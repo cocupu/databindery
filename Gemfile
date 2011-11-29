@@ -17,9 +17,14 @@ end
 
 gem 'jquery-rails'
 
-# To use debugger
-group :development do
+group :test do
 #  gem 'ruby-debug19'
+  gem "rspec-rails", ">= 2.8.0.rc1"
+  gem "database_cleaner", ">= 0.7.0"
+  gem "mongoid-rspec", ">= 1.4.4"
+  gem "factory_girl_rails", ">= 1.4.0"
+  gem "cucumber-rails", ">= 1.2.0"
+  gem "capybara", ">= 1.1.2"
 end
 
 gem "bson_ext", ">= 1.5.1"
