@@ -8,4 +8,9 @@ describe DecomposeSpreadsheetJob do
     @job.should respond_to :perform
   end
 
+  it "should break up the spreadsheet" do
+    @chattel = Chattel.create(:attachment => File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls'))
+    @job = DecomposeSpreadsheetJob.new({:spreadsheet_id=>@chattel.id}, nil)
+    @job.perform
+  end
 end
