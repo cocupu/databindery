@@ -17,6 +17,7 @@ end
 
 gem 'jquery-rails'
 gem 'haml'
+gem 'roo', '>=1.10.1'
 
 group :test, :development do
   gem "rspec-rails", ">= 2.8.0.rc1"
