@@ -33,4 +33,6 @@ end
 gem "bson_ext", ">= 1.5.1"
 gem "mongoid", ">= 2.3.4"
 gem "devise", ">= 1.5.1"
+gem "mongoid-paperclip", :require => "mongoid_paperclip"
+gem "aws-s3",            :require => "aws/s3"
 
