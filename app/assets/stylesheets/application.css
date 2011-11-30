@@ -5,3 +5,44 @@
  *= require_self
  *= require_tree . 
 */
+
+body {
+  background-color: #8DB437;
+  /* Safari 5.1, Chrome 10+ */
+  background: -webkit-linear-gradient(top, #DAFF88, #ffffff);
+  
+  /* Firefox 3.6+ */
+  background: -moz-linear-gradient(top, #DAFF88, #fff);
+  
+  /* IE 10 */
+  background: -ms-linear-gradient(top, #DAFF88, #fff);
+  background-repeat: repeat-x;
+
+}
+.title_image {
+  margin-left:auto;
+  margin-right:auto;
+  display: block;
+  background-color: #8DB437;
+  -webkit-box-shadow: rgba(0,0,0,0.07) 0 3px 2px inset;
+  -webkit-border-radius: 18px;
+  -moz-border-radius: 18px;
+  border-radius: 18px;
+  padding-top: 3px;
+  padding-right: 10px;
+}
+
+.content {
+  width: 1024px;
+  border: 1px solid #E9E9E9;
+  background-color: #eaefea;
+  height: 500px;
+  -webkit-box-shadow: rgba(0,0,0,0.07) 0 1px 2px inset;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  padding: 20px;
+  margin-left:auto;
+  margin-right:auto;
+  margin-top: 20px;
+}

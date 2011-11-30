@@ -18,12 +18,15 @@ end
 gem 'jquery-rails'
 gem 'haml'
 gem 'roo', '>=1.10.1'
+gem 'delayed_job'
+gem 'delayed_job_mongoid'
 
 group :test, :development do
   gem "rspec-rails", ">= 2.8.0.rc1"
 #  gem 'ruby-debug19'
 end
 group :test do
+  gem "mocha"
   gem "database_cleaner", ">= 0.7.0"
   gem "mongoid-rspec", ">= 1.4.4"
   gem "factory_girl_rails", ">= 1.4.0"
