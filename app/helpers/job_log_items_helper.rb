@@ -1,2 +1,0 @@
-module JobLogItemsHelper
-end

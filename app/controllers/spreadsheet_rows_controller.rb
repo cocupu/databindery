@@ -1,0 +1,2 @@
+class SpreadsheetRowsController < ApplicationController
+end
