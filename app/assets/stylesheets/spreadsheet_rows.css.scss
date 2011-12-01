@@ -2,23 +2,14 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-table.scrollable {
-  background: white;
-  border-collapse: collapse;
-  border: 2px inset black;
-  tbody{
-    display:block;
-    max-height:350px;
-    max-width: 720px;
-    overflow:scroll;
-    font-size: small;
-    td {
-      border: 1px solid gray;
-      border-collapse: collapse;
-      padding: 3px;
-      min-height: 30px;
-        
-    }
+table#data {
+  clear:both ;
+  td {
+    white-space: nowrap;
+  }
+  td.wrappable {
+    white-space: normal;
+    width: 200px;
   }
 }
 

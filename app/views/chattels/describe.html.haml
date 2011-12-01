@@ -1,3 +1,26 @@
-You uploaded 
-= @chattel.attachment.url
+%p
+  You uploaded 
+  = @chattel.attachment.url
+
+- @spreadsheet_rows = SpreadsheetRow.all(:conditions=>{:chattel_id => params[:id]})
+
+-if @spreadsheet_rows.count == 0
+  %p Refresh until we can see the spreadsheet below: (TODO - Ajax processing bar).
+
+-else
+  %div.group
+    Now create a data model(s) for the spreadsheet:
+    =form_for [@chattel, MappingTemplate.new()] do |f|
+      %ul
+        %li
+          =f.label :row_start, 'Data Begins on row: '
+          =f.select :row_start, [0, 1, 2, 3, 4, 5, 6], :selected=>2
+        %li
+          =label_tag 'mapping_template[model_name][0]', 'Model Name: '
+          =text_field_tag 'mapping_template[model_name][0]'
+          TODO multiple models and select differentiator column
+        %li
+          =f.submit "Continue" 
+  =render :partial=>'spreadsheet_rows/table'
+
 

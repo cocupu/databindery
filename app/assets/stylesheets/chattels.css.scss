@@ -1,3 +1,8 @@
 // Place all the styles related to the chattels controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+form ul {
+  list-style-type: none;
+  padding-left: 0;
+}

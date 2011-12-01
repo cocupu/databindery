@@ -1,0 +1,2 @@
+class MappingTemplatesController < ApplicationController
+end

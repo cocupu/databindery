@@ -3,4 +3,5 @@ class SpreadsheetRow
   belongs_to :job_log_item
   belongs_to :chattel   #TODO add index here.
   field :values
+  field :row_number
 end
