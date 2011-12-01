@@ -1,5 +1,8 @@
 require 'spec_helper'
 
 describe JobLogItem do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it "should have status" do
+    @job_log_item = JobLogItem.create(:status =>'NEW')
+    @job_log_item.status.should == 'NEW'
+  end
 end

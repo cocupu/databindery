@@ -1,11 +1,13 @@
+%h1 Files
 %table
   %thead
     %tr
-      %th ID
       %th Path
   %tbody
   -@chattels.each do |chattel|
     %tr
-      %td= chattel.id
-      %td= chattel.attachment.url
+      - if chattel.spreadsheet?
+        %td= link_to chattel.attachment.url, spreadsheet_row_path(chattel.id)
+      - else
+        %td= chattel.attachment.url
 

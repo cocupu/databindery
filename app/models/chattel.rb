@@ -4,4 +4,8 @@ class Chattel
 
   has_mongoid_attached_file :attachment
 
+  def spreadsheet?
+    ["application/vnd.ms-excel"].include? attachment_content_type
+  end
+
 end

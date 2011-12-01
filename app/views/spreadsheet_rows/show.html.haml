@@ -1,0 +1,11 @@
+%h1 Spreadsheet Rows
+%h2= "Document: " + params[:id]
+%table.scrollable
+  %tbody
+    -@spreadsheet_rows.each do |row|
+      %tr
+        %td=row.chattel_id
+        -row.values.each do |val|
+          %td=val || '&nbsp;'.html_safe # nbsp allows empty rows to have height. 
+
+
