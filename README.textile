@@ -2,29 +2,22 @@ h1. CoCuPu
 
 h2. Trying it out
 The default server (webbrick) performs poorly.  Instead run:
-<pre>
-$ unicorn_rails
+<pre>$ unicorn_rails
 </pre>
 
 h2. Deploying
 Need to run this after deploying to a new MongoDB:
-<pre>
-script/rails runner 'Delayed::Backend::Mongoid::Job.create_indexes'
-</pre>
+<pre>$ script/rails runner 'Delayed::Backend::Mongoid::Job.create_indexes' </pre>
 
 h2. Workers
 
 h3. In development:
-<pre>
-$ rake jobs:work
-</pre>
+<pre>$ rake jobs:work</pre>
 
 h3. In production:
-<pre>
-$ RAILS_ENV=production script/delayed_job start
+<pre>$ RAILS_ENV=production script/delayed_job start
 $ RAILS_ENV=production script/delayed_job stop
 
 # Runs two workers in separate processes.
 $ RAILS_ENV=production script/delayed_job -n 2 start
-$ RAILS_ENV=production script/delayed_job stop
-</pre>
+$ RAILS_ENV=production script/delayed_job stop</pre>
