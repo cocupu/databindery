@@ -1,0 +1,29 @@
+%h1 Jobs
+
+%div
+  -if @jobs.empty?
+    No Jobs Queued
+  -else
+    %h2 In the queue:
+  -@jobs.each do |job|
+    =job.id
+    =job.last_error
+
+%div
+  %h2 History:
+  -if @job_logs.empty?
+    No Jobs Logged
+  -else 
+    %table
+      %thead
+        %tr
+          %th ID
+          %th Name
+          %th Status
+      %tbody
+      -@job_logs.each do |job|
+        %tr
+          %td=link_to job.id, job
+          %td=job.name
+          %td=job.status
+

@@ -1,0 +1,15 @@
+%nav
+  %ul
+    %li=link_to 'Collect', root_path
+    %li Curate
+    %li Publish
+    %li
+      Administration
+      %ul
+        %li
+          =link_to 'Jobs', jobs_path
+        %li
+          =link_to 'Files', chattels_path
+        %li
+          Spreadsheet Rows
+          =#link_to 'Spreadsheet Rows', spreadsheets_path

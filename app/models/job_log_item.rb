@@ -1,6 +1,6 @@
 class JobLogItem
   include Mongoid::Document
-#  include Mongoid::Timestamps
+  include Mongoid::Timestamps
 
   field :status
 

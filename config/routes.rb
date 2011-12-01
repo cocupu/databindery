@@ -5,6 +5,8 @@ Cocupu::Application.routes.draw do
       get 'describe'
     end
   end
+  resources :jobs
+  resources :job_log_items
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

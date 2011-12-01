@@ -23,6 +23,7 @@ gem 'delayed_job_mongoid'
 
 group :test, :development do
   gem "rspec-rails", ">= 2.8.0.rc1"
+  gem 'unicorn'  # Use unicorn as the webserver
 #  gem 'ruby-debug19'
 end
 group :test do

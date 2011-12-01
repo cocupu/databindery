@@ -1,5 +1,11 @@
 == CoCuPu
 
+== Trying it out
+The default server (webbrick) performs poorly.  Instead run:
+<pre>
+$ unicorn_rails
+</pre>
+
 == Deploying
 Need to run this after deploying to a new MongoDB:
 <pre>

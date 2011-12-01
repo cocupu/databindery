@@ -28,6 +28,17 @@ describe ChattelsController do
     end
   end
 
+  describe "index" do
+    before do
+      @c = Chattel.create
+    end
+    it "should get a list" do
+      get :index
+      assigns[:chattels].should include @c
+      response.should be_success
+    end
+  end
+
   describe "describe" do
     before do
       @c = Chattel.create
