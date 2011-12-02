@@ -10,7 +10,7 @@ describe MappingTemplatesController do
     it "should create" do
       Cocupu::Spreadsheet.any_instance.expects(:reify)
 
-      post :create, :chattel_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models=>{'0'=>{:name=>"Talk", :mapping=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
+      post :create, :spreadsheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models=>{'0'=>{:name=>"Talk", :mapping=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
       assigns[:mapping_template].row_start.should == 2
       assigns[:mapping_template].models.first.name.should == 'Talk'
       assigns[:mapping_template].models.first.field_mappings.size.should == 2
@@ -21,7 +21,7 @@ describe MappingTemplatesController do
       Model.count.should == 1
       Model.first.m_fields.first.label.should == 'File Name'
 
-      response.should redirect_to(:action=>'show', :chattel_id=>@ss.id, :id=>assigns[:mapping_template].id)
+      response.should redirect_to(:action=>'show', :spreadsheet_id=>@ss.id, :id=>assigns[:mapping_template].id)
     end
   end
 
@@ -32,7 +32,7 @@ describe MappingTemplatesController do
       @template.save
     end
     it "should show" do
-      get :show, :chattel_id=>7, :id=>@template.id
+      get :show, :spreadsheet_id=>7, :id=>@template.id
       response.should be_success
       assigns[:mapping_template].should == @template
     end

@@ -1,0 +1,14 @@
+%h1="Instances of #{@model.name}"
+=@model.instances.count
+total records
+
+%ul
+  -@model.instances.each do |inst|
+    %li
+      %dl
+        %dt ID:
+        %dd=inst.id
+        -inst.properties.each do |prop|
+          %dt #{prop.field.label}: 
+          %dd=prop.value
+     

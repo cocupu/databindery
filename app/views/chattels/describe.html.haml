@@ -2,7 +2,8 @@
   You uploaded 
   = @chattel.attachment.url
 
-- @spreadsheet_rows = SpreadsheetRow.all(:conditions=>{:chattel_id => params[:id]})
+-# @spreadsheet_rows = SpreadsheetRow.all(:conditions=>{:spreadsheet_id => params[:id]})
+- @spreadsheet_rows = @chattel.rows
 
 -if @spreadsheet_rows.count == 0
   %p Refresh until we can see the spreadsheet below: (TODO - Ajax processing bar).
@@ -10,7 +11,7 @@
 -else
   %div.group
     Now create a data model(s) for the spreadsheet:
-    =form_for [@chattel, MappingTemplate.new()] do |f|
+    =form_for(:spreadsheet, :url=>spreadsheet_mapping_templates_path(@chattel)) do |f|
       %ul
         %li
           =f.label :row_start, 'Data Begins on row: '

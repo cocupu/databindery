@@ -9,7 +9,7 @@ describe ReifyEachSpreadsheetRowJob do
   it "should process" do
     template = MappingTemplate.new()
     template.models << TemplateModelMapping.new(:name=>'Truck', :field_mappings=>[FieldMapping.new(:label=>"Wheels", :source=>'B')])
-    job = ReifyEachSpreadsheetRowJob.new(SpreadsheetRow.new(:values=>['one', 'two', 'three']), {:template=>template}, mock("parent_id"))
+    job = ReifyEachSpreadsheetRowJob.new(SpreadsheetRow.new(:values=>['one', 'two', 'three']), {:template=>template}, mock("parent_id"), JobLogItem.new)
     job.enqueue(job)
     job.perform
     ModelInstance.count.should == 1

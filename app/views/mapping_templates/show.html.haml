@@ -9,7 +9,7 @@
       %br/ 
       Columns:
       %ul
-        -model['mapping'].each do |column|
+        -model.field_mappings.each do |column|
           %li
             =column['source']
             &rarr;

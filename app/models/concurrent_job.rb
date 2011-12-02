@@ -9,10 +9,11 @@ class ConcurrentJob
   end
 
   
-  def enqueue_jobs(job_class, per_job_data, all_job_data)
+  def enqueue_collection(job_class, per_job_data, all_job_data)
     self.update_attribute(:status, "PROCESSING")
     per_job_data.each do |data|
-      Delayed::Job.enqueue job_class.new(data, all_job_data, self.id) 
+      log = JobLogItem.create(:status=>"READY", :name=>job_class.to_s)
+      Delayed::Job.enqueue job_class.new(data, all_job_data, self.id, log) 
     end
   end
 

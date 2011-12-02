@@ -1,6 +1,6 @@
 class MappingTemplatesController < ApplicationController
   def create
-    @spreadsheet = Cocupu::Spreadsheet.find(params[:chattel_id])
+    @spreadsheet = Cocupu::Spreadsheet.find(params[:spreadsheet_id])
     @mapping_template = MappingTemplate.new()
     @mapping_template.attributes = params[:mapping_template]
     @mapping_template.save!  

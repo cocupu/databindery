@@ -5,6 +5,6 @@
     %li
       =model.name
       (
-      -model.fields.each do |f|
-        =f
+      =model.m_fields.map(&:label).join(', ')
       )
+      =link_to "instances", model_model_instances_path(model)
