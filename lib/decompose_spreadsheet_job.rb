@@ -1,13 +1,13 @@
-class DecomposeSpreadsheetJob < ProcessChainJob
+class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
 
   def enqueue(job)
-    @log = JobLogItem.create(:status=>"ENQUEUE", :name=>self.class.to_s)
+    log.update_attribute(:status, 'ENQUEUE')
   end
 
   def perform
-    @log.update_attribute(:status, 'PROCESSING')
-    @chattel = Chattel.find(input[:spreadsheet_id]).update_attribute(:_type,"Cocupu::Spreadsheet")
-    @chattel = Cocupu::Spreadsheet.find(input[:spreadsheet_id])
+    log.update_attribute(:status, 'PROCESSING')
+    Chattel.find(spreadsheet_id).update_attribute(:_type,"Cocupu::Spreadsheet") #do a typecast
+    @chattel = Cocupu::Spreadsheet.find(spreadsheet_id)
     spreadsheet = detect_type(@chattel).new(@chattel.attachment.path)
     spreadsheet.first_row.upto(spreadsheet.last_row) do |row_idx|
       stored_row = []
@@ -25,17 +25,17 @@ class DecomposeSpreadsheetJob < ProcessChainJob
 
 
   def success(job)
-    @log.update_attribute(:status, 'SUCCESS')
+    log.update_attribute(:status, 'SUCCESS')
   end
 
   def error(job, exception)
-    @log.status = 'ERROR'
-    @log.message = exception
-    @log.save!
+    log.status = 'ERROR'
+    log.message = exception
+    log.save!
   end
 
   def failure
-    @log.update_attribute(:status, 'FAILURE')
+    log.update_attribute(:status, 'FAILURE')
   end
 
   def detect_type(chattel)

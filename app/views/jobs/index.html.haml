@@ -6,8 +6,10 @@
   -else
     %h2 In the queue:
   -@jobs.each do |job|
-    =job.id
-    =job.last_error
+    %li
+      =job.id
+      %pre
+        =job.last_error
 
 %div
   %h2 History:
