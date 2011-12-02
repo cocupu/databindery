@@ -22,7 +22,7 @@ class MappingTemplatesController < ApplicationController
   end
 
   def create_model(model_template)
-    m_fields = model_template['mapping'].map{|elem| Field.new(:label=>elem['label'])}
-    Model.create!(:name=>model_template['name'], :m_fields=>m_fields)
+    m_fields = model_template.field_mappings.map{|elem| Field.new(:label=>elem.label)}
+    Model.create!(:name=>model_template.name, :m_fields=>m_fields)
   end
 end

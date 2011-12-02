@@ -12,7 +12,12 @@ describe MappingTemplatesController do
 
       post :create, :chattel_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models=>{'0'=>{:name=>"Talk", :mapping=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
       assigns[:mapping_template].row_start.should == 2
-      assigns[:mapping_template].models.should == [{"name"=>'Talk', "mapping"=>[{"label"=>'File Name', "source"=>'A'}, {"label"=>'Title', "source"=>'C'}]}]
+      assigns[:mapping_template].models.first.name.should == 'Talk'
+      assigns[:mapping_template].models.first.field_mappings.size.should == 2
+      assigns[:mapping_template].models.first.field_mappings[0].label.should == 'File Name'
+      assigns[:mapping_template].models.first.field_mappings[0].source.should == 'A'
+      assigns[:mapping_template].models.first.field_mappings[1].label.should == 'Title'
+      assigns[:mapping_template].models.first.field_mappings[1].source.should == 'C'
       Model.count.should == 1
       Model.first.m_fields.first.label.should == 'File Name'
 

@@ -25,7 +25,7 @@ group :test, :development do
   #gem "rspec-rails", ">= 2.8.0.rc1"
   gem "rspec-rails", "~> 2.7.0"
   gem 'unicorn'  # Use unicorn as the webserver
-#  gem 'ruby-debug19'
+  gem 'ruby-debug19'
 end
 group :test do
   gem "mocha"

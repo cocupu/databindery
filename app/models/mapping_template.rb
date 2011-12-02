@@ -1,7 +1,7 @@
 class MappingTemplate
   include Mongoid::Document
   field :row_start
-  field :models
+  embeds_many :models, :class_name=>"TemplateModelMapping"
 
   def attributes=(attrs)
     attrs[:row_start] = attrs[:row_start].to_i if attrs[:row_start]
@@ -16,9 +16,9 @@ class MappingTemplate
     cast_hash_to_array(model_params).each do |field_map|
       mapping = []
       cast_hash_to_array(field_map[:mapping]).each do |item|
-        mapping << item if item[:label].present?
+        mapping << FieldMapping.new(:label=>item[:label], :source=>item[:source]) if item[:label].present?
       end
-      models << {:name=>field_map[:name], :mapping=>mapping}
+      models << TemplateModelMapping.new(:name=>field_map[:name], :field_mappings=>mapping)
     end
     models
   end
