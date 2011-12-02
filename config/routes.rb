@@ -6,6 +6,7 @@ Cocupu::Application.routes.draw do
       get 'describe'
     end
   end
+  resources :models
   resources :jobs
   resources :job_log_items
   resources :spreadsheet_rows

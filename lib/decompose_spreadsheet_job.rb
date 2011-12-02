@@ -2,7 +2,8 @@ class DecomposeSpreadsheetJob < ProcessChainJob
 
   def perform
     @log = JobLogItem.create(:status=>"PROCESSING", :name=>self.class.to_s)
-    @chattel = Chattel.find(input[:spreadsheet_id])
+    @chattel = Chattel.find(input[:spreadsheet_id]).update_attribute(:_type,"Cocupu::Spreadsheet")
+    @chattel = Cocupu::Spreadsheet.find(input[:spreadsheet_id])
     spreadsheet = detect_type(@chattel).new(@chattel.attachment.path)
     spreadsheet.first_row.upto(spreadsheet.last_row) do |row_idx|
       stored_row = []
@@ -14,7 +15,7 @@ class DecomposeSpreadsheetJob < ProcessChainJob
           stored_row << cell
         end
       end
-      SpreadsheetRow.create(:chattel => @chattel , :row_number => row_idx, :job_log_item => @log, :values => stored_row)
+      SpreadsheetRow.create(:spreadsheet => @chattel , :row_number => row_idx, :job_log_item => @log, :values => stored_row)
     end
   end
 

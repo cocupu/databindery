@@ -6,6 +6,11 @@ The default server (webbrick) performs poorly.  Instead run:
 </pre>
 
 h2. Deploying
+# Install a javascript runtime (already installed on the Mac)
+  See https://github.com/sstephenson/execjs
+  I tried this one:
+<pre>gem install therubyracer</pre>
+
 Need to run this after deploying to a new MongoDB:
 <pre>$ script/rails runner 'Delayed::Backend::Mongoid::Job.create_indexes' </pre>
 
@@ -14,7 +19,7 @@ h2. Workers
 h3. In development:
 <pre>$ rake jobs:work</pre>
 
-h3. In production:
+h3. In production -- doesn't work:
 <pre>$ RAILS_ENV=production script/delayed_job start
 $ RAILS_ENV=production script/delayed_job stop</pre>
 

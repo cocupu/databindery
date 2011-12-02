@@ -23,4 +23,15 @@ RSpec.configure do |config|
   # automatically. This will be the default behavior in future versions of
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
+
+  # Drop all columns before the test run.
+  config.before(:all) do
+    Mongoid.database.collections.each do |collection|
+      unless collection.name =~ /^system\./
+        collection.remove
+      end
+    end
+  end
 end
+
+

@@ -1,0 +1,10 @@
+%h1 Models
+
+%ul
+  -@models.each do |model|
+    %li
+      =model.name
+      (
+      -model.fields.each do |f|
+        =f
+      )
