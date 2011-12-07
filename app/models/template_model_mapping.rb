@@ -3,6 +3,8 @@ class TemplateModelMapping
   embedded_in :mapping_template
   embeds_many :field_mappings
 
+  accepts_nested_attributes_for :field_mappings, :reject_if => lambda { |a| a.values.all?(&:blank?) }, :allow_destroy => true
+
   field :name, type: String
 
   def referenced_model()

@@ -10,6 +10,11 @@ describe JobLogItemsController do
       response.should be_success
       assigns[:job_log_item].should == @item
     end
+    it "should return json" do
+      get :show, :id=>@item.id, :format=>:json
+      response.should be_success
+      response.body.should == @item.to_json
+    end
   end
 
 end

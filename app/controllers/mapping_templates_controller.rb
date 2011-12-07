@@ -1,4 +1,8 @@
 class MappingTemplatesController < ApplicationController
+  def new
+    @spreadsheet = Cocupu::Spreadsheet.find(params[:spreadsheet_id])
+    @mapping_template = MappingTemplate.new(:spreadsheet=>@spreadsheet, :models=>[TemplateModelMapping.new(:field_mappings=>[FieldMapping.new])])
+  end
   def create
     @spreadsheet = Cocupu::Spreadsheet.find(params[:spreadsheet_id])
     @mapping_template = MappingTemplate.new()

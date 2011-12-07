@@ -3,5 +3,6 @@ class JobLogItem
   include Mongoid::Timestamps
 
   field :status
+  field :name
 
 end

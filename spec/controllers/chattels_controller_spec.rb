@@ -24,7 +24,7 @@ describe ChattelsController do
       post :create, :chattel => {:attachment=> fixture_file_upload(Rails.root + 'spec/fixtures/images/rails.png', 'image/png')}
       assigns[:chattel].should be_persisted
       assigns[:chattel].attachment.file?.should be_true
-      response.should redirect_to(describe_chattel_path(assigns[:chattel]))
+      response.should redirect_to(describe_chattel_path(assigns[:chattel], :log=>assigns[:log].id))
     end
   end
 
@@ -42,10 +42,12 @@ describe ChattelsController do
   describe "describe" do
     before do
       @c = Chattel.create
+      @l = JobLogItem.create
     end
     it "should be successful" do
-      get :describe, :id=>@c.id
+      get :describe, :id=>@c.id, :log=>@l.id
       assigns[:chattel].should == @c
+      assigns[:log].should == @l
       response.should be_success
     end
   

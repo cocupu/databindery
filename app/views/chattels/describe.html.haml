@@ -1,36 +1,31 @@
+:javascript
+  /*poll the log controller for result of @log.id*/
+  /*if status == 'SUCCESS' then go to spreadsheets/@chattel.id/mapping_template/new */
+  function poll(){
+      $.ajax({ url: "#{job_log_item_path(@log)}", success: function(data){
+        //Update your dashboard gauge
+        $('#results').html("Status: " + data.status); 
+        if (data.status == 'SUCCESS') {
+          document.location = '#{new_spreadsheet_mapping_template_path(:spreadsheet_id=>@chattel.id)}'
+        } else {
+          //Setup the next poll
+          setTimeout(function(){
+           poll();
+          }, 5000);
+        }
+      }, dataType: "json"});
+  }
+  poll();
+  
+LOG
+=@log.id
+
 %p
   You uploaded 
   = @chattel.attachment.url
 
--if @chattel.respond_to? :rows
-  - @spreadsheet_rows = @chattel.rows
-  %div.group
-    Now create a data model(s) for the spreadsheet:
-    =form_for(:spreadsheet, :url=>spreadsheet_mapping_templates_path(@chattel)) do |f|
-      %ul
-        %li
-          =f.label :row_start, 'Data Begins on row: '
-          =f.select :row_start, [0, 1, 2, 3, 4, 5, 6], :selected=>2
-        %li
-          =label_tag 'mapping_template[models][0][name]', 'Model Name: '
-          =text_field_tag 'mapping_template[models][0][name]'
-          TODO multiple models and select differentiator column
-        %li
-          Model fields:
-          %table.model-fields
-            %tr
-              %th Field Name:
-              %th Source Column:
-            -0.upto(8) do |i|
-              %tr
-                %td=text_field_tag "mapping_template[models][0][mapping][#{i}][label]"
-                %td=select_tag("mapping_template[models][0][mapping][#{i}][source]", options_for_select( 0.upto(@spreadsheet_rows[0].values.size).map{|n| (n+65).chr}), :include_blank=>true)
-            
-        %li
-          =f.submit "Continue" 
-  =render :partial=>'spreadsheet_rows/table'
-
--else
-  %p Refresh until we can see the spreadsheet below: (TODO - Ajax processing bar).
+Once the file has been processed, you will be redirected to the next step.
+#results
+  Checking the status
 
 

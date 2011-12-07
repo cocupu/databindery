@@ -10,7 +10,7 @@ describe MappingTemplatesController do
     it "should create" do
       Cocupu::Spreadsheet.any_instance.expects(:reify)
 
-      post :create, :spreadsheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models=>{'0'=>{:name=>"Talk", :mapping=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
+      post :create, :spreadsheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
       assigns[:mapping_template].row_start.should == 2
       assigns[:mapping_template].models.first.name.should == 'Talk'
       assigns[:mapping_template].models.first.field_mappings.size.should == 2
@@ -35,6 +35,20 @@ describe MappingTemplatesController do
       get :show, :spreadsheet_id=>7, :id=>@template.id
       response.should be_success
       assigns[:mapping_template].should == @template
+    end
+  end
+
+  describe 'new' do
+    before do
+      @spreadsheet = Cocupu::Spreadsheet.create!()
+    end
+    it "should be success" do
+      get :new, :spreadsheet_id => @spreadsheet.id
+      assigns[:spreadsheet].should == @spreadsheet
+      assigns[:mapping_template].should_not be_nil
+      assigns[:mapping_template].models.length.should == 1
+      assigns[:mapping_template].models[0].field_mappings.length.should == 1
+      response.should be_success
     end
   end
 
