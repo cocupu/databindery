@@ -1,0 +1,18 @@
+- @spreadsheet_rows = @spreadsheet.rows
+%div.group
+  Now create a data model(s) for the spreadsheet:
+  =flash[:error]
+  =form_for( @mapping_template, :url=>spreadsheet_mapping_templates_path(@spreadsheet)) do |f|
+    %ul
+      %li.spacer
+        =f.label :row_start, 'Data Begins on row: '
+        =f.select :row_start, [0, 1, 2, 3, 4, 5, 6], :selected=>2
+      =f.fields_for :models do |model_form| 
+        = render :partial=>'model', :locals=>{:f => model_form}
+      %li
+        = add_child_link 'New model', :models, f.object_id
+      %li
+        =f.submit "Continue" 
+    = new_child_fields_template f, :models, :tag=>:ul, :index=>f.object_id
+=render :partial=>'spreadsheet_rows/table'
+

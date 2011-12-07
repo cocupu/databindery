@@ -4,5 +4,6 @@ class JobLogItem
 
   field :status
   field :name
+  field :message
 
 end

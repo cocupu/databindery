@@ -1,0 +1,16 @@
+%li.spacer
+  =f.label 'name', 'Model Name: '
+  =f.text_field 'name'
+  %p TODO select a differentiator column
+
+  Model fields:
+  %table.model-fields
+    %tr
+      %th Field Name:
+      %th Source Column:
+    =f.fields_for :field_mappings do |field_form| 
+      = render :partial=>'field_mapping', :locals=>{:f=>field_form}
+  = add_child_link 'New field', :field_mappings, f.object_id
+  = new_child_fields_template f, :field_mappings, :tag=>:table, :index=>f.object_id
+            
+

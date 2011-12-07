@@ -23,6 +23,16 @@ describe MappingTemplatesController do
 
       response.should redirect_to(:action=>'show', :spreadsheet_id=>@ss.id, :id=>assigns[:mapping_template].id)
     end
+    it "should raise errors if no model name was supplied" do
+      Cocupu::Spreadsheet.any_instance.expects(:reify).never
+
+      post :create, :spreadsheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
+      assigns[:mapping_template].row_start.should == 2
+      assigns[:mapping_template].models.first.errors[:name].should == ["can't be blank"]
+      Model.count.should == 0
+      response.should be_success
+      flash[:error].should == ["Name can't be blank"]
+    end
   end
 
   describe "show" do

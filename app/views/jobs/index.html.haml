@@ -9,7 +9,7 @@
     %li
       =job.id
       %pre
-        =job.last_error
+        =truncate(job.last_error, :length=>400)
 
 %div
   %h2 History:
@@ -22,10 +22,14 @@
           %th ID
           %th Name
           %th Status
+          %th Updated
+          %th Message
       %tbody
       -@job_logs.each do |job|
         %tr
           %td=link_to job.id, job
           %td=job.name
           %td=job.status
+          %td=job.updated_at
+          %td=job.message
 

@@ -1,0 +1,4 @@
+%tr
+  %td=f.text_field "label"
+  %td=f.select("source", options_for_select( 0.upto(@spreadsheet_rows[0].values.size).map{|n| (n+65).chr}), :include_blank=>true)
+

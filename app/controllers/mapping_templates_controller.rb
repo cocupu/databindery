@@ -6,12 +6,17 @@ class MappingTemplatesController < ApplicationController
   def create
     @spreadsheet = Cocupu::Spreadsheet.find(params[:spreadsheet_id])
     @mapping_template = MappingTemplate.new()
+    params[:mapping_template][:models_attributes].delete("new_models")
     @mapping_template.attributes = params[:mapping_template]
-    @mapping_template.save!  
-    ## TODO validate that we don't alread have models with these names
-    create_models(@mapping_template.models)
-    @spreadsheet.reify(@mapping_template)
-    redirect_to :action=>'show', :id=>@mapping_template.id
+    if @mapping_template.save  
+      ## TODO validate that we don't alread have models with these names
+      create_models(@mapping_template.models)
+      @spreadsheet.reify(@mapping_template)
+      redirect_to :action=>'show', :id=>@mapping_template.id
+    else
+      flash[:error] = @mapping_template.models.collect {|m| m.errors.full_messages}.flatten 
+      render :action=>'new'
+    end
   end
 
   def show
