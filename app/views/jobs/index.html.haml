@@ -8,7 +8,7 @@
   -@jobs.each do |job|
     %li
       =job.id
-      %pre
+      %pre{:title=>job.last_error}
         =truncate(job.last_error, :length=>400)
 
 %div
@@ -16,20 +16,5 @@
   -if @job_logs.empty?
     No Jobs Logged
   -else 
-    %table
-      %thead
-        %tr
-          %th ID
-          %th Name
-          %th Status
-          %th Updated
-          %th Message
-      %tbody
-      -@job_logs.each do |job|
-        %tr
-          %td=link_to job.id, job
-          %td=job.name
-          %td=job.status
-          %td=job.updated_at
-          %td=job.message
+    =render :partial=>'job_log_items/table', :locals=>{:job_logs=>@job_logs}
 

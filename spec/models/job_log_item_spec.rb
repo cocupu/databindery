@@ -5,4 +5,21 @@ describe JobLogItem do
     @job_log_item = JobLogItem.create(:status =>'NEW')
     @job_log_item.status.should == 'NEW'
   end
+  
+  it "should have parents and children" do
+    @conc = ConcurrentJob.create
+    @child1 = JobLogItem.create
+    @conc.children = [@child1, JobLogItem.create]
+    @child1.parent.should == @conc
+  end
+
+  it "should alert parents when the status changes" do
+    @conc = ConcurrentJob.create
+    @child1 = JobLogItem.create(:parent=>@conc)
+
+    @conc.expects(:member_finished)
+    @child1.update_attribute(:status, 'FAILED')
+    @child1.status.should == 'FAILED'
+    
+  end
 end

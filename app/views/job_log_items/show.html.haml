@@ -1,6 +1,9 @@
 %dl
   %dt Id
   %dd=@job_log_item.id
+  -if @job_log_item.parent
+    %dt Parent
+    %dd=link_to @job_log_item.parent.id, job_log_item_path(@job_log_item.parent)
   %dt Name
   %dd=@job_log_item.name
   %dt Status
@@ -9,3 +12,8 @@
   %dd=@job_log_item.created_at
   %dt Updated At
   %dd=@job_log_item.updated_at
+
+  -if @children
+    %dt="#{@children.size} Children"
+    %dl
+      =render :partial=>'job_log_items/table', :locals=>{:job_logs=>@children}

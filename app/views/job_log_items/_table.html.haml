@@ -1,0 +1,17 @@
+%table
+  %thead
+    %tr
+      %th ID
+      %th Name
+      %th Status
+      %th Updated
+      %th Message
+  %tbody
+  -job_logs.each do |job|
+    %tr
+      %td=link_to job.id, job_log_item_path(job)
+      %td=job.name
+      %td=job.status
+      %td=job.updated_at
+      %td=job.message
+

@@ -13,7 +13,7 @@ describe Cocupu::Spreadsheet do
     ss = Cocupu::Spreadsheet.new()
     job = mock("job")
     job.expects(:enqueue_collection).with(ReifyEachSpreadsheetRowJob, [], {:template=>template})
-    ConcurrentJob.expects(:new).returns(job)
+    ConcurrentJob.expects(:create).returns(job)
     ss.reify(template)
   end
 end
