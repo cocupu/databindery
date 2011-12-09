@@ -14,6 +14,12 @@
 /log/*.log
 /tmp
 
+# Generate jetty, don't store in git
+jetty/
+
+# Uploads are stored in public/system
+public/system
+
 # Ignore vim swap files
 *.swp
 *.swo

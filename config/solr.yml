@@ -1,0 +1,10 @@
+# each environment can have a jetty_path with absolute or relative
+# (to app root) path to a jetty/solr install. This is used
+# by the rake tasks that start up solr automatically for testing
+
+development:
+  url: http://127.0.0.1:8983/solr
+test: &test
+  url: http://127.0.0.1:8888/solr
+cucumber:
+  <<: *test
