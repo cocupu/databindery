@@ -3,7 +3,7 @@ module Cocupu
   class SolrConf < Rails::Generators::Base
     source_root File.expand_path('../templates', __FILE__)
     
-    argument :target_path, :type=>:string, :default => "."
+    argument :target_path, :type=>:string, :default => "jetty/solr/conf"
     
     desc """ 
 Generate solr config files solrconfig.xml and schema.xml
