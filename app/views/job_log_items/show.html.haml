@@ -12,6 +12,11 @@
   %dd=@job_log_item.created_at
   %dt Updated At
   %dd=@job_log_item.updated_at
+  -if @job_log_item.message
+    %dt Message
+    %dd
+      %pre=@job_log_item.message
+
 
   -if @children
     %dt="#{@children.size} Children"

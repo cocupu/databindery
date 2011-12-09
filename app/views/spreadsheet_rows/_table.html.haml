@@ -1,12 +1,12 @@
--if @spreadsheet_rows[0]
+-if @worksheet.rows[0]
   %table#data.scrollable
     %thead
       %tr
         %th
-        -1.upto(@spreadsheet_rows[0].values.size) do |col|
+        -1.upto(@worksheet.rows[0].values.size) do |col|
           %th=(col+64).chr
     %tbody
-      -@spreadsheet_rows.each do |row|
+      -@worksheet.rows.each do |row|
         %tr
           %td=row.row_number
           -row.values.each do |val|

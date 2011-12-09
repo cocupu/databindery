@@ -1,17 +1,19 @@
 class MappingTemplatesController < ApplicationController
+
   def new
-    @spreadsheet = Cocupu::Spreadsheet.find(params[:spreadsheet_id])
-    @mapping_template = MappingTemplate.new(:spreadsheet=>@spreadsheet, :models=>[TemplateModelMapping.new(:field_mappings=>[FieldMapping.new])])
+    @worksheet = Worksheet.find(params[:mapping_template][:worksheet_id])
+    @mapping_template = MappingTemplate.new(:models=>[TemplateModelMapping.new(:field_mappings=>[FieldMapping.new])])
   end
+
   def create
-    @spreadsheet = Cocupu::Spreadsheet.find(params[:spreadsheet_id])
+    @worksheet = Worksheet.find(params[:worksheet_id])
     @mapping_template = MappingTemplate.new()
     params[:mapping_template][:models_attributes].delete("new_models")
     @mapping_template.attributes = params[:mapping_template]
     if @mapping_template.save  
       ## TODO validate that we don't alread have models with these names
       create_models(@mapping_template.models)
-      @spreadsheet.reify(@mapping_template)
+      @worksheet.reify(@mapping_template)
       redirect_to :action=>'show', :id=>@mapping_template.id
     else
       flash[:error] = @mapping_template.models.collect {|m| m.errors.full_messages}.flatten 

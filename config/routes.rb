@@ -6,8 +6,10 @@ Cocupu::Application.routes.draw do
     end
   end
   resources :spreadsheets do
-    resources :mapping_templates
+    resources :worksheets do
+    end
   end
+  resources :mapping_templates
   
   resources :models do
     resources :model_instances

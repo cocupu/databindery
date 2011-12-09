@@ -1,16 +1,15 @@
 require 'spec_helper'
 
 describe MappingTemplatesController do
-
   describe "create with a single model" do
     before do
       Model.count.should == 0  #Make sure the db is clean
-      @ss = Cocupu::Spreadsheet.create!
+      @ss = Worksheet.create!
     end
     it "should create" do
-      Cocupu::Spreadsheet.any_instance.expects(:reify)
+      Worksheet.any_instance.expects(:reify)
 
-      post :create, :spreadsheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
+      post :create, :worksheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
       assigns[:mapping_template].row_start.should == 2
       assigns[:mapping_template].models.first.name.should == 'Talk'
       assigns[:mapping_template].models.first.field_mappings.size.should == 2
@@ -21,12 +20,12 @@ describe MappingTemplatesController do
       Model.count.should == 1
       Model.first.m_fields.first.label.should == 'File Name'
 
-      response.should redirect_to(:action=>'show', :spreadsheet_id=>@ss.id, :id=>assigns[:mapping_template].id)
+      response.should redirect_to(:action=>'show', :id=>assigns[:mapping_template].id)
     end
     it "should raise errors if no model name was supplied" do
-      Cocupu::Spreadsheet.any_instance.expects(:reify).never
+      Worksheet.any_instance.expects(:reify).never
 
-      post :create, :spreadsheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
+      post :create, :worksheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
       assigns[:mapping_template].row_start.should == 2
       assigns[:mapping_template].models.first.errors[:name].should == ["can't be blank"]
       Model.count.should == 0
@@ -51,10 +50,11 @@ describe MappingTemplatesController do
   describe 'new' do
     before do
       @spreadsheet = Cocupu::Spreadsheet.create!()
+      @one = Worksheet.create(:spreadsheet=>@spreadsheet)
     end
     it "should be success" do
-      get :new, :spreadsheet_id => @spreadsheet.id
-      assigns[:spreadsheet].should == @spreadsheet
+      get :new, :mapping_template=>{:worksheet_id => @one.id}
+      assigns[:worksheet].should == @one
       assigns[:mapping_template].should_not be_nil
       assigns[:mapping_template].models.length.should == 1
       assigns[:mapping_template].models[0].field_mappings.length.should == 1

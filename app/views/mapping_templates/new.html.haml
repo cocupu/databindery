@@ -1,8 +1,7 @@
-- @spreadsheet_rows = @spreadsheet.rows
 %div.group
-  Now create a data model(s) for the spreadsheet:
+  Now create a data model(s) for the worksheet:
   =flash[:error]
-  =form_for( @mapping_template, :url=>spreadsheet_mapping_templates_path(@spreadsheet)) do |f|
+  =form_for( @mapping_template, :url=>mapping_templates_path(:worksheet_id=>@worksheet)) do |f|
     %ul
       %li.spacer
         =f.label :row_start, 'Data Begins on row: '
