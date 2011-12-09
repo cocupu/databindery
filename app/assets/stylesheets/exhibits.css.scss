@@ -1,3 +1,17 @@
 // Place all the styles related to the exhibits controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+ul.exhibits {
+  li {
+    dt {
+      width: 150px;
+      float: left;
+      text-align: right;
+      font-weight: bold;
+    }
+    dd {
+      margin-left: 160px;
+    }
+  }
+}

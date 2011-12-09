@@ -25,7 +25,7 @@ class ModelInstance
     model.m_fields.each do |f|
       doc[f.solr_name] = properties.where(:field_id=>f.id).first.value
     end
-#puts "DOC #{doc.inspect}\n"
+puts "DOC #{doc.inspect}\n"
     doc
   end
 end

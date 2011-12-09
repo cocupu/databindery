@@ -6,7 +6,7 @@
 
 -if @results
   %h2 found #{pluralize(@total, 'result')}
-  %ul
+  %ul.exhibits
     -@results.each do |result|
       %li= render :partial=>'item', :locals=>{:item=>result}
 -if params[:debug]
