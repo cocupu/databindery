@@ -53,4 +53,5 @@ module Cocupu
     config.assets.version = '1.0'
 
   end
+  require 'cocupu'
 end

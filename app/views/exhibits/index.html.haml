@@ -1,0 +1,17 @@
+%h1 Exhibits
+
+=form_for :search, :url=>exhibits_path(), :method=>:get do
+  =text_field_tag :q, params[:q]
+  =submit_tag "Search"
+
+-if @results
+  %h2 found #{pluralize(@total, 'result')}
+  %ul
+    -@results.each do |result|
+      %li= render :partial=>'item', :locals=>{:item=>result}
+-if params[:debug]
+  %pre=@raw_results['responseHeader'].inspect
+  %pre=@raw_results['response'].inspect
+  %pre=@raw_results['facet_counts'].inspect
+
+

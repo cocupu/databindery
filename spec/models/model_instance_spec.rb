@@ -12,4 +12,26 @@ describe ModelInstance do
     instance.model = Model.new
     instance.should be_valid
   end
+
+  describe "with properties" do
+    before do
+      @model = Model.new(:name=>"Mods and Rockers")
+      f1 = Field.new(:label=>'Field one')
+      @model.m_fields = [f1]
+      @model.save
+
+      @instance = ModelInstance.new(:model=>@model)
+      @instance.save
+      @instance.properties = [Property.new(:value=>"good", :field=>f1) ]
+    end
+
+    it "should get fields by label" do
+      @instance.get('Field one').should == 'good'
+      
+    end
+
+    it "should produce a solr document" do
+      @instance.to_solr(@model.m_fields).should == {'id'=>@instance.id, 'model' =>'Mods and Rockers', "field_one_s"=>"good"}
+    end
+  end
 end

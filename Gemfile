@@ -43,4 +43,5 @@ gem "mongoid-paperclip", :require => "mongoid_paperclip"
 gem "aws-s3",            :require => "aws/s3"
 
 gem "jettywrapper", ">= 1.2.0"
+gem "rsolr"
 

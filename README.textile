@@ -17,6 +17,9 @@ Need to run this after deploying to a new MongoDB:
 h2. Jetty
 To install jetty run the generator:
 <pre>rails g cocupu:jetty</pre>
+$ cp contrib/analysis-extras/lib/icu4j-4_8_1_1.jar lib/
+$ cp contrib/analysis-extras/lucene-libs/*.jar lib/
+$ cp contrib/velocity/lib/*.jar lib/
 
 h2. Workers
 

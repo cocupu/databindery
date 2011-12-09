@@ -14,6 +14,9 @@ Cocupu::Application.routes.draw do
   resources :models do
     resources :model_instances
   end
+
+  resources :exhibits 
+
   resources :jobs
   resources :job_log_items
   resources :spreadsheet_rows

@@ -61,6 +61,19 @@ Requires system('unzip... ') to work, probably won't work on Windows.
         remove_dir(tmp_save_dir)
       end                  
     end
+
+    def solr_multi_core
+      ['development-core', 'test-core'].each do |core|
+        inside File.join(save_location, 'solr') do
+          run("cp -r conf #{core}")
+          run('cp contrib/analysis-extras/lib/icu4j-4_8_1_1.jar lib/')
+          run('cp contrib/analysis-extras/lucene-libs/*.jar lib/')
+          run('cp contrib/velocity/lib/*.jar lib/')
+        end
+      end
+      remove_dir File.join(save_location, 'solr', 'conf')
+
+    end
     
     # the only thing that's REALLY BL-specific is these conf files
     # installed by another generator. We write em on top of the solr we
@@ -71,7 +84,7 @@ Requires system('unzip... ') to work, probably won't work on Windows.
     # If we later install Solr from somewhere other than BL jetty repo, we'd
     # still want to write these on top, just like this. 
     def install_conf_files
-      generate("cocupu:solr_conf", "#{File.join(save_location, 'solr', 'conf')} --force")
+      generate("cocupu:solr_conf", "#{File.join(save_location, 'solr')} --force")
     end
     
   end

@@ -3,8 +3,8 @@
 # by the rake tasks that start up solr automatically for testing
 
 development:
-  url: http://127.0.0.1:8983/solr
+  url: http://127.0.0.1:8983/solr/development
 test: &test
-  url: http://127.0.0.1:8888/solr
+  url: http://127.0.0.1:8983/solr/test
 cucumber:
   <<: *test
