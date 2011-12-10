@@ -65,6 +65,7 @@ Requires system('unzip... ') to work, probably won't work on Windows.
     def solr_multi_core
       ['development-core', 'test-core'].each do |core|
         inside File.join(save_location, 'solr') do
+          run("mkdir  #{core}")
           run("cp -r conf #{core}/")
           run('cp contrib/analysis-extras/lib/icu4j-4_8_1_1.jar lib/')
           run('cp contrib/analysis-extras/lucene-libs/*.jar lib/')
