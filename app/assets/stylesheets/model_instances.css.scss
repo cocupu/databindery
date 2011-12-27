@@ -1,3 +1,30 @@
 // Place all the styles related to the model_instances controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.model_instances {
+
+  li {
+    list-style-type: none;
+    -webkit-box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    -moz-box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    
+    dt {
+      display: block;
+      width: 100px;
+      float: left;
+      clear: both;
+    }
+    dd {
+      display: block;
+      width: 440px;
+      float: left;
+      margin-bottom: 10px;
+    }
+    dl {
+      clear: both;
+    } 
+
+  }
+}

@@ -16,4 +16,17 @@ module ApplicationHelper
       end
     end
   end
+
+  def render_facet_link(facet_field, facet_value,  count)
+    facet_params = params[:f] ? params[:f].dup : {}
+    if facet_params.has_key?(facet_field)
+      facet_params.delete(facet_field)
+      "#{facet_value} (#{count})".html_safe +
+      link_to("X", exhibit_path(@exhibit, :f=>facet_params, :q=>params[:q]), :title=>'Remove facet')
+    else
+      facet_params[facet_field] = facet_value
+      link_to "#{truncate(facet_value)} (#{count})", exhibit_path(@exhibit, :f=>facet_params, :q=>params[:q]), :title=>facet_value
+    end
+
+  end
 end

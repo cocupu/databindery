@@ -1,17 +1,7 @@
 %h1 Exhibits
 
-=form_for :search, :url=>exhibits_path(), :method=>:get do
-  =text_field_tag :q, params[:q]
-  =submit_tag "Search"
+%ul
+  -@exhibits.each do |exhibit|
+    %li=link_to exhibit.title, exhibit
 
--if @results
-  %h2 found #{pluralize(@total, 'result')}
-  %ul.exhibits
-    -@results.each do |result|
-      %li= render :partial=>'item', :locals=>{:item=>result}
--if params[:debug]
-  %pre=@raw_results['responseHeader'].inspect
-  %pre=@raw_results['response'].inspect
-  %pre=@raw_results['facet_counts'].inspect
-
-
+=link_to "Create a new exhibit", new_exhibit_path, :class=>'button orange medium'

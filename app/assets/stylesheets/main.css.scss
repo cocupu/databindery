@@ -1,36 +1,18 @@
-@mixin rounded($amount) {
-  -moz-border-radius: $amount;
-  -webkit-border-radius: $amount;
-  border-radius: $amount;
-}
-
+@import "common";
 body {
   background-color: #8DB437;
-  /* Safari 5.1, Chrome 10+ */
-  background: -webkit-linear-gradient(top, #DAFF88, #ffffff);
-  
-  /* Firefox 3.6+ */
-  background: -moz-linear-gradient(top, #DAFF88, #fff);
-  
-  /* IE 10 */
-  background: -ms-linear-gradient(top, #DAFF88, #fff);
+  @include background_gradient(top, #DAFF88, #ffffff);
   background-repeat: repeat-x;
-  font-family: 'Signika', sans-serif;
+  font-family: 'Open Sans Condensed', Helvetica, Arial, sans-serif;
   color: #333;
-  text-shadow: 0 1px 0 white;
+  /* text-shadow: 0 1px 0 white; */
 
 }
 
 h1 {
   background-color: #8DB437;
-  background: -webkit-linear-gradient(right, #DAFF88, #8DB437);
-  
-  /* Firefox 3.6+ */
-  background: -moz-linear-gradient(right, #DAFF88, #8DB437);
-  
-  /* IE 10 */
-  background: -ms-linear-gradient(right, #DAFF88, #8DB437);
-  -webkit-box-shadow: rgba(0,0,0,0.07) 0 3px 2px inset;
+  @include background_gradient(right, #DAFF88, #8DB437);
+  @include inset_box_shadow();
   @include rounded(18px);
   padding-left: 40px;
   color: white;
@@ -78,3 +60,28 @@ a {
   padding: 8px;
 }
 
+.medium.button {
+  padding: 10px 14px 12px 16px;
+  font-size: 16px;
+}
+.small.button {
+  padding: 1px 7px 1px 8px;
+  font-size: 12px;
+  @include rounded(10px);
+  vertical-align: middle;
+}
+.orange.button {
+  background: -moz-linear-gradient(center bottom, #FF9009 22%, #FA4 81%);
+  background: -webkit-gradient(linear,left bottom, left top, color-stop(0.22, #FF9009), color-stop(0.81, #FA4));
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr=#ffaa44, endColorStr=#ff9009);
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffaa44, endColorstr=#ff9009)";
+}
+a.button {
+  display: inline-block;
+  font-family: 'Open Sans Condensed', Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  color: white;
+  @include box_shadow();
+  text-decoration: none;
+  white-space: nowrap;
+}

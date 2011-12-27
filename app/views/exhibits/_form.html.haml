@@ -1,0 +1,11 @@
+=form_for @exhibit do |f|
+  %ul
+    %li
+      = f.label :title
+      = f.text_field :title
+    %li
+      = f.label :facets, "Facets (comma separated)"
+      = text_field_tag 'exhibit[facets]', @exhibit.facets.join(', ')
+    %li
+      = f.submit
+

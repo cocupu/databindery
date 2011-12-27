@@ -1,9 +1,28 @@
 // Place all the styles related to the exhibits controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+@import "common";
+
+form#search {
+  margin-left: auto;
+  margin-right: auto;
+  width: 600px;
+}
+#q {
+  width: 400px;
+}
 
 ul.exhibits {
   li {
+    list-style-type: none;
+    -webkit-box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    -moz-box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    .title {
+      padding: 5px;
+      margin-bottom: 0;
+      @include background_gradient(right, #DAFF88, #8DB437);
+    }
     dl {
       width: 600px;
       float: left;
@@ -21,4 +40,8 @@ ul.exhibits {
       }
     }
   }
+}
+
+div.facets {
+  clear: both;
 }

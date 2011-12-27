@@ -5,14 +5,55 @@ describe ExhibitsController do
     exhibits_path.should == '/exhibits'
   end
 
+  before do
+    @exhibit = Exhibit.create
+  end
+
+  after do
+    @exhibit.delete
+  end
+
   describe "index" do
     it "should be success" do
       get :index
       response.should be_successful
+      assigns[:exhibits].should be_kind_of Mongoid::Criteria
     end
   end
 
-  describe "search" do
+  describe "new" do
+    it "should be success" do
+      get :new
+      response.should be_successful
+      assigns[:exhibit].should be_kind_of Exhibit
+    end
+  end
+
+  describe "create" do
+    it "should be success" do
+      post :create, :exhibit=> {:title => 'Foresooth', :facets=>'looketh, overmany, thither' }
+      response.should redirect_to exhibit_path(assigns[:exhibit])
+      assigns[:exhibit].facets.should == ['looketh', 'overmany', 'thither']
+    end
+  end
+
+  describe "edit" do
+    it "should be success" do
+      get :edit, :id =>@exhibit.id
+      response.should be_successful
+      assigns[:exhibit].should be_kind_of Exhibit
+    end
+  end
+
+  describe "update" do
+    it "should be success" do
+      put :update, :id=>@exhibit.id, :exhibit=> {:title => 'Foresooth', :facets=>'looketh, overmany, thither' }
+      response.should redirect_to exhibit_path(assigns[:exhibit])
+      assigns[:exhibit].facets.should == ['looketh', 'overmany', 'thither']
+    end
+  end
+
+  describe "show" do
     before do
       ## Clear out old results so we start from scratch
       raw_results = Cocupu.solr.get 'select', :params => {:q => 'bazaar', :fl=>'id', :qf=>'field_good_s'}
@@ -26,11 +67,13 @@ describe ExhibitsController do
       @instance.save
       @instance.properties << Property.new(:value=>"bazaar", :field=>f1) 
       @model.index
+
     end
     it "should be success" do
-      get :index, :q=>'bazaar'
+      get :show, :id=>@exhibit.id, :q=>'bazaar'
       assigns[:total].should == 1
       assigns[:results].should_not be_nil
+      assigns[:exhibit].should == @exhibit
       response.should be_successful
     end
   end
