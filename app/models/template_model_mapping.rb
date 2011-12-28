@@ -8,6 +8,10 @@ class TemplateModelMapping
   validates_presence_of :name
 
   field :name, type: String
+  field :filter_source, type: String
+  field :filter_predicate, type: String
+  field :filter_constant, type: String
+  field :filter, type: Boolean
 
   def referenced_model()
     model = Model.first(:conditions=>{:name=>name})  ### TODO Looking up by name probably isn't the best way. Index at the least.

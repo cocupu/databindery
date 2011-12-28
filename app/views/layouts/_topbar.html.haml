@@ -1,0 +1,13 @@
+.topbar
+  .fill
+    .container
+      =link_to 'Collect Curate Publish', '#', :class=>"brand"
+      %ul.nav
+        %li{:class=>controller_name == 'welcome' ? 'active' : ''}= link_to('Home', root_path)
+        %li= link_to('About', '#about')
+        %li= link_to('Contact', '#contact')
+      %form{:action=>"", :class=>"pull-right"}
+        %input.input-small{:type=>"text", :placeholder=>"Username"}
+        %input.input-small{:type=>"password", :placeholder=>"Password"}
+        %button.btn{:type=>"submit"} Sign in
+

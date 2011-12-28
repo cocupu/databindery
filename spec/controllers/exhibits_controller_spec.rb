@@ -74,6 +74,7 @@ describe ExhibitsController do
       assigns[:total].should == 1
       assigns[:results].should_not be_nil
       assigns[:exhibit].should == @exhibit
+      assigns[:facet_fields].should == {}
       response.should be_successful
     end
   end

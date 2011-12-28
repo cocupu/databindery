@@ -16,4 +16,15 @@ describe TemplateModelMapping do
       template.referenced_model.should == @model
     end
   end
+
+  describe "filter properties" do
+    before do
+      @template = TemplateModelMapping.new(:name => "Truck")
+    end
+    it "should have source" do
+      @template.filter_source = 'F'
+      @template.filter_predicate = 'equal'
+      @template.filter_constant = 'Ford'
+    end
+  end
 end

@@ -1,4 +1,5 @@
 class MappingTemplatesController < ApplicationController
+  layout 'full_width'
 
   def new
     @worksheet = Worksheet.find(params[:mapping_template][:worksheet_id])

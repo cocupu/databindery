@@ -1,8 +1,18 @@
-%li.spacer
+.clearfix
   =f.label 'name', 'Model Name: '
   =f.text_field 'name'
-  %p TODO select a differentiator column
 
+.clearfix
+  =f.label 'filter', 'Filter Row:'
+  =f.check_box 'filter' 
+
+.clearfix
+  When column
+  =f.select("filter_source", options_for_select( 0.upto(@worksheet.rows[0].values.size).map{|n| (n+65).chr}), {:include_blank=>true}, {:class=>'small'})
+  =f.select("filter_predicate", options_for_select({'is present' =>'present', 'is blank' => 'blank', 'is equal to:' =>'equal' }))
+  =f.text_field("filter_constant" )
+
+.clearfix
   Model fields:
   %table.model-fields
     %tr

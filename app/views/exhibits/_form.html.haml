@@ -1,11 +1,14 @@
 =form_for @exhibit do |f|
-  %ul
-    %li
-      = f.label :title
+  .clearfix
+    = f.label :title
+    .input
       = f.text_field :title
-    %li
-      = f.label :facets, "Facets (comma separated)"
+  .clearfix
+    = f.label :facets, "Facets"
+    .input
       = text_field_tag 'exhibit[facets]', @exhibit.facets.join(', ')
-    %li
-      = f.submit
+      %span.help-block comma separated
+  .clearfix
+    .input
+      = f.submit :class=>'btn primary'
 

@@ -3,21 +3,11 @@ body {
   background-color: #8DB437;
   @include background_gradient(top, #DAFF88, #ffffff);
   background-repeat: repeat-x;
-  font-family: 'Open Sans Condensed', Helvetica, Arial, sans-serif;
   color: #333;
   /* text-shadow: 0 1px 0 white; */
 
 }
 
-h1 {
-  background-color: #8DB437;
-  @include background_gradient(right, #DAFF88, #8DB437);
-  @include inset_box_shadow();
-  @include rounded(18px);
-  padding-left: 40px;
-  color: white;
-  text-shadow: 0 1px 0 black;
-}
 
 .title_image {
   margin-left:auto;
@@ -37,18 +27,6 @@ h1 {
   margin-top: 20px;
 }
 
-.content {
-  width: 820px;
-  border: 1px solid #E9E9E9;
-  background-color: #eaefea;
-  height: 500px;
-  -webkit-box-shadow: rgba(0,0,0,0.07) 0 1px 2px inset;
-  @include rounded(4px);
-  padding: 20px;
-  float: left;
-  margin-left:15px;
-  overflow: auto;
-}
 a {
   text-decoration: none;
 }
@@ -60,28 +38,3 @@ a {
   padding: 8px;
 }
 
-.medium.button {
-  padding: 10px 14px 12px 16px;
-  font-size: 16px;
-}
-.small.button {
-  padding: 1px 7px 1px 8px;
-  font-size: 12px;
-  @include rounded(10px);
-  vertical-align: middle;
-}
-.orange.button {
-  background: -moz-linear-gradient(center bottom, #FF9009 22%, #FA4 81%);
-  background: -webkit-gradient(linear,left bottom, left top, color-stop(0.22, #FF9009), color-stop(0.81, #FA4));
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr=#ffaa44, endColorStr=#ff9009);
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffaa44, endColorstr=#ff9009)";
-}
-a.button {
-  display: inline-block;
-  font-family: 'Open Sans Condensed', Helvetica, Arial, sans-serif;
-  font-weight: bold;
-  color: white;
-  @include box_shadow();
-  text-decoration: none;
-  white-space: nowrap;
-}

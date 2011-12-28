@@ -6,9 +6,9 @@
  * ----> Note the missing = require_tree 
  *= require demo_table.css
  *= require main
- *= require sidebar
  *= require exhibits
  *= require model_instances
+ *= require mapping_templates
  *= require forms
  *= depend_on _common 
 */

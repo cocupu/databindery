@@ -1,26 +1,24 @@
-%h1
+-content_for :page_name do
   #{@exhibit.title }
-  =link_to "edit", edit_exhibit_path(@exhibit), :class=>'button small right'
+
+-content_for :subtitle do
+  =link_to "edit", edit_exhibit_path(@exhibit), :class=>'btn small'
 
 =form_for :search, :url=>exhibit_path(@exhibit), :method=>:get, :html=>{:id=>'search'} do
   =text_field_tag :q, params[:q]
-  =submit_tag "Search"
+  -facet_params.each do |key, value|
+    =hidden_field_tag "f[#{key}]", value
+  =submit_tag "Search", :class=>'btn'
 
 -if @results
-  %h2 found #{pluralize(@total, 'result')}
+  %h2 Found #{pluralize(@total, 'result')}
   %ul.exhibits
     -@results.each do |result|
       %li= render :partial=>'item', :locals=>{:item=>result}
-  .facets
-    %h2 Facets:
-    %ul
-      -@facet_fields.each do |facet_key, facet_value|
+  -content_for :sidebar do
+    %h3 Facets:
+    %ul.tree
+      -@exhibit.facets.each do |facet_key|
         %li
           .facet=facet_key
-          %ul
-            -while facet_value.present? do
-              -arg = facet_value.shift(2)
-              %li
-                = render_facet_link(facet_key, arg[0], arg[1])
-
-
+          = render_facet_list(facet_key, @facet_fields[facet_key])

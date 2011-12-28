@@ -1,17 +1,18 @@
-%div.group
-  Now create a data model(s) for the worksheet:
+- content_for :page_name do
+  Now create a data model for the worksheet:
+=form_for( @mapping_template, :url=>mapping_templates_path(:worksheet_id=>@worksheet), :class=>'group') do |f|
   =flash[:error]
-  =form_for( @mapping_template, :url=>mapping_templates_path(:worksheet_id=>@worksheet)) do |f|
-    %ul
-      %li.spacer
-        =f.label :row_start, 'Data Begins on row: '
-        =f.select :row_start, [0, 1, 2, 3, 4, 5, 6], :selected=>2
-      =f.fields_for :models do |model_form| 
-        = render :partial=>'model', :locals=>{:f => model_form}
-      %li
-        = add_child_link 'New model', :models, f.object_id
-      %li
-        =f.submit "Continue" 
+  .clearfix
+    =f.label :row_start, 'Data Begins on row: '
+    =f.select :row_start, [0, 1, 2, 3, 4, 5, 6], {:selected=>2}, {:class=>'small'}
+  .clearfix
+    =f.fields_for :models do |model_form| 
+      = render :partial=>'model', :locals=>{:f => model_form}
+  .clearfix
+    = add_child_link 'New model', :models, f.object_id
+  .clearfix
+    =f.submit "Continue" 
+  .clearfix
     = new_child_fields_template f, :models, :tag=>:ul, :index=>f.object_id
 =render :partial=>'spreadsheet_rows/table'
 
