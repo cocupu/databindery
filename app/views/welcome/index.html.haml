@@ -1,3 +1,5 @@
+=content_for :page_name do
+  Welcome to Collect, Curate, Publish.
 %h3 Exhibits
 %ul
   -Exhibit.find(:all).limit(5).each do |e|

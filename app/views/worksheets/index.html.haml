@@ -1,4 +1,7 @@
 =form_for :mapping_template, :url=> new_mapping_template_path, :method=>:get do |f|
   =f.label :worksheet_id, 'Select a worksheet:'
-  =f.collection_select 'worksheet_id', @spreadsheet.worksheets, :id, :name
-  =f.submit "Next"
+  .input
+    =f.collection_select 'worksheet_id', @spreadsheet.worksheets, :id, :name
+  .clearfix
+  .input
+    =f.submit "Next", :class=>'btn primary'

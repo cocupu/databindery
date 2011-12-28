@@ -1,6 +1,7 @@
 =form_for @chattel, :html=>{:multipart=>true} do |f|
   =f.label 'attachment', 'Upload a file:'
-  =f.file_field 'attachment'
+  .input
+    =f.file_field 'attachment'
   %br
   %br
-  =submit_tag "Next"
+  =submit_tag "Next", :class=>'btn primary'
