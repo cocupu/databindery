@@ -1,10 +1,11 @@
 - content_for :page_name do
-  Now create a data model for the worksheet:
+  Create a data model for the worksheet:
 =form_for( @mapping_template, :url=>mapping_templates_path(:worksheet_id=>@worksheet), :class=>'group') do |f|
   =flash[:error]
   .clearfix
     =f.label :row_start, 'Data Begins on row: '
-    =f.select :row_start, [0, 1, 2, 3, 4, 5, 6], {:selected=>2}, {:class=>'small'}
+    .input
+      =f.select :row_start, [0, 1, 2, 3, 4, 5, 6], {:selected=>2}, {:class=>'xsmall'}
   .clearfix
     =f.fields_for :models do |model_form| 
       = render :partial=>'model', :locals=>{:f => model_form}

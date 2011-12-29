@@ -6,7 +6,7 @@
   .clearfix
     = f.label :facets, "Facets"
     .input
-      = text_field_tag 'exhibit[facets]', @exhibit.facets.join(', ')
+      = text_field_tag 'exhibit[facets]', @exhibit.facets ? @exhibit.facets.join(', ') : '' 
       %span.help-block comma separated
   .clearfix
     .input

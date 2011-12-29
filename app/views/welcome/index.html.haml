@@ -4,6 +4,7 @@
 %ul
   -Exhibit.find(:all).limit(5).each do |e|
     %li=link_to e.title, exhibit_path(e)
+=link_to "Create a new exhibit", new_exhibit_path, :class=>'btn primary small'
 
 %h3 Jobs
 %ul

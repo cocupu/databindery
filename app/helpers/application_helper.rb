@@ -1,6 +1,6 @@
 module ApplicationHelper
   def add_child_link(name, association, index)
-    link_to(name, "javascript:void(0)", :class => "add_child", :"data-association" => association, :"data-index" => index.to_s)
+    link_to(name, "javascript:void(0)", :class => "btn add_child", :"data-association" => association, :"data-index" => index.to_s)
   end
   
   def new_child_fields_template(form_builder, association, options = {})
