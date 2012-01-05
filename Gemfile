@@ -21,6 +21,8 @@ gem 'roo', '>=1.10.1'
 gem 'delayed_job'
 gem 'delayed_job_mongoid'
 
+gem 'therubyracer' # required on linux
+
 group :test, :development do
   #gem "rspec-rails", ">= 2.8.0.rc1"
   gem "rspec-rails", "~> 2.7.0"
