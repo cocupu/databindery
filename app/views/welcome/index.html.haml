@@ -1,25 +1,49 @@
 =content_for :page_name do
   Welcome to Collect, Curate, Publish.
-%h3 Exhibits
-%ul
-  -Exhibit.find(:all).limit(5).each do |e|
-    %li=link_to e.title, exhibit_path(e)
-=link_to "Create a new exhibit", new_exhibit_path, :class=>'btn primary small'
 
-%h3 Jobs
-%ul
-  -JobLogItem.where(:parent_id => nil).limit(5).each do |j|
+.row
+  .span9
+    %p Our goal is to enable an ecosystem of data usage and to encourage data-driven discourse in the pursuit of knowledge, innovation and happiness.  This platform gives you the shortest path between Collecting and Publishing data while providing the necessary tools for Curating, controlling access and tracking usage.
+
+    %p CoCuPu frees data from spreadsheets and Document-centric systems like Sharepoint by allowing you to Collect arbitrary files into a pool, spawn structured data files (spreadsheets, xml, etc.) into a web of linked data, build connections between all the contents, and publish access-controlled exhibits with data-centric search interfaces and webservice APIs.  
+  .span6.offset1
+
+    %h3 Get started today!
+    =form_for LoginCredential.new, :url=>user_session_path  do |f|
+      = f.text_field :name, :placeholder=>"Full Name", :class=>'large' 
+      %br
+      = f.email_field :email, :placeholder=>"E-Mail", :class=>'', :autocomplete=>'off' 
+      %br
+      = f.password_field :password, :placeholder=>"Password", :class=>'' 
+      %br
+      %br
+      %button.btn.large.primary{:type=>"submit"} Sign Up
+
+%section
+  .page-header
+    %h1 See what our customers are doing with CoCuPu:
+
+
+
+  %ul.col4
     %li
-      =link_to j.name, jobs_path()
-      %span{:class=>'label ' + j.status.downcase}=j.status
+      =link_to '#' do
+        =image_tag 'http://lorempixel.com/210/150/?1=true', :class=>'thumbnail', :width=>210, :height=>150
+      %strong Lorem ipsum
+    %li
+      =link_to '#' do
+        =image_tag 'http://lorempixel.com/210/150/?2=true', :class=>'thumbnail', :width=>210, :height=>150
+      %strong Lorem ipsum
+    %li
+      =link_to '#' do
+        =image_tag 'http://lorempixel.com/210/150/?3=true', :class=>'thumbnail', :width=>210, :height=>150
+      %strong Lorem ipsum
+    %li
+      =link_to '#' do
+        =image_tag 'http://lorempixel.com/210/150/?4=true', :class=>'thumbnail', :width=>210, :height=>150
+      %strong Lorem ipsum
 
-%h3 Data Models
-%ul
-  -Model.find(:all).limit(5).each do |m|
-    %li=link_to m.name, model_model_instances_path(m)
 
-%h3 Import Data
-%ul
-  %li
-    =link_to "Upload a file", new_chattel_path
+
+
 
