@@ -9,7 +9,7 @@
   .span6.offset1
 
     %h3 Get started today!
-    =form_for LoginCredential.new, :url=>user_session_path  do |f|
+    =form_for LoginCredential.new, :url=>login_credential_registration_path  do |f|
       = f.text_field :name, :placeholder=>"Full Name", :class=>'large' 
       %br
       = f.email_field :email, :placeholder=>"E-Mail", :class=>'', :autocomplete=>'off' 

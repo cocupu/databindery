@@ -11,7 +11,7 @@
           %li= link_to('About', '#about')
           %li= link_to('Contact', '#contact')
         =form_for LoginCredential.new, :url=>user_session_path, :html=>{:class=>"pull-right"} do |f|
-          = f.email_field :email, :placeholder=>"E-Mail", :class=>'input-small' 
-          = f.password_field :password, :placeholder=>"Password", :class=>'input-small' 
+          = f.email_field :email, :placeholder=>"E-Mail", :class=>'input-small', :id=>'top_login_email' 
+          = f.password_field :password, :placeholder=>"Password", :class=>'input-small', :id=>'top_login_password' 
           %button.btn{:type=>"submit"} Sign in
 
