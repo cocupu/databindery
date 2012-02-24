@@ -36,7 +36,7 @@ end
 
 gem 'ripple', :git=>'git://github.com/jcoyne/ripple.git', :branch=>'integration'
 gem "devise"
-gem "aws-s3", :require => "aws/s3"
+gem "aws-sdk"
 gem "jettywrapper", ">= 1.2.0"
 gem "rsolr"
 gem "cancan"

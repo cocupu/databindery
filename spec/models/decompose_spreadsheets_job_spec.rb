@@ -10,25 +10,34 @@ describe DecomposeSpreadsheetJob do
   end
 
   it "should break up the Excel spreadsheet" do
-    @chattel = Chattel.create(:attachment => File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls'))
+    @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
+    @file.stubs(:original_filename => 'dechen_rangdrol_archives_database.xls')
+    @file.stubs(:content_type => 'application/vnd.ms-excel')
+    @chattel = Cocupu::Spreadsheet.create(:attachment => @file)
     @job = DecomposeSpreadsheetJob.new(@chattel.id, JobLogItem.new)
     @job.enqueue(@job) #start the logger
     @job.perform
-    sheets = Worksheet.where(:spreadsheet_id=>@chattel.id)
+    sheets = Cocupu::Spreadsheet.find(@chattel.id).worksheets
     sheets.count.should == 1
-    SpreadsheetRow.where(:worksheet_id=>sheets.first.id).count.should == 434
+    sheets.first.rows.count.should == 434
   end
   it "should break up the ODS spreadsheet" do
-    @chattel = Chattel.create(:attachment => File.new(Rails.root + 'spec/fixtures/Stock Check 2.ods'))
+    @file = File.new(Rails.root + 'spec/fixtures/Stock Check 2.ods')
+    @file.stubs(:original_filename => 'Stock Check 2.ods')
+    @file.stubs(:content_type => 'application/vnd.oasis.opendocument.spreadsheet')
+    @chattel = Cocupu::Spreadsheet.create(:attachment => @file)
     @job = DecomposeSpreadsheetJob.new(@chattel.id, JobLogItem.new)
     @job.enqueue(@job) #start the logger
     @job.perform
-    sheets = Worksheet.where(:spreadsheet_id=>@chattel.id)
+    sheets = Cocupu::Spreadsheet.find(@chattel.id).worksheets
     sheets.count.should == 4
-    SpreadsheetRow.where(:worksheet_id=>sheets.first.id).count.should == 39
+    datasheet = sheets.select{|s| s.name == 'datasheet'}.first
+    datasheet.rows.count.should == 39 
+    minerals = sheets.select{|s| s.name == 'calculation sheet _ minerals'}.first
+puts "Minerals #{minerals.rows}"
 
-    aluminum = SpreadsheetRow.where(:worksheet_id=>sheets[1].id, :row_number=>3).first
-    aluminum.values.should == 
+    aluminum = minerals.rows.select{|r| r.row_number == 3}.first
+    aluminum.values.map(&:value).should == 
       ["Aluminium",
        "transportation, packaging, construction, electronics",
        75000000000.0,

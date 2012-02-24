@@ -1,7 +1,7 @@
 class Worksheet
   include Ripple::Document
   many :rows, :class_name=>'SpreadsheetRow'
-  one :spreadsheet, :class_name=>'Cocupu::Spreadsheet' #, index: true
+  #one :spreadsheet, :class_name=>'Cocupu::Spreadsheet' #, index: true
   property :name, String
 
   alias_method :id, :key

@@ -9,7 +9,11 @@ class ChattelsController < ApplicationController
   end
 
   def create
-    @chattel = Chattel.new
+    if ['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet'].include?(params[:chattel][:attachment].mime_type)
+      @chattel = Cocupu::Spreadsheet.new
+    else
+      @chattel = Chattel.new
+    end
     @chattel.attachment = params[:chattel][:attachment]
     @chattel.save!
     #TODO check to see if this is a valid spreadsheet.
@@ -21,5 +25,18 @@ class ChattelsController < ApplicationController
   def describe
     @log = JobLogItem.find(params[:log])
     @chattel= Chattel.find(params[:id])
+  end
+
+  private 
+  def detect_type(chattel)
+    case chattel.attachment_content_type
+    when "application/vnd.ms-excel"
+      Excel
+    when "application/vnd.oasis.opendocument.spreadsheet"
+      Openoffice
+    else
+      raise "UnknownType: #{chattel.attachment_content_type}"
+    end
+    
   end
 end

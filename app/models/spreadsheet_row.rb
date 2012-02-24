@@ -1,7 +1,7 @@
 class SpreadsheetRow
   include Ripple::Document
   one :job_log_item
-  one :worksheet#, index: true
+  #one :worksheet#, index: true
   many :values
   property :row_number, Integer
 

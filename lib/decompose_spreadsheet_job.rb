@@ -6,19 +6,26 @@ class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
 
   def perform
     log.update_attribute(:status, 'PROCESSING')
-    Chattel.find(spreadsheet_id).update_attribute(:_type,"Cocupu::Spreadsheet") #do a typecast
     @chattel = Cocupu::Spreadsheet.find(spreadsheet_id)
-    spreadsheet = detect_type(@chattel).new(@chattel.attachment.path)
+    tmpfile = file = Tempfile.new(['cocupu', '.'+@chattel.attachment_extension], :encoding => 'ascii-8bit')
+    tmpfile.write(@chattel.attachment.read)
+    spreadsheet = detect_type(@chattel).new(tmpfile.path)
     spreadsheet.sheets.each do |worksheet|
       ingest_worksheet(spreadsheet, worksheet, @chattel)
     end
+puts "Worksheets: #{@chattel.worksheets}"
+    @chattel.save #Saves associated worksheets
+    tmpfile.close
+    tmpfile.unlink
   end
 
   def ingest_worksheet(spreadsheet, worksheet, file)
-    sheet = Worksheet.create(:spreadsheet=>file, :name=>worksheet)
+    sheet = Worksheet.create(:name=>worksheet)
     spreadsheet.first_row(worksheet).upto(spreadsheet.last_row(worksheet)) do |row_idx|
       ingest_row(spreadsheet, worksheet, sheet, row_idx)
     end
+    sheet.save #Saves associated rows
+    file.worksheets << sheet
   end
 
   def ingest_row(spreadsheet, worksheet, sheet, row_idx)
@@ -31,7 +38,8 @@ class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
         stored_row << cell
       end
     end
-    SpreadsheetRow.create(:worksheet => sheet , :row_number => row_idx, :job_log_item => @log, :values => stored_row)
+    row = SpreadsheetRow.create(:row_number => row_idx, :job_log_item => @log, :values => stored_row.map{|v| SpreadsheetRow::Value.new(:value=>v)})
+    sheet.rows << row
   end
 
   def success(job)
