@@ -1,8 +1,6 @@
 class Property
   include Ripple::Document
-  one :model_instance  #TODO remove if possible
-  belongs_to :field
+  belongs_to :field #TODO can this be removed and just stored as Field.many :property ?
   validates_presence_of :field
-  validates_presence_of :model_instance
   property :value, String
 end

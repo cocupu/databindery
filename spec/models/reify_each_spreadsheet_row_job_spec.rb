@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ReifyEachSpreadsheetRowJob do
   before do
-    ModelInstance.count.should == 0 ## database should be clean
+    ModelInstance.list.count.should == 0 ## database should be clean
     @field = Field.new(:label=>'Wheels')
     @model = Model.create(:name=>'Truck', :m_fields=>[@field])
   end

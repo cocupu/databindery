@@ -27,6 +27,7 @@ class ConcurrentJob < JobLogItem
 
   ## A callback so the child jobs can report in.
   def member_finished
+puts "INVOKED on #{self.key}"
     ## Check to see if all children are finished.
     #if JobLogItem.find_by_index(:parent_id, self.id).in(:status=>['READY', 'PROCESSING', 'ENQUEUE']).count > 0
     if find_children_with_status(['READY', 'PROCESSING', 'ENQUEUE']).count > 0

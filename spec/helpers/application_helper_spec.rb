@@ -8,7 +8,7 @@ describe ApplicationHelper do
   end
   
   after do
-    @exhibit.delete
+    @exhibit.destroy
   end
 
   it "should render_facet_list" do

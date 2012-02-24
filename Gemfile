@@ -25,7 +25,6 @@ gem 'therubyracer' # required on linux
 group :test, :development do
   gem "rspec-rails"
   gem 'unicorn'  # Use unicorn as the webserver
-  gem 'ruby-debug19'
 end
 group :test do
   gem "mocha"

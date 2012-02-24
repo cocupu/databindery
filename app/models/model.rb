@@ -2,6 +2,7 @@ class Model
   include Ripple::Document
   #'fields' is already a method in a mongoid document, so it's a poor choice
   many :m_fields, :class_name=>"Field"
+
   #TODO has_many
   #many :instances, :class_name=>"ModelInstance"
   def instances
