@@ -1,6 +1,7 @@
 class LoginCredential
-  include Mongoid::Document
-  field :name
+  include Ripple::Document
+  property :name, String
+
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,

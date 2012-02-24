@@ -7,7 +7,7 @@ class ExhibitsController < ApplicationController
   end
 
   def index
-    @exhibits = Exhibit.find(:all)
+    @exhibits = Exhibit.list
   end
   def edit
     @exhibit = Exhibit.find(params[:id])
@@ -16,7 +16,7 @@ class ExhibitsController < ApplicationController
   def show
     @exhibit = Exhibit.find(params[:id])
     ## TODO constrain fields just to models in this pool/exhibit
-    query_fields = Field.all.map {|f| f.solr_name }.uniq
+    query_fields = Field.list.map {|f| f.solr_name }.uniq
     (solr_response, @facet_fields) = get_search_results( params, {:qf=>query_fields.join(' '), 'facet.field' => ['name_s', 'model']})
     
     @total = solr_response["numFound"]
@@ -30,7 +30,7 @@ class ExhibitsController < ApplicationController
   def create
     @exhibit = Exhibit.new
     @exhibit.title = params[:exhibit][:title]
-    @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/)
+    @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/).map{|f| Exhibit::Facet.new(:value=>f)}
     @exhibit.save
     redirect_to @exhibit
   end
@@ -38,7 +38,7 @@ class ExhibitsController < ApplicationController
   def update
     @exhibit = Exhibit.find(params[:id])
     @exhibit.title = params[:exhibit][:title]
-    @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/)
+    @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/).map{|f| Exhibit::Facet.new(:value=>f)}
     @exhibit.save
     redirect_to @exhibit
   end
@@ -57,7 +57,7 @@ class ExhibitsController < ApplicationController
     benchmark "get_search_results" do
       params = self.solr_search_params(user_params).merge(extra_controller_params)  
       res = Cocupu.solr.get('select', :params=>params)
-puts "RES: #{res.inspect}"
+#puts "RES: #{res.inspect}"
       solr_response = force_to_utf8(res['response'])
       facet_fields = res['facet_counts']['facet_fields']
     end

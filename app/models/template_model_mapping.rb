@@ -1,22 +1,24 @@
 class TemplateModelMapping
-  include Mongoid::Document
-  embedded_in :mapping_template
-  embeds_many :field_mappings
+  include Ripple::EmbeddedDocument
+  # embedded_in :mapping_template
+  many :field_mappings
 
   accepts_nested_attributes_for :field_mappings, :reject_if => lambda { |a|  a.values.all?(&:blank?) }, :allow_destroy => true
 
   validates_presence_of :name
 
-  field :name, type: String
-  field :filter_source, type: String
-  field :filter_predicate, type: String
-  field :filter_constant, type: String
-  field :filter, type: Boolean
+  property :name, String, :index=>true
+  property :filter_source, String
+  property :filter_predicate, String
+  property :filter_constant, String
+  property :filter, Boolean
 
   def referenced_model()
-    model = Model.first(:conditions=>{:name=>name})  ### TODO Looking up by name probably isn't the best way. Index at the least.
+    results = Model.find_by_index(:name, name)  ### TODO Looking up by name probably isn't the best way. 
+    model = results.first
     raise "unable to find model named #{name}" unless model
     model
   end
+
 end
 

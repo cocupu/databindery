@@ -1,8 +1,9 @@
 class Chattel
-  include Mongoid::Document
-  include Mongoid::Paperclip
+  include Ripple::Document
+  # include Mongoid::Paperclip
 
-  has_mongoid_attached_file :attachment
+  #has_mongoid_attached_file :attachment
+  alias_method :id, :key
 
   def spreadsheet?
     ["application/vnd.ms-excel"].include? attachment_content_type

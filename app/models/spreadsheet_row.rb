@@ -1,7 +1,13 @@
 class SpreadsheetRow
-  include Mongoid::Document
-  belongs_to :job_log_item
-  belongs_to :worksheet, index: true
-  field :values
-  field :row_number
+  include Ripple::Document
+  one :job_log_item
+  one :worksheet#, index: true
+  many :values
+  property :row_number, Integer
+
+  class Value
+    include Ripple::EmbeddedDocument
+    property :value, String
+    embedded_in :spreadsheet_row
+  end
 end

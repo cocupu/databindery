@@ -6,6 +6,7 @@ describe ConcurrentJob do
     job.status.should == "READY"
   end
 
+
   it "should enqueue_collection" do
     job = ConcurrentJob.new()
     mock_row1 = mock("row1")
@@ -20,6 +21,15 @@ describe ConcurrentJob do
     Delayed::Job.expects(:enqueue).with(j2)
     job.enqueue_collection(ReifyEachSpreadsheetRowJob, [mock_row1, mock_row2], mock_input)
     job.status.should == 'PROCESSING'
+  end
+  describe "find_children_with_status" do
+    before do
+      @conc = ConcurrentJob.create(:status=>'READY')
+      @child1 = JobLogItem.create(:parent=>@conc, :status=>'READY')
+    end
+    it "should find child" do
+      @conc.find_children_with_status(['READY']).should == [@child1.key]
+    end
   end
 
   describe "member_finished" do

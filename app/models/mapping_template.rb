@@ -1,7 +1,7 @@
 class MappingTemplate
-  include Mongoid::Document
-  field :row_start
-  embeds_many :models, :class_name=>"TemplateModelMapping"
+  include Ripple::Document
+  property :row_start, Integer
+  many :models, :class_name=>"TemplateModelMapping"
 
   accepts_nested_attributes_for :models, :reject_if => lambda { |a| a.values.all?(&:blank?) }, :allow_destroy => true
 

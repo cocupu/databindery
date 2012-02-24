@@ -1,8 +1,10 @@
 class Worksheet
-  include Mongoid::Document
-  has_many :rows, :class_name=>'SpreadsheetRow'
-  belongs_to :spreadsheet, :class_name=>'Cocupu::Spreadsheet', index: true
-  field :name
+  include Ripple::Document
+  many :rows, :class_name=>'SpreadsheetRow'
+  one :spreadsheet, :class_name=>'Cocupu::Spreadsheet' #, index: true
+  property :name, String
+
+  alias_method :id, :key
 
   def reify(mapping_template)
     ConcurrentJob.create().enqueue_collection(ReifyEachSpreadsheetRowJob, self.rows, {:template=>mapping_template })

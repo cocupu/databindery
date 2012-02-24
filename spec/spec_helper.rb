@@ -10,7 +10,14 @@ require 'capybara/rails'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
+require 'ripple/test_server' if Rails.env == 'test'
+
 RSpec.configure do |config|
+  if Rails.env == 'test'
+    config.before(:all){ Ripple::TestServer.setup }
+    config.after(:each){ Ripple::TestServer.clear }
+  end
+
   config.mock_with :mocha
   config.include Devise::TestHelpers, :type => :controller
 
@@ -20,11 +27,14 @@ RSpec.configure do |config|
   config.infer_base_class_for_anonymous_controllers = false
 
   # Drop all columns before the test run.
-  config.before(:each) do
-    Mongoid.database.collections.each do |collection|
-      unless collection.name =~ /^system\./
-        collection.remove
-      end
+  config.before(:all) do
+    # Mongoid.database.collections.each do |collection|
+    #   unless collection.name =~ /^system\./
+    #     collection.remove
+    #   end
+    # end
+    [Model].each do |collection|
+      collection.destroy_all
     end
   end
 end

@@ -1,6 +1,14 @@
 class ConcurrentJob < JobLogItem
 
-  after_initialize :init_fields
+  self.bucket_name = JobLogItem.bucket_name
+
+  #after_initialize :init_fields
+  def initialize(*args)
+    super(*args)
+    init_fields
+  end
+
+  alias_method :id, :key
 
   def init_fields
     return unless new_record?
@@ -20,11 +28,12 @@ class ConcurrentJob < JobLogItem
   ## A callback so the child jobs can report in.
   def member_finished
     ## Check to see if all children are finished.
-    if JobLogItem.where(:parent_id => self.id).in(:status=>['READY', 'PROCESSING', 'ENQUEUE']).count > 0
+    #if JobLogItem.find_by_index(:parent_id, self.id).in(:status=>['READY', 'PROCESSING', 'ENQUEUE']).count > 0
+    if find_children_with_status(['READY', 'PROCESSING', 'ENQUEUE']).count > 0
       self.update_attribute(:status, "PROCESSING") if status != 'PROCESSING'
       return
     end
-    if JobLogItem.where(:parent_id => self.id, :status=>'FAILED').count > 0
+    if find_children_with_status(['FAILED']).count > 0
       self.update_attribute(:status, "FAILED") 
     else
       self.update_attribute(:status, "SUCCESS") 

@@ -10,14 +10,14 @@ describe ExhibitsController do
   end
 
   after do
-    @exhibit.delete
+    @exhibit.destroy
   end
 
   describe "index" do
     it "should be success" do
       get :index
       response.should be_successful
-      assigns[:exhibits].should be_kind_of Mongoid::Criteria
+      assigns[:exhibits].should be_kind_of Array
     end
   end
 
@@ -33,7 +33,7 @@ describe ExhibitsController do
     it "should be success" do
       post :create, :exhibit=> {:title => 'Foresooth', :facets=>'looketh, overmany, thither' }
       response.should redirect_to exhibit_path(assigns[:exhibit])
-      assigns[:exhibit].facets.should == ['looketh', 'overmany', 'thither']
+      assigns[:exhibit].facets.map(&:value).should == ['looketh', 'overmany', 'thither']
     end
   end
 
@@ -49,7 +49,7 @@ describe ExhibitsController do
     it "should be success" do
       put :update, :id=>@exhibit.id, :exhibit=> {:title => 'Foresooth', :facets=>'looketh, overmany, thither' }
       response.should redirect_to exhibit_path(assigns[:exhibit])
-      assigns[:exhibit].facets.should == ['looketh', 'overmany', 'thither']
+      assigns[:exhibit].facets.map(&:value).should == ['looketh', 'overmany', 'thither']
     end
   end
 
@@ -66,6 +66,7 @@ describe ExhibitsController do
       @instance = ModelInstance.new(:model=>@model)
       @instance.save
       @instance.properties << Property.new(:value=>"bazaar", :field=>f1) 
+      puts "We have instance #{@instance}"
       @model.index
 
     end
@@ -74,7 +75,7 @@ describe ExhibitsController do
       assigns[:total].should == 1
       assigns[:results].should_not be_nil
       assigns[:exhibit].should == @exhibit
-      assigns[:facet_fields].should == {}
+      assigns[:facet_fields].should == {"name_s"=>[], "model"=>["Mods and Rockers", 1]}
       response.should be_successful
     end
   end

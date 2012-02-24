@@ -1,5 +1,14 @@
 h1. CoCuPu
 
+h2. Prerequisites
+<pre>brew install riak</pre>
+
+h2. Configure riak
+In =riak/etc/app.conf= set storage_backend to riak_kv_eleveldb_backend.  ELevelDB is the only backend with index support
+<pre>riak/bin/riak start</pre>
+<pre>riak/bin/riak ping</pre>
+This should return 'pong'
+  
 h2. Trying it out
 The default server (webbrick) performs poorly.  Instead run:
 <pre>$ unicorn_rails
