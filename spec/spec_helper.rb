@@ -33,7 +33,7 @@ RSpec.configure do |config|
     #     collection.remove
     #   end
     # end
-    [Model].each do |collection|
+    [ModelInstance, Model].each do |collection|
       collection.destroy_all
     end
   end

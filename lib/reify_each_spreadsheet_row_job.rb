@@ -11,8 +11,8 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:row, :input, :parent_id, :log)
       model = model_tmpl.referenced_model() #TODO pass pool so that each user can reuse same names
       vals = [] 
       model_tmpl.field_mappings.each do |fm|
-        field = model.m_fields.where(label: fm.label).first
-        vals << Property.new(:field=> field, :value=>row.values[fm.source.ord - 65])
+        field = model.m_fields.select{|f| f.label == fm.label}.first
+        vals << Property.new(:field=> field, :value=>row.values[fm.source.ord - 65].value)
       end
       ModelInstance.create!(:model=>model, :properties=>vals)
     end
