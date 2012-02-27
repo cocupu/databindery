@@ -60,12 +60,12 @@ describe ExhibitsController do
       Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
       Cocupu.solr.commit
       @model = Model.create(:name=>"Mods and Rockers")
-      f1 = Field.new(:label=>'Field good')
+      f1 = Field.create(:label=>'Field good')
       @model.m_fields << f1
 
-      @instance = ModelInstance.new(:model=>@model)
+      @instance = ModelInstance.create(:model=>@model)
+      @instance.properties << Property.create(:value=>"bazaar", :field=>f1) 
       @instance.save
-      @instance.properties << Property.new(:value=>"bazaar", :field=>f1) 
       puts "We have instance #{@instance}"
       @model.index
 

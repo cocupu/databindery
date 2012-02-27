@@ -15,7 +15,7 @@ class MappingTemplatesController < ApplicationController
       ## TODO validate that we don't alread have models with these names
       create_models(@mapping_template.models)
       @worksheet.reify(@mapping_template)
-      redirect_to :action=>'show', :id=>@mapping_template.id
+      redirect_to :action=>'show', :id=>@mapping_template.key
     else
       flash[:error] = @mapping_template.models.collect {|m| m.errors.full_messages}.flatten 
       render :action=>'new'

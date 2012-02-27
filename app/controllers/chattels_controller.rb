@@ -9,7 +9,7 @@ class ChattelsController < ApplicationController
   end
 
   def create
-    if ['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet'].include?(params[:chattel][:attachment].mime_type)
+    if ['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet'].include?(params[:chattel][:attachment].content_type)
       @chattel = Cocupu::Spreadsheet.new
     else
       @chattel = Chattel.new
