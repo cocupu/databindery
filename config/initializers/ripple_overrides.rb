@@ -1,6 +1,7 @@
 # for ripple devise integration
 require 'orm_adapter/adapters/ripple'
 
+Riak.disable_list_keys_warnings = true
 module Ripple
   module Document
 
