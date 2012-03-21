@@ -1,3 +1,6 @@
+# for ripple devise integration
+require 'orm_adapter/adapters/ripple'
+
 module Ripple
   module Document
 

@@ -34,7 +34,9 @@ group :test do
   gem "capybara", ">= 1.1.2"
 end
 
+#gem 'ripple', :git=>'git://github.com/seancribbs/ripple.git'#, :branch=>'integration'
 gem 'ripple', :git=>'git://github.com/jcoyne/ripple.git', :branch=>'integration'
+gem 'orm_adapter'
 gem "devise"
 gem "aws-sdk"
 gem "jettywrapper", ">= 1.2.0"

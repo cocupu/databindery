@@ -5,7 +5,21 @@ require 'rails/test_help'
 # Setup in-memory test server for Riak
 require 'ripple/test_server'
 
+# Setup in-memory test server for Riak
+
+
+require 'ripple/test_server'
+
+
+
 class ActiveSupport::TestCase
+
+
+  setup { Ripple::TestServer.setup }
+
+
+  teardown { Ripple::TestServer.clear }
+
   setup { Ripple::TestServer.setup }
   teardown { Ripple::TestServer.clear }
 

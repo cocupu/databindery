@@ -10,12 +10,12 @@ require 'capybara/rails'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
-require 'ripple/test_server' if Rails.env == 'test'
+#require 'ripple/test_server' if Rails.env == 'test'
 
 RSpec.configure do |config|
   if Rails.env == 'test'
-    config.before(:all){ Ripple::TestServer.setup }
-    config.after(:each){ Ripple::TestServer.clear }
+    # config.before(:all){ Ripple::TestServer.setup }
+    # config.after(:each){ Ripple::TestServer.clear }
   end
 
   config.mock_with :mocha
@@ -33,7 +33,7 @@ RSpec.configure do |config|
     #     collection.remove
     #   end
     # end
-    [ModelInstance, Model].each do |collection|
+    [ModelInstance, Model, JobLogItem].each do |collection|
       collection.destroy_all
     end
   end

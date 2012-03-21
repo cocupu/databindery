@@ -12,10 +12,12 @@ development:
 # * js_source_dir specifies where your custom Javascript functions for
 #           MapReduce should be loaded from. Usually app/mapreduce.
 test:
-  http_port: 9000
-  pb_port: 9002
+  # http_port: 9000
+  # pb_port: 9002
+  http_port: 8098
+  pb_port: 8087
   host: 127.0.0.1
-  source: /Users/justin/workspace/riak-1.0.3/bin   # Default for Homebrew.
+  #source: /usr/local/Cellar/riak/1.0.3/libexec/bin
   js_source_dir: <%= Rails.root + "app/mapreduce" %>
 
 production:
