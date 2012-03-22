@@ -25,5 +25,11 @@ module Cocupu
     end
     Cocupu.solr.commit
   end
+
+  def self.clear_index
+    raw_results = Cocupu.solr.get 'select', :params => {:q => '{!lucene}*:*', :fl=>'id', :qt=>'document', :rows=>100}
+    Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
+    Cocupu.solr.commit
+  end
 end
 
