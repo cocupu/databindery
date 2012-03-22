@@ -17,7 +17,7 @@ class ChattelsController < ApplicationController
     @chattel.attachment = params[:chattel][:attachment]
     @chattel.save!
     #TODO check to see if this is a valid spreadsheet.
-    @log = JobLogItem.create(:status=>"READY", :name=>DecomposeSpreadsheetJob.to_s, :object_id=>@chattel.key)
+    @log = JobLogItem.create(:status=>"READY", :name=>DecomposeSpreadsheetJob.to_s, :data=>@chattel.key)
     q = Carrot.queue('decompose_spreadsheet')
     q.publish(@log.key);
 

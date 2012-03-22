@@ -7,7 +7,7 @@ class SpreadsheetRow
 
   class Value
     include Ripple::EmbeddedDocument
-    property :value, String
+    property :value, Object
     embedded_in :spreadsheet_row
   end
 end

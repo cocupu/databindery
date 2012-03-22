@@ -18,7 +18,7 @@ describe MappingTemplatesController do
       assigns[:mapping_template].models.first.field_mappings[1].label.should == 'Title'
       assigns[:mapping_template].models.first.field_mappings[1].source.should == 'C'
       Model.list.count.should == 1
-      Model.first.m_fields.first.label.should == 'File Name'
+      Model.list.first.m_fields.map(&:label).should include("File Name", "Title")
 
       response.should redirect_to(:action=>'show', :id=>assigns[:mapping_template].key)
     end
@@ -28,7 +28,7 @@ describe MappingTemplatesController do
       post :create, :worksheet_id=>@ss.key, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
       assigns[:mapping_template].row_start.should == 2
       assigns[:mapping_template].models.first.errors[:name].should == ["can't be blank"]
-      Model.count.should == 0
+      Model.list.count.should == 0
       response.should be_success
       flash[:error].should == ["Name can't be blank"]
     end
@@ -37,7 +37,7 @@ describe MappingTemplatesController do
   describe "show" do
     before do
       @template = MappingTemplate.new
-      @template.attributes = {"row_start"=>"2", :models=>{'0'=>{:name=>"Talk", :mapping=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}} 
+      @template.attributes = {"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}} 
       @template.save
     end
     it "should show" do

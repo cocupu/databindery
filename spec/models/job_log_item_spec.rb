@@ -20,6 +20,9 @@ describe JobLogItem do
     @conc.expects(:member_finished)
     @child1.update_attribute(:status, 'FAILED')
     @child1.status.should == 'FAILED'
-    
+  end
+  describe ".create" do
+    subject {JobLogItem.create }
+    its(:data) { should be_nil}
   end
 end

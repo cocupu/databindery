@@ -12,19 +12,16 @@ module Ripple
 
       # Gets a list of the available models for this adapter
       def self.model_classes
-        raise "Not implemented"
         ObjectSpace.each_object(Class).to_a.select {|klass| klass.ancestors.include? Ripple::Document}
       end
 
       # get a list of column names for a given class
       def column_names
-        raise "Not implemented"
-        klass.fields.keys
+        klass.properties.keys
       end
 
       # @see OrmAdapter::Base#get!
       def get!(id)
-        raise "Not implemented"
         klass.find(wrap_key(id))
       end
 
@@ -35,36 +32,35 @@ module Ripple
 
       # @see OrmAdapter::Base#find_first
       def find_first(options)
-        conditions, order = extract_conditions_and_order!(options)
-        raise "Not implemented"
-        #klass.limit(1).where(conditions_to_fields(conditions)).order_by(order).first
+        klass.find(keys_for_conditions(conditions).first)
       end
 
       # @see OrmAdapter::Base#find_all
-      def find_all(options)
-        conditions, order = extract_conditions_and_order!(options)
-        raise "Not implemented"
-        #klass.where(conditions_to_fields(conditions)).order_by(order)
+      def find_all(conditions)
+        klass.find(keys_for_conditions(conditions)) or []
       end
+
 
       # @see OrmAdapter::Base#create!
       def create!(attributes)
-        raise "Not implemented"
-        #klass.create!(attributes)
+        klass.create!(attributes)
       end
   
     protected
-
-      # converts and documents to ids
-      def conditions_to_fields(conditions)
-        conditions.inject({}) do |fields, (key, value)|
-          if value.is_a?(Mongoid::Document) && klass.fields.keys.include?("#{key}_id")
-            fields.merge("#{key}_id" => value.id)
-          else
-            fields.merge(key => value)
-          end
-        end
+      
+      def keys_for_conditions(conditions)
+        map = "
+          function(v) {
+            if (v.values) {
+              original = v;
+              var v = Riak.mapValuesJson(v)[0];
+              return (#{conditions.map { |k,v| "v.#{k} === '#{v}'" }.join(' && ')}) ? [decodeURIComponent(original.key)] : [];
+            } else return [];
+          }
+        "
+        keys = Riak::MapReduce.new(klass.bucket.client).add(klass.bucket).map(map, :keep => true).run
       end
+      
     end
   end
 end

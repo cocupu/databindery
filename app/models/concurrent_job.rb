@@ -21,7 +21,7 @@ class ConcurrentJob < JobLogItem
     self.update_attribute(:status, "PROCESSING")
     per_job_data.each do |data|
 puts "DATA IS #{data}"
-      log = JobLogItem.create(:status=>"READY", :name=>job_class.to_s, :parent=>self, :object_id=>7)
+      log = JobLogItem.create(:status=>"READY", :name=>job_class.to_s, :parent=>self, :data=>7)
 #      Delayed::Job.enqueue job_class.new(data, all_job_data, self.id, log) 
       q = Carrot.queue(job_class.to_s.underscore)
       q.publish(log.key);

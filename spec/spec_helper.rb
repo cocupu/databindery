@@ -27,7 +27,7 @@ RSpec.configure do |config|
   config.infer_base_class_for_anonymous_controllers = false
 
   # Drop all columns before the test run.
-  config.before(:all) do
+  config.before(:each) do
     # Mongoid.database.collections.each do |collection|
     #   unless collection.name =~ /^system\./
     #     collection.remove
