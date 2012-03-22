@@ -31,7 +31,7 @@ module Ripple
       end
 
       # @see OrmAdapter::Base#find_first
-      def find_first(options)
+      def find_first(conditions)
         klass.find(keys_for_conditions(conditions).first)
       end
 
