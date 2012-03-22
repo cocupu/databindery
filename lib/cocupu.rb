@@ -14,6 +14,7 @@ module Cocupu
         raise "The #{::Rails.env} environment settings were not found in the solr.yml config" unless solr_config[::Rails.env]
         solr_config[::Rails.env].symbolize_keys
       end
+    @solr_config
   end
 
   # Documents is a single solr document or array of solr documents

@@ -20,8 +20,11 @@ class ConcurrentJob < JobLogItem
   def enqueue_collection(job_class, per_job_data, all_job_data)
     self.update_attribute(:status, "PROCESSING")
     per_job_data.each do |data|
-      log = JobLogItem.create(:status=>"READY", :name=>job_class.to_s, :parent=>self)
-      Delayed::Job.enqueue job_class.new(data, all_job_data, self.id, log) 
+puts "DATA IS #{data}"
+      log = JobLogItem.create(:status=>"READY", :name=>job_class.to_s, :parent=>self, :object_id=>7)
+#      Delayed::Job.enqueue job_class.new(data, all_job_data, self.id, log) 
+      q = Carrot.queue(job_class.to_s.underscore)
+      q.publish(log.key);
     end
   end
 

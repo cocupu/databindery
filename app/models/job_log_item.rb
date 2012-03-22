@@ -6,6 +6,7 @@ class JobLogItem
   property :status, String
   property :name, String
   property :message, String
+  property :object_id, String
   belongs_to :parent, :class_name=>'JobLogItem'
 
   #TODO has_many

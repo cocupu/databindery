@@ -15,7 +15,6 @@ class Model
 
   def index
     fields = m_fields
-puts "Indexing #{fields} for #{instances}\n\n"
     Cocupu.index(instances.map {|m| m.to_solr(fields) })
   end
 end

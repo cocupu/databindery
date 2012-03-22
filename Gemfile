@@ -18,7 +18,7 @@ end
 gem 'jquery-rails'
 gem 'haml'
 gem 'roo', '>=1.10.1'
-gem 'delayed_job'
+gem 'carrot'
 
 gem 'therubyracer' # required on linux
 

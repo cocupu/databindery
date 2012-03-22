@@ -56,17 +56,19 @@ describe ExhibitsController do
   describe "show" do
     before do
       ## Clear out old results so we start from scratch
+      raw_results = Cocupu.solr.get 'select', :params => {:q => '{!lucene}model:"Mods and Rockers"', :fl=>'id', :qt=>'document', :qf=>'model', :rows=>100}
+      Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
       raw_results = Cocupu.solr.get 'select', :params => {:q => 'bazaar', :fl=>'id', :qf=>'field_good_s'}
       Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
       Cocupu.solr.commit
       @model = Model.create(:name=>"Mods and Rockers")
       f1 = Field.create(:label=>'Field good')
       @model.m_fields << f1
+      @model.save
 
       @instance = ModelInstance.create(:model=>@model)
       @instance.properties << Property.create(:value=>"bazaar", :field=>f1) 
       @instance.save
-      puts "We have instance #{@instance}"
       @model.index
 
     end

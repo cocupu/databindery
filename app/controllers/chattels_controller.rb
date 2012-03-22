@@ -1,7 +1,7 @@
 class ChattelsController < ApplicationController
 
   def index
-    @chattels = Chattel.find(:all)
+    @chattels = Chattel.list
   end 
 
   def new 
@@ -17,9 +17,11 @@ class ChattelsController < ApplicationController
     @chattel.attachment = params[:chattel][:attachment]
     @chattel.save!
     #TODO check to see if this is a valid spreadsheet.
-    @log = JobLogItem.create(:status=>"READY", :name=>DecomposeSpreadsheetJob.to_s)
-    Delayed::Job.enqueue DecomposeSpreadsheetJob.new(@chattel.id, @log)
-    redirect_to describe_chattel_path(@chattel, :log=>@log.id)
+    @log = JobLogItem.create(:status=>"READY", :name=>DecomposeSpreadsheetJob.to_s, :object_id=>@chattel.key)
+    q = Carrot.queue('decompose_spreadsheet')
+    q.publish(@log.key);
+
+    redirect_to describe_chattel_path(@chattel, :log=>@log.key)
   end
 
   def describe
