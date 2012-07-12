@@ -7,7 +7,7 @@
   -@chattels.each do |chattel|
     %tr
       - if chattel.spreadsheet?
-        %td= link_to chattel.attachment.url, spreadsheet_row_path(chattel.id)
+        %td= link_to chattel.attachment.url_for(:read).to_s, spreadsheet_row_path(chattel.id)
       - else
-        %td= chattel.attachment.url
+        %td= chattel.attachment.url_for(:read).to_s
 

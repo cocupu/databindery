@@ -20,6 +20,7 @@ class ExhibitsController < ApplicationController
     (solr_response, @facet_fields) = get_search_results( params, {:qf=>query_fields.join(' '), 'facet.field' => ['name_s', 'model']})
     
     @total = solr_response["numFound"]
+puts "Looking for #{solr_response['docs'].map{|d| d['id']}.inspect}"
     @results = ModelInstance.find(solr_response['docs'].map{|d| d['id']})
   end
 

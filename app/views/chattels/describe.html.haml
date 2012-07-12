@@ -4,7 +4,7 @@
   function poll(){
       $.ajax({ url: "#{job_log_item_path(@log)}", success: function(data){
         //Update your dashboard gauge
-        $('#results').html("Status: " + data.status); 
+        $('#results').html("Status: " + data.job_log_item.status); 
         if (data.status == 'SUCCESS') {
           document.location = '#{spreadsheet_worksheets_path(:spreadsheet_id=>@chattel.id)}'
         } else {
@@ -19,7 +19,7 @@
   
 %p
   You uploaded 
-  = @chattel.attachment.url
+  =link_to @chattel.attachment_file_name, @chattel.attachment.url_for(:read).to_s
 
 Once the file has been processed, you will be redirected to the next step.
 #results

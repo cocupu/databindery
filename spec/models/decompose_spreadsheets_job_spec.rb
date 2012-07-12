@@ -15,7 +15,7 @@ describe DecomposeSpreadsheetJob do
     @file.stubs(:content_type => 'application/vnd.ms-excel')
     @chattel = Cocupu::Spreadsheet.create(:attachment => @file)
     @job = DecomposeSpreadsheetJob.new(@chattel.id, JobLogItem.new)
-    @job.enqueue(@job) #start the logger
+    @job.enqueue #start the logger
     @job.perform
     sheets = Cocupu::Spreadsheet.find(@chattel.id).worksheets
     sheets.count.should == 1
@@ -27,7 +27,7 @@ describe DecomposeSpreadsheetJob do
     @file.stubs(:content_type => 'application/vnd.oasis.opendocument.spreadsheet')
     @chattel = Cocupu::Spreadsheet.create(:attachment => @file)
     @job = DecomposeSpreadsheetJob.new(@chattel.id, JobLogItem.new)
-    @job.enqueue(@job) #start the logger
+    @job.enqueue #start the logger
     @job.perform
     sheets = Cocupu::Spreadsheet.find(@chattel.id).worksheets
     sheets.count.should == 4

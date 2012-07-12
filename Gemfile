@@ -13,14 +13,16 @@ group :assets do
   gem 'sass-rails',   '~> 3.1.5'
   gem 'coffee-rails', '~> 3.1.1'
   gem 'uglifier', '>= 1.0.3'
+  gem 'therubyracer' # required on linux
 end
 
 gem 'jquery-rails'
 gem 'haml'
 gem 'roo', '>=1.10.1'
-gem 'carrot'
 
-gem 'therubyracer' # required on linux
+gem 'carrot'
+gem 'amqp'
+
 
 group :test, :development do
   gem "rspec-rails"
@@ -34,12 +36,12 @@ group :test do
   gem "capybara", ">= 1.1.2"
 end
 
-#gem 'ripple', :git=>'git://github.com/seancribbs/ripple.git'#, :branch=>'integration'
-gem 'ripple', :git=>'git://github.com/jcoyne/ripple.git', :branch=>'integration'
+gem 'ripple', '1.0.0.beta2'
 gem 'orm_adapter'
 gem "devise"
 gem "aws-sdk"
 gem "jettywrapper", ">= 1.2.0"
 gem "rsolr"
 gem "cancan"
+
 

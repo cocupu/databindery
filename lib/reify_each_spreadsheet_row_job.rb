@@ -1,5 +1,5 @@
 ## A delayed job that enqueues one child job for each row in the spreadsheet.
-class ReifyEachSpreadsheetRowJob < Struct.new(:row, :input, :parent_id, :log)
+class ReifyEachSpreadsheetRowJob < Struct.new(:row, :input, :log)
 
   def enqueue(job)
     log.update_attribute(:status, 'ENQUEUE')

@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+
+require File.join(File.dirname(__FILE__), '../config/environment.rb')
+
+def work(payload)
+    log = JobLogItem.find(payload)
+    puts "Found log_item #{log}"
+    puts "it has a spreadsheet: #{log.data}"
+    job = DecomposeSpreadsheetJob.new(log.data, log)
+    begin
+      job.perform
+      job.success
+    rescue Exception => e
+      job.error(e)
+    end
+end
+
+
+EventMachine.run do
+  connection = AMQP.connect(:host => '127.0.0.1')
+  channel  = AMQP::Channel.new(connection)
+  queue    = channel.queue("decompose_spreadsheet")
+
+  queue.subscribe do |payload|
+    puts "Received a message: #{payload}."
+    work(payload)
+    #connection.close { EventMachine.stop }
+  end
+
+end

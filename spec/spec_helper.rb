@@ -10,13 +10,17 @@ require 'capybara/rails'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
-#require 'ripple/test_server' if Rails.env == 'test'
+require 'ripple/test_server'
+
+
 
 RSpec.configure do |config|
-  if Rails.env == 'test'
-    # config.before(:all){ Ripple::TestServer.setup }
-    # config.after(:each){ Ripple::TestServer.clear }
-  end
+
+
+
+  config.before(:suite) { Ripple::TestServer.setup }
+  config.after(:each) { Ripple::TestServer.clear }
+
 
   config.mock_with :mocha
   config.include Devise::TestHelpers, :type => :controller
@@ -31,11 +35,6 @@ RSpec.configure do |config|
     Cocupu.clear_index 
   end
   config.before(:each) do
-    # Mongoid.database.collections.each do |collection|
-    #   unless collection.name =~ /^system\./
-    #     collection.remove
-    #   end
-    # end
     [ModelInstance, Model, JobLogItem].each do |collection|
       collection.destroy_all
     end
