@@ -1,17 +1,6 @@
 %h1 Jobs
 
 %div
-  -if @jobs.empty?
-    No Jobs Queued
-  -else
-    %h2 In the queue:
-  -@jobs.each do |job|
-    %li
-      =job.id
-      %pre{:title=>job.last_error}
-        =truncate(job.last_error, :length=>400)
-
-%div
   %h2 History:
   -if @job_logs.empty?
     No Jobs Logged

@@ -12,13 +12,9 @@ describe ConcurrentJob do
     mock_row1 = mock("row1")
     mock_row2 = mock("row2")
     mock_input = mock("input")
-    # j1 = mock('job1')
-    # j2 = mock('job2')
-    # ReifyEachSpreadsheetRowJob.expects(:new).returns(j1)#.with(mock_row1, mock_input, job.id, log )
-    # ReifyEachSpreadsheetRowJob.expects(:new).returns(j2)#.with(mock_row2, mock_input, job.id, log )
 
-    JobLogItem.expects(:create).returns(mock('log_item', :key=>'abc123'))
-    JobLogItem.expects(:create).returns(mock('log_item', :key=>'def456'))
+    JobLogItem.expects(:create).returns(stub('job_log1', :key=>'abc123', :update_attribute=>true))
+    JobLogItem.expects(:create).returns(stub('job_log2', :key=>'def456', :update_attribute=>true))
     mock_queue = mock('queue')
     Carrot.expects(:queue).with('reify_each_spreadsheet_row_job').returns(mock_queue).twice
     mock_queue.expects(:publish).with('abc123')
