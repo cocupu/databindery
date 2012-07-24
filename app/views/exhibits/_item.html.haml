@@ -1,6 +1,6 @@
 %p.title=item.model.name
 %dl
-  -item.model.m_fields.each do |f|
-    %dt=f.label
-    %dd=item.get(f.label)
+  -item.model.fields.each do |k, label|
+    %dt=label
+    %dd=item.data[k]
 .clear

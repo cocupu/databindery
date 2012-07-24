@@ -1,5 +1,7 @@
 h1. CoCuPu
 
+UGH: https://github.com/rails/rails/pull/2948#issuecomment-5832017
+
 h2. Prerequisites
 <pre>brew install riak</pre>
 

@@ -7,7 +7,7 @@ class ExhibitsController < ApplicationController
   end
 
   def index
-    @exhibits = Exhibit.list
+    @exhibits = Exhibit.all
   end
   def edit
     @exhibit = Exhibit.find(params[:id])
@@ -16,12 +16,11 @@ class ExhibitsController < ApplicationController
   def show
     @exhibit = Exhibit.find(params[:id])
     ## TODO constrain fields just to models in this pool/exhibit
-    query_fields = Field.list.map {|f| f.solr_name }.uniq
+    query_fields = Model.all.map {|model| model.fields.map{ |key, val| Node.solr_name(key) } }.flatten.uniq
     (solr_response, @facet_fields) = get_search_results( params, {:qf=>query_fields.join(' '), 'facet.field' => ['name_s', 'model']})
     
     @total = solr_response["numFound"]
-puts "Looking for #{solr_response['docs'].map{|d| d['id']}.inspect}"
-    @results = ModelInstance.find(solr_response['docs'].map{|d| d['id']})
+    @results = Node.find_all_by_persistent_id(solr_response['docs'].map{|d| d['id']})
   end
 
   def new
@@ -31,7 +30,7 @@ puts "Looking for #{solr_response['docs'].map{|d| d['id']}.inspect}"
   def create
     @exhibit = Exhibit.new
     @exhibit.title = params[:exhibit][:title]
-    @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/).map{|f| Exhibit::Facet.new(:value=>f)}
+    @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/)
     @exhibit.save
     redirect_to @exhibit
   end
@@ -39,7 +38,7 @@ puts "Looking for #{solr_response['docs'].map{|d| d['id']}.inspect}"
   def update
     @exhibit = Exhibit.find(params[:id])
     @exhibit.title = params[:exhibit][:title]
-    @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/).map{|f| Exhibit::Facet.new(:value=>f)}
+    @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/)
     @exhibit.save
     redirect_to @exhibit
   end

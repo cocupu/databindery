@@ -3,13 +3,13 @@ require 'spec_helper'
 describe MappingTemplatesController do
   describe "create with a single model" do
     before do
-      Model.list.count.should == 0  #Make sure the db is clean
+      Model.count.should == 0  #Make sure the db is clean
       @ss = Worksheet.create!
     end
     it "should create" do
-      Worksheet.any_instance.expects(:reify)
+      Worksheet.any_instance.should_receive(:reify)
 
-      post :create, :worksheet_id=>@ss.key, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
+      post :create, :worksheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
       assigns[:mapping_template].row_start.should == 2
       assigns[:mapping_template].models.first.name.should == 'Talk'
       assigns[:mapping_template].models.first.field_mappings.size.should == 2
@@ -17,18 +17,18 @@ describe MappingTemplatesController do
       assigns[:mapping_template].models.first.field_mappings[0].source.should == 'A'
       assigns[:mapping_template].models.first.field_mappings[1].label.should == 'Title'
       assigns[:mapping_template].models.first.field_mappings[1].source.should == 'C'
-      Model.list.count.should == 1
-      Model.list.first.m_fields.map(&:label).should include("File Name", "Title")
+      Model.count.should == 1
+      Model.first.fields.values.should include("File Name", "Title")
 
-      response.should redirect_to(:action=>'show', :id=>assigns[:mapping_template].key)
+      response.should redirect_to(:action=>'show', :id=>assigns[:mapping_template].id)
     end
     it "should raise errors if no model name was supplied" do
-      Worksheet.any_instance.expects(:reify).never
+      Worksheet.any_instance.should_receive(:reify).never
 
-      post :create, :worksheet_id=>@ss.key, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
+      post :create, :worksheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
       assigns[:mapping_template].row_start.should == 2
       assigns[:mapping_template].models.first.errors[:name].should == ["can't be blank"]
-      Model.list.count.should == 0
+      Model.count.should == 0
       response.should be_success
       flash[:error].should == ["Name can't be blank"]
     end
@@ -41,7 +41,7 @@ describe MappingTemplatesController do
       @template.save
     end
     it "should show" do
-      get :show, :spreadsheet_id=>7, :id=>@template.key
+      get :show, :spreadsheet_id=>7, :id=>@template.id
       response.should be_success
       assigns[:mapping_template].should == @template
     end
@@ -55,7 +55,7 @@ describe MappingTemplatesController do
       @spreadsheet.save
     end
     it "should be success" do
-      get :new, :mapping_template=>{:worksheet_id => @one.key}
+      get :new, :mapping_template=>{:worksheet_id => @one.id}
       assigns[:worksheet].should == @one
       assigns[:mapping_template].should_not be_nil
       assigns[:mapping_template].models.length.should == 1

@@ -7,14 +7,14 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:row, :input, :log)
 
   def perform
     log.update_attribute(:status, 'PROCESSING')
-    input[:template].models.each do |model_tmpl|
-      model = model_tmpl.referenced_model() #TODO pass pool so that each user can reuse same names
-      vals = [] 
-      model_tmpl.field_mappings.each do |fm|
-        field = model.m_fields.select{|f| f.label == fm.label}.first
-        vals << Property.new(:field=> field, :value=>row.values[fm.source.ord - 65].value)
+    input[:template].models.each do |model_id, model_tmpl|
+      model = Model.find(model_id)
+      vals = {}
+      model_tmpl[:field_mappings].each do |fm_source, field|
+        field = model.fields['field']
+        vals[field] = row.values[fm_source.ord - 65]
       end
-      ModelInstance.create!(:model=>model, :properties=>vals)
+      Node.create!(:model=>model, :data=>vals)
     end
   end
 

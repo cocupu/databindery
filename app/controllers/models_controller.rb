@@ -1,5 +1,5 @@
 class ModelsController < ApplicationController
   def index
-    @models = Model.list
+    @models = Model.all
   end
 end

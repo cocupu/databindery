@@ -1,15 +1,8 @@
-class Chattel
-  include Ripple::Document
-  alias_method :id, :key
+class Chattel < ActiveRecord::Base
 
   def spreadsheet?
     is_a? Cocupu::Spreadsheet
   end
-
-  property :attachment_content_type, String
-  property :attachment_file_name, String
-  property :attachment_extension, String
-
 
   def attachment
     #call .url_for(:read) (public signed), .public_url (unsigned), or .read() on this object
@@ -18,7 +11,7 @@ class Chattel
   end 
 
   def attachment= file
-    self.save if new?  ## Generate a key
+    self.save if new_record?  ## Generate a key
     self.attachment_content_type = file.content_type
     self.attachment_file_name = file.original_filename
     self.attachment_extension = /\.([^.]+)$/.match(attachment_file_name)[1]
@@ -37,7 +30,7 @@ class Chattel
   private
 
   def file_key
-    "#{key}.#{attachment_extension}"
+    "#{id}.#{attachment_extension}"
   end
 
   def bucket_name

@@ -3,7 +3,7 @@ class MappingTemplatesController < ApplicationController
 
   def new
     @worksheet = Worksheet.find(params[:mapping_template][:worksheet_id])
-    @mapping_template = MappingTemplate.new(:models=>[TemplateModelMapping.new(:field_mappings=>[FieldMapping.new])])
+    @mapping_template = MappingTemplate.new()
   end
 
   def create
@@ -34,7 +34,8 @@ class MappingTemplatesController < ApplicationController
   end
 
   def create_model(model_template)
-    m_fields = model_template.field_mappings.map{|elem| Field.new(:label=>elem.label)}
-    Model.create!(:name=>model_template.name, :m_fields=>m_fields)
+    m_fields = {}
+    model_template.field_mappings.each{|elem| m_fields[elem.label.gsub(/ /, '_').downcase] = elem.label}
+    Model.create!(:name=>model_template.name, :fields=>m_fields)
   end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120712195528) do
+ActiveRecord::Schema.define(:version => 20120724200226) do
 
   create_table "change_sets", :force => true do |t|
     t.hstore   "data"
@@ -24,11 +24,36 @@ ActiveRecord::Schema.define(:version => 20120712195528) do
 
   add_index "change_sets", ["data"], :name => "change_sets_gist_data"
 
+  create_table "chattels", :force => true do |t|
+    t.string   "attachment_content_type"
+    t.string   "attachment_file_name"
+    t.string   "attachment_extension"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
+  end
+
+  create_table "exhibits", :force => true do |t|
+    t.string   "title"
+    t.text     "facets"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "identities", :force => true do |t|
     t.string   "name"
     t.integer  "login_credential_id"
     t.datetime "created_at",          :null => false
     t.datetime "updated_at",          :null => false
+  end
+
+  create_table "job_log_items", :force => true do |t|
+    t.string   "status"
+    t.string   "name"
+    t.string   "message"
+    t.string   "data"
+    t.integer  "parent_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "login_credentials", :force => true do |t|
@@ -49,6 +74,20 @@ ActiveRecord::Schema.define(:version => 20120712195528) do
   add_index "login_credentials", ["email"], :name => "index_login_credentials_on_email", :unique => true
   add_index "login_credentials", ["reset_password_token"], :name => "index_login_credentials_on_reset_password_token", :unique => true
 
+  create_table "mapping_templates", :force => true do |t|
+    t.integer  "row_start"
+    t.text     "models"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "models", :force => true do |t|
+    t.string   "name"
+    t.hstore   "fields"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "nodes", :force => true do |t|
     t.hstore   "data"
     t.string   "persistent_id"
@@ -57,9 +96,11 @@ ActiveRecord::Schema.define(:version => 20120712195528) do
     t.integer  "identity_id"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+    t.integer  "model_id"
   end
 
   add_index "nodes", ["data"], :name => "nodes_gist_data"
+  add_index "nodes", ["model_id"], :name => "index_nodes_on_model_id"
 
   create_table "pools", :force => true do |t|
     t.string   "name"
@@ -67,6 +108,21 @@ ActiveRecord::Schema.define(:version => 20120712195528) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.integer  "head_id"
+  end
+
+  create_table "spreadsheet_rows", :force => true do |t|
+    t.integer  "row_number"
+    t.integer  "worksheet_id"
+    t.text     "values"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  create_table "worksheets", :force => true do |t|
+    t.string   "name"
+    t.integer  "spreadsheet_id"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
   add_foreign_key "change_sets", "change_sets", :name => "change_sets_parent_id_fk", :column => "parent_id"

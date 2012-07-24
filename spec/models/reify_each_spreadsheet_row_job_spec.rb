@@ -2,21 +2,21 @@ require 'spec_helper'
 
 describe ReifyEachSpreadsheetRowJob do
   before do
-    ModelInstance.list.count.should == 0 ## database should be clean
-    @field = Field.new(:label=>'Wheels')
-    @model = Model.create(:name=>'Truck', :m_fields=>[@field])
+    Node.count.should == 0 ## database should be clean
+    #@field = Field.new(:label=>'Wheels')
+    @model = Model.create(:name=>'Truck', :fields=>{'wheels' => 'Wheels'})
   end
   it "should process" do
     template = MappingTemplate.new()
-    template.models << TemplateModelMapping.new(:name=>'Truck', :field_mappings=>[FieldMapping.new(:label=>"Wheels", :source=>'B')])
-    job = ReifyEachSpreadsheetRowJob.new(SpreadsheetRow.new(:values=>['one', 'two', 'three'].map{|v| SpreadsheetRow::Value.new(:value=>v)}), {:template=>template}, JobLogItem.new)
+    template.models = {@model.id => {:field_mappings=> {'B' => 'wheels'}}}
+
+    job = ReifyEachSpreadsheetRowJob.new(SpreadsheetRow.new(:values=>['one', 'two', 'three']), {:template=>template}, JobLogItem.new)
     job.enqueue
     job.perform
-    ModelInstance.list.count.should == 1
-    created = ModelInstance.list.first
+    Node.count.should == 1
+    created = Node.first
     created.model.should == @model
-    created.properties.first.value.should == 'two'
-    created.properties.first.field.should == @field 
+    created.data['wheels'].should == 'two'
   end
 
 end

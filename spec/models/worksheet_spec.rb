@@ -23,8 +23,8 @@ describe Worksheet do
     template = mock("template")
     ws = Worksheet.new()
     job = mock("job")
-    job.expects(:enqueue_collection).with(ReifyEachSpreadsheetRowJob, [], {:template=>template})
-    ConcurrentJob.expects(:create).returns(job)
+    job.should_receive(:enqueue_collection).with(ReifyEachSpreadsheetRowJob, [], {:template=>template})
+    ConcurrentJob.should_receive(:create).and_return(job)
     ws.reify(template)
   end
 

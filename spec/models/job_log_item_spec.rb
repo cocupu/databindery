@@ -17,7 +17,7 @@ describe JobLogItem do
     @conc = ConcurrentJob.create
     @child1 = JobLogItem.create(:parent=>@conc)
 
-    @conc.expects(:member_finished)
+    @conc.should_receive(:member_finished)
     @child1.update_attribute(:status, 'FAILED')
     @child1.status.should == 'FAILED'
   end

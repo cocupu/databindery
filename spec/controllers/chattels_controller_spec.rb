@@ -22,10 +22,10 @@ describe ChattelsController do
   describe "create" do
     it "should be successfull" do
       mock_queue = mock('queue')
-      Carrot.expects(:queue).with('decompose_spreadsheet').returns(mock_queue)
+      Carrot.should_receive(:queue).with('decompose_spreadsheet').and_return(mock_queue)
       mock_log = stub("log", :key=>'6HceCIKd3ucLNco9583DVnmGW5E')
-      JobLogItem.expects(:create).returns(mock_log)
-      mock_queue.expects(:publish).with('6HceCIKd3ucLNco9583DVnmGW5E')
+      JobLogItem.should_receive(:create).and_return(mock_log)
+      mock_queue.should_receive(:publish).with('6HceCIKd3ucLNco9583DVnmGW5E')
 
       post :create, :chattel => {:attachment=> fixture_file_upload(Rails.root + 'spec/fixtures/images/rails.png', 'image/png')}
       assigns[:chattel].should be_persisted

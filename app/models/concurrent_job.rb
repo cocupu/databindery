@@ -1,14 +1,10 @@
 class ConcurrentJob < JobLogItem
 
-  self.bucket_name = JobLogItem.bucket_name
-
   #after_initialize :init_fields
   def initialize(*args)
     super(*args)
     init_fields
   end
-
-  alias_method :id, :key
 
   def init_fields
     return unless new_record?
@@ -25,20 +21,20 @@ puts "DATA IS #{data}"
       ###Typically ReifyEachSpreadsheetRow job
       job_class.new(data, all_job_data, log).enqueue
       q = Carrot.queue(job_class.to_s.underscore)
-      q.publish(log.key);
+      q.publish(log.id);
     end
   end
 
   ## A callback so the child jobs can report in.
   def member_finished
-puts "INVOKED on #{self.key}"
+puts "INVOKED on #{self.id}"
     ## Check to see if all children are finished.
     #if JobLogItem.find_by_index(:parent_id, self.id).in(:status=>['READY', 'PROCESSING', 'ENQUEUE']).count > 0
-    if find_children_with_status(['READY', 'PROCESSING', 'ENQUEUE']).count > 0
+    if count_children_with_status(['READY', 'PROCESSING', 'ENQUEUE']) > 0
       self.update_attribute(:status, "PROCESSING") if status != 'PROCESSING'
       return
     end
-    if find_children_with_status(['FAILED']).count > 0
+    if count_children_with_status(['FAILED']) > 0
       self.update_attribute(:status, "FAILED") 
     else
       self.update_attribute(:status, "SUCCESS") 

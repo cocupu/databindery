@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ModelsController do
   describe "index" do
     before do
-      @model = Model.create!(:name=>'Car', :m_fields=>["Number of Doors", 'Top Speed'].map {|f| Field.new(:label=>f)})
+      @model = Model.create!(:name=>'Car', :fields=>{'doors'=>"Number of Doors", 'speed'=>'Top Speed'})
     end
     it "should show models" do
       get :index

@@ -10,19 +10,9 @@ require 'capybara/rails'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
-require 'ripple/test_server'
-
-
 
 RSpec.configure do |config|
 
-
-
-  config.before(:suite) { Ripple::TestServer.setup }
-  config.after(:each) { Ripple::TestServer.clear }
-
-
-  config.mock_with :mocha
   config.include Devise::TestHelpers, :type => :controller
 
   # If true, the base class of anonymous controllers will be inferred
@@ -35,7 +25,7 @@ RSpec.configure do |config|
     Cocupu.clear_index 
   end
   config.before(:each) do
-    [ModelInstance, Model, JobLogItem].each do |collection|
+    [Node, Model, JobLogItem].each do |collection|
       collection.destroy_all
     end
   end

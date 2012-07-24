@@ -34,7 +34,7 @@ class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
         stored_row << cell
       end
     end
-    row = SpreadsheetRow.create(:row_number => row_idx, :job_log_item => @log, :values => stored_row.map{|v| SpreadsheetRow::Value.new(:value=>v)})
+    row = SpreadsheetRow.create(:row_number => row_idx, :job_log_item => @log, :values => stored_row)
     sheet.rows << row
   end
 

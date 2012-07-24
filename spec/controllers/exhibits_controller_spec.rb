@@ -33,7 +33,7 @@ describe ExhibitsController do
     it "should be success" do
       post :create, :exhibit=> {:title => 'Foresooth', :facets=>'looketh, overmany, thither' }
       response.should redirect_to exhibit_path(assigns[:exhibit])
-      assigns[:exhibit].facets.map(&:value).should == ['looketh', 'overmany', 'thither']
+      assigns[:exhibit].facets.should == ['looketh', 'overmany', 'thither']
     end
   end
 
@@ -49,7 +49,7 @@ describe ExhibitsController do
     it "should be success" do
       put :update, :id=>@exhibit.id, :exhibit=> {:title => 'Foresooth', :facets=>'looketh, overmany, thither' }
       response.should redirect_to exhibit_path(assigns[:exhibit])
-      assigns[:exhibit].facets.map(&:value).should == ['looketh', 'overmany', 'thither']
+      assigns[:exhibit].facets.should == ['looketh', 'overmany', 'thither']
     end
   end
 
@@ -62,12 +62,11 @@ describe ExhibitsController do
       Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
       Cocupu.solr.commit
       @model = Model.create(:name=>"Mods and Rockers")
-      f1 = Field.create(:label=>'Field good')
-      @model.m_fields << f1
+      @model.fields = {'f1' => 'Field good'}
       @model.save
 
-      @instance = ModelInstance.create(:model=>@model)
-      @instance.properties << Property.create(:value=>"bazaar", :field=>f1) 
+      @instance = Node.create(:model=>@model)
+      @instance.data = {'f1' => 'bazaar'}
       @instance.save
       @model.index
 

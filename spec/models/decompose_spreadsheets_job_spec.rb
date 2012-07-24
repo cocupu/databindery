@@ -11,8 +11,8 @@ describe DecomposeSpreadsheetJob do
 
   it "should break up the Excel spreadsheet" do
     @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
-    @file.stubs(:original_filename => 'dechen_rangdrol_archives_database.xls')
-    @file.stubs(:content_type => 'application/vnd.ms-excel')
+    @file.stub(:original_filename => 'dechen_rangdrol_archives_database.xls')
+    @file.stub(:content_type => 'application/vnd.ms-excel')
     @chattel = Cocupu::Spreadsheet.create(:attachment => @file)
     @job = DecomposeSpreadsheetJob.new(@chattel.id, JobLogItem.new)
     @job.enqueue #start the logger
@@ -23,8 +23,8 @@ describe DecomposeSpreadsheetJob do
   end
   it "should break up the ODS spreadsheet" do
     @file = File.new(Rails.root + 'spec/fixtures/Stock Check 2.ods')
-    @file.stubs(:original_filename => 'Stock Check 2.ods')
-    @file.stubs(:content_type => 'application/vnd.oasis.opendocument.spreadsheet')
+    @file.stub(:original_filename => 'Stock Check 2.ods')
+    @file.stub(:content_type => 'application/vnd.oasis.opendocument.spreadsheet')
     @chattel = Cocupu::Spreadsheet.create(:attachment => @file)
     @job = DecomposeSpreadsheetJob.new(@chattel.id, JobLogItem.new)
     @job.enqueue #start the logger
@@ -37,7 +37,7 @@ describe DecomposeSpreadsheetJob do
 puts "Minerals #{minerals.rows}"
 
     aluminum = minerals.rows.select{|r| r.row_number == 3}.first
-    aluminum.values.map(&:value).should == 
+    aluminum.values.should == 
       ["Aluminium",
        "transportation, packaging, construction, electronics",
        75000000000.0,

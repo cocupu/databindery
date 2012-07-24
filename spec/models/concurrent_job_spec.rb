@@ -13,22 +13,22 @@ describe ConcurrentJob do
     mock_row2 = mock("row2")
     mock_input = mock("input")
 
-    JobLogItem.expects(:create).returns(stub('job_log1', :key=>'abc123', :update_attribute=>true))
-    JobLogItem.expects(:create).returns(stub('job_log2', :key=>'def456', :update_attribute=>true))
+    JobLogItem.should_receive(:create).and_return(stub('job_log1', :id=>'abc123', :update_attribute=>true))
+    JobLogItem.should_receive(:create).and_return(stub('job_log2', :id=>'def456', :update_attribute=>true))
     mock_queue = mock('queue')
-    Carrot.expects(:queue).with('reify_each_spreadsheet_row_job').returns(mock_queue).twice
-    mock_queue.expects(:publish).with('abc123')
-    mock_queue.expects(:publish).with('def456')
+    Carrot.should_receive(:queue).twice.with('reify_each_spreadsheet_row_job').and_return(mock_queue)
+    mock_queue.should_receive(:publish).with('abc123')
+    mock_queue.should_receive(:publish).with('def456')
     job.enqueue_collection(ReifyEachSpreadsheetRowJob, [mock_row1, mock_row2], mock_input)
     job.status.should == 'PROCESSING'
   end
-  describe "find_children_with_status" do
+  describe "count_children_with_status" do
     before do
       @conc = ConcurrentJob.create(:status=>'READY')
       @child1 = JobLogItem.create(:parent=>@conc, :status=>'READY')
     end
     it "should find child" do
-      @conc.find_children_with_status(['READY']).should == [@child1.key]
+      @conc.count_children_with_status(['READY']).should == 1
     end
   end
 

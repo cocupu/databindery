@@ -1,13 +1,6 @@
-class SpreadsheetRow
-  include Ripple::Document
-  one :job_log_item
-  #one :worksheet#, index: true
-  many :values
-  property :row_number, Integer
+class SpreadsheetRow < ActiveRecord::Base
+  has_one :job_log_item
+  belongs_to :worksheet
+  serialize :values, Array
 
-  class Value
-    include Ripple::EmbeddedDocument
-    property :value, Object
-    embedded_in :spreadsheet_row
-  end
 end
