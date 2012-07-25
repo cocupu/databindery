@@ -1,3 +1,4 @@
+require 'iconv' # roo 1.10.1 depends on iconv (https://github.com/hmcgowan/roo/issues/13)
 class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
 
   def perform

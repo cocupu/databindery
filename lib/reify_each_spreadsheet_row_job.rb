@@ -11,7 +11,6 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:row, :input, :log)
       model = Model.find(model_id)
       vals = {}
       model_tmpl[:field_mappings].each do |fm_source, field|
-        field = model.fields['field']
         vals[field] = row.values[fm_source.ord - 65]
       end
       Node.create!(:model=>model, :data=>vals)

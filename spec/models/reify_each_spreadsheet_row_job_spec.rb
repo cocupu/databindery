@@ -2,7 +2,8 @@ require 'spec_helper'
 
 describe ReifyEachSpreadsheetRowJob do
   before do
-    Node.count.should == 0 ## database should be clean
+    ## database should be clean
+    Node.count.should == 0 
     #@field = Field.new(:label=>'Wheels')
     @model = Model.create(:name=>'Truck', :fields=>{'wheels' => 'Wheels'})
   end
@@ -16,6 +17,7 @@ describe ReifyEachSpreadsheetRowJob do
     Node.count.should == 1
     created = Node.first
     created.model.should == @model
+puts "data #{created.data}"
     created.data['wheels'].should == 'two'
   end
 
