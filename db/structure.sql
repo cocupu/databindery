@@ -184,6 +184,7 @@ CREATE TABLE job_log_items (
     message character varying(255),
     data character varying(255),
     parent_id integer,
+    type character varying(255),
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );

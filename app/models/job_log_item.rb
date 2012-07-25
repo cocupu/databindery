@@ -5,7 +5,7 @@ class JobLogItem < ActiveRecord::Base
   #TODO has_many
   def children= children
     children.each do |c|
-      c.update_attribute(:parent_id, self.id)
+      c.parent = self
     end
   end
   
@@ -19,6 +19,8 @@ class JobLogItem < ActiveRecord::Base
 
   ## if status is changed, alert the parent
   def alert_parent_of_status_change
+
+puts "Status: #{self.previous_changes.inspect}, Parent: #{parent}"
     needs_alert = self.previous_changes["status"].present? && parent
     parent.member_finished if needs_alert
   end

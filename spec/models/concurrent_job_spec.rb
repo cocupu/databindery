@@ -13,8 +13,8 @@ describe ConcurrentJob do
     mock_row2 = mock("row2")
     mock_input = mock("input")
 
-    JobLogItem.should_receive(:create).and_return(stub('job_log1', :id=>'abc123', :update_attribute=>true))
-    JobLogItem.should_receive(:create).and_return(stub('job_log2', :id=>'def456', :update_attribute=>true))
+    JobLogItem.should_receive(:create).and_return(stub('job_log1', :id=>'abc123', :update_attributes=>true))
+    JobLogItem.should_receive(:create).and_return(stub('job_log2', :id=>'def456', :update_attributes=>true))
     mock_queue = mock('queue')
     Carrot.should_receive(:queue).twice.with('reify_each_spreadsheet_row_job').and_return(mock_queue)
     mock_queue.should_receive(:publish).with('abc123')
@@ -38,26 +38,26 @@ describe ConcurrentJob do
       @child1 = JobLogItem.create(:parent=>@conc, :status=>'READY')
     end
     it "should set finished when all jobs done" do
-      @child1.update_attribute(:status, 'FAILED')
+      @child1.update_attributes(:status => 'FAILED')
       @conc.status.should == 'FAILED'
     end
     it "should set finished when all jobs done" do
-      @child1.update_attribute(:status, 'SUCCESS')
+      @child1.update_attributes(:status => 'SUCCESS')
       @conc.status.should == 'SUCCESS'
     end
     it "should not set finished if any job is READY" do
       @child2 = JobLogItem.create(:parent=>@conc, :status=>'READY')
-      @child1.update_attribute(:status, 'SUCCESS')
+      @child1.update_attributes(:status =>'SUCCESS')
       @conc.status.should == 'PROCESSING'
     end
     it "should not set finished if any job is ENQUEUE" do
       @child2 = JobLogItem.create(:parent=>@conc, :status=>'ENQUEUE')
-      @child1.update_attribute(:status, 'SUCCESS')
+      @child1.update_attributes(:status => 'SUCCESS')
       @conc.status.should == 'PROCESSING'
     end
     it "should not set finished if any job is PROCESSING" do
       @child2 = JobLogItem.create(:parent=>@conc, :status=>'PROCESSING')
-      @child1.update_attribute(:status, 'SUCCESS')
+      @child1.update_attributes(:status => 'SUCCESS')
       @conc.status.should == 'PROCESSING'
     end
   end

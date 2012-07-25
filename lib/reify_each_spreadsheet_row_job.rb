@@ -2,11 +2,11 @@
 class ReifyEachSpreadsheetRowJob < Struct.new(:row, :input, :log)
 
   def enqueue
-    log.update_attribute(:status, 'ENQUEUE')
+    log.update_attributes(:status => 'ENQUEUE')
   end
 
   def perform
-    log.update_attribute(:status, 'PROCESSING')
+    log.update_attributes(:status => 'PROCESSING')
     input[:template].models.each do |model_id, model_tmpl|
       model = Model.find(model_id)
       vals = {}
@@ -19,7 +19,7 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:row, :input, :log)
   end
 
   def success(job)
-    log.update_attribute(:status, 'SUCCESS')
+    log.update_attributes(:status => 'SUCCESS')
   end
 
   def error(job, exception)
@@ -29,6 +29,6 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:row, :input, :log)
   end
 
   def failure
-    log.update_attribute(:status, 'FAILURE')
+    log.update_attributes(:status => 'FAILURE')
   end
 end

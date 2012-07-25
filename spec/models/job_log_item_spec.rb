@@ -18,7 +18,7 @@ describe JobLogItem do
     @child1 = JobLogItem.create(:parent=>@conc)
 
     @conc.should_receive(:member_finished)
-    @child1.update_attribute(:status, 'FAILED')
+    @child1.update_attributes(:status => 'FAILED')
     @child1.status.should == 'FAILED'
   end
   describe ".create" do

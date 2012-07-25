@@ -6,6 +6,7 @@ class CreateJobLogItems < ActiveRecord::Migration
       t.string :message
       t.string :data
       t.integer :parent_id
+      t.string :type  #For single table inheritance
  
       t.timestamps
     end

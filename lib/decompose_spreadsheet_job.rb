@@ -1,7 +1,7 @@
 class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
 
   def perform
-    log.update_attribute(:status, 'PROCESSING')
+    log.update_attributes(:status => 'PROCESSING')
     ss = Cocupu::Spreadsheet.find(spreadsheet_id)
     tmpfile = file = Tempfile.new(['cocupu', '.'+ss.attachment_extension], :encoding => 'ascii-8bit')
     tmpfile.write(ss.attachment.read)
@@ -39,7 +39,7 @@ class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
   end
 
   def enqueue
-    log.update_attribute(:status, 'ENQUEUE')
+    log.update_attributes(:status => 'ENQUEUE')
   end
 
 
@@ -54,7 +54,7 @@ class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
   end
 
   def failure
-    log.update_attribute(:status, 'FAILURE')
+    log.update_attributes(:status => 'FAILURE')
   end
 
 

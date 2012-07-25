@@ -24,11 +24,11 @@ RSpec.configure do |config|
   config.before(:all) do
     Cocupu.clear_index 
   end
-  config.before(:each) do
-    [Node, Model, JobLogItem].each do |collection|
-      collection.destroy_all
-    end
-  end
+  # config.before(:each) do
+  #   [Node, Model, JobLogItem].each do |collection|
+  #     collection.destroy_all
+  #   end
+  # end
 end
 
 
