@@ -25,7 +25,9 @@ describe ConcurrentJob do
   describe "count_children_with_status" do
     before do
       @conc = ConcurrentJob.create(:status=>'READY')
-      @child1 = JobLogItem.create(:parent=>@conc, :status=>'READY')
+      @child1 = JobLogItem.new(:status=>'READY')
+      @child1.parent = @conc
+      @child1.save!
     end
     it "should find child" do
       @conc.count_children_with_status(['READY']).should == 1
@@ -35,7 +37,9 @@ describe ConcurrentJob do
   describe "member_finished" do
     before do
       @conc = ConcurrentJob.create(:status=>'READY')
-      @child1 = JobLogItem.create(:parent=>@conc, :status=>'READY')
+      @child1 = JobLogItem.new(:status=>'READY')
+      @child1.parent = @conc
+      @child1.save!
     end
     it "should set finished when all jobs done" do
       @child1.update_attributes(:status => 'FAILED')
@@ -46,17 +50,23 @@ describe ConcurrentJob do
       @conc.status.should == 'SUCCESS'
     end
     it "should not set finished if any job is READY" do
-      @child2 = JobLogItem.create(:parent=>@conc, :status=>'READY')
+      @child2 = JobLogItem.new(:status=>'READY')
+      @child2.parent = @conc
+      @child2.save!
       @child1.update_attributes(:status =>'SUCCESS')
       @conc.status.should == 'PROCESSING'
     end
     it "should not set finished if any job is ENQUEUE" do
-      @child2 = JobLogItem.create(:parent=>@conc, :status=>'ENQUEUE')
+      @child2 = JobLogItem.new(:status=>'ENQUEUE')
+      @child2.parent = @conc
+      @child2.save!
       @child1.update_attributes(:status => 'SUCCESS')
       @conc.status.should == 'PROCESSING'
     end
     it "should not set finished if any job is PROCESSING" do
-      @child2 = JobLogItem.create(:parent=>@conc, :status=>'PROCESSING')
+      @child2 = JobLogItem.new(:status=>'PROCESSING')
+      @child2.parent = @conc
+      @child2.save!
       @child1.update_attributes(:status => 'SUCCESS')
       @conc.status.should == 'PROCESSING'
     end

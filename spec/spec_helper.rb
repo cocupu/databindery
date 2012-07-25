@@ -6,6 +6,7 @@ require 'rspec/autorun'
 require 'capybara/rspec'
 require 'capybara/rails'
 
+
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
@@ -24,11 +25,11 @@ RSpec.configure do |config|
   config.before(:all) do
     Cocupu.clear_index 
   end
-  # config.before(:each) do
-  #   [Node, Model, JobLogItem].each do |collection|
-  #     collection.destroy_all
-  #   end
-  # end
+  config.before(:each) do
+    [Node, Model, JobLogItem, LoginCredential].each do |collection|
+      collection.destroy_all
+    end
+  end
 end
 
 

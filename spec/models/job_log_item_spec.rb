@@ -15,7 +15,9 @@ describe JobLogItem do
 
   it "should alert parents when the status changes" do
     @conc = ConcurrentJob.create
-    @child1 = JobLogItem.create(:parent=>@conc)
+    @child1 = JobLogItem.new
+    @child1.parent=@conc
+    @child1.save!
 
     @conc.should_receive(:member_finished)
     @child1.update_attributes(:status => 'FAILED')

@@ -1,6 +1,8 @@
 FactoryGirl.define do
   factory :login, :class=>LoginCredential do
-    email 'test@cocupu.com'
+    sequence :email do |n|
+      "person#{n}@cocupu.com"
+    end
     password 'notblank'
   end
 end

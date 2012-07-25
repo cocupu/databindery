@@ -40,10 +40,10 @@ gem 'uuid'
 group :test, :development do
   gem "rspec-rails"
   gem 'unicorn'  # Use unicorn as the webserver
+  gem "factory_girl_rails"
 end
 group :test do
   gem "database_cleaner", ">= 0.7.0"
-  gem "factory_girl_rails"
   gem "capybara", ">= 1.1.2"
 end
 
