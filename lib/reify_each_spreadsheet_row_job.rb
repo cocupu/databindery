@@ -1,5 +1,5 @@
 ## A delayed job that enqueues one child job for each row in the spreadsheet.
-class ReifyEachSpreadsheetRowJob < Struct.new(:row, :input, :log)
+class ReifyEachSpreadsheetRowJob < Struct.new(:row, :template, :log)
 
   def enqueue
     log.update_attributes(:status => 'ENQUEUE')
@@ -7,7 +7,7 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:row, :input, :log)
 
   def perform
     log.update_attributes(:status => 'PROCESSING')
-    input[:template].models.each do |model_id, model_tmpl|
+    template.models.each do |model_id, model_tmpl|
       model = Model.find(model_id)
       vals = {}
       model_tmpl[:field_mappings].each do |fm_source, field|
@@ -21,9 +21,9 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:row, :input, :log)
     log.update_attributes(:status => 'SUCCESS')
   end
 
-  def error(job, exception)
+  def error(exception)
     log.status = 'ERROR'
-    log.message = exception
+    log.message = "#{exception.message} (#{exception.class})" + exception.backtrace.join("\n")
     log.save!
   end
 

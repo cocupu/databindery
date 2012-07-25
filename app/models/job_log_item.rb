@@ -2,6 +2,7 @@ class JobLogItem < ActiveRecord::Base
   belongs_to :parent, :class_name=>'JobLogItem'
   belongs_to :spreadsheet_row
 
+  serialize :data
   attr_accessible :status, :data, :name
 
   #TODO has_many

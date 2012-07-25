@@ -7,17 +7,23 @@
 =link_to "Create a new exhibit", new_exhibit_path, :class=>'btn primary small'
 
 %h3 Jobs
-%ul
-  -JobLogItem.all.each do |j|
-    -#JobLogItem.find_by_index(:parent_id, nil).each do |j|
-    %li
-      =link_to j.name, jobs_path()
-      %span{:class=>'label ' + j.status.downcase}=j.status
+-count = JobLogItem.count
+-if count == 0
+  none
+-else
+  %ul
+    -JobLogItem.limit(10).each do |j|
+      %li
+        =link_to j.name, jobs_path()
+        %span{:class=>'label ' + j.status.downcase}=j.status
+
+-if count > 10 
+  and #{count - 10} more
 
 %h3 Data Models
 %ul
-  -Model.all.each do |m|
-    %li=link_to m.name, model_model_instances_path(m)
+  -Model.limit(20).each do |m|
+    %li=link_to m.name, model_nodes_path(m)
 
 %h3 Import Data
 %ul

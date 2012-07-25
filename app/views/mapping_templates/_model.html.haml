@@ -1,20 +1,20 @@
 %fieldset
   .clearfix
-    =f.label 'name', 'Model Name: '
+    =label_tag "#{root}[name]", 'Model Name: '
     .input
-      =f.text_field 'name'
+      =text_field_tag "#{root}[name]"
 
   .clearfix
-    =f.label 'filter', 'Filter Row:'
+    =label "#{root}[filter]", 'Filter Row:'
     .input
-      =f.check_box 'filter' 
+      =check_box_tag "#{root}[filter]" 
 
   .clearfix
     .input
       When column
-      =f.select("filter_source", options_for_select( 0.upto(@worksheet.rows[0].values.size).map{|n| (n+65).chr}), {:include_blank=>true}, {:class=>'xsmall'})
-      =f.select("filter_predicate", options_for_select({'is present' =>'present', 'is blank' => 'blank', 'is equal to:' =>'equal' }))
-      =f.text_field("filter_constant" )
+      =select_tag( "#{root}[filter_source]", options_for_select( 0.upto(@worksheet.rows[0].values.size).map{|n| (n+65).chr}, {:include_blank=>true}), {:class=>'xsmall'})
+      =select_tag("#{root}[filter_predicate]", options_for_select({'is present' =>'present', 'is blank' => 'blank', 'is equal to:' =>'equal' }))
+      =text_field_tag "#{root}[filter_constant]"
 
   .clearfix
     Model fields:
@@ -22,9 +22,10 @@
       %tr
         %th Field Name:
         %th Source Column:
-      =f.fields_for :field_mappings do |field_form| 
-        = render :partial=>'field_mapping', :locals=>{:f=>field_form}
-    =add_child_link 'New field', :field_mappings, f.object_id
-    =new_child_fields_template f, :field_mappings, :tag=>:table, :index=>f.object_id
+      - if model
+        =model[:field_mappings].each_with_index do |mapping, n| 
+          = render :partial=>'field_mapping', :locals=>{:mapping=>mapping, :root=>"#{root}[field_mappings_attributes][#{n}]"}
+    =add_child_link 'New field', :field_mappings, 'huh' 
+    =render :partial => 'field_mapping', :locals=>{:mapping=>{}, :root=>"#{root}[field_mappings_attributes][new_mapping]"}# new_child_fields_template f, :field_mappings, :tag=>:table, :index=>f.object_id
             
 

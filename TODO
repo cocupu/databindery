@@ -1,3 +1,7 @@
 Replace roo with rubyXL: https://github.com/gilt/rubyXL
 Constrain models and nodes into pools.
 Sign in should store full name in the identity
+New model and new field are broken
+Uploading another spreadsheet into the same model (should create a new mapping, but not overwrite existing model fields)
+If you delete a queue, and then submit a new spreadsheet mapping no jobs actually get queued.
+no method show for models controller. used on view/mapping_templates/show 

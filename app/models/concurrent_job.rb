@@ -13,15 +13,17 @@ class ConcurrentJob < JobLogItem
   end
   
 
-  def enqueue_collection(job_class, per_job_data, all_job_data)
+  def enqueue_collection(job_class, object_list, all_job_data)
     self.status = "PROCESSING"
     save!
-    per_job_data.each do |data|
-      log = JobLogItem.new(:status=>"READY", :name=>job_class.to_s, :data=>data)
+    object_list.each do |object|
+
+      log = JobLogItem.new(:status=>"READY", :name=>job_class.to_s, :data=>{:id=>object.id}.merge(all_job_data))
       log.parent = self
       log.save!
       ###Typically ReifyEachSpreadsheetRow job
-      job_class.new(data, all_job_data, log).enqueue
+      job_class.new(object_list, all_job_data, log).enqueue
+puts "Queuing #{log.id}"
       q = Carrot.queue(job_class.to_s.underscore)
       q.publish(log.id);
     end

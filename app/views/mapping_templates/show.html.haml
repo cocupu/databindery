@@ -3,14 +3,15 @@
   %dt Start Row
   %dd=@mapping_template.row_start
 %ul
-  -@mapping_template.models.each do |model|
+  -@mapping_template.models.each do |model_id, values|
     %li
-      =link_to model['name'], model_path(model['name'])
+      - model = Model.find(model_id)
+      =link_to model.name, model_path(model)
       %br/ 
       Columns:
       %ul
-        -model.field_mappings.each do |column|
+        -values[:field_mappings].each do |source, value|
           %li
-            =column['source']
+            =source
             &rarr;
-            =column['label']
+            =value
