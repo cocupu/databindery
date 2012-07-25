@@ -11,7 +11,7 @@ describe 'as a guest on the sign in page' do
 
     #Fill in the form with the user’s credentials and submit it.
     before do
-      fill_in 'login_credential_name', :with => 'Joe Blow'
+      fill_in 'name', :with => 'Joe Blow'
       fill_in 'login_credential_email', :with => 'joe@gmail.com'
       fill_in 'login_credential_password', :with => 'password'
       click_button 'Sign Up'

@@ -49,8 +49,8 @@ ActiveRecord::Schema.define(:version => 20120724200226) do
   create_table "job_log_items", :force => true do |t|
     t.string   "status"
     t.string   "name"
-    t.string   "message"
-    t.string   "data"
+    t.text     "message"
+    t.text     "data"
     t.integer  "parent_id"
     t.string   "type"
     t.datetime "created_at", :null => false

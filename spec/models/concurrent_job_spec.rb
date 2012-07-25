@@ -13,12 +13,15 @@ describe ConcurrentJob do
     mock_row2 = mock("row2")
     mock_input = mock("input")
 
-    JobLogItem.should_receive(:create).and_return(stub('job_log1', :id=>'abc123', :update_attributes=>true))
-    JobLogItem.should_receive(:create).and_return(stub('job_log2', :id=>'def456', :update_attributes=>true))
+    log1 =JobLogItem.create
+    log2 =JobLogItem.create
+
+    JobLogItem.should_receive(:new).and_return(log1)
+    JobLogItem.should_receive(:new).and_return(log2)
     mock_queue = mock('queue')
     Carrot.should_receive(:queue).twice.with('reify_each_spreadsheet_row_job').and_return(mock_queue)
-    mock_queue.should_receive(:publish).with('abc123')
-    mock_queue.should_receive(:publish).with('def456')
+    mock_queue.should_receive(:publish).with(log1.id)
+    mock_queue.should_receive(:publish).with(log2.id)
     job.enqueue_collection(ReifyEachSpreadsheetRowJob, [mock_row1, mock_row2], mock_input)
     job.status.should == 'PROCESSING'
   end

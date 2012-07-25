@@ -1,2 +1,3 @@
 Replace roo with rubyXL: https://github.com/gilt/rubyXL
 Constrain models and nodes into pools.
+Sign in should store full name in the identity

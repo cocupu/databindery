@@ -1,9 +1,11 @@
 require 'spec_helper'
 
 describe JobLogItem do
-  it "should have status" do
-    @job_log_item = JobLogItem.create(:status =>'NEW')
+  it "should have status, data and name" do
+    @job_log_item = JobLogItem.create(:status =>'NEW', :data=>'7', :name=>DecomposeSpreadsheetJob.to_s)
     @job_log_item.status.should == 'NEW'
+    @job_log_item.data.should == '7'
+    @job_log_item.name.should == 'DecomposeSpreadsheetJob'
   end
   
   it "should have parents and children" do
@@ -22,6 +24,10 @@ describe JobLogItem do
     @conc.should_receive(:member_finished)
     @child1.update_attributes(:status => 'FAILED')
     @child1.status.should == 'FAILED'
+  end
+
+  it "should have data" do
+    
   end
   describe ".create" do
     subject {JobLogItem.create }

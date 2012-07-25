@@ -3,8 +3,8 @@ class CreateJobLogItems < ActiveRecord::Migration
     create_table :job_log_items do |t|
       t.string :status
       t.string :name
-      t.string :message
-      t.string :data
+      t.text :message
+      t.text :data
       t.integer :parent_id
       t.string :type  #For single table inheritance
  

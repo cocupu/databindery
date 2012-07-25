@@ -19,9 +19,9 @@ class ChattelsController < ApplicationController
     #TODO check to see if this is a valid spreadsheet.
     @log = JobLogItem.create(:status=>"READY", :name=>DecomposeSpreadsheetJob.to_s, :data=>@chattel.id)
     q = Carrot.queue('decompose_spreadsheet')
-    q.publish(@log.key);
+    q.publish(@log.id);
 
-    redirect_to describe_chattel_path(@chattel, :log=>@log.key)
+    redirect_to describe_chattel_path(@chattel, :log=>@log.id)
   end
 
   def describe

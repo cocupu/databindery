@@ -17,8 +17,9 @@ class ConcurrentJob < JobLogItem
     self.status = "PROCESSING"
     save!
     per_job_data.each do |data|
-puts "DATA IS #{data}"
-      log = JobLogItem.create(:status=>"READY", :name=>job_class.to_s, :parent=>self, :data=>data)
+      log = JobLogItem.new(:status=>"READY", :name=>job_class.to_s, :data=>data)
+      log.parent = self
+      log.save!
       ###Typically ReifyEachSpreadsheetRow job
       job_class.new(data, all_job_data, log).enqueue
       q = Carrot.queue(job_class.to_s.underscore)
@@ -28,9 +29,7 @@ puts "DATA IS #{data}"
 
   ## A callback so the child jobs can report in.
   def member_finished
-puts "INVOKED on #{self.id}"
     ## Check to see if all children are finished.
-    #if JobLogItem.find_by_index(:parent_id, self.id).in(:status=>['READY', 'PROCESSING', 'ENQUEUE']).count > 0
     if count_children_with_status(['READY', 'PROCESSING', 'ENQUEUE']) > 0
       self.update_attributes(:status => "PROCESSING") if status != 'PROCESSING'
       return
