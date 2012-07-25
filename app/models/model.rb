@@ -1,9 +1,14 @@
 class Model < ActiveRecord::Base
-  #'fields' is already a method in a mongoid document, so it's a poor choice
-  #many :m_fields, :class_name=>"Field"
   serialize :fields, ActiveRecord::Coders::Hstore
 
+  after_initialize :init
+
+  validates :name, :presence=>true
   has_many :instances, :class_name=>'Node'
+
+  def init
+    self.fields ||= {}
+  end
 
   def index
     ## only index the most recent version of each node

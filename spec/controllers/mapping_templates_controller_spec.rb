@@ -11,14 +11,12 @@ describe MappingTemplatesController do
 
       post :create, :worksheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
       assigns[:mapping_template].row_start.should == 2
-      assigns[:mapping_template].models.first.name.should == 'Talk'
-      assigns[:mapping_template].models.first.field_mappings.size.should == 2
-      assigns[:mapping_template].models.first.field_mappings[0].label.should == 'File Name'
-      assigns[:mapping_template].models.first.field_mappings[0].source.should == 'A'
-      assigns[:mapping_template].models.first.field_mappings[1].label.should == 'Title'
-      assigns[:mapping_template].models.first.field_mappings[1].source.should == 'C'
+      model = Model.find(assigns[:mapping_template].models.keys.first)
       Model.count.should == 1
-      Model.first.fields.values.should include("File Name", "Title")
+      model.fields.should == {'file_name' => "File Name", 'title' => "Title"}
+      model.name.should == 'Talk'
+      mapping = assigns[:mapping_template].models[model.id]
+      mapping[:field_mappings].should == {'A' =>'file_name', 'C'=>'title'}
 
       response.should redirect_to(:action=>'show', :id=>assigns[:mapping_template].id)
     end
@@ -27,7 +25,6 @@ describe MappingTemplatesController do
 
       post :create, :worksheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
       assigns[:mapping_template].row_start.should == 2
-      assigns[:mapping_template].models.first.errors[:name].should == ["can't be blank"]
       Model.count.should == 0
       response.should be_success
       flash[:error].should == ["Name can't be blank"]
