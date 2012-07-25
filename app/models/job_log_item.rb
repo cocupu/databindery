@@ -1,6 +1,7 @@
 class JobLogItem < ActiveRecord::Base
   belongs_to :parent, :class_name=>'JobLogItem'
   belongs_to :spreadsheet_row
+  default_scope order("updated_at desc")
 
   serialize :data
   attr_accessible :status, :data, :name

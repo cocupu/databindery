@@ -18,7 +18,7 @@
         %span{:class=>'label ' + j.status.downcase}=j.status
 
 -if count > 10 
-  and #{count - 10} more
+  and #{link_to "#{count - 10} more", jobs_path}
 
 %h3 Data Models
 %ul
