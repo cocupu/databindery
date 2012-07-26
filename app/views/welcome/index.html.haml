@@ -2,11 +2,11 @@
   Welcome to Collect, Curate, Publish.
 
 .row
-  .span9
+  .span7
     %p Our goal is to enable an ecosystem of data usage and to encourage data-driven discourse in the pursuit of knowledge, innovation and happiness.  This platform gives you the shortest path between Collecting and Publishing data while providing the necessary tools for Curating, controlling access and tracking usage.
 
     %p CoCuPu frees data from spreadsheets and Document-centric systems like Sharepoint by allowing you to Collect arbitrary files into a pool, spawn structured data files (spreadsheets, xml, etc.) into a web of linked data, build connections between all the contents, and publish access-controlled exhibits with data-centric search interfaces and webservice APIs.  
-  .span6.offset1
+  .span3.offset1
 
     %h3 Get started today!
     =form_for LoginCredential.new, :url=>login_credential_registration_path  do |f|
@@ -17,7 +17,7 @@
       = f.password_field :password, :placeholder=>"Password", :class=>'' 
       %br
       %br
-      %button.btn.large.primary{:type=>"submit"} Sign Up
+      %button.btn.large.btn-primary{:type=>"submit"} Sign Up
 
 %section
   .page-header

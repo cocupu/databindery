@@ -5,7 +5,7 @@
  *= require_self
  * ----> Note the missing = require_tree 
  *= require demo_table.css
- *= require bootstrap-1.4.0.min.css 
+ *= require twitter/bootstrap
  *= require main
  *= require exhibits
  *= require model_instances

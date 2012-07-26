@@ -8,9 +8,26 @@ body {
 
 }
 
+/* The white background content wrapper */
+.content {
+  background-color: #fff;
+  padding: 20px;
+  margin: 0 -20px 20px 0; /* negative indent the amount of the padding to maintain the grid system */
+  -webkit-border-radius: 0 0 6px 6px;
+     -moz-border-radius: 0 0 6px 6px;
+          border-radius: 0 0 6px 6px;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+     -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+          box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+
+
+
+
 section {
   padding-top: 60px;
 }
+
 .masthead {
   background-color: #f5f5f5;
   padding: 20px 20px 10px;
@@ -31,29 +48,8 @@ section {
     column-gap: 22px;  
 }  
 
-.title_image {
-  margin-left:auto;
-  margin-right:auto;
-  display: block;
-  background-color: #8DB437;
-  -webkit-box-shadow: rgba(0,0,0,0.07) 0 3px 2px inset;
-  @include rounded(18px);
-  padding-top: 3px;
-  padding-right: 10px;
-}
 
-.main {
-  width: 1024px;
-  margin-left:auto;
-  margin-right:auto;
-  margin-top: 20px;
-}
-
-a {
-  text-decoration: none;
-}
-
-.group {
+.mapping-template {
   border: 1px solid gray;
   @include rounded(4px);
   margin-bottom: 20px;

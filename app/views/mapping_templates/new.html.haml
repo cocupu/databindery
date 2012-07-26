@@ -1,6 +1,6 @@
 - content_for :page_name do
   Create a data model for the worksheet:
-=form_for( @mapping_template, :url=>mapping_templates_path(:worksheet_id=>@worksheet), :class=>'group') do |f|
+=form_for( @mapping_template, :url=>mapping_templates_path(:worksheet_id=>@worksheet), :class=>'mapping-template') do |f|
   =flash[:error]
   .clearfix
     =f.label :row_start, 'Data Begins on row: '
@@ -12,7 +12,7 @@
   .clearfix
     = add_child_link 'New model', :models, f.object_id
   .clearfix
-    =f.submit "Continue", :class=>"btn primary" 
+    =f.submit "Continue", :class=>"btn btn-primary" 
   .clearfix
     %div{:id=>"models_#{f.object_id}_fields_template", :style=>'display:none'}
       = render :partial=>'model', :locals=>{:root=>"mapping_template[models_attributes][new_models]"} 

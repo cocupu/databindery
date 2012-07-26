@@ -4,7 +4,7 @@
 %ul
   -Exhibit.all.each do |e|
     %li=link_to e.title, exhibit_path(e)
-=link_to "Create a new exhibit", new_exhibit_path, :class=>'btn primary small'
+=link_to "Create a new exhibit", new_exhibit_path, :class=>'btn btn-primary small'
 
 %h3 Jobs
 -count = JobLogItem.count
