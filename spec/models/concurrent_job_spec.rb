@@ -9,8 +9,8 @@ describe ConcurrentJob do
 
   it "should enqueue_collection" do
     job = ConcurrentJob.new()
-    mock_row1 = mock("row1")
-    mock_row2 = mock("row2")
+    mock_row1 = mock("row1", :id=>123)
+    mock_row2 = mock("row2", :id=>235)
 
     log1 =JobLogItem.create
     log2 =JobLogItem.create
@@ -21,7 +21,7 @@ describe ConcurrentJob do
     Carrot.should_receive(:queue).twice.with('reify_each_spreadsheet_row_job').and_return(mock_queue)
     mock_queue.should_receive(:publish).with(log1.id)
     mock_queue.should_receive(:publish).with(log2.id)
-    job.enqueue_collection(ReifyEachSpreadsheetRowJob, [mock_row1, mock_row2], {:template_id => 7})
+    job.enqueue_collection(ReifyEachSpreadsheetRowJob, [mock_row1, mock_row2], {:template_id => 7, :pool_id=>5})
     job.status.should == 'PROCESSING'
   end
   describe "count_children_with_status" do

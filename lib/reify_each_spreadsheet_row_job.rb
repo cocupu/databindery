@@ -1,11 +1,15 @@
 ## A delayed job that enqueues one child job for each row in the spreadsheet.
-class ReifyEachSpreadsheetRowJob < Struct.new(:row, :template, :log)
+class ReifyEachSpreadsheetRowJob < Struct.new(:log)
 
   def enqueue
     log.update_attributes(:status => 'ENQUEUE')
   end
 
   def perform
+    logger.debug "Reify data: #{log.data}"
+    row = SpreadsheetRow.find(log.data[:id])
+    template = MappingTemplate.find(log.data[:template_id])
+    pool = Pool.find(log.data[:pool_id])
     log.update_attributes(:status => 'PROCESSING')
     template.models.each do |model_id, model_tmpl|
       model = Model.find(model_id)
@@ -13,7 +17,7 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:row, :template, :log)
       model_tmpl[:field_mappings].each do |fm_source, field|
         vals[field] = row.values[fm_source.ord - 65]
       end
-      Node.create!(:model=>model, :data=>vals)
+      Node.create!(:model=>model, :pool=>pool, :data=>vals)
     end
   end
 

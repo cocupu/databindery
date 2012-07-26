@@ -6,10 +6,7 @@ require File.join(File.dirname(__FILE__), '../config/environment.rb')
 def work(payload)
     log = JobLogItem.find(payload)
     puts "Found log_item #{log}"
-    puts "it has a log: #{log.data}"
-    row = SpreadsheetRow.find(log.data[:id])
-    template = MappingTemplate.find(log.data[:template_id])
-    job = ReifyEachSpreadsheetRowJob.new(row, template, log)
+    job = ReifyEachSpreadsheetRowJob.new(log)
     begin
       job.perform
       job.success

@@ -4,13 +4,13 @@
       =link_to 'Collect Curate Publish', root_path, :class=>"brand"
       -if login_credential_signed_in?
         %ul.nav
-          %li= link_to("Log Out",  destroy_user_session_path)
+          %li= link_to("Log Out",  signout_path)
       -else
         %ul.nav
           %li{:class=>controller_name == 'welcome' ? 'active' : ''}= link_to('Home', root_path)
           %li= link_to('About', '#about')
           %li= link_to('Contact', '#contact')
-        =form_for LoginCredential.new, :url=>user_session_path, :html=>{:class=>"navbar-form pull-right"} do |f|
+        =form_for LoginCredential.new, :url=>signin_path, :html=>{:class=>"navbar-form pull-right"} do |f|
           = f.email_field :email, :placeholder=>"E-Mail", :class=>'input-small', :id=>'top_login_email' 
           = f.password_field :password, :placeholder=>"Password", :class=>'input-small', :id=>'top_login_password' 
           %button.btn{:type=>"submit"} Sign in

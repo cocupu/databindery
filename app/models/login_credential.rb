@@ -7,5 +7,13 @@ class LoginCredential < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me
 
+  has_many :identities, :dependent => :destroy
+
+  after_create :create_identity
+
+  def create_identity
+    Identity.create!(:login_credential=>self)
+  end
+
 
 end

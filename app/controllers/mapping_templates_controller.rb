@@ -1,5 +1,7 @@
 class MappingTemplatesController < ApplicationController
   layout 'full_width'
+  before_filter :authenticate_login_credential!
+
 
   def new
     @worksheet = Worksheet.find(params[:mapping_template][:worksheet_id])
@@ -19,7 +21,7 @@ class MappingTemplatesController < ApplicationController
       return
     end
     @mapping_template.save!
-    @worksheet.reify(@mapping_template)
+    @worksheet.reify(@mapping_template, current_pool)
     redirect_to @mapping_template
   end
 

@@ -20,12 +20,13 @@ describe Worksheet do
    
   end
   it "reify should initiate a ConcurrentJob" do
-    template = mock("template")
+    template = MappingTemplate.create!
+    pool = Pool.create!(owner: Identity.create!)
     ws = Worksheet.new()
     job = mock("job")
-    job.should_receive(:enqueue_collection).with(ReifyEachSpreadsheetRowJob, [], {:template_id=>template})
+    job.should_receive(:enqueue_collection).with(ReifyEachSpreadsheetRowJob, [], {:template_id=>template.id, :pool_id=>pool.id})
     ConcurrentJob.should_receive(:create).and_return(job)
-    ws.reify(template)
+    ws.reify(template, pool)
   end
 
 end

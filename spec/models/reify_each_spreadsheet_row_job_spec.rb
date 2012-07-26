@@ -4,21 +4,22 @@ describe ReifyEachSpreadsheetRowJob do
   before do
     ## database should be clean
     Node.count.should == 0 
-    #@field = Field.new(:label=>'Wheels')
     @model = Model.create(:name=>'Truck', :fields=>{'wheels' => 'Wheels'})
+    @template = MappingTemplate.new()
+    @template.models = {@model.id => {:field_mappings=> {'B' => 'wheels'}}}
+    @template.save!
+    @ss_row = SpreadsheetRow.create!(:values=>['one', 'two', 'three'])
+    @pool = Pool.create!(:owner=>Identity.create!)
+    @ticket = JobLogItem.new(:data=>{:id=>@ss_row.id, :template_id => @template.id, :pool_id => @pool.id})
   end
   it "should process" do
-    template = MappingTemplate.new()
-    template.models = {@model.id => {:field_mappings=> {'B' => 'wheels'}}}
-
-    job = ReifyEachSpreadsheetRowJob.new(SpreadsheetRow.new(:values=>['one', 'two', 'three']), template, JobLogItem.new)
+    job = ReifyEachSpreadsheetRowJob.new(@ticket)
     job.enqueue
     job.perform
     Node.count.should == 1
     created = Node.first
     created.model.should == @model
-puts "data #{created.data}"
-    created.data['wheels'].should == 'two'
+    created.data.should == {'wheels' => 'two'}
   end
 
 end

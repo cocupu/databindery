@@ -1,20 +1,24 @@
 require 'spec_helper'
 
 describe Node do
+  before :all do
+    @pool = Pool.create!(:owner=>Identity.create!)
+  end
   before do
     subject.model = Model.create(:name=>"Test Model")
   end
   it "should store a hash of data" do
     subject.data = {:foo =>'bar', 'boop' =>'bop'}
     subject.data.should == {:foo =>'bar', 'boop' =>'bop'}
-    subject.save!
   end
   it "should create a persistent_id when created" do
+    subject.pool = @pool
     subject.persistent_id.should be_nil
     subject.save!
     subject.persistent_id.should_not be_nil
   end
   it "should create a new version when it's changed" do
+    subject.pool = @pool
     subject.save!
     identity = Identity.create
     subject.update_attributes(:identity_id=>identity.id, :data=>{'boo'=>'bap'})
@@ -30,12 +34,15 @@ describe Node do
     instance = Node.new(:model=>model)
     instance.model.should == model
   end
-  it "should not be valid unless it has a model" do
+  it "should not be valid unless it has a model and pool" do
     instance = Node.new()
     instance.should_not be_valid
     instance.model = Model.create
+    instance.should_not be_valid
+    instance.pool = Pool.create
     instance.should be_valid
   end
+
 
   describe "with data" do
     before do

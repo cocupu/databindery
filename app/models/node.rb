@@ -1,8 +1,11 @@
 class Node < ActiveRecord::Base
   before_create :generate_uuid
   belongs_to :model
+  belongs_to :pool
+  validates :model, presence: true
+  validates :pool, presence: true
+
   serialize :data, ActiveRecord::Coders::Hstore
-  validates_presence_of :model
 
 
   def generate_uuid

@@ -22,8 +22,7 @@ class ConcurrentJob < JobLogItem
       log.parent = self
       log.save!
       ###Typically ReifyEachSpreadsheetRow job
-      job_class.new(object_list, all_job_data, log).enqueue
-puts "Queuing #{log.id}"
+      job_class.new(log).enqueue
       q = Carrot.queue(job_class.to_s.underscore)
       q.publish(log.id);
     end

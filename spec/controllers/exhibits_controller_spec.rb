@@ -65,7 +65,7 @@ describe ExhibitsController do
       @model.fields = {'f1' => 'Field good'}
       @model.save
 
-      @instance = Node.create(:model=>@model)
+      @instance = Node.create!(model: @model, pool: Pool.create!(owner: Identity.create!))
       @instance.data = {'f1' => 'bazaar'}
       @instance.save
       @model.index

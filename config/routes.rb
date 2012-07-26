@@ -1,9 +1,10 @@
 Cocupu::Application.routes.draw do
 
-  devise_for :login_credentials do
-    get 'signin' => 'devise/sessions#new', :as => :new_user_session
-    post 'signin' => 'devise/sessions#create', :as => :user_session
-    get 'signout' => 'devise/sessions#destroy', :as => :destroy_user_session
+  devise_for :login_credentials 
+  devise_scope :login_credentials  do
+    get 'signin' => 'devise/sessions#new'#, :as => :new_user_session
+    post 'signin' => 'devise/sessions#create'#, :as => :user_session
+    get 'signout' => 'devise/sessions#destroy'#, :as => :destroy_user_session
   end
   
 
