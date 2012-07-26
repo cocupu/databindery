@@ -8,3 +8,4 @@ no method show for models controller. used on view/mapping_templates/show
 exhibit should show "type" facet by default?
 exhibit should be able to constrain by "type"?
 exhibits aren't finding anything.
+pools

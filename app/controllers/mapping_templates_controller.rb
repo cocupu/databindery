@@ -3,7 +3,7 @@ class MappingTemplatesController < ApplicationController
 
   def new
     @worksheet = Worksheet.find(params[:mapping_template][:worksheet_id])
-    @mapping_template = MappingTemplate.new()
+    @mapping_template = MappingTemplate.new(:models=>[{:field_mappings=>{''=>''}}])
   end
 
   def create

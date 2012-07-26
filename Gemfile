@@ -1,14 +1,6 @@
 source 'http://rubygems.org'
 
-#gem 'rails', '3.2.6'
 gem 'rails', '3.2.7.rc1'
-
-# Bundle edge Rails instead:
-# gem 'rails', :git => 'git://github.com/rails/rails.git'
-# gem 'journey', :git => 'https://github.com/rails/journey.git'
-# 
-# gem 'active_record_deprecated_finders', :git => 'git://github.com/rails/active_record_deprecated_finders.git'
-
 
 gem 'json'
 

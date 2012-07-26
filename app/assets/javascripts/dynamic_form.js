@@ -4,7 +4,6 @@ $(function() {
     var id = obj.attr('data-index');
     var content = $('#' + assoc + '_' + id + '_fields_template').html();
     var regexp = new RegExp('new_' + assoc, 'g');
-console.log("looking for new_" + assoc);
     var new_id = new Date().getTime();
     return content.replace(regexp, new_id);
   }

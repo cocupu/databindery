@@ -56,7 +56,7 @@ describe MappingTemplatesController do
       assigns[:worksheet].should == @one
       assigns[:mapping_template].should_not be_nil
       assigns[:mapping_template].models.length.should == 1
-      assigns[:mapping_template].models[0].field_mappings.length.should == 1
+      assigns[:mapping_template].models[0][:field_mappings].should == {''=>''}
       response.should be_success
     end
   end

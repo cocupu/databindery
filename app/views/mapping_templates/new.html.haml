@@ -7,14 +7,14 @@
     .input
       =f.select :row_start, [0, 1, 2, 3, 4, 5, 6], {:selected=>2}, {:class=>'xsmall'}
   .clearfix
-    =f.object.models.each_with_index do |m, n|
+    -f.object.models.each_with_index do |model, n|
       = render :partial=>'model', :locals=>{:model => model, :root=>"mapping_template[models_attributes][#{n}]" }
   .clearfix
     = add_child_link 'New model', :models, f.object_id
   .clearfix
-    =f.submit "Continue", :class=>"btn btn_primary" 
+    =f.submit "Continue", :class=>"btn primary" 
   .clearfix
     %div{:id=>"models_#{f.object_id}_fields_template", :style=>'display:none'}
-      = render :partial=>'model', :locals=>{:root=>"mapping_template[models_attributes][new_models]"} #new_child_fields_template f, :models, :tag=>:ul, :index=>f.object_id
+      = render :partial=>'model', :locals=>{:root=>"mapping_template[models_attributes][new_models]"} 
 =render :partial=>'spreadsheet_rows/table'
 
