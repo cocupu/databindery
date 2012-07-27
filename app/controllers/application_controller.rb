@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   ## Just assuming the first identity for now.  Later we may allow the user to pick the identity they want to use.
   def current_identity
-    current_login_credential.identities.first
+    current_user.identities.first
   end
 
   ## Just assuming the first pool for now.  Later we may allow the user to pick the pool to use.

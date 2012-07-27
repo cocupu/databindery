@@ -10,7 +10,7 @@ describe MappingTemplatesController do
       it "should not create" do
         Worksheet.any_instance.should_receive(:reify).never
         post :create, :worksheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
-        response.should redirect_to new_login_credential_session_path
+        response.should redirect_to new_user_session_path
         flash[:alert].should == "You need to sign in or sign up before continuing."
       end
     end

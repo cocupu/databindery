@@ -7,10 +7,8 @@
     .container
       .content
         =render :partial=>'layouts/page_header'
-        .row
-          .span16
-            =render :partial=>'layouts/messages'
-            = yield 
+        =render :partial=>'layouts/messages'
+        = yield 
       %footer
         %p &copy; Collect Curate Publish 2012
 

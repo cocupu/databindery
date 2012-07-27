@@ -1,11 +1,15 @@
 - content_for :page_name do
   Create a data model for the worksheet:
-=form_for( @mapping_template, :url=>mapping_templates_path(:worksheet_id=>@worksheet), :class=>'mapping-template') do |f|
-  =flash[:error]
-  .clearfix
-    =f.label :row_start, 'Data Begins on row: '
-    .input
+=form_for( @mapping_template, :url=>mapping_templates_path(:worksheet_id=>@worksheet), :html=>{:class=>'form-horizontal'}) do |f|
+  .control-group
+    =f.label :file_type, 'This file is an example of a(n):', class: "control-label"
+    .controls
+      =f.text_field :file_type
+  .control-group
+    =f.label :row_start, 'Data Begins on row:', class: "control-label"
+    .controls
       =f.select :row_start, [0, 1, 2, 3, 4, 5, 6], {:selected=>2}, {:class=>'xsmall'}
+  =render :partial=>'spreadsheet_preview'
   .clearfix
     -f.object.models.each_with_index do |model, n|
       = render :partial=>'model', :locals=>{:model => model, :root=>"mapping_template[models_attributes][#{n}]" }
@@ -16,5 +20,4 @@
   .clearfix
     %div{:id=>"models_#{f.object_id}_fields_template", :style=>'display:none'}
       = render :partial=>'model', :locals=>{:root=>"mapping_template[models_attributes][new_models]"} 
-=render :partial=>'spreadsheet_rows/table'
 

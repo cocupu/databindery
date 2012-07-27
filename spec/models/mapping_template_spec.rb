@@ -40,4 +40,11 @@ describe MappingTemplate do
       @template.models[model.id][:field_mappings]['C'].should == 'title'
     end
   end
+
+  describe "file_type" do
+    it "should have a file_type" do
+      subject.file_type= "foo"
+      subject.file_type.should == "foo"
+    end
+  end
 end

@@ -1,9 +1,10 @@
 class MappingTemplatesController < ApplicationController
   layout 'full_width'
-  before_filter :authenticate_login_credential!
+  before_filter :authenticate_user!
 
 
   def new
+    raise ArgumentError unless params[:mapping_template] && params[:mapping_template][:worksheet_id]
     @worksheet = Worksheet.find(params[:mapping_template][:worksheet_id])
     @mapping_template = MappingTemplate.new(:models=>[{:field_mappings=>{''=>''}}])
   end

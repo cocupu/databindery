@@ -11,3 +11,25 @@ li.spacer {
 select.xsmall {
   width: 50px;
 }
+
+#data {
+  border-collapse: collapse;
+  border: 2px solid black;
+  td, th {
+    border-left: 1px solid #888;
+    border-right: 1px solid #888;
+    padding: 2px;
+  }
+  thead {
+    background-color: #aaa;
+  }
+  tbody {
+    tr {
+      background-color: #ccc;
+    }
+    tr:nth-child(2n+1) {
+      background-color: #f0f0f0;
+    }
+  }
+  
+}

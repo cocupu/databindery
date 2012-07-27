@@ -258,7 +258,8 @@ CREATE TABLE mapping_templates (
     row_start integer,
     models text,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    file_type character varying(255)
 );
 
 
@@ -775,3 +776,5 @@ INSERT INTO schema_migrations (version) VALUES ('20120724192025');
 INSERT INTO schema_migrations (version) VALUES ('20120724192751');
 
 INSERT INTO schema_migrations (version) VALUES ('20120724200226');
+
+INSERT INTO schema_migrations (version) VALUES ('20120727173145');
