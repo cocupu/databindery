@@ -1,31 +1,34 @@
 %fieldset
-  .clearfix
-    =label_tag "#{root}[name]", 'Model Name: '
-    .input
+  .control-group
+    =label_tag "#{root}[name]", 'Each Row is a(n):', :class=>"control-label"
+    .controls
       =text_field_tag "#{root}[name]"
 
-  .clearfix
-    =label "#{root}[filter]", 'Filter Row:'
-    .input
-      =check_box_tag "#{root}[filter]" 
+  /*.clearfix*/
+  /*  =label "#{root}[filter]", 'Filter Row:'*/
+  /*  .input*/
+  /*    =check_box_tag "#{root}[filter]" */
+
+  /*.clearfix*/
+  /*  .input*/
+  /*    When column*/
+  /*    =select_tag( "#{root}[filter_source]", options_for_select( 0.upto(@worksheet.rows[0].values.size).map{|n| (n+65).chr}, {:include_blank=>true}), {:class=>'xsmall'})*/
+  /*    =select_tag("#{root}[filter_predicate]", options_for_select({'is present' =>'present', 'is blank' => 'blank', 'is equal to:' =>'equal' }))*/
+  /*    =text_field_tag "#{root}[filter_constant]"*/
 
   .clearfix
-    .input
-      When column
-      =select_tag( "#{root}[filter_source]", options_for_select( 0.upto(@worksheet.rows[0].values.size).map{|n| (n+65).chr}, {:include_blank=>true}), {:class=>'xsmall'})
-      =select_tag("#{root}[filter_predicate]", options_for_select({'is present' =>'present', 'is blank' => 'blank', 'is equal to:' =>'equal' }))
-      =text_field_tag "#{root}[filter_constant]"
-
-  .clearfix
-    Model fields:
+    Meaning of columns:
     %table.model-fields
       %tr
+        %th Column:
         %th Field Name:
-        %th Source Column:
       - if model
-        -model[:field_mappings].each_with_index do |mapping, n| 
-          = render :partial=>'field_mapping', :locals=>{:mapping=>mapping, :root=>"#{root}[field_mappings_attributes][#{n}]"}
+        -n = 0 
+        -model[:field_mappings].each do |key, value| 
+          = render :partial=>'field_mapping', :locals=>{:label_val=>value, :column=>key, :root=>"#{root}[field_mappings_attributes][#{n}]"}
+          - n += 1
     =add_child_link 'New field', :field_mappings, '1234' 
+    /* field template */
     %table{:id=>"field_mappings_#{1234}_fields_template", :style=>'display:none'}
-      =render :partial => 'field_mapping', :locals=>{:mapping=>{}, :root=>"#{root}[field_mappings_attributes][new_field_mappings]"}            
+      =render :partial => 'field_mapping', :locals=>{:label_val=>'', :column=>'', :root=>"#{root}[field_mappings_attributes][new_field_mappings]"}            
 

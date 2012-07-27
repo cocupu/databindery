@@ -18,15 +18,25 @@ class MappingTemplate < ActiveRecord::Base
       model = Model.find_or_initialize_by_name(value[:name])
       
       mapping = {} 
+      original_mapping = {}
       value[:field_mappings_attributes].each_value do |map|
-        next unless map[:label].present?
         field_code = map[:label].downcase.gsub(/\s+/, '_')
-        model.fields[field_code] = map[:label]
-        mapping[map[:source]] = field_code
+        unless field_code.blank? 
+          model.fields[field_code] = map[:label]
+          mapping[map[:source]] = field_code 
+        end
+        original_mapping[map[:source]] = map[:label]
       end
-      model.save!
+      begin
+        model.save!
+      rescue  ActiveRecord::RecordInvalid => e
+        # the model didn't save, so use '' as the key if that's the case
+        models[''] ||= {}
+        models[''][:field_mappings] = original_mapping  # Alert: this overwrites the old map if it existed
+        raise e
+      end
       models[model.id] ||= {}
-      models[model.id][:field_mappings] = mapping  # Alert: this overwrites the old map if it existed
+      models[model.id][:field_mappings] = mapping.delete_if { |k, v| v.blank? } # Alert: this overwrites the old map if it existed
     end
   end
 

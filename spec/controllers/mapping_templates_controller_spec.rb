@@ -33,11 +33,12 @@ describe MappingTemplatesController do
       it "should raise errors if no model name was supplied" do
         Worksheet.any_instance.should_receive(:reify).never
 
-        post :create, :worksheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
+        post :create, :worksheet_id=>@ss.id, :mapping_template=>{"row_start"=>"2", :models_attributes=>{'0'=>{:name=>"", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>"D"}}}}}
         assigns[:mapping_template].row_start.should == 2
         Model.count.should == 0
         response.should be_success
-        flash[:error].should == ["Name can't be blank"]
+        flash[:alert].should == "Name can't be blank"
+        assigns[:mapping_template].models[''][:field_mappings].should == {"A" => "File Name", "C"=>"Title", "D"=>''}
       end
     end
   end
@@ -58,10 +59,7 @@ describe MappingTemplatesController do
 
   describe 'new' do
     before do
-      @spreadsheet = Cocupu::Spreadsheet.new()
-      @one = Worksheet.create()
-      @spreadsheet.worksheets << @one
-      @spreadsheet.save
+      @one = FactoryGirl.create :worksheet
       sign_in FactoryGirl.create :login 
     end
     it "should be success" do
@@ -69,7 +67,8 @@ describe MappingTemplatesController do
       assigns[:worksheet].should == @one
       assigns[:mapping_template].should_not be_nil
       assigns[:mapping_template].models.length.should == 1
-      assigns[:mapping_template].models[0][:field_mappings].should == {''=>''}
+      vals = @one.rows[0].values
+      assigns[:mapping_template].models[''][:field_mappings].should == {"A"=>vals[0], "B"=>vals[1], "C"=>vals[2], "D"=>vals[3], "E"=>vals[4]}
       response.should be_success
     end
   end

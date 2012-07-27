@@ -21,14 +21,12 @@ RSpec.configure do |config|
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
 
+  config.use_transactional_fixtures = true
+
+
   # Drop all columns before the test run.
   config.before(:all) do
     Cocupu.clear_index 
-  end
-  config.before(:each) do
-    [Node, Model, JobLogItem, LoginCredential].each do |collection|
-      collection.destroy_all
-    end
   end
 end
 
