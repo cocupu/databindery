@@ -6,7 +6,13 @@ FactoryGirl.define do
     password 'notblank'
   end
 
+  factory :spreadsheet, :class=>Cocupu::Spreadsheet do
+
+  end
+
   factory :worksheet do
+    spreadsheet 
+    order 0
     after(:create) do |worksheet, evaluator|
       FactoryGirl.create_list(:spreadsheet_row, 5, worksheet: worksheet)
     end

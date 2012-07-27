@@ -5,6 +5,10 @@ describe Worksheet do
     @ws = Worksheet.new(:name=>"Fred")
     @ws.name.should == 'Fred'
   end
+  it "should have an order" do
+    @ws = Worksheet.new(:order=>3)
+    @ws.order.should == 3
+  end
   it "should belong to a spreadsheet" do
     @spreadsheet = Cocupu::Spreadsheet.create
     @ws = Worksheet.new(:name=>"Fred")

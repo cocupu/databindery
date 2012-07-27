@@ -16,6 +16,7 @@ describe 'as a signed in user' do
   it 'creates a mapping' do
     page.should have_selector('table#data')
     fill_in "This file is an example of a(n):", with: "Data Logbook"
+    page.should have_content 'You are using Worksheet 1 of 1 worksheet'
     
   end
 

@@ -12,6 +12,7 @@ body {
 .content {
   background-color: #fff;
   padding: 20px;
+  min-height: 400px;
   margin: 0 -20px 20px 0; /* negative indent the amount of the padding to maintain the grid system */
   -webkit-border-radius: 0 0 6px 6px;
      -moz-border-radius: 0 0 6px 6px;

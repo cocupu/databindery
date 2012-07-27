@@ -434,7 +434,8 @@ CREATE TABLE worksheets (
     name character varying(255),
     spreadsheet_id integer,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    "order" integer
 );
 
 
@@ -778,3 +779,5 @@ INSERT INTO schema_migrations (version) VALUES ('20120724192751');
 INSERT INTO schema_migrations (version) VALUES ('20120724200226');
 
 INSERT INTO schema_migrations (version) VALUES ('20120727173145');
+
+INSERT INTO schema_migrations (version) VALUES ('20120727191054');

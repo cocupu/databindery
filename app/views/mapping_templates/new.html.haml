@@ -5,6 +5,7 @@
     =f.label :file_type, 'This file is an example of a(n):', class: "control-label"
     .controls
       =f.text_field :file_type
+  You are using Worksheet #{@worksheet.order + 1} of #{pluralize(@worksheet.spreadsheet.worksheets.count, 'worksheet')}
   .control-group
     =f.label :row_start, 'Data Begins on row:', class: "control-label"
     .controls

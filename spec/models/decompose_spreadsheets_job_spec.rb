@@ -32,9 +32,10 @@ describe DecomposeSpreadsheetJob do
     sheets = Cocupu::Spreadsheet.find(@chattel.id).worksheets
     sheets.count.should == 4
     datasheet = sheets.select{|s| s.name == 'datasheet'}.first
+    datasheet.order.should == 0
     datasheet.rows.count.should == 39 
     minerals = sheets.select{|s| s.name == 'calculation sheet _ minerals'}.first
-puts "Minerals #{minerals.rows}"
+    minerals.order.should == 1
 
     aluminum = minerals.rows.select{|r| r.row_number == 3}.first
     aluminum.values.should == 

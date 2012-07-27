@@ -7,16 +7,16 @@ class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
     tmpfile = file = Tempfile.new(['cocupu', '.'+ss.attachment_extension], :encoding => 'ascii-8bit')
     tmpfile.write(ss.attachment.read)
     spreadsheet = Cocupu::Spreadsheet.detect_type(ss).new(tmpfile.path)
-    spreadsheet.sheets.each do |worksheet|
-      ingest_worksheet(spreadsheet, worksheet, ss)
+    spreadsheet.sheets.each_with_index do |worksheet, index|
+      ingest_worksheet(spreadsheet, worksheet, ss, index)
     end
     ss.save #Saves associated worksheets
     tmpfile.close
     tmpfile.unlink
   end
 
-  def ingest_worksheet(spreadsheet, worksheet, file)
-    sheet = Worksheet.create(:name=>worksheet)
+  def ingest_worksheet(spreadsheet, worksheet, file, index)
+    sheet = Worksheet.create(:name=>worksheet, :order=>index)
     spreadsheet.first_row(worksheet).upto(spreadsheet.last_row(worksheet)) do |row_idx|
       ingest_row(spreadsheet, worksheet, sheet, row_idx)
     end

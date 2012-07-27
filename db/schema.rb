@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120727173145) do
+ActiveRecord::Schema.define(:version => 20120727191054) do
 
   create_table "change_sets", :force => true do |t|
     t.hstore   "data"
@@ -125,6 +125,7 @@ ActiveRecord::Schema.define(:version => 20120727173145) do
     t.integer  "spreadsheet_id"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
+    t.integer  "order"
   end
 
   add_foreign_key "change_sets", "change_sets", :name => "change_sets_parent_id_fk", :column => "parent_id"
