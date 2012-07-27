@@ -6,7 +6,7 @@
         -1.upto(@worksheet.rows[0].values.size) do |col|
           %th=(col+64).chr
     %tbody
-      -@worksheet.rows.each do |row|
+      -@worksheet.rows[0..5].each do |row|
         %tr
           %td=row.row_number
           -row.values.each do |val|
@@ -16,11 +16,6 @@
               %td.wrappable=val
             -else 
               %td=val 
-
-  :javascript
-    $(document).ready(function() {
-      $('#data').dataTable();
-    } );
 
 -else
   Spreadsheet has not yet been processed
