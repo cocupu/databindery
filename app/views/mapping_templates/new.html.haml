@@ -11,17 +11,12 @@
     .controls
       =f.select :row_start, [0, 1, 2, 3, 4, 5, 6], {:selected=>2}, {:class=>'xsmall'}
   =render :partial=>'spreadsheet_preview'
-  .clearfix
-    -n = 0
-    -f.object.models.each do |model_id, model|
-      = render :partial=>'model', :locals=>{:model => model, :root=>"mapping_template[models_attributes][#{n}]" }
-      -n += 1
-  /*.clearfix*/
+  %br
+  -f.object.model_mappings.each_with_index do |model, n|
+    = render :partial=>'model', :locals=>{:model => model, :root=>"mapping_template[model_mappings_attributes][#{n}]" }
   /*  = add_child_link 'New model', :models, f.object_id*/
-  .clearfix
-    =f.submit "Continue", :class=>"btn btn-primary" 
-  .clearfix 
-    /* model template */
-    /*%div{:id=>"models_#{f.object_id}_fields_template", :style=>'display:none'}*/
-    /*  = render :partial=>'model', :locals=>{:root=>"mapping_template[models_attributes][new_models]"} */
+  =f.submit "Continue", :class=>"btn btn-primary" 
+  /* model template */
+  /*%div{:id=>"models_#{f.object_id}_fields_template", :style=>'display:none'}*/
+  /*  = render :partial=>'model', :locals=>{:root=>"mapping_template[model_mappings_attributes][new_models]"} */
 

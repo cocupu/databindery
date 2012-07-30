@@ -6,7 +6,7 @@ describe ReifyEachSpreadsheetRowJob do
     Node.count.should == 0 
     @model = Model.create(:name=>'Truck', :fields=>{'wheels' => 'Wheels'})
     @template = MappingTemplate.new()
-    @template.models = {@model.id => {:field_mappings=> {'B' => 'wheels'}}}
+    @template.model_mappings = [{:model_id=>@model.id, :field_mappings=> [{:source=>"B", :label=>"Wheels", :field=>"wheels"}, {:source=>"A", :label=>''}]}]
     @template.save!
     @ss_row = SpreadsheetRow.create!(:values=>['one', 'two', 'three'])
     @pool = Pool.create!(:owner=>Identity.create!)

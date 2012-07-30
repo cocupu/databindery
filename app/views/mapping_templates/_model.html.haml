@@ -16,19 +16,16 @@
   /*    =select_tag("#{root}[filter_predicate]", options_for_select({'is present' =>'present', 'is blank' => 'blank', 'is equal to:' =>'equal' }))*/
   /*    =text_field_tag "#{root}[filter_constant]"*/
 
-  .clearfix
-    Meaning of columns:
-    %table.model-fields
-      %tr
-        %th Column:
-        %th Field Name:
-      - if model
-        -n = 0 
-        -model[:field_mappings].each do |key, value| 
-          = render :partial=>'field_mapping', :locals=>{:label_val=>value, :column=>key, :root=>"#{root}[field_mappings_attributes][#{n}]"}
-          - n += 1
-    =add_child_link 'New field', :field_mappings, '1234' 
-    /* field template */
-    %table{:id=>"field_mappings_#{1234}_fields_template", :style=>'display:none'}
-      =render :partial => 'field_mapping', :locals=>{:label_val=>'', :column=>'', :root=>"#{root}[field_mappings_attributes][new_field_mappings]"}            
+  %h2 Meaning of columns:
+  %table.model-fields
+    %tr
+      %th Column:
+      %th Field Name:
+    - if model
+      -model[:field_mappings].each_with_index do |row, n| 
+        = render :partial=>'field_mapping', :locals=>{:row=>row, :parent=>root, :root=>"#{root}[field_mappings_attributes][#{n}]"}
+  =add_child_link 'New field', :field_mappings, '1234' 
+  /* field template */
+  %table{:id=>"field_mappings_#{1234}_fields_template", :style=>'display:none'}
+    =render :partial => 'field_mapping', :locals=>{:row=>{:source=>'', :value=>''}, :parent=>root, :root=>"#{root}[field_mappings_attributes][new_field_mappings]"}            
 

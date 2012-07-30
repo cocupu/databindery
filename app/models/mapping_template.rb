@@ -1,10 +1,10 @@
 class MappingTemplate < ActiveRecord::Base
-  serialize :models, Hash 
+  serialize :model_mappings, Array  # one row per model
 
   after_initialize :init
 
   def init
-    self.models ||= {}
+    self.model_mappings ||= []
   end
 
   def attributes=(attrs)
@@ -12,31 +12,29 @@ class MappingTemplate < ActiveRecord::Base
     super(attrs)
   end
 
-  def models_attributes=(attrs)
+  def model_mappings_attributes=(attrs)
     attrs.each_value do |value|
       #TODO constrain to pool
       model = Model.find_or_initialize_by_name(value[:name])
-      
       mapping = {} 
       original_mapping = {}
-      value[:field_mappings_attributes].each_value do |map|
+      model_mapping = {:field_mappings => value[:field_mappings_attributes].values, :name=>value[:name], :label=>value[:label]}
+      model_mapping[:field_mappings].each do |map|
         field_code = map[:label].downcase.gsub(/\s+/, '_')
         unless field_code.blank? 
           model.fields[field_code] = map[:label]
-          mapping[map[:source]] = field_code 
+          model.label= field_code if value[:label] == map[:source]
+          map[:field] = field_code
         end
-        original_mapping[map[:source]] = map[:label]
       end
       begin
         model.save!
       rescue  ActiveRecord::RecordInvalid => e
-        # the model didn't save, so use '' as the key if that's the case
-        models[''] ||= {}
-        models[''][:field_mappings] = original_mapping  # Alert: this overwrites the old map if it existed
+        model_mappings << model_mapping
         raise e
       end
-      models[model.id] ||= {}
-      models[model.id][:field_mappings] = mapping.delete_if { |k, v| v.blank? } # Alert: this overwrites the old map if it existed
+      model_mapping[:model_id] = model.id
+      model_mappings << model_mapping
     end
   end
 

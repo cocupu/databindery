@@ -6,16 +6,19 @@ class MappingTemplatesController < ApplicationController
   def new
     raise ArgumentError unless params[:mapping_template] && params[:mapping_template][:worksheet_id]
     @worksheet = Worksheet.find(params[:mapping_template][:worksheet_id])
-    mappings = {}
+    mappings = []
     header_row = @worksheet.rows[0] #this is a bad assumption
-    header_row.values.each_with_index { |value, n| mappings[(n+65).chr] = value }
-    @mapping_template = MappingTemplate.new(:models=>{''=>{:field_mappings=>mappings}})
+    header_row.values.each_with_index { |value, n| mappings << {:source=> (n+65).chr, :label => value }}
+    @mapping_template = MappingTemplate.new(:model_mappings=>[{:field_mappings=>mappings}])
   end
 
   def create
     @worksheet = Worksheet.find(params[:worksheet_id])
     @mapping_template = MappingTemplate.new()
-    params[:mapping_template][:models_attributes].delete("new_models")
+    params[:mapping_template][:model_mappings_attributes].each do |key, mma|
+      #remove template fields
+      mma['field_mappings_attributes'].delete('new_field_mappings')
+    end
     begin
       @mapping_template.attributes = params[:mapping_template]
     rescue ActiveRecord::RecordInvalid => e

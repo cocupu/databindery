@@ -2,11 +2,13 @@
   %table#data.scrollable
     %thead
       %tr
+        %td 1
         -@worksheet.rows[0].values.each do |row|
           %th=row
     %tbody
-      -@worksheet.rows[1..3].each do |row|
+      -@worksheet.rows[1..3].each_with_index do |row, n|
         %tr
+          %td=n+2
           -row.values.each do |val|
             -if val.nil?
               %td &nbsp; 

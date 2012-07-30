@@ -54,5 +54,4 @@ module Cocupu
     
 
   end
-  require 'cocupu'
 end

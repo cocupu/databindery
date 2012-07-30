@@ -256,7 +256,7 @@ ALTER SEQUENCE login_credentials_id_seq OWNED BY login_credentials.id;
 CREATE TABLE mapping_templates (
     id integer NOT NULL,
     row_start integer,
-    models text,
+    model_mappings text,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     file_type character varying(255)
@@ -291,7 +291,8 @@ CREATE TABLE models (
     name character varying(255),
     fields hstore,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    label character varying(255)
 );
 
 
@@ -781,3 +782,7 @@ INSERT INTO schema_migrations (version) VALUES ('20120724200226');
 INSERT INTO schema_migrations (version) VALUES ('20120727173145');
 
 INSERT INTO schema_migrations (version) VALUES ('20120727191054');
+
+INSERT INTO schema_migrations (version) VALUES ('20120730150229');
+
+INSERT INTO schema_migrations (version) VALUES ('20120730182459');

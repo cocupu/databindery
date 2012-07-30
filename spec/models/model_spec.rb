@@ -2,9 +2,13 @@ require 'spec_helper'
 
 describe Model do
   it "should have many fields" do
-    @model = Model.new()
-    @model.fields = {'one' => 'One'}
-    @model.fields['two'] = 'Two'
-    @model.fields['one'].should == "One"
+    subject.fields = {'one' => 'One'}
+    subject.fields['two'] = 'Two'
+    subject.fields['one'].should == "One"
+  end
+
+  it "should have a label" do
+    subject.label = "title"
+    subject.label.should == "title"
   end
 end

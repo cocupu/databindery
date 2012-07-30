@@ -1,7 +1,8 @@
 %tr
   %td
-    =column
-    =hidden_field_tag("#{root}[source]", column, :class=>'xsmall')
-  %td=text_field_tag "#{root}[label]", label_val
+    =row[:source]
+    =radio_button_tag("#{parent}[label]", 'true' )
+    =hidden_field_tag("#{root}[source]", row[:source], :class=>'xsmall')
+  %td=text_field_tag "#{root}[label]", row[:label]
 
 

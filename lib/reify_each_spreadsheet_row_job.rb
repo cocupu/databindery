@@ -11,17 +11,18 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:log)
     template = MappingTemplate.find(log.data[:template_id])
     pool = Pool.find(log.data[:pool_id])
     log.update_attributes(:status => 'PROCESSING')
-    template.models.each do |model_id, model_tmpl|
-      model = Model.find(model_id)
+    template.model_mappings.each do |model_tmpl|
+      model = Model.find(model_tmpl[:model_id])
       vals = {}
-      model_tmpl[:field_mappings].each do |fm_source, field|
-        vals[field] = row.values[fm_source.ord - 65]
+      model_tmpl[:field_mappings].each do |map|
+        next unless map[:field]
+        vals[map[:field]] = row.values[map[:source].ord - 65]
       end
       Node.create!(:model=>model, :pool=>pool, :data=>vals)
     end
   end
 
-  def success(job)
+  def success
     log.update_attributes(:status => 'SUCCESS')
   end
 
