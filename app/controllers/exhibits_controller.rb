@@ -57,6 +57,7 @@ class ExhibitsController < ApplicationController
     benchmark "get_search_results" do
       params = self.solr_search_params(user_params).merge(extra_controller_params)
       res = Cocupu.solr.get('select', :params=>params)
+puts "Params: #{params}"
       solr_response = force_to_utf8(res['response'])
       facet_fields = res['facet_counts']['facet_fields']
     end
