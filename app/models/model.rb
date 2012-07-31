@@ -6,6 +6,9 @@ class Model < ActiveRecord::Base
   validates :name, :presence=>true
   has_many :instances, :class_name=>'Node'
 
+  belongs_to :owner, class_name: "Identity", :foreign_key => 'identity_id'
+  validates :owner, presence: true
+
   def init
     self.fields ||= {}
   end

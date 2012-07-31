@@ -16,6 +16,9 @@ describe WelcomeController do
       before { sign_in FactoryGirl.create :login }
       subject { get :index }
       it { should render_template("dashboard") }
+      it "should assign models" do
+        assigns[:models].should == @my_model
+      end
     end
   end
 

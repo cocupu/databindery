@@ -292,7 +292,8 @@ CREATE TABLE models (
     fields hstore,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    label character varying(255)
+    label character varying(255),
+    identity_id integer
 );
 
 
@@ -661,6 +662,13 @@ CREATE UNIQUE INDEX index_login_credentials_on_reset_password_token ON login_cre
 
 
 --
+-- Name: index_models_on_identity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_models_on_identity_id ON models USING btree (identity_id);
+
+
+--
 -- Name: index_nodes_on_model_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -711,6 +719,14 @@ ALTER TABLE ONLY change_sets
 
 ALTER TABLE ONLY identities
     ADD CONSTRAINT identities_login_credential_id_fk FOREIGN KEY (login_credential_id) REFERENCES login_credentials(id);
+
+
+--
+-- Name: models_identity_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY models
+    ADD CONSTRAINT models_identity_id_fk FOREIGN KEY (identity_id) REFERENCES identities(id);
 
 
 --
@@ -786,3 +802,5 @@ INSERT INTO schema_migrations (version) VALUES ('20120727191054');
 INSERT INTO schema_migrations (version) VALUES ('20120730150229');
 
 INSERT INTO schema_migrations (version) VALUES ('20120730182459');
+
+INSERT INTO schema_migrations (version) VALUES ('20120731202229');
