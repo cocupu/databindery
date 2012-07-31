@@ -2,17 +2,7 @@ h1. CoCuPu
 
 UGH: https://github.com/rails/rails/pull/2948#issuecomment-5832017
 
-h2. Prerequisites
-<pre>brew install riak</pre>
-
-h2. Configure riak
-In =riak/etc/app.conf= set storage_backend to riak_kv_eleveldb_backend.  ELevelDB is the only backend with index support
-<pre>riak/bin/riak start</pre>
-<pre>riak/bin/riak ping</pre>
-This should return 'pong'
-  
 h2. Trying it out
-The default server (webbrick) performs poorly.  Instead run:
 <pre>$ unicorn_rails
 </pre>
 
@@ -21,9 +11,6 @@ h2. Deploying
   See https://github.com/sstephenson/execjs
   I tried this one:
 <pre>gem install therubyracer</pre>
-
-Need to run this after deploying to a new MongoDB:
-<pre>$ script/rails runner 'Delayed::Backend::Mongoid::Job.create_indexes' </pre>
 
 h2. Jetty
 To install jetty run the generator:
@@ -35,15 +22,7 @@ $ cp contrib/velocity/lib/*.jar lib/
 h2. Workers
 
 h3. In development:
-<pre>$ rake jobs:work</pre>
+<pre>$ script/reify_worker</pre>
+<pre>$ script/decompose_worker</pre>
 
-h3. In production -- doesn't work:
-<pre>$ RAILS_ENV=production script/delayed_job start
-$ RAILS_ENV=production script/delayed_job stop</pre>
-
-Run two workers in separate processes.
-
-<pre>$ RAILS_ENV=production script/delayed_job -n 2 start
-$ RAILS_ENV=production script/delayed_job stop</pre>
-
-Take two on jenkins.
+Push should now trigger a jenkins build.
