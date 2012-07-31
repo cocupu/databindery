@@ -10,6 +10,15 @@ FactoryGirl.define do
     login_credential
   end
 
+  factory :node do
+    pool
+    model
+  end
+
+  factory :pool do
+    owner
+  end
+
   factory :model do
     sequence :name do |n|
       "Factory model name  #{n}"

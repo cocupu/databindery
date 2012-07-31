@@ -10,4 +10,8 @@ class ApplicationController < ActionController::Base
   def current_pool
     current_identity.pools.first
   end
+
+  def current_ability
+    @current_ability ||= Ability.new(current_identity)
+  end
 end

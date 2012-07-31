@@ -3,13 +3,14 @@
 total records
 
 %ul.model_instances
-  -@model.instances.each do |inst|
+  -@models.instances.limit(100).each do |inst|
     %li
-      %dl
-        %dt ID:
-        %dd=inst.persistent_id
-        -inst.data.each do |key, value|
-          %dt #{@model.fields[key]}: 
-          %dd=value
-      .clear
+      %div
+        %dl
+          %dt ID:
+          %dd=inst.persistent_id
+          -inst.data.each do |key, value|
+            -if value
+              %dt #{@model.fields[key]}: 
+              %dd=value
      
