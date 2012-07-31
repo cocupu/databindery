@@ -46,4 +46,4 @@ Run two workers in separate processes.
 <pre>$ RAILS_ENV=production script/delayed_job -n 2 start
 $ RAILS_ENV=production script/delayed_job stop</pre>
 
-Push should now trigger a jenkins build.
+Take two on jenkins.
