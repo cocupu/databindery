@@ -13,11 +13,16 @@ describe WelcomeController do
 
     end
     describe "when logged on" do
-      before { sign_in FactoryGirl.create :login }
-      subject { get :index }
-      it { should render_template("dashboard") }
-      it "should assign models" do
-        assigns[:models].should == @my_model
+      before do
+        @user = FactoryGirl.create :login
+        @my_model = FactoryGirl.create(:model, owner: @user.identities.first)
+        @not_my_model = FactoryGirl.create(:model)
+        sign_in @user
+      end
+      it "should be successful" do
+        get :index 
+        response.should render_template("dashboard") 
+        assigns[:models].should == [@my_model]
       end
     end
   end

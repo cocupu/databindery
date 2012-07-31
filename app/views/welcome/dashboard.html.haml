@@ -34,7 +34,7 @@
 
 %h3 Data Models
 %ul
-  -Model.limit(20).each do |m|
+  -@models.limit(20).each do |m|
     %li=link_to m.name, model_nodes_path(m)
 
 %br

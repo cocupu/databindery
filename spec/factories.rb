@@ -1,9 +1,20 @@
 FactoryGirl.define do
-  factory :login, :class=>LoginCredential do
+  factory :login, class: LoginCredential, aliases: [:login_credential] do
     sequence :email do |n|
       "person#{n}@cocupu.com"
     end
     password 'notblank'
+  end
+  
+  factory :identity, aliases: [:owner] do
+    login_credential
+  end
+
+  factory :model do
+    sequence :name do |n|
+      "Factory model name  #{n}"
+    end
+    owner
   end
 
   factory :spreadsheet, :class=>Cocupu::Spreadsheet do

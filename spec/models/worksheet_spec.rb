@@ -24,7 +24,7 @@ describe Worksheet do
    
   end
   it "reify should initiate a ConcurrentJob" do
-    template = MappingTemplate.create!
+    template = MappingTemplate.create!(owner: Identity.create!)
     pool = Pool.create!(owner: Identity.create!)
     ws = Worksheet.new()
     job = mock("job")

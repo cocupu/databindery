@@ -5,7 +5,7 @@ describe Node do
     @pool = Pool.create!(:owner=>Identity.create!)
   end
   before do
-    subject.model = Model.create(:name=>"Test Model")
+    subject.model = Model.create!(name: "Test Model", :owner=>Identity.create!)
   end
   it "should store a hash of data" do
     subject.data = {:foo =>'bar', 'boop' =>'bop'}

@@ -259,7 +259,8 @@ CREATE TABLE mapping_templates (
     model_mappings text,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    file_type character varying(255)
+    file_type character varying(255),
+    identity_id integer
 );
 
 
@@ -662,6 +663,13 @@ CREATE UNIQUE INDEX index_login_credentials_on_reset_password_token ON login_cre
 
 
 --
+-- Name: index_mapping_templates_on_identity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_mapping_templates_on_identity_id ON mapping_templates USING btree (identity_id);
+
+
+--
 -- Name: index_models_on_identity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -719,6 +727,14 @@ ALTER TABLE ONLY change_sets
 
 ALTER TABLE ONLY identities
     ADD CONSTRAINT identities_login_credential_id_fk FOREIGN KEY (login_credential_id) REFERENCES login_credentials(id);
+
+
+--
+-- Name: mapping_templates_identity_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY mapping_templates
+    ADD CONSTRAINT mapping_templates_identity_id_fk FOREIGN KEY (identity_id) REFERENCES identities(id);
 
 
 --
@@ -804,3 +820,5 @@ INSERT INTO schema_migrations (version) VALUES ('20120730150229');
 INSERT INTO schema_migrations (version) VALUES ('20120730182459');
 
 INSERT INTO schema_migrations (version) VALUES ('20120731202229');
+
+INSERT INTO schema_migrations (version) VALUES ('20120731204726');

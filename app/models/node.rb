@@ -15,7 +15,6 @@ class Node < ActiveRecord::Base
   # override activerecord to copy-on-write
   def update
     Node.create(self.attributes)
-    
   end
 
   def to_solr(fields) 
