@@ -7,3 +7,8 @@ task :reindex => :environment do
   Cocupu.solr.commit
 end
 
+task :index => :environment do
+  Model.find(:all).each {|m| m.index}
+  Cocupu.solr.commit
+end
+
