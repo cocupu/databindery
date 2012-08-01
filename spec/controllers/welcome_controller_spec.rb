@@ -17,12 +17,15 @@ describe WelcomeController do
         @user = FactoryGirl.create :login
         @my_model = FactoryGirl.create(:model, owner: @user.identities.first)
         @not_my_model = FactoryGirl.create(:model)
+        @exhibit = FactoryGirl.create(:exhibit, pool: @user.identities.first.pools.first)
+      
         sign_in @user
       end
       it "should be successful" do
         get :index 
         response.should render_template("dashboard") 
         assigns[:models].should == [@my_model]
+        assigns[:exhibits].should == [@exhibit]
       end
     end
   end

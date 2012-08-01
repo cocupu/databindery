@@ -1,5 +1,7 @@
 %p.title=item.model.label
 %dl.clearfix
+  %dt ID
+  %dd=item.persistent_id
   -item.model.fields.each do |k, label|
     %dt=label
     %dd=item.data[k]

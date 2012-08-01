@@ -39,6 +39,6 @@ class Node < ActiveRecord::Base
   end
 
   def self.solr_name(field_name)
-    field_name.downcase.gsub(' ','_') + "_s"
+    field_name.downcase.gsub(' ','_') + "_t"
   end
 end

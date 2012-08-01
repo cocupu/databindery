@@ -19,7 +19,7 @@ class ExhibitsController < ApplicationController
     fq = "pool_s:#{@exhibit.pool_id}"
     ## TODO need a better way to get the query fields.  Not all these models are necessarily in this pool
     query_fields = Model.all.map {|model| model.fields.map{ |key, val| Node.solr_name(key) } }.flatten.uniq
-    (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool_s"]).join(' '), :fq=>fq, 'facet.field' => ['name_s', 'model']})
+    (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool_s"]).join(' '), :qt=>'search', :fq=>fq, 'facet.field' => ['name_s', 'model']})
     
     @total = solr_response["numFound"]
     @results = Node.find_all_by_persistent_id(solr_response['docs'].map{|d| d['id']})

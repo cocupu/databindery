@@ -63,7 +63,7 @@ describe Node do
     end
 
     it "should produce a solr document" do
-      @instance.to_solr(@model.fields).should == {'id'=>@instance.persistent_id, 'version_s'=>@instance.id, 'model' =>'Mods and Rockers', "f1_s"=>"good", 'pool_s' => @pool.id}
+      @instance.to_solr(@model.fields).should == {'id'=>@instance.persistent_id, 'version_s'=>@instance.id, 'model' =>'Mods and Rockers', "f1_t"=>"good", 'pool_s' => @pool.id}
     end
   end
 
