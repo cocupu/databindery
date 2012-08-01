@@ -48,6 +48,8 @@ describe MappingTemplate do
       model.label.should == 'title'
       model.fields.should == {'file_name' => 'File Name', 'title'=>'Title'}
 
+      @template.row_start.should == 2
+
       @template.model_mappings[0][:field_mappings][1][:label].should == 'Title'
       @template.model_mappings[0][:field_mappings][1][:field].should == 'title'
       @template.model_mappings[0][:name].should == 'Talk'

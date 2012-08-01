@@ -1,10 +1,6 @@
 class ConcurrentJob < JobLogItem
 
-  #after_initialize :init_fields
-  def initialize(*args)
-    super(*args)
-    init_fields
-  end
+  after_initialize :init_fields
 
   def init_fields
     return unless new_record?
