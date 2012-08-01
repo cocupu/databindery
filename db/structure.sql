@@ -104,7 +104,8 @@ CREATE TABLE exhibits (
     title character varying(255),
     facets text,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    pool_id integer
 );
 
 
@@ -694,6 +695,14 @@ ALTER TABLE ONLY change_sets
 
 
 --
+-- Name: exhibits_pool_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY exhibits
+    ADD CONSTRAINT exhibits_pool_id_fk FOREIGN KEY (pool_id) REFERENCES pools(id);
+
+
+--
 -- Name: identities_login_credential_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -792,3 +801,5 @@ INSERT INTO schema_migrations (version) VALUES ('20120730182459');
 INSERT INTO schema_migrations (version) VALUES ('20120731202229');
 
 INSERT INTO schema_migrations (version) VALUES ('20120731204726');
+
+INSERT INTO schema_migrations (version) VALUES ('20120801155151');

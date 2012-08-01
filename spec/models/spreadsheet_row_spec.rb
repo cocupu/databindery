@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe SpreadsheetRow do
   before do
-    @job = JobLogItem.create()
+    @job = JobLogItem.create!
     @row = SpreadsheetRow.new(:row_number => '9', :job_log_item => @job)
     @row.values = [nil, 'str', 7]
   end

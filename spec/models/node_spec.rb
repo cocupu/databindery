@@ -46,17 +46,16 @@ describe Node do
 
   describe "with data" do
     before do
-      @model = Model.create(:name=>"Mods and Rockers")
+      @pool = FactoryGirl.create(:pool)
+      @model = Model.create(name: "Mods and Rockers")
       @model.fields = {'f1'=>'Field one'}
       @model.save
 
-      @instance = Node.new(:model=>@model)
-      @instance.save
-      @instance.data = {'f1'=>'good'}
+      @instance = Node.new(model: @model, pool: @pool, data: {'f1'=>'good'})
     end
 
     it "should produce a solr document" do
-      @instance.to_solr(@model.fields).should == {'id'=>@instance.persistent_id, 'version_s'=>@instance.id, 'model' =>'Mods and Rockers', "f1_s"=>"good"}
+      @instance.to_solr(@model.fields).should == {'id'=>@instance.persistent_id, 'version_s'=>@instance.id, 'model' =>'Mods and Rockers', "f1_s"=>"good", 'pool_s' => @pool.id}
     end
   end
 

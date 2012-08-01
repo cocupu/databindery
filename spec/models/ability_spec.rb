@@ -27,4 +27,37 @@ describe Ability do
       ability.can?(:read, @node).should_not be_true
     end
   end
+
+  describe "exhibits" do
+    before :all do
+      @exhibit = FactoryGirl.create :exhibit
+      @owner = Ability.new(@exhibit.pool.owner)
+      @non_owner = Ability.new(FactoryGirl.create :identity)
+    end
+    it "are readable by the owner of the pool they are in" do
+      @owner.can?(:read, @exhibit).should be_true
+    end
+    it "are not readable by a non-owner of the pool" do
+      @non_owner.can?(:read, @exhibit).should_not be_true
+    end
+    it "are editable by the owner of the pool they are in" do
+      @owner.can?(:edit, @exhibit).should be_true
+    end
+    it "are not editable by a non-owner of the pool" do
+      @non_owner.can?(:edit, @exhibit).should_not be_true
+    end
+    it "are updateable by the owner of the pool they are in" do
+      @owner.can?(:update, @exhibit).should be_true
+    end
+    it "are not updateable by a non-owner of the pool" do
+      @non_owner.can?(:update, @exhibit).should_not be_true
+    end
+    it "should be creatable by anyone" do
+      @non_owner.can?(:create, Exhibit).should be_true
+    end
+    it "should not be creatable by anonymous" do
+      ability = Ability.new(Identity.new)
+      ability.can?(:create, Exhibit).should_not be_true
+    end
+  end
 end

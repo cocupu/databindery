@@ -10,6 +10,10 @@ FactoryGirl.define do
     login_credential
   end
 
+  factory :exhibit do
+    pool
+  end
+
   factory :node do
     pool
     model

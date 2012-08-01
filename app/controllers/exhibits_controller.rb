@@ -2,33 +2,34 @@ class ExhibitsController < ApplicationController
   include Blacklight::SolrHelper
   include ActiveSupport::Benchmarkable
 
+  load_and_authorize_resource 
+
   def blacklight_config 
     @config ||= Cocupu::Config.new
   end
 
   def index
-    @exhibits = Exhibit.all
   end
+
   def edit
-    @exhibit = Exhibit.find(params[:id])
   end
 
   def show
-    @exhibit = Exhibit.find(params[:id])
-    ## TODO constrain fields just to models in this pool/exhibit
+    # Constrain results to this pool
+    fq = "pool_s:#{@exhibit.pool_id}"
+    ## TODO need a better way to get the query fields.  Not all these models are necessarily in this pool
     query_fields = Model.all.map {|model| model.fields.map{ |key, val| Node.solr_name(key) } }.flatten.uniq
-    (solr_response, @facet_fields) = get_search_results( params, {:qf=>query_fields.join(' '), 'facet.field' => ['name_s', 'model']})
+    (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool_s"]).join(' '), :fq=>fq, 'facet.field' => ['name_s', 'model']})
     
     @total = solr_response["numFound"]
     @results = Node.find_all_by_persistent_id(solr_response['docs'].map{|d| d['id']})
   end
 
   def new
-    @exhibit = Exhibit.new
   end
 
   def create
-    @exhibit = Exhibit.new
+    @exhibit.pool = current_pool
     @exhibit.title = params[:exhibit][:title]
     @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/)
     @exhibit.save
@@ -36,7 +37,6 @@ class ExhibitsController < ApplicationController
   end
 
   def update
-    @exhibit = Exhibit.find(params[:id])
     @exhibit.title = params[:exhibit][:title]
     @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/)
     @exhibit.save
@@ -57,7 +57,8 @@ class ExhibitsController < ApplicationController
     benchmark "get_search_results" do
       params = self.solr_search_params(user_params).merge(extra_controller_params)
       res = Cocupu.solr.get('select', :params=>params)
-puts "Params: #{params}"
+      logger.debug "Query to solr: #{params}"
+      logger.debug "Solr resopnse :#{res}"
       solr_response = force_to_utf8(res['response'])
       facet_fields = res['facet_counts']['facet_fields']
     end

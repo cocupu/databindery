@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ApplicationHelper do
   before do
-    @exhibit = Exhibit.create
+    @exhibit = FactoryGirl.create :exhibit
     assign :exhibit, @exhibit
     params[:q] = 'term'
   end

@@ -18,7 +18,7 @@ class Node < ActiveRecord::Base
   end
 
   def to_solr(fields) 
-    doc = {'id' => persistent_id, 'version_s'=>id, 'model' => model.name}
+    doc = {'id' => persistent_id, 'version_s'=>id, 'model' => model.name, 'pool_s' => pool_id}
     return doc if data.nil?
     model.fields.each_key do |f|
       doc[Node.solr_name(f)] = data[f]
