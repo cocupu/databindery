@@ -5,7 +5,7 @@ class Node < ActiveRecord::Base
   validates :model, presence: true
   validates :pool, presence: true
 
-  serialize :data, ActiveRecord::Coders::Hstore
+  serialize :data, Hash
 
 
   def generate_uuid

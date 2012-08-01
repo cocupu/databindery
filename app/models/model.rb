@@ -1,5 +1,5 @@
 class Model < ActiveRecord::Base
-  serialize :fields, ActiveRecord::Coders::Hstore
+  serialize :fields, Hash 
 
   after_initialize :init
 
