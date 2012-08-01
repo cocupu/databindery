@@ -1,9 +1,9 @@
 %h1="Instances of #{@model.name}"
-=@model.instances.count
+=@nodes.count
 total records
 
 %ul.model_instances
-  -@models.instances.limit(100).each do |inst|
+  -@nodes.limit(100).each do |inst|
     %li
       %div
         %dl
