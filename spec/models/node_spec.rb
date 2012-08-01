@@ -43,6 +43,14 @@ describe Node do
     instance.should be_valid
   end
 
+  it "should index itself when it's saved" do
+    Cocupu.should_receive :index
+    Cocupu.solr.should_receive :commit
+    subject.pool = @pool 
+    subject.model = FactoryGirl.create(:model)
+    subject.save!
+  end
+
 
   describe "with data" do
     before do

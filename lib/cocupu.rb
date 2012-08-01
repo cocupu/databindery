@@ -19,7 +19,7 @@ module Cocupu
 
   # Documents is a single solr document or array of solr documents
   def self.index(documents)
-    documents = [documents] unless documents.respond_to? :to_enum
+    documents = Array.wrap(documents)
     documents.each do |doc|
       solr.add doc
     end

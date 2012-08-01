@@ -7,6 +7,18 @@ class Node < ActiveRecord::Base
 
   serialize :data, Hash
 
+  after_save :update_index
+  after_destroy :remove_from_index
+
+  def remove_from_index
+    Cocupu.solr.delete_by_id self.id
+    Cocupu.solr.commit
+  end
+
+  def update_index
+    Cocupu.index(self.to_solr(model.fields.keys))
+    Cocupu.solr.commit
+  end
 
   def generate_uuid
     self.persistent_id= UUID.new.generate if !persistent_id

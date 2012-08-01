@@ -68,7 +68,7 @@ describe ExhibitsController do
 
         @instance = Node.create!(model: @model, data: {'f1' => 'bazaar'}, pool: @exhibit.pool)
         @instance2 = Node.create!(model: @model, data: {'f1' => 'bazaar'}, pool: Pool.create!(owner: Identity.create!))
-        @model.index
+        #@model.index
 
       end
       it "should be success" do
