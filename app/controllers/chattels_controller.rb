@@ -14,6 +14,7 @@ class ChattelsController < ApplicationController
     else
       @chattel = Chattel.new
     end
+    @chattel.owner = FactoryGirl.create :identity
     @chattel.attachment = params[:chattel][:attachment]
     @chattel.save!
     #TODO check to see if this is a valid spreadsheet.

@@ -36,7 +36,7 @@ describe ChattelsController do
 
   describe "index" do
     before do
-      @c = Chattel.create
+      @c = Chattel.create(owner: FactoryGirl.create(:identity))
     end
     it "should get a list" do
       get :index
@@ -47,7 +47,7 @@ describe ChattelsController do
 
   describe "describe" do
     before do
-      @c = Chattel.create
+      @c = Chattel.create(owner: FactoryGirl.create(:identity))
       @l = JobLogItem.create
     end
     it "should be successful" do

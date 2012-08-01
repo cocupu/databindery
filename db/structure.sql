@@ -72,7 +72,8 @@ CREATE TABLE chattels (
     attachment_file_name character varying(255),
     attachment_extension character varying(255),
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    owner_id integer
 );
 
 
@@ -695,6 +696,14 @@ ALTER TABLE ONLY change_sets
 
 
 --
+-- Name: chattels_owner_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY chattels
+    ADD CONSTRAINT chattels_owner_id_fk FOREIGN KEY (owner_id) REFERENCES identities(id);
+
+
+--
 -- Name: exhibits_pool_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -803,3 +812,5 @@ INSERT INTO schema_migrations (version) VALUES ('20120731202229');
 INSERT INTO schema_migrations (version) VALUES ('20120731204726');
 
 INSERT INTO schema_migrations (version) VALUES ('20120801155151');
+
+INSERT INTO schema_migrations (version) VALUES ('20120801214419');

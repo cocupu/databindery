@@ -31,6 +31,7 @@ FactoryGirl.define do
   end
 
   factory :spreadsheet, :class=>Cocupu::Spreadsheet do
+    owner
 
   end
 

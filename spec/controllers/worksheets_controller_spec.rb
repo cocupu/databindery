@@ -5,7 +5,7 @@ describe WorksheetsController do
     before do
       @worksheet1 = Worksheet.new
       @worksheet2 = Worksheet.new
-      @spreadsheet = Cocupu::Spreadsheet.create!(:worksheets=>[@worksheet1, @worksheet2])
+      @spreadsheet = FactoryGirl.create(:spreadsheet, :worksheets=>[@worksheet1, @worksheet2])
     end
     it "should be success" do
       get :index, :spreadsheet_id => @spreadsheet.id
@@ -16,7 +16,7 @@ describe WorksheetsController do
   describe 'index with a single worksheet' do
     before do
       @worksheet = Worksheet.new
-      @spreadsheet = Cocupu::Spreadsheet.create!(:worksheets=>[@worksheet])
+      @spreadsheet = FactoryGirl.create(:spreadsheet, :worksheets=>[@worksheet])
     end
     it "should be success" do
       get :index, :spreadsheet_id => @spreadsheet.id
