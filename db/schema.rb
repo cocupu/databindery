@@ -11,10 +11,10 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120727191054) do
+ActiveRecord::Schema.define(:version => 20120801214419) do
 
   create_table "change_sets", :force => true do |t|
-    t.hstore   "data"
+    t.text     "data"
     t.integer  "pool_id"
     t.integer  "identity_id"
     t.integer  "parent_id"
@@ -22,14 +22,13 @@ ActiveRecord::Schema.define(:version => 20120727191054) do
     t.datetime "updated_at",  :null => false
   end
 
-  add_index "change_sets", ["data"], :name => "change_sets_gist_data"
-
   create_table "chattels", :force => true do |t|
     t.string   "attachment_content_type"
     t.string   "attachment_file_name"
     t.string   "attachment_extension"
     t.datetime "created_at",              :null => false
     t.datetime "updated_at",              :null => false
+    t.integer  "owner_id"
   end
 
   create_table "exhibits", :force => true do |t|
@@ -37,6 +36,7 @@ ActiveRecord::Schema.define(:version => 20120727191054) do
     t.text     "facets"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.integer  "pool_id"
   end
 
   create_table "identities", :force => true do |t|
@@ -77,21 +77,28 @@ ActiveRecord::Schema.define(:version => 20120727191054) do
 
   create_table "mapping_templates", :force => true do |t|
     t.integer  "row_start"
-    t.text     "models"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.text     "model_mappings"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
     t.string   "file_type"
+    t.integer  "identity_id"
   end
+
+  add_index "mapping_templates", ["identity_id"], :name => "index_mapping_templates_on_identity_id"
 
   create_table "models", :force => true do |t|
     t.string   "name"
-    t.hstore   "fields"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.text     "fields"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.string   "label"
+    t.integer  "identity_id"
   end
 
+  add_index "models", ["identity_id"], :name => "index_models_on_identity_id"
+
   create_table "nodes", :force => true do |t|
-    t.hstore   "data"
+    t.text     "data"
     t.string   "persistent_id"
     t.string   "parent_id"
     t.integer  "pool_id"
@@ -101,7 +108,6 @@ ActiveRecord::Schema.define(:version => 20120727191054) do
     t.integer  "model_id"
   end
 
-  add_index "nodes", ["data"], :name => "nodes_gist_data"
   add_index "nodes", ["model_id"], :name => "index_nodes_on_model_id"
 
   create_table "pools", :force => true do |t|
@@ -132,7 +138,15 @@ ActiveRecord::Schema.define(:version => 20120727191054) do
   add_foreign_key "change_sets", "identities", :name => "change_sets_identity_id_fk"
   add_foreign_key "change_sets", "pools", :name => "change_sets_pool_id_fk"
 
+  add_foreign_key "chattels", "identities", :name => "chattels_owner_id_fk", :column => "owner_id"
+
+  add_foreign_key "exhibits", "pools", :name => "exhibits_pool_id_fk"
+
   add_foreign_key "identities", "login_credentials", :name => "identities_login_credential_id_fk"
+
+  add_foreign_key "mapping_templates", "identities", :name => "mapping_templates_identity_id_fk"
+
+  add_foreign_key "models", "identities", :name => "models_identity_id_fk"
 
   add_foreign_key "nodes", "identities", :name => "nodes_identity_id_fk"
   add_foreign_key "nodes", "pools", :name => "nodes_pool_id_fk"

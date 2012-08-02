@@ -1,14 +1,58 @@
 require 'spec_helper'
 
 describe ModelsController do
+  before do
+    @user = FactoryGirl.create :login
+    @my_model = FactoryGirl.create(:model, owner: @user.identities.first)
+    @not_my_model = FactoryGirl.create(:model)
+  end
   describe "index" do
-    before do
-      @model = Model.create!(:name=>'Car', :owner=> FactoryGirl.create(:identity), :fields=>{'doors'=>"Number of Doors", 'speed'=>'Top Speed'})
+    describe "when not logged on" do
+      subject { get :index }
+      it "should show nothing" do
+        response.should  be_successful
+        assigns[:models].should be_nil
+      end
     end
-    it "should show models" do
-      get :index
-      assigns[:models].should include @model
-      response.should be_success
+
+    describe "when logged on" do
+      before do
+        sign_in @user
+      end
+      it "should be successful" do
+        get :index 
+        response.should  be_successful
+        assigns[:models].should == [@my_model]
+      end
+    end
+  end
+
+  describe "edit" do
+    describe "when not logged on" do
+      it "should redirect to root" do
+        get :edit, :id=>@my_model.id 
+        response.should redirect_to root_path
+      end
+    end
+
+    describe "when logged on" do
+      before do
+        sign_in @user
+      end
+      it "should redirect on a model that's not mine " do
+        get :edit, :id=>@not_my_model.id 
+        response.should redirect_to root_path
+      end
+      it "should be successful" do
+        get :edit, :id=>@my_model.id 
+        response.should be_successful
+        assigns[:model].should == @my_model
+        assigns[:models].should == [@my_model]
+        assigns[:field].should == {name: '', type: '', uri: '', multivalued: false}.stringify_keys
+        assigns[:association].should == {name: '', type: '', references: ''}.stringify_keys
+        assigns[:association_types].should == ['Has Many', 'Has One', 'Ordered List', 'Unordered List']
+        assigns[:field_types].should == ['Text Field', 'Text Area', 'Date']
+      end
     end
   end
 

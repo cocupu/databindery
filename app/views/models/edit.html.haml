@@ -1,0 +1,38 @@
+=render partial: 'models_list'
+%div.editor
+  %h2 What a #{@model.name} Looks Like
+
+  =form_tag model_fields_path(@model), :action=>:post do
+    %h3 Add Field
+    .control-group
+      =label_tag 'field[name]', 'Field Name'
+      =text_field_tag 'field[name]', @field[:name] 
+    .control-group
+      =label_tag 'field[type]', 'Field Type'
+      =select_tag 'field[type]', options_for_select(@field_types, @field[:type]), :class=>"input-small"
+
+    .control-group
+      =label_tag 'field[uri]', 'Code/URI (optional)'
+      =text_field_tag 'field[uri]', @field[:uri]
+    .control-group
+      =label_tag 'field[multivalued]' do
+        =check_box_tag 'field[multivalued]', @field[:multivalued]
+        Multi-valued
+    .control-group
+      =submit_tag "Create", :class=>'btn btn-primary'
+   
+
+  =form_tag model_associations_path(@model), :action=>:post do
+    %h3 Add Association
+    .control-group
+      =label_tag 'association[type]', 'Type'
+      =select_tag 'association[type]', options_for_select(@association_types, @association[:type]), :class=>"input-small"
+    .control-group
+      =label_tag 'association[name]', 'Association Name'
+      =text_field_tag 'association[name]', @association[:name] 
+    .control-group
+      =label_tag 'association[references]', 'Type'
+      =select_tag 'association[references]', options_from_collection_for_select(@models, :id, :name, @association[:references]), :class=>"input-small"
+    .control-group
+      =submit_tag "Create", :class=>'btn btn-primary'
+

@@ -1,0 +1,6 @@
+%ul.models
+  -@models.limit(20).each do |m|
+    %li
+      %h2=link_to m.name, edit_model_path(m)
+      %p= link_to "Instances", model_nodes_path(m)
+

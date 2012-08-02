@@ -1,3 +1,45 @@
 // Place all the styles related to the models controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+
+ul.models {
+  li {
+    width: 150px;
+    border: 1px solid #333;
+    height: 100px;
+    padding: 5px;
+    list-style: none;
+    h2 {
+    }
+  }
+  float: left;
+}
+
+.editor {
+  border: 1px solid #333;
+  width: 850px;
+  min-height: 400px;
+  margin-left: 10px;
+  float: left;
+  padding: 5px;
+
+  h2 {
+    text-align: center;
+  }
+
+  h3 {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 10px;
+  }
+
+  .control-group {
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  .btn {
+    margin-bottom: 9px;
+  }
+}

@@ -5,7 +5,10 @@ body {
   background-repeat: repeat-x;
   color: #333;
   /* text-shadow: 0 1px 0 white; */
+}
 
+body.no-grad {
+  background: none;
 }
 
 /* The white background content wrapper */
@@ -22,6 +25,15 @@ body {
           box-shadow: 0 1px 2px rgba(0,0,0,.15);
 }
 
+
+.full-width-container {
+  padding: 20px;
+  min-height: 400px;
+}
+
+footer {
+  margin-left: 20px;
+}
 
 
 

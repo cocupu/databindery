@@ -32,3 +32,11 @@ RSpec.configure do |config|
 end
 
 
+def log_in(user)
+    visit root_path
+    fill_in 'top_login_email', :with => user.email
+    fill_in 'top_login_password', :with => user.password 
+    click_button 'Sign in'
+    page.should have_link('Log Out', :href=>'/signout')
+end
+

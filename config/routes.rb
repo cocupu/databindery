@@ -20,6 +20,8 @@ Cocupu::Application.routes.draw do
   resources :mapping_templates
   
   resources :models do
+    resources :fields
+    resources :associations
     resources :nodes
   end
 
