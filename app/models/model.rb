@@ -1,10 +1,13 @@
 class Model < ActiveRecord::Base
-  serialize :fields, ActiveRecord::Coders::Hstore
+  serialize :fields, Hash 
 
   after_initialize :init
 
   validates :name, :presence=>true
-  has_many :instances, :class_name=>'Node'
+  has_many :nodes
+
+  belongs_to :owner, class_name: "Identity", :foreign_key => 'identity_id'
+  validates :owner, presence: true
 
   def init
     self.fields ||= {}

@@ -25,20 +25,27 @@ ul.exhibits {
       @include background_gradient(right, #DAFF88, #8DB437);
     }
     dl {
-      width: 600px;
-      float: left;
+      width: 650px;
+      display: block;
       dt {
-        width: 150px;
+        width: 200px;
         float: left;
-        clear: left;
         text-align: right;
         font-weight: bold;
+        clear: left;
       }
       dd {
         margin-left: 10px;
         width: 440px;
         float:left;
       }
+    }
+    dl.clearfix:after {
+        content: ".";
+        display: block;
+        height: 0;
+        clear: both;
+        visibility: hidden;
     }
   }
 }

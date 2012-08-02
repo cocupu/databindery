@@ -73,5 +73,4 @@ describe ConcurrentJob do
       @conc.status.should == 'PROCESSING'
     end
   end
-  it "should not enqueue header rows"
 end

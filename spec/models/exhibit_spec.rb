@@ -1,18 +1,22 @@
 require 'spec_helper'
 
 describe Exhibit do
-  before do
-    @exhibit = Exhibit.new
-  end
   it "Should have many facets" do
-    @exhibit.facets = ["Age", "Weight", "Marital status"]
-    @exhibit.save!
-    @exhibit.reload
-    @exhibit.facets.should == ["Age", "Weight", "Marital status"]
+    subject.pool = FactoryGirl.create :pool
+    subject.facets = ["Age", "Weight", "Marital status"]
+    subject.save!
+    subject.reload
+    subject.facets.should == ["Age", "Weight", "Marital status"]
   end
 
   it "should have a title" do
-    @exhibit.title = "Persons of note"
-    @exhibit.title.should == "Persons of note"
+    subject.title = "Persons of note"
+    subject.title.should == "Persons of note"
+  end
+
+  it "should not be valid unless it has a  pool" do
+    subject.should_not be_valid
+    subject.pool = Pool.create
+    subject.should be_valid
   end
 end

@@ -5,19 +5,13 @@ class JobLogItem < ActiveRecord::Base
 
   serialize :data
   attr_accessible :status, :data, :name
-
-  #TODO has_many
-  def children= children
-    children.each do |c|
-      c.parent = self
-    end
-  end
+  has_many :children, :foreign_key =>'parent_id', :class_name=>"JobLogItem"
   
   after_update :alert_parent_of_status_change
 
 
   def count_children_with_status(values)
-    JobLogItem.where(:parent_id => self.id, :status => values).count
+    children.where(:status => values).count
   end
   
 

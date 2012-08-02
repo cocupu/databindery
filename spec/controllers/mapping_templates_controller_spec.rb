@@ -52,7 +52,7 @@ describe MappingTemplatesController do
 
   describe "show" do
     before do
-      @template = MappingTemplate.new
+      @template = MappingTemplate.new(owner: FactoryGirl.create(:identity))
       @template.attributes = {"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}} 
       @template.save
       sign_in FactoryGirl.create :login 

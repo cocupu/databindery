@@ -22,20 +22,6 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
---
--- Name: hstore; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS hstore WITH SCHEMA public;
-
-
---
--- Name: EXTENSION hstore; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION hstore IS 'data type for storing sets of (key, value) pairs';
-
-
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
@@ -48,7 +34,7 @@ SET default_with_oids = false;
 
 CREATE TABLE change_sets (
     id integer NOT NULL,
-    data hstore,
+    data text,
     pool_id integer,
     identity_id integer,
     parent_id integer,
@@ -86,7 +72,8 @@ CREATE TABLE chattels (
     attachment_file_name character varying(255),
     attachment_extension character varying(255),
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    owner_id integer
 );
 
 
@@ -118,7 +105,8 @@ CREATE TABLE exhibits (
     title character varying(255),
     facets text,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    pool_id integer
 );
 
 
@@ -259,7 +247,8 @@ CREATE TABLE mapping_templates (
     model_mappings text,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    file_type character varying(255)
+    file_type character varying(255),
+    identity_id integer
 );
 
 
@@ -289,10 +278,11 @@ ALTER SEQUENCE mapping_templates_id_seq OWNED BY mapping_templates.id;
 CREATE TABLE models (
     id integer NOT NULL,
     name character varying(255),
-    fields hstore,
+    fields text,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    label character varying(255)
+    label character varying(255),
+    identity_id integer
 );
 
 
@@ -321,7 +311,7 @@ ALTER SEQUENCE models_id_seq OWNED BY models.id;
 
 CREATE TABLE nodes (
     id integer NOT NULL,
-    data hstore,
+    data text,
     persistent_id character varying(255),
     parent_id character varying(255),
     pool_id integer,
@@ -640,13 +630,6 @@ ALTER TABLE ONLY worksheets
 
 
 --
--- Name: change_sets_gist_data; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX change_sets_gist_data ON change_sets USING gist (data);
-
-
---
 -- Name: index_login_credentials_on_email; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -661,17 +644,24 @@ CREATE UNIQUE INDEX index_login_credentials_on_reset_password_token ON login_cre
 
 
 --
+-- Name: index_mapping_templates_on_identity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_mapping_templates_on_identity_id ON mapping_templates USING btree (identity_id);
+
+
+--
+-- Name: index_models_on_identity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_models_on_identity_id ON models USING btree (identity_id);
+
+
+--
 -- Name: index_nodes_on_model_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_nodes_on_model_id ON nodes USING btree (model_id);
-
-
---
--- Name: nodes_gist_data; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX nodes_gist_data ON nodes USING gist (data);
 
 
 --
@@ -706,11 +696,43 @@ ALTER TABLE ONLY change_sets
 
 
 --
+-- Name: chattels_owner_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY chattels
+    ADD CONSTRAINT chattels_owner_id_fk FOREIGN KEY (owner_id) REFERENCES identities(id);
+
+
+--
+-- Name: exhibits_pool_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY exhibits
+    ADD CONSTRAINT exhibits_pool_id_fk FOREIGN KEY (pool_id) REFERENCES pools(id);
+
+
+--
 -- Name: identities_login_credential_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY identities
     ADD CONSTRAINT identities_login_credential_id_fk FOREIGN KEY (login_credential_id) REFERENCES login_credentials(id);
+
+
+--
+-- Name: mapping_templates_identity_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY mapping_templates
+    ADD CONSTRAINT mapping_templates_identity_id_fk FOREIGN KEY (identity_id) REFERENCES identities(id);
+
+
+--
+-- Name: models_identity_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY models
+    ADD CONSTRAINT models_identity_id_fk FOREIGN KEY (identity_id) REFERENCES identities(id);
 
 
 --
@@ -751,8 +773,6 @@ ALTER TABLE ONLY pools
 
 INSERT INTO schema_migrations (version) VALUES ('20120712154638');
 
-INSERT INTO schema_migrations (version) VALUES ('20120712190103');
-
 INSERT INTO schema_migrations (version) VALUES ('20120712193715');
 
 INSERT INTO schema_migrations (version) VALUES ('20120712193817');
@@ -786,3 +806,11 @@ INSERT INTO schema_migrations (version) VALUES ('20120727191054');
 INSERT INTO schema_migrations (version) VALUES ('20120730150229');
 
 INSERT INTO schema_migrations (version) VALUES ('20120730182459');
+
+INSERT INTO schema_migrations (version) VALUES ('20120731202229');
+
+INSERT INTO schema_migrations (version) VALUES ('20120731204726');
+
+INSERT INTO schema_migrations (version) VALUES ('20120801155151');
+
+INSERT INTO schema_migrations (version) VALUES ('20120801214419');

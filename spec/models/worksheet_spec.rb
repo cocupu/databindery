@@ -23,14 +23,14 @@ describe Worksheet do
     @ws.rows.first.should == @row
    
   end
-  it "reify should initiate a ConcurrentJob" do
-    template = MappingTemplate.create!
+  it "reify should initiate a ConcurrentJob but not enqueue header rows" do
+    template = MappingTemplate.create!(owner: Identity.create!, row_start: 2)
     pool = Pool.create!(owner: Identity.create!)
     ws = Worksheet.new()
+    ws.stub(:rows => ['one', 'two', 'three'])
     job = mock("job")
-    job.should_receive(:enqueue_collection).with(ReifyEachSpreadsheetRowJob, [], {:template_id=>template.id, :pool_id=>pool.id})
+    job.should_receive(:enqueue_collection).with(ReifyEachSpreadsheetRowJob, ['two', 'three'], {:template_id=>template.id, :pool_id=>pool.id})
     ConcurrentJob.should_receive(:create).and_return(job)
     ws.reify(template, pool)
   end
-
 end

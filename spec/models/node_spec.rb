@@ -5,7 +5,7 @@ describe Node do
     @pool = Pool.create!(:owner=>Identity.create!)
   end
   before do
-    subject.model = Model.create(:name=>"Test Model")
+    subject.model = Model.create!(name: "Test Model", :owner=>Identity.create!)
   end
   it "should store a hash of data" do
     subject.data = {:foo =>'bar', 'boop' =>'bop'}
@@ -43,20 +43,27 @@ describe Node do
     instance.should be_valid
   end
 
+  it "should index itself when it's saved" do
+    Cocupu.should_receive :index
+    Cocupu.solr.should_receive :commit
+    subject.pool = @pool 
+    subject.model = FactoryGirl.create(:model)
+    subject.save!
+  end
+
 
   describe "with data" do
     before do
-      @model = Model.create(:name=>"Mods and Rockers")
+      @pool = FactoryGirl.create(:pool)
+      @model = Model.create(name: "Mods and Rockers")
       @model.fields = {'f1'=>'Field one'}
       @model.save
 
-      @instance = Node.new(:model=>@model)
-      @instance.save
-      @instance.data = {'f1'=>'good'}
+      @instance = Node.new(model: @model, pool: @pool, data: {'f1'=>'good'})
     end
 
     it "should produce a solr document" do
-      @instance.to_solr(@model.fields).should == {'id'=>@instance.persistent_id, 'version_s'=>@instance.id, 'model' =>'Mods and Rockers', "f1_s"=>"good"}
+      @instance.to_solr(@model.fields).should == {'id'=>@instance.persistent_id, 'version_s'=>@instance.id, 'model' =>'Mods and Rockers', "f1_t"=>"good", 'pool_s' => @pool.id}
     end
   end
 

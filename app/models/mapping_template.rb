@@ -2,6 +2,8 @@ class MappingTemplate < ActiveRecord::Base
   serialize :model_mappings, Array  # one row per model
 
   after_initialize :init
+  belongs_to :owner, class_name: "Identity", :foreign_key => 'identity_id'
+  validates :owner, presence: true
 
   def init
     self.model_mappings ||= []
@@ -14,8 +16,7 @@ class MappingTemplate < ActiveRecord::Base
 
   def model_mappings_attributes=(attrs)
     attrs.each_value do |value|
-      #TODO constrain to pool
-      model = Model.find_or_initialize_by_name(value[:name])
+      model = Model.find_or_initialize_by_name_and_identity_id(value[:name], owner.id)
       mapping = {} 
       original_mapping = {}
       model_mapping = {:field_mappings => value[:field_mappings_attributes].values, :name=>value[:name], :label=>value[:label]}

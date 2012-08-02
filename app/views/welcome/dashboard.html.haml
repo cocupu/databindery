@@ -1,12 +1,12 @@
 =content_for :page_name do
   Welcome to Collect, Curate, Publish.
 %h3 Exhibits
--count = Exhibit.count
+-count = @exhibits.count
 -if count == 0
   none
 -else
   %ul
-    -Exhibit.limit(10).each do |e|
+    -@exhibits.limit(10).each do |e|
       %li=link_to e.title, exhibit_path(e)
 -if count > 10 
   and #{link_to "#{count - 10} more", exhibits_path}
@@ -34,7 +34,7 @@
 
 %h3 Data Models
 %ul
-  -Model.limit(20).each do |m|
+  -@models.limit(20).each do |m|
     %li=link_to m.name, model_nodes_path(m)
 
 %br

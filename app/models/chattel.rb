@@ -1,4 +1,6 @@
 class Chattel < ActiveRecord::Base
+  belongs_to :owner, class_name: "Identity"
+  validates :owner, presence: true
 
   def spreadsheet?
     is_a? Cocupu::Spreadsheet
