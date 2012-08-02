@@ -25,3 +25,4 @@ h3. In development:
 <pre>$ script/reify_worker</pre>
 <pre>$ script/decompose_worker</pre>
 
+once more with feeling
