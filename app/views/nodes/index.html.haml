@@ -9,8 +9,8 @@ total records
         %dl
           %dt ID:
           %dd=inst.persistent_id
-          -inst.data.each do |key, value|
-            -if value
-              %dt #{@model.fields[key]}: 
-              %dd=value
+          -@model.fields.each do |field|
+            -if inst.data[field[:code]]
+              %dt #{field[:name]}: 
+              %dd=inst.data[field[:code]]
      
