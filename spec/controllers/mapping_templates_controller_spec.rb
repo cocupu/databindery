@@ -23,7 +23,7 @@ describe MappingTemplatesController do
         assigns[:mapping_template].row_start.should == 2
         model = Model.find(assigns[:mapping_template].model_mappings.first[:model_id])
         Model.count.should == 1
-        model.fields.should == {'file_name' => "File Name", 'title' => "Title"}
+        model.fields.should == [ {code: 'file_name', name: "File Name"}, {code: 'title', name: "Title"}]
         model.name.should == 'Talk'
         model.label.should == "title"
         mapping = assigns[:mapping_template].model_mappings[0]

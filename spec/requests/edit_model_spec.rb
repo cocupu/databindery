@@ -15,6 +15,8 @@ describe 'as a signed in user' do
     fill_in "Code/URI (optional)", :with=>'dc:title'
     check 'Multi-valued'
     click_on 'Create'
+
+    page.should have_selector '#fields tbody tr:first td:nth-child(2)', :text=>'Title'
     
   end
 

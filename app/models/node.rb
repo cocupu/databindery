@@ -16,7 +16,7 @@ class Node < ActiveRecord::Base
   end
 
   def update_index
-    Cocupu.index(self.to_solr(model.fields.keys))
+    Cocupu.index(self.to_solr)
     Cocupu.solr.commit
   end
 
@@ -29,11 +29,11 @@ class Node < ActiveRecord::Base
     Node.create(self.attributes)
   end
 
-  def to_solr(fields) 
+  def to_solr() 
     doc = {'id' => persistent_id, 'version_s'=>id, 'model' => model.name, 'pool_s' => pool_id}
     return doc if data.nil?
-    model.fields.each_key do |f|
-      doc[Node.solr_name(f)] = data[f]
+    model.fields.each do |f|
+      doc[Node.solr_name(f[:code])] = data[f[:code]]
     end
     doc
   end

@@ -21,9 +21,9 @@ class MappingTemplate < ActiveRecord::Base
       original_mapping = {}
       model_mapping = {:field_mappings => value[:field_mappings_attributes].values, :name=>value[:name], :label=>value[:label]}
       model_mapping[:field_mappings].each do |map|
-        field_code = map[:label].downcase.gsub(/\s+/, '_')
+        field_code = Model.field_name(map[:label])
         unless field_code.blank? 
-          model.fields[field_code] = map[:label]
+          model.fields << {code: field_code, :name=>map[:label]}
           model.label= field_code if value[:label] == map[:source]
           map[:field] = field_code
         end

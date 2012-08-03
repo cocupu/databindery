@@ -56,14 +56,14 @@ describe Node do
     before do
       @pool = FactoryGirl.create(:pool)
       @model = Model.create(name: "Mods and Rockers")
-      @model.fields = {'f1'=>'Field one'}
+      @model.fields = [{code: 'f1', name: 'Field one'}]
       @model.save
 
       @instance = Node.new(model: @model, pool: @pool, data: {'f1'=>'good'})
     end
 
     it "should produce a solr document" do
-      @instance.to_solr(@model.fields).should == {'id'=>@instance.persistent_id, 'version_s'=>@instance.id, 'model' =>'Mods and Rockers', "f1_t"=>"good", 'pool_s' => @pool.id}
+      @instance.to_solr.should == {'id'=>@instance.persistent_id, 'version_s'=>@instance.id, 'model' =>'Mods and Rockers', "f1_t"=>"good", 'pool_s' => @pool.id}
     end
   end
 

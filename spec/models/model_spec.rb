@@ -6,9 +6,9 @@ describe Model do
   end
 
   it "should have many fields" do
-    subject.fields = {'one' => 'One'}
-    subject.fields['two'] = 'Two'
-    subject.fields['one'].should == "One"
+    subject.fields = {'one' => {:name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}}
+    subject.fields['two'] = {:name=>'Two', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}
+    subject.fields['one'].should == {:name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}
   end
 
   it "should have a label" do

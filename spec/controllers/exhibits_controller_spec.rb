@@ -63,7 +63,7 @@ describe ExhibitsController do
         Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
         Cocupu.solr.commit
         @model = Model.create!(:name=>"Mods and Rockers", owner: Identity.create!)
-        @model.fields = {'f1' => 'Field good'}
+        @model.fields = [{code: 'f1', name: 'Field good'}]
         @model.save
 
         @instance = Node.create!(model: @model, data: {'f1' => 'bazaar'}, pool: @exhibit.pool)

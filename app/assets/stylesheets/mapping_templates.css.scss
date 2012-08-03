@@ -2,6 +2,8 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+@import "common";
+
 li.spacer {
   border-bottom: 1px solid gray;
   padding: 5px;
@@ -13,23 +15,6 @@ select.xsmall {
 }
 
 #data {
-  border-collapse: collapse;
-  border: 2px solid black;
-  td, th {
-    border-left: 1px solid #888;
-    border-right: 1px solid #888;
-    padding: 2px;
-  }
-  thead {
-    background-color: #aaa;
-  }
-  tbody {
-    tr {
-      background-color: #ccc;
-    }
-    tr:nth-child(2n+1) {
-      background-color: #f0f0f0;
-    }
-  }
+  @include zebra_stripe();
   
 }

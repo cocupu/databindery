@@ -2,6 +2,7 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+@import "common";
 
 ul.models {
   li {
@@ -41,5 +42,10 @@ ul.models {
 
   .btn {
     margin-bottom: 9px;
+  }
+  
+  #fields {
+    @include zebra_stripe();
+    width: 98%;
   }
 }

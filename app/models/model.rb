@@ -1,5 +1,5 @@
 class Model < ActiveRecord::Base
-  serialize :fields, Hash 
+  serialize :fields, Array 
 
   after_initialize :init
 
@@ -10,12 +10,20 @@ class Model < ActiveRecord::Base
   validates :owner, presence: true
 
   def init
-    self.fields ||= {}
+    self.fields ||= []
   end
 
   def index
     ## only index the most recent version of each node
     max_ids = Node.select('max(id) as max_id').where('model_id = ?', self.id).group(:persistent_id).map(&:max_id)
-    Cocupu.index(Node.find(max_ids).map {|m| m.to_solr(fields.keys) })
+    Cocupu.index(Node.find(max_ids).map {|m| m.to_solr })
+  end
+
+  def keys
+    fields.map{|f| f[:code]}
+  end
+
+  def self.field_name(label)
+    label.downcase.gsub(/\s+/, '_')
   end
 end

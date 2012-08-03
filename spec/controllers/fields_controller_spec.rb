@@ -23,8 +23,10 @@ describe FieldsController do
         response.should redirect_to root_path
       end
       it "should be successful" do
-        post :create, :model_id=>@my_model.id, :field=>{name: '', type: '', uri: '', multivalued: false}
-        response.should be_successful
+        post :create, :model_id=>@my_model.id, :field=>{name: 'Description', type: 'text_field', uri: 'dc:description', multivalued: true}
+        @my_model.reload.fields.should == 
+           [{"name" => 'Description', "code"=>"description", "type" => 'text_field', "uri" => 'dc:description', "multivalued" => true}]
+        response.should redirect_to edit_model_path(@my_model)
       end
     end
   end
