@@ -141,7 +141,7 @@ class DrivesController < ApplicationController
   private 
   
   def credentials
-   @credentials ||= Google::APIClient::ClientSecrets.load
+   @credentials ||= Google::APIClient::ClientSecrets.load('config')
   end
 
   def client
