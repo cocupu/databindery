@@ -18,12 +18,12 @@ gem 'jquery-rails'
 gem 'haml'
 gem 'roo', '>=1.10.1'
 
+gem 'google-api-client', '0.4.5', :require=>'google/api_client'
+
 gem 'carrot'
 gem 'amqp'
 
 gem 'pg'
-#gem 'activerecord-postgres-hstore'
-gem 'activerecord-postgres-hstore', git: 'git://github.com/softa/activerecord-postgres-hstore.git'
 
 gem 'foreigner'
 
