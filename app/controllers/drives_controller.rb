@@ -123,7 +123,8 @@ class DrivesController < ApplicationController
       #   redirect to("/#/edit/#{doc_id}")
       # end
     end
-    render :text=>"logged in"
+    result = api_client.execute!(:api_method => drive.files.list)
+    render :text=>result.inspect
   end
 
   ###
