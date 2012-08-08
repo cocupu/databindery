@@ -61,25 +61,26 @@ class DrivesController < ApplicationController
     api_client.authorization.fetch_access_token!
 
     result = api_client.execute!(:api_method => oauth2.userinfo.get)
-    user = User.find_or_create_by_profile_id(result.data.id)
-    if user.new_record?
-      user.email = result.data.email
+    google_account = current_identity.google_accounts.where(:profile_id, result.data.id)
+    google_account ||= GoogleAccount.create!(owner: current_identity, profile_id:result.data.id)
+    if google_account.new_record?
+      google_account.email = result.data.email
     end
-    api_client.authorization.refresh_token = (api_client.authorization.refresh_token || user.refresh_token)
-    if user.refresh_token != api_client.authorization.refresh_token
-      user.refresh_token = api_client.authorization.refresh_token
-      user.save
+    api_client.authorization.refresh_token = (api_client.authorization.refresh_token || google_account.refresh_token)
+    if google_account.refresh_token != api_client.authorization.refresh_token
+      google_account.refresh_token = api_client.authorization.refresh_token
+      google_account.save
     end
-    session[:user_id] = user.id
+    session[:google_account_id] = google_account.id
   end
 
   def auth_url(state = '')
-    user_email = current_user ? current_user.email : ''
+    google_email = current_google_account ? current_google_account.email : ''
     return api_client.authorization.authorization_uri(
       :state => state,
       :approval_prompt => :force,
       :access_type => :offline,
-      :user_id => user_email
+      :user_id => google_email
     ).to_s
   end
 
@@ -139,6 +140,10 @@ class DrivesController < ApplicationController
   end
 
   private 
+
+  def current_google_account
+    @current_ga ||= current_identity.google_accounts.where(:id=>session[:google_account_id])
+  end
   
   def credentials
    @credentials ||= Google::APIClient::ClientSecrets.load('config')

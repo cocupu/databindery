@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120801214419) do
+ActiveRecord::Schema.define(:version => 20120808190758) do
 
   create_table "change_sets", :force => true do |t|
     t.text     "data"
@@ -37,6 +37,15 @@ ActiveRecord::Schema.define(:version => 20120801214419) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.integer  "pool_id"
+  end
+
+  create_table "google_accounts", :force => true do |t|
+    t.integer  "owner_id"
+    t.string   "profile_id"
+    t.string   "email"
+    t.string   "refresh_token"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
   end
 
   create_table "identities", :force => true do |t|
@@ -141,6 +150,8 @@ ActiveRecord::Schema.define(:version => 20120801214419) do
   add_foreign_key "chattels", "identities", :name => "chattels_owner_id_fk", :column => "owner_id"
 
   add_foreign_key "exhibits", "pools", :name => "exhibits_pool_id_fk"
+
+  add_foreign_key "google_accounts", "identities", :name => "google_accounts_owner_id_fk", :column => "owner_id"
 
   add_foreign_key "identities", "login_credentials", :name => "identities_login_credential_id_fk"
 
