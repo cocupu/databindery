@@ -18,25 +18,6 @@ class DrivesController < ApplicationController
       'https://www.googleapis.com/auth/userinfo.email',
       'https://www.googleapis.com/auth/userinfo.profile'
   ]
-  
-  ##
-  # Get an API client instance
-  def api_client
-    @client ||= (begin
-      client = Google::APIClient.new
-
-      client.authorization.client_id = credentials.client_id
-      client.authorization.client_secret = credentials.client_secret
-      client.authorization.redirect_uri = credentials.redirect_uris.first
-      client.authorization.scope = SCOPES
-      client
-    end)
-  end
-
-  def authorized?
-    return api_client.authorization.refresh_token && api_client.authorization.access_token
-  end
-
   before_filter do
     # Make sure access token is up to date for each request
     api_client.authorization.update_token!(session)
@@ -53,6 +34,40 @@ class DrivesController < ApplicationController
       session[:issued_at] = api_client.authorization.issued_at
   end
 
+
+
+  ##
+  # Main entry point for the app. Ensures the user is authorized & inits the editor
+  # for either edit of the opened files or creating a new file.
+  def index 
+    if params[:code]
+      authorize_code(params[:code])
+    elsif params[:error] # User denied the oauth grant
+      render :text=>"Forbidden", :status => :forbidden
+    end
+    unless authorized?
+      redirect_to auth_url(params[:state])
+      return
+    end
+
+    result = api_client.execute!(:api_method => drive.files.list)
+    render :text=>result.data.items.inspect
+  end
+
+  ###
+  # Load content
+  #
+  def show
+    result = api_client.execute!(
+      :api_method => drive.files.get,
+      :parameters => { 'fileId' => params['id'] })
+    file = result.data.to_hash
+    result = api_client.execute(:uri => result.data.downloadUrl)
+    file['content'] = result.body
+    render json: file
+  end
+
+  private 
   ##
   # Upgrade our authorization code when a user launches the app from Drive &
   # ensures saved refresh token is up to date
@@ -83,64 +98,25 @@ class DrivesController < ApplicationController
       :user_id => google_email
     ).to_s
   end
-
+  
   ##
-  # Prepare request data for upload
-  def prepare_data(body)
-    data = MultiJson.decode(body)
-    resource_id = data['resource_id']
-    file_content = nil
+  # Get an API client instance
+  def api_client
+    @client ||= (begin
+      client = Google::APIClient.new
 
-    if data['content']    
-      content = StringIO.new(data['content'])
-      file_content = Google::APIClient::UploadIO.new(content, data['mimeType'])
-    end
-    data.keep_if { |k,v| %w{title labels parents description mimeType}.include? k}
-    
-    [resource_id, data, file_content]
+      client.authorization.client_id = credentials.client_id
+      client.authorization.client_secret = credentials.client_secret
+      client.authorization.redirect_uri = credentials.redirect_uris.first
+      client.authorization.scope = SCOPES
+      client
+    end)
   end
 
-  ##
-  # Main entry point for the app. Ensures the user is authorized & inits the editor
-  # for either edit of the opened files or creating a new file.
-  def index 
-    if params[:code]
-      authorize_code(params[:code])
-    elsif params[:error] # User denied the oauth grant
-      render :text=>"Forbidden", :status => :forbidden
-    end
-    unless authorized?
-      redirect_to auth_url(params[:state])
-      return
-    end
-
-    if params[:state] || params[:code]
-      # state = MultiJson.decode(params[:state] || '{}')
-      # if state['parentId']
-      #   redirect to("/#/create/#{state['parentId']}")
-      # else
-      #   doc_id = state['ids'] ? state['ids'].first : ''
-      #   redirect to("/#/edit/#{doc_id}")
-      # end
-    end
-    result = api_client.execute!(:api_method => drive.files.list)
-    render :text=>result.inspect
+  def authorized?
+    return api_client.authorization.refresh_token && api_client.authorization.access_token
   end
 
-  ###
-  # Load content
-  #
-  def show
-    result = api_client.execute!(
-      :api_method => drive.files.get,
-      :parameters => { 'fileId' => params['id'] })
-    file = result.data.to_hash
-    result = api_client.execute(:uri => result.data.downloadUrl)
-    file['content'] = result.body
-    render json: file
-  end
-
-  private 
 
   def current_google_account
     @current_ga ||= current_identity.google_accounts.where(id: session[:google_account_id]).first
