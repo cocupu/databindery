@@ -1,5 +1,10 @@
 require 'spec_helper'
 
 describe GoogleAccount do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it "should have an owner" do
+    ident = Identity.create
+    subject.owner = ident
+    subject.owner.should == ident
+
+  end
 end
