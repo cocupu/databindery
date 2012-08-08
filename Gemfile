@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.2.8.rc1'
+gem 'rails', '3.2.8.rc2'
 
 gem 'json'
 
@@ -16,9 +16,9 @@ end
 
 gem 'jquery-rails'
 gem 'haml'
-gem 'roo', '>=1.10.1'
+gem 'roo', github: 'Empact/roo'
 
-gem 'google-api-client', '0.4.5', :require=>'google/api_client'
+gem 'google-api-client', '0.4.5'
 
 gem 'carrot'
 gem 'amqp'

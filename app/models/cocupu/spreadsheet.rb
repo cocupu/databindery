@@ -5,9 +5,9 @@ class Cocupu::Spreadsheet < Chattel
   def self.detect_type(chattel)
     case chattel.attachment_content_type
     when "application/vnd.ms-excel"
-      Excel
+      Roo::Excel
     when "application/vnd.oasis.opendocument.spreadsheet"
-      Openoffice
+      Roo::Openoffice
     else
       raise "UnknownType: #{chattel.attachment_content_type}"
     end

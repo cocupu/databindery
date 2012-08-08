@@ -1,4 +1,3 @@
-require 'iconv' # roo 1.10.1 depends on iconv (https://github.com/hmcgowan/roo/issues/13)
 class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
 
   def perform
@@ -6,7 +5,8 @@ class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
     ss = Cocupu::Spreadsheet.find(spreadsheet_id)
     tmpfile = file = Tempfile.new(['cocupu', '.'+ss.attachment_extension], :encoding => 'ascii-8bit')
     tmpfile.write(ss.attachment.read)
-    spreadsheet = Cocupu::Spreadsheet.detect_type(ss).new(tmpfile.path)
+    type = Cocupu::Spreadsheet.detect_type(ss)
+    spreadsheet = type.new(tmpfile.path)
     spreadsheet.sheets.each_with_index do |worksheet, index|
       ingest_worksheet(spreadsheet, worksheet, ss, index)
     end
