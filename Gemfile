@@ -18,7 +18,7 @@ gem 'jquery-rails'
 gem 'haml'
 gem 'roo', github: 'Empact/roo'
 
-gem 'google-api-client', '0.4.5'
+gem 'google-api-client', '0.4.5', :require =>'google/api_client'
 
 gem 'carrot'
 gem 'amqp'

@@ -7,6 +7,7 @@ Cocupu::Application.routes.draw do
     get "signout", :to => "devise/sessions#destroy"
   end
   
+  resources :drives
 
   resources :chattels do
     member do
