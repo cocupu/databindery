@@ -15,7 +15,7 @@
           %td
         - else 
           %td=file.title
-          %td=Node.find_by_binding(file.id) ? link_to('bind', new_node_path(binding:file.id)) : link_to('show bindings', node_path(file.id))
+          %td=Node.find_by_binding(file.id) ? link_to('show bindings', node_path(file.id)) : link_to('bind', new_node_path(binding:file.id)) 
         %td=file.userPermission.id
         %td
           - if file.modifiedDate > 1.day.ago
