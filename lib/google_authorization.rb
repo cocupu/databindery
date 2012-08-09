@@ -21,10 +21,8 @@ puts "client error"
 
     before_filter do
       # Make sure access token is up to date for each request
-puts "updating token"
       api_client.authorization.update_token!(session)
       if api_client.authorization.refresh_token && api_client.authorization.expired?
-puts "fetch token"
         api_client.authorization.fetch_access_token!
       end
     end
@@ -48,6 +46,7 @@ puts "fetch token"
     api_client.authorization.fetch_access_token!
 
     result = api_client.execute!(:api_method => oauth2.userinfo.get)
+puts "RESULT: #{result.data.inspect}"
     google_account = current_identity.google_accounts.where(profile_id: result.data.id).first
     google_account ||= GoogleAccount.create!(owner: current_identity, profile_id:result.data.id)
     if google_account.new_record?

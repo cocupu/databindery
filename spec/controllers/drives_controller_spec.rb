@@ -10,20 +10,27 @@ describe DrivesController do
       end
     end
     describe "when signed in" do
+      before do
+        @user = FactoryGirl.create :login
+        sign_in @user
+      end
       describe "and not authorized" do
-        before do
-          @user = FactoryGirl.create :login
-          sign_in @user
-        end
         it "should list files" do
           get :index
           response.should redirect_to "https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&client_id=840123515072-bi3cnnt361ek7tnqfgbc05npt4h096k8.apps.googleusercontent.com&redirect_uri=http://bindery.cocupu.com:3001/drives&response_type=code&scope=https://www.googleapis.com/auth/drive.readonly%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&user_id="
         end
       end
+      describe "with code" do
+        before do
+        end
+        it "should authorize code" do
+          controller.should_receive(:authorize_code).with('1235')
+          get :index, :code=>'1235'
+          response.should be_redirect
+        end
+      end
       describe "and authorized" do
         before do
-          @user = FactoryGirl.create :login
-          sign_in @user
           @files = [stub('file1', :parents=>[]), stub('file2', :parents=>[{:id=>'file1'}])]
           controller.should_receive(:authorized?).and_return(true)
           mock_client = stub("Api client")
@@ -35,7 +42,7 @@ describe DrivesController do
           get :index
           response.should be_success
           # it returns a list of files, see: https://developers.google.com/drive/v2/reference/files
-          assigns[:files].should == [@files[0]]
+          assigns[:files].should == @files
         end
       end
     end

@@ -7,12 +7,10 @@ class DrivesController < ApplicationController
   # Main entry point for the app. Ensures the user is authorized & inits the editor
   # for either edit of the opened files or creating a new file.
   def index 
-puts "params: #{params.inspect}"
     if params[:code]
       authorize_code(params[:code])
     end	
     unless authorized?
-puts "NOT AUTHORIZED"
       redirect_to auth_url(params[:state])
       return
     end
