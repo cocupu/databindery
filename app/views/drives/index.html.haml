@@ -11,6 +11,10 @@
     -@files.each do |file|
       %tr
         %td=file.title
-        %td=file.id
-        %td=file.userPermission.inspect
-        %td=file.modifiedDate
+        %td=link_to('bind', "##{file.id}")
+        %td=file.userPermission.id
+        %td
+          - if file.modifiedDate > 1.day.ago
+            =file.modifiedDate.to_formatted_s(:time)
+          - else
+            =file.modifiedDate.to_formatted_s(:short)
