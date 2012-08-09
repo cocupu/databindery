@@ -24,7 +24,7 @@ describe DrivesController do
         before do
           @user = FactoryGirl.create :login
           sign_in @user
-          @files = [stub('file1'), stub('file2')]
+          @files = [stub('file1', :parents=>[]), stub('file2', :parents=>[{:id=>'file1'}])]
           controller.should_receive(:authorized?).and_return(true)
           mock_client = stub("Api client")
           mock_client.should_receive(:execute!).with(:api_method => kind_of(Google::APIClient::Method)).and_return(stub("result", :data => stub("data", :items=>@files)))
@@ -34,8 +34,8 @@ describe DrivesController do
         it "should list files" do
           get :index
           response.should be_success
-          # it returns a list of files, see: https://developers.google.com/drive/v1/reference/files
-          assigns[:files].should == @files
+          # it returns a list of files, see: https://developers.google.com/drive/v2/reference/files
+          assigns[:files].should == [@files[0]]
         end
       end
     end

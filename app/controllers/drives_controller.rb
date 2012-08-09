@@ -13,8 +13,10 @@ class DrivesController < ApplicationController
     end
 
     result = api_client.execute!(:api_method => drive.files.list)
-    # a list of files. see https://developers.google.com/drive/v1/reference/files
-    @files = result.data.items
+    # a list of files. see https://developers.google.com/drive/v2/reference/files
+    # TODO OPTIMIZE cache this result
+    items = result.data.items
+    @files = items.select {|i| i.parents.empty?}
   end
 
   ###
