@@ -49,12 +49,11 @@ puts "client error"
 puts "RESULT: #{result.data.inspect}"
     google_account = current_identity.google_accounts.where(profile_id: result.data.id).first
     google_account ||= GoogleAccount.create!(owner: current_identity, profile_id:result.data.id)
-    if google_account.new_record?
-      google_account.email = result.data.email
-    end
+    google_account.email = result.data.email
     api_client.authorization.refresh_token = (api_client.authorization.refresh_token || google_account.refresh_token)
     if google_account.refresh_token != api_client.authorization.refresh_token
       google_account.refresh_token = api_client.authorization.refresh_token
+puts "saving"
       google_account.save
     end
     session[:google_account_id] = google_account.id
