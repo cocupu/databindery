@@ -10,8 +10,12 @@
   %tbody
     -@files.each do |file|
       %tr
-        %td=file.title
-        %td=link_to('bind', "##{file.id}")
+        -if file.mime_type == 'application/vnd.google-apps.folder'
+          %td=link_to(file.title, "#folder/#{file.id}")
+          %td
+        - else 
+          %td=file.title
+          %td=link_to('bind', "##{file.id}")
         %td=file.userPermission.id
         %td
           - if file.modifiedDate > 1.day.ago

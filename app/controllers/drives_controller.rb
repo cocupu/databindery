@@ -16,7 +16,7 @@ class DrivesController < ApplicationController
     # a list of files. see https://developers.google.com/drive/v2/reference/files
     # TODO OPTIMIZE cache this result
     items = result.data.items
-    @files = items.select {|i| i.parents.empty?}
+    @files = items
   end
 
   ###
