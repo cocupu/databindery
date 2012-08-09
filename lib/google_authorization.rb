@@ -14,14 +14,17 @@ module GoogleAuthorization
     #  assume client errors are due to auth failures
     # and return a redirect 
     rescue_from Google::APIClient::ClientError do
+puts "client error"
       redirect_to auth_url(params[:state])
     end
 
 
     before_filter do
       # Make sure access token is up to date for each request
+puts "updating token"
       api_client.authorization.update_token!(session)
       if api_client.authorization.refresh_token && api_client.authorization.expired?
+puts "fetch token"
         api_client.authorization.fetch_access_token!
       end
     end
@@ -40,23 +43,23 @@ module GoogleAuthorization
   ##
   # Upgrade our authorization code when a user launches the app from Drive &
   # ensures saved refresh token is up to date
-  # def authorize_code(authorization_code)
-  #   api_client.authorization.code = authorization_code
-  #   api_client.authorization.fetch_access_token!
+  def authorize_code(authorization_code)
+    api_client.authorization.code = authorization_code
+    api_client.authorization.fetch_access_token!
 
-  #   result = api_client.execute!(:api_method => oauth2.userinfo.get)
-  #   google_account = current_identity.google_accounts.where(profile_id: result.data.id).first
-  #   google_account ||= GoogleAccount.create!(owner: current_identity, profile_id:result.data.id)
-  #   if google_account.new_record?
-  #     google_account.email = result.data.email
-  #   end
-  #   api_client.authorization.refresh_token = (api_client.authorization.refresh_token || google_account.refresh_token)
-  #   if google_account.refresh_token != api_client.authorization.refresh_token
-  #     google_account.refresh_token = api_client.authorization.refresh_token
-  #     google_account.save
-  #   end
-  #   session[:google_account_id] = google_account.id
-  # end
+    result = api_client.execute!(:api_method => oauth2.userinfo.get)
+    google_account = current_identity.google_accounts.where(profile_id: result.data.id).first
+    google_account ||= GoogleAccount.create!(owner: current_identity, profile_id:result.data.id)
+    if google_account.new_record?
+      google_account.email = result.data.email
+    end
+    api_client.authorization.refresh_token = (api_client.authorization.refresh_token || google_account.refresh_token)
+    if google_account.refresh_token != api_client.authorization.refresh_token
+      google_account.refresh_token = api_client.authorization.refresh_token
+      google_account.save
+    end
+    session[:google_account_id] = google_account.id
+  end
 
   def auth_url(state = '')
     google_email = current_google_account ? current_google_account.email : ''
