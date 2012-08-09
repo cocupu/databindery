@@ -11,11 +11,11 @@
     -@files.each do |file|
       %tr
         -if file.mime_type == 'application/vnd.google-apps.folder'
-          %td=link_to(file.title, "#folder/#{file.id}")
+          %td=file.title #link_to(file.title, "#folder/#{file.id}")
           %td
         - else 
           %td=file.title
-          %td=link_to('bind', "##{file.id}")
+          %td=Node.find_by_binding(file.id) ? link_to('bind', new_node_path(binding:file.id)) : link_to('show bindings', node_path(file.id))
         %td=file.userPermission.id
         %td
           - if file.modifiedDate > 1.day.ago

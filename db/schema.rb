@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120808190758) do
+ActiveRecord::Schema.define(:version => 20120809212228) do
 
   create_table "change_sets", :force => true do |t|
     t.text     "data"
@@ -115,8 +115,10 @@ ActiveRecord::Schema.define(:version => 20120808190758) do
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
     t.integer  "model_id"
+    t.string   "binding"
   end
 
+  add_index "nodes", ["binding"], :name => "index_nodes_on_binding"
   add_index "nodes", ["model_id"], :name => "index_nodes_on_model_id"
 
   create_table "pools", :force => true do |t|

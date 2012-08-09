@@ -2,6 +2,7 @@ class DrivesController < ApplicationController
 
   include GoogleAuthorization
   before_filter :authenticate_user!
+  layout 'full_width'
 
   ##
   # Main entry point for the app. Ensures the user is authorized & inits the editor

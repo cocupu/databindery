@@ -7,6 +7,10 @@ describe Node do
   before do
     subject.model = Model.create!(name: "Test Model", :owner=>Identity.create!)
   end
+  it "should have a binding" do
+    subject.binding = '0B4oXai2d4yz6eENDUVJpQ1NkV3M'
+    subject.binding.should == '0B4oXai2d4yz6eENDUVJpQ1NkV3M'
+  end
   it "should store a hash of data" do
     subject.data = {:foo =>'bar', 'boop' =>'bop'}
     subject.data.should == {:foo =>'bar', 'boop' =>'bop'}
