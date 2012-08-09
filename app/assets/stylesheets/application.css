@@ -10,6 +10,7 @@
  *= require models
  *= require model_instances
  *= require mapping_templates
+ *= require drives
  *= require forms
  *= depend_on _common 
 */
