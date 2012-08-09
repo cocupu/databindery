@@ -13,6 +13,7 @@ class DrivesController < ApplicationController
     end
 
     result = api_client.execute!(:api_method => drive.files.list)
+    # a list of files. see https://developers.google.com/drive/v1/reference/files
     @files = result.data.items
   end
 
