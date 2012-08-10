@@ -1,8 +1,17 @@
 %h1 Description
 
-%h2 File Info
-%dl
-  %dt File Name
-  %dd Look this up from google? #{@node.binding}
+=form_for @node do |f|
+  %h2 File Info
+  %dl
+    %dt File Name
+    %dd Look this up from google? #{@node.binding}
+  =f.hidden_field :binding
 
-%h2 Bindings/Associations
+  %h2 Bindings/Associations
+  .control-group
+    =f.label :model_id, "This file is a(n) example of "
+    .controls
+      =f.select :model_id, options_from_collection_for_select(@models, :id, :name)
+
+  .form-actions
+    =f.submit "Associate", :class=>'btn btn-primary'

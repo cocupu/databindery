@@ -9,6 +9,7 @@ class Node < ActiveRecord::Base
 
   after_save :update_index
   after_destroy :remove_from_index
+  attr_accessible :data
 
   def remove_from_index
     Cocupu.solr.delete_by_id self.id
