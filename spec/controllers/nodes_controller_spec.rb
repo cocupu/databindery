@@ -49,7 +49,7 @@ describe NodesController do
       response.should redirect_to node_path(assigns[:node])
       assigns[:node].binding.should == '0B4oXai2d4yz6bUstRldTeXV0dHM'
       assigns[:node].model.should == @my_model
-      flash[:notice].should == "Node created"
+      flash[:notice].should == "#{@my_model.name} created"
     end
     it "should not be successful using a model I don't own" do 
       post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@not_my_model}
