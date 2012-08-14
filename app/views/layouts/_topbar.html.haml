@@ -1,10 +1,15 @@
 .navbar
   .navbar-inner
     .container
-      =link_to 'Collect Curate Publish', root_path, :class=>"brand"
+      =link_to 'Data Bindery', root_path, :class=>"brand"
       -if user_signed_in?
         %ul.nav
-          %li= link_to("Log Out",  signout_path)
+          %li= link_to "Entities", models_path
+          %li= link_to "Files", drives_path 
+          %li= link_to "Exhibits", exhibits_path 
+          //%li= link_to "Data Sources", "#"
+        %ul.nav.pull-right
+          %li= link_to "Log Out",  signout_path
       -else
         %ul.nav
           %li{:class=>controller_name == 'welcome' ? 'active' : ''}= link_to('Home', root_path)

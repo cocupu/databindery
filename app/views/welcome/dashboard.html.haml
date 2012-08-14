@@ -1,51 +1,19 @@
-=content_for :page_name do
-  Welcome to Collect, Curate, Publish.
-%h3 Exhibits
--count = @exhibits.count
--if count == 0
-  none
--else
-  %ul
-    -@exhibits.limit(10).each do |e|
-      %li=link_to e.title, exhibit_path(e)
--if count > 10 
-  and #{link_to "#{count - 10} more", exhibits_path}
-%br
-=link_to "Create a new exhibit", new_exhibit_path, :class=>'btn btn-primary small'
-%br
-%br
-
-%h3 Jobs
--count = JobLogItem.count
--if count == 0
-  none
--else
-  %ul
-    -JobLogItem.limit(10).each do |j|
-      %li
-        =link_to j.name, jobs_path()
-        %span{:class=>'label ' + j.status.downcase}=j.status
-
--if count > 10 
-  and #{link_to "#{count - 10} more", jobs_path}
-
-%br
-%br
-
-%h3 Data Models
-%ul
-  %li=link_to "Entities", models_path
-%br
-%br
-
-%h3 Drive
-%ul
-  %li=link_to "Google Drive", drives_path
-%br
-%br
-
-%h3 Import Data
-%ul
-  %li
-    =link_to "Upload a file", new_chattel_path
-
+.row{style: "margin-top: 20px"}
+  .span1
+    &nbsp;
+  .span10
+    .hero-unit
+      %h1 Data Bindery
+      %p
+        Welcome to Data Bindery.  To get started, select a File Store that has files you want to describe &amp; arrange.  Currently we only support Google Drive as a File Store.  
+        =link_to "Connect to Google Drive", drives_path
+        and authorize Data Bindery to see your files so you can arrange them.
+      %p
+        =button_to "Connect to Google Drive", drives_path, :method=>:get, :class=>'btn btn-primary'
+  .span1
+    &nbsp;
+/*%h3 Import Data*/
+/*%ul*/
+/*  %li*/
+/*    =link_to "Upload a file", new_chattel_path*/
+/**/
