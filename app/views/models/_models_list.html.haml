@@ -1,9 +1,19 @@
 .subnav.subnav-fixed
-  %ul.models.nav.nav-pills
+  %ul.models.nav.nav-pills.nav-stacked
     -@models.limit(20).each do |m|
-      %li{:class=> @model && m.id == @model.id ? 'active' : ''}
-        =link_to edit_model_path(m) do
-          %h2=m.name
+      %li{:class=> @model && m.id == @model.id ? 'active dropdown' : 'dropdown', :id=>"menu#{m.id}"}
+        =link_to "#menu#{m.id}", 'data-toggle'=> 'dropdown', :class=> 'dropdown-toggle' do
+          =m.name
+          %b.caret
+        %ul.dropdown-menu
+          %li
+            =link_to "Search", edit_model_path(m)
+          %li
+            =link_to "Input and output formats", '#', :style=>"color: pink"
+          %li
+            =link_to "Metadata & Associations", edit_model_path(m)
+          %li
+            =link_to "Create New", edit_model_path(m)
 
     %li=link_to "New Type of Entity", new_model_path
 

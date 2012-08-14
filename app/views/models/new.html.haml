@@ -1,10 +1,10 @@
-%h1 New Entity
+%h1 New Type of Entity
 
-=form_for @model do |f|
+=form_for @model, :class=>'' do |f|
   .control-group
-    =f.label :name, "Type of Data"
+    =f.label :name, "Each datum is called a(n): "
     .controls
       =f.text_field :name
 
   .form-actions
-    =f.submit 'Create Entity', :class=>'btn btn-primary'
+    =f.submit 'Create Entity Type', :class=>'btn btn-primary'

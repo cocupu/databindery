@@ -26,7 +26,7 @@ class NodesController < ApplicationController
     @node.model = model
     @node.pool = current_pool
     @node.save!
-    redirect_to node_path(@node.id), :notice=>"Node created"
+    redirect_to node_path(@node.id), :notice=>"#{model.name} created"
   end
 end
   

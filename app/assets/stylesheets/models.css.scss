@@ -6,9 +6,7 @@
 
 ul.models {
   float: left;
-  li {
-    float: none;
-  }
+  width: 200px;
 }
 
 .editor {
@@ -42,4 +40,11 @@ ul.models {
     @include zebra_stripe();
     width: 98%;
   }
+}
+.editor:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
 }
