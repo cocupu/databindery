@@ -5,16 +5,10 @@
 @import "common";
 
 ul.models {
-  li {
-    width: 150px;
-    border: 1px solid #333;
-    height: 100px;
-    padding: 5px;
-    list-style: none;
-    h2 {
-    }
-  }
   float: left;
+  li {
+    float: none;
+  }
 }
 
 .editor {

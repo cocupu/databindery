@@ -56,4 +56,50 @@ describe ModelsController do
     end
   end
 
+  describe "new" do
+    describe "when not logged on" do
+      it "should redirect to root" do
+        get :new
+        response.should redirect_to root_path
+      end
+    end
+
+    describe "when logged on" do
+      before do
+        sign_in @user
+      end
+      it "should be successful" do
+        get :new
+        response.should be_successful
+        assigns[:model].should be_kind_of Model
+      end
+    end
+  end
+  describe "create" do
+    describe "when not logged on" do
+      it "should redirect to root" do
+        post :create
+        response.should redirect_to root_path
+      end
+    end
+
+    describe "when logged on" do
+      before do
+        sign_in @user
+      end
+      it "should redirect to form when validation fails" do
+        post :create, :model=>{}
+        response.should be_successful
+        response.should render_template(:new)
+        assigns[:model].should be_kind_of Model
+      end
+      it "should be successful" do
+        post :create, :model=>{:name=>'Turkey'}
+        response.should redirect_to edit_model_path(assigns[:model])
+        assigns[:model].should be_kind_of Model
+        assigns[:model].name.should == 'Turkey'
+      end
+    end
+  end
+
 end

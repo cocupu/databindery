@@ -1,0 +1,10 @@
+%h1 New Entity
+
+=form_for @model do |f|
+  .control-group
+    =f.label :name, "Type of Data"
+    .controls
+      =f.text_field :name
+
+  .form-actions
+    =f.submit 'Create Entity', :class=>'btn btn-primary'

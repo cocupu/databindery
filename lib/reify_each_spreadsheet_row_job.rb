@@ -18,7 +18,10 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:log)
         next unless map[:field]
         vals[map[:field]] = row.values[map[:source].ord - 65]
       end
-      Node.create!(:model=>model, :pool=>pool, :data=>vals)
+      n = Node.new(:data=>vals)
+      n.model = model
+      n.pool = pool 
+      n.save!
     end
   end
 

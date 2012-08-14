@@ -25,7 +25,7 @@ FactoryGirl.define do
 
   factory :model do
     sequence :name do |n|
-      "Factory model name  #{n}"
+      "Factory model name #{n}"
     end
     owner
   end

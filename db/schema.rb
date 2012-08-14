@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120809212228) do
+ActiveRecord::Schema.define(:version => 20120814185830) do
 
   create_table "change_sets", :force => true do |t|
     t.text     "data"
@@ -98,10 +98,11 @@ ActiveRecord::Schema.define(:version => 20120809212228) do
   create_table "models", :force => true do |t|
     t.string   "name"
     t.text     "fields"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
     t.string   "label"
     t.integer  "identity_id"
+    t.text     "associations"
   end
 
   add_index "models", ["identity_id"], :name => "index_models_on_identity_id"

@@ -66,8 +66,14 @@ describe ExhibitsController do
         @model.fields = [{code: 'f1', name: 'Field good'}]
         @model.save
 
-        @instance = Node.create!(model: @model, data: {'f1' => 'bazaar'}, pool: @exhibit.pool)
-        @instance2 = Node.create!(model: @model, data: {'f1' => 'bazaar'}, pool: Pool.create!(owner: Identity.create!))
+        @instance = Node.new(data: {'f1' => 'bazaar'})
+        @instance.model = @model
+        @instance.pool = @exhibit.pool 
+        @instance.save!
+        @instance2 = Node.new(data: {'f1' => 'bazaar'})
+        @instance2.model = @model
+        @instance2.pool = Pool.create!(owner: Identity.create!) 
+        @instance2.save!
         #@model.index
 
       end
@@ -84,10 +90,9 @@ describe ExhibitsController do
 
   describe "when not signed in" do
     describe "index" do
-      it "should show no exhibits" do
+      it "should be unauthorized" do
         get :index
-        response.should be_successful
-        assigns[:exhibits].should == []
+        response.should redirect_to root_path
       end
     end
 

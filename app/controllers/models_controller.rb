@@ -8,8 +8,20 @@ class ModelsController < ApplicationController
 
   end 
 
+  def new
+  end
+
+  def create
+    @model.owner = current_identity
+    if @model.save
+      redirect_to edit_model_path(@model), :notice=>"Entity has been created"
+    else
+      render action: :new
+    end
+  end
+
   def edit
-    @models = Model.accessible_by(current_ability)
+    @models = Model.accessible_by(current_ability) # for the sidebar
     @field = {name: '', type: '', uri: '', multivalued: false}
     @association= {name: '', type: '', references: ''}
     @association_types = ['Has Many', 'Has One', 'Ordered List', 'Unordered List']

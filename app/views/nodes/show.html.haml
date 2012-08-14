@@ -1,0 +1,18 @@
+%h1=@node.model.name
+
+=form_for @node do |f|
+  %h2 File Info
+  %dl
+    %dt File Name
+    %dd Look this up from google? #{@node.binding}
+
+  %h2 Bindings/Associations
+  .control-group
+    =label_tag :association_search, "is part of "
+    .controls
+      =text_field_tag :association_search, nil, :placeholder=>"enter the name of the Talk"
+      %p.help-block How do we know which associations are set up for this model?
+
+
+  .form-actions
+    =f.submit "Associate", :class=>'btn btn-primary'

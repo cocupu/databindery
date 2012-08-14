@@ -24,7 +24,7 @@ describe Node do
   it "should create a new version when it's changed" do
     subject.pool = @pool
     subject.save!
-    identity = Identity.create
+    identity = Identity.create!
     subject.update_attributes(:identity_id=>identity.id, :data=>{'boo'=>'bap'})
     new = Node.find_all_by_persistent_id(subject.persistent_id)
     new.length.should == 2
@@ -35,7 +35,8 @@ describe Node do
 
   it "should have a model" do
     model = Model.create
-    instance = Node.new(:model=>model)
+    instance = Node.new
+    instance.model=model
     instance.model.should == model
   end
   it "should not be valid unless it has a model and pool" do
@@ -63,7 +64,9 @@ describe Node do
       @model.fields = [{code: 'f1', name: 'Field one'}]
       @model.save
 
-      @instance = Node.new(model: @model, pool: @pool, data: {'f1'=>'good'})
+      @instance = Node.new(data: {'f1'=>'good'})
+      @instance.model = @model
+      @instance.pool = @pool 
     end
 
     it "should produce a solr document" do

@@ -11,6 +11,11 @@ describe Model do
     subject.fields['one'].should == {:name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}
   end
 
+  it "should have many associations" do
+    subject.associations << {type: 'Has One', name: 'talks', references: 37}
+    subject.associations.should == [{type: 'Has One', name: 'talks', references: 37}]
+  end
+
   it "should have a label" do
     subject.label = "title"
     subject.label.should == "title"

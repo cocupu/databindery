@@ -3,10 +3,17 @@ class Ability
 
   def initialize(identity)
     identity ||= Identity.new # guest user (not logged in)
-    can [:read, :edit], Model, :identity_id => identity.id
-    can :create, Node unless identity.new_record?
-    can :read, Node, :pool=>{ :owner_id => identity.id}
-    can [:read, :edit, :update], Exhibit, :pool=>{ :owner_id => identity.id}
-    can :create, Exhibit unless identity.new_record?
+
+    # Logged in users:
+    unless identity.new_record?
+      can [:read, :edit], Model, :identity_id => identity.id
+      can :create, Model
+
+      can :create, Node
+      can :read, Node, :pool=>{ :owner_id => identity.id}
+
+      can [:read, :edit, :update], Exhibit, :pool=>{ :owner_id => identity.id}
+      can :create, Exhibit
+    end
   end
 end

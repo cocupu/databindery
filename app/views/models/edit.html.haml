@@ -2,7 +2,7 @@
 %div.editor
   %h2 What a #{@model.name} Looks Like
 
-  =form_tag model_fields_path(@model), :action=>:post do
+  =form_tag model_fields_path(@model), :action=>:post, :id=>'add_field' do
     %h3 Add Field
     .control-group
       =label_tag 'field[name]', 'Field Name'
@@ -22,7 +22,7 @@
       =submit_tag "Create", :class=>'btn btn-primary'
    
 
-  =form_tag model_associations_path(@model), :action=>:post do
+  =form_tag model_associations_path(@model), :action=>:post, :id=>'add_association' do
     %h3 Add Association
     .control-group
       =label_tag 'association[type]', 'Type'
@@ -47,11 +47,24 @@
         %th URI
         %th Multi-valued
     %tbody
+      -cumulative = 0
       -@model.fields.each_with_index do |value, index|
+        -cumulative = index + 1
         %tr
-          %td=index+1 
+          %td=cumulative
           %td=value[:name]
           %td=value[:type]
           %td=value[:references]
           %td=value[:uri]
           %td=value[:multivalued]
+      -@model.associations.each_with_index do |value, index|
+        %tr
+          %td=index+cumulative + 1
+          %td=value[:name]
+          %td=value[:type]
+          %td=Model.find(value[:references]).name
+          %td
+          %td
+
+  %p{:style=>"margin-top: 10px"}
+    =link_to pluralize(@model.nodes.count, "instance"), model_nodes_path(@model)

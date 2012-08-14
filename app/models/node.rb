@@ -27,7 +27,12 @@ class Node < ActiveRecord::Base
 
   # override activerecord to copy-on-write
   def update
-    Node.create(self.attributes)
+    n = Node.new(self.attributes)
+    n.model = self.model
+    n.pool = self.pool
+    n.persistent_id = self.persistent_id
+    n.save
+    n
   end
 
   def to_solr() 

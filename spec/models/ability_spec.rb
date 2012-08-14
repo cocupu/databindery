@@ -13,6 +13,14 @@ describe Ability do
       ability = Ability.new(FactoryGirl.create :identity)
       ability.can?(:read, @model).should_not be_true
     end
+    it "can be created by a logged in user" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:create, Model).should be_true
+    end
+    it "can't be created by a logged in user" do
+      ability = Ability.new(nil)
+      ability.can?(:create, Model).should_not be_true
+    end
   end
   describe "nodes" do
     before do

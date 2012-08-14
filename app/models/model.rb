@@ -1,5 +1,6 @@
 class Model < ActiveRecord::Base
   serialize :fields, Array 
+  serialize :associations, Array 
 
   after_initialize :init
 
@@ -11,6 +12,7 @@ class Model < ActiveRecord::Base
 
   def init
     self.fields ||= []
+    self.associations ||= []
   end
 
   def index
