@@ -2,17 +2,32 @@ h1. CoCuPu
 
 UGH: https://github.com/rails/rails/pull/2948#issuecomment-5832017
 
-h2. Trying it out
-<pre>$ unicorn_rails
+h2. TL;DR.
+
+<pre>
+  rake db:create
+  rake db:migrate
+  rails g cocupu:jetty
+  rake jetty:start
+  rake spec
+  unicorn_rails
+</pre>
+
+h2. Running Server
+
+<pre>
+  unicorn_rails
 </pre>
 
 h2. Deploying
+
 # Install a javascript runtime (already installed on the Mac)
   See https://github.com/sstephenson/execjs
   I tried this one:
 <pre>gem install therubyracer</pre>
 
 h2. Jetty
+
 To install jetty run the generator:
 <pre>rails g cocupu:jetty</pre>
 $ cp contrib/analysis-extras/lib/icu4j-4_8_1_1.jar lib/
@@ -22,6 +37,7 @@ $ cp contrib/velocity/lib/*.jar lib/
 h2. Workers
 
 h3. In development:
+
 <pre>$ script/reify_worker</pre>
 <pre>$ script/decompose_worker</pre>
 
