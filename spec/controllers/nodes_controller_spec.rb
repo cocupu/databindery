@@ -34,12 +34,24 @@ describe NodesController do
       @not_my_model = FactoryGirl.create(:model)
       sign_in @user
     end
-    it "should be successful" do 
+    it "should be successful when a binding is passed" do 
       get :new, :binding => '0B4oXai2d4yz6bUstRldTeXV0dHM'
       response.should be_success
       assigns[:node].should be_kind_of Node
       assigns[:node].binding.should == '0B4oXai2d4yz6bUstRldTeXV0dHM'
       assigns[:models].should == [@my_model]
+      response.should render_template :new_binding
+    end
+    it "should be successful when a readable model is passed" do 
+      get :new, :model_id => @my_model
+      response.should be_success
+      assigns[:node].should be_kind_of Node
+      assigns[:node].model.should == @my_model
+    end
+    it "should be redirect when an unreadable model is passed" do 
+      get :new, :model_id => @not_my_model
+      response.should redirect_to root_path
+      flash[:alert].should == "You are not authorized to access this page."
     end
   end
 

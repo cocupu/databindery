@@ -24,7 +24,7 @@ describe 'as a signed in user' do
       click_on 'Create'
     end
 
-    page.should have_selector '#fields tbody tr:first td:nth-child(2)', :text=>'Title'
+    page.should have_selector '#fields tbody tr:nth-child(2) td:nth-child(2)', :text=>'Title'
 
     ### Add association
 
@@ -35,7 +35,7 @@ describe 'as a signed in user' do
       click_on 'Create'
     end
     
-    page.should have_selector '#fields tbody tr:first td:nth-child(2)', :text=>'Title'
+    page.should have_selector '#fields tbody tr:nth-child(3) td:nth-child(2)', :text=>'talks'
   end
 
 end

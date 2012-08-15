@@ -14,8 +14,14 @@ class NodesController < ApplicationController
   def new
     ## IF params[:binding] is passed, they are binding a file.
     ## ELSE IF params[:model_id] is passed, they are creating a new entity.
-    @node.binding = params[:binding]
-    @models = Model.accessible_by(current_ability)
+    if params[:binding] 
+      @node.binding = params[:binding]
+      @models = Model.accessible_by(current_ability)
+      render :new_binding
+      return
+    end
+    @node.model = Model.find(params[:model_id])
+    authorize! :read, @node.model
   end
 
   def show

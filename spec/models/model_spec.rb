@@ -11,9 +11,36 @@ describe Model do
     subject.fields['one'].should == {:name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}
   end
 
-  it "should have many associations" do
-    subject.associations << {type: 'Has One', name: 'talks', references: 37}
-    subject.associations.should == [{type: 'Has One', name: 'talks', references: 37}]
+  describe "associations" do
+    before do
+      @other_model = FactoryGirl.create(:model)
+      subject.associations << {type: 'Has One', name: 'talk', references: @other_model.id}
+      subject.associations << {type: 'Has Many', name: 'authors', references: 39}
+      subject.associations << {type: 'Ordered List', name: 'tracks', references: 40}
+      subject.associations << {type: 'Unordered List', name: 'members', references: 41}
+    end
+    it "should have many associations" do
+      subject.associations.should == [{type: 'Has One', name: 'talk', references: @other_model.id},
+        {type: 'Has Many', name: 'authors', references: 39}, 
+        {type: 'Ordered List', name: 'tracks', references: 40}, 
+        {type: 'Unordered List', name: 'members', references: 41}]
+    end
+
+    it "should have labels" do
+      subject.inbound_associations.map(&:label).should include("Has One Talk", "Has Many Authors")
+    end
+
+    it "should have model" do
+      subject.inbound_associations.first.model.should == @other_model
+    end
+
+
+    it "should have many outbound associations" do
+      subject.outbound_associations.should == [{type: 'Ordered List', name: 'tracks', references: 40}, {type: 'Unordered List', name: 'members', references: 41}]
+    end
+    it "should have many inbound associations" do
+      subject.inbound_associations.should == [{type: 'Has One', name: 'talk', references: @other_model.id}, {type: 'Has Many', name: 'authors', references: 39}]
+    end
   end
 
   it "should have a label" do

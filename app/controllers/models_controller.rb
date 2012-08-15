@@ -24,7 +24,7 @@ class ModelsController < ApplicationController
     @models = Model.accessible_by(current_ability) # for the sidebar
     @field = {name: '', type: '', uri: '', multivalued: false}
     @association= {name: '', type: '', references: ''}
-    @association_types = ['Has Many', 'Has One', 'Ordered List', 'Unordered List']
+    @association_types = Model::Association::TYPES
     @field_types = ['Text Field', 'Text Area', 'Date']
   end
 end

@@ -6,14 +6,21 @@
     %dt File Name
     %dd Look this up from google? #{@node.binding}
 
-  -unless @node.model.associations.empty?
+  -unless @node.model.fields.empty?
+    %h2 Metadata
+    -@node.model.fields.each do |field|
+      =draw_field(field, @node.data[field[:code]])
+
+
+  -unless @node.model.inbound_associations.empty?
     %h2 Bindings/Associations
-    .control-group
-      =label_tag :association_search, "is part of "
-      .controls
-        =text_field_tag :association_search, nil, :placeholder=>"enter the name of the Talk"
-        %p.help-block How do we know which associations are set up for this model?
+    -@node.model.inbound_associations.each do |assoc|
+      .control-group
+        =label_tag "node[association][#{assoc.name}]", assoc.label
+        .controls
+          =text_field_tag "node[association][#{assoc.name}]", nil, :placeholder=>"enter the name of the #{assoc.model.name}"
 
 
+  -unless @node.model.inbound_associations.empty? && @node.model.fields.empty?
     .form-actions
-      =f.submit "Associate", :class=>'btn btn-primary'
+      =f.submit "Save", :class=>'btn btn-primary'
