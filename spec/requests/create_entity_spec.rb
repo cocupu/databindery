@@ -20,6 +20,9 @@ describe 'as a signed in user' do
     fill_in "Description", :with=>'Test Desc'
     click_on 'Create Entity'
 
+    page.should have_selector(".alert-success", :text=>"#{@my_model.name} created")
+    page.should have_selector("#node_data_description[value='Test Desc']")
+
   end
 
 end

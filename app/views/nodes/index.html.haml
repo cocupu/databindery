@@ -1,23 +1,25 @@
--if @model
-  %h1="Instances of #{@model.name}"
--else
-  %h1 Entities
+=render partial: 'models/models_list'
+%div.content
+  -if @model
+    %h1="Instances of #{@model.name}"
+  -else
+    %h1 Entities
 
-=pluralize @nodes.count, "total record"
+  =pluralize @nodes.count, "total record"
 
-%ul.model_instances
-  -@nodes.limit(100).each do |inst|
-    %li
-      %div
-        =inst.data.inspect
-        %dl
-          %dt ID:
-          %dd=inst.persistent_id
-          -unless @model
-            %dt Type:
-            %dd=inst.model.name
-          -inst.model.fields.each do |field|
-            -if inst.data[field[:code]]
-              %dt #{field[:name]}: 
-              %dd=inst.data[field[:code]]
-     
+  %ul.model_instances
+    -@nodes.limit(100).each do |inst|
+      %li
+        %div
+          =inst.data.inspect
+          %dl
+            %dt ID:
+            %dd=inst.persistent_id
+            -unless @model
+              %dt Type:
+              %dd=inst.model.name
+            -inst.model.fields.each do |field|
+              -if inst.data[field[:code]]
+                %dt #{field[:name]}: 
+                %dd=inst.data[field[:code]]
+       

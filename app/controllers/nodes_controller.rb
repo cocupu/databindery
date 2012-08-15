@@ -1,5 +1,6 @@
 class NodesController < ApplicationController
   load_and_authorize_resource :except=>:index
+  layout 'full_width'
 
   def index
     if params[:model_id]
@@ -9,14 +10,15 @@ class NodesController < ApplicationController
     else
       @nodes = Node.accessible_by(current_ability)
     end
+    @models = Model.accessible_by(current_ability) # for the sidebar
   end
 
   def new
+    @models = Model.accessible_by(current_ability)
     ## IF params[:binding] is passed, they are binding a file.
     ## ELSE IF params[:model_id] is passed, they are creating a new entity.
     if params[:binding] 
       @node.binding = params[:binding]
-      @models = Model.accessible_by(current_ability)
       render :new_binding
       return
     end
@@ -25,6 +27,7 @@ class NodesController < ApplicationController
   end
 
   def show
+    @models = Model.accessible_by(current_ability) # for the sidebar
   end
   
   def create

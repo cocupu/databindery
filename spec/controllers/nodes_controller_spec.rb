@@ -12,18 +12,43 @@ describe NodesController do
       sign_in @user
     end
     it "should load the model and its nodes" do
-      get :index, :model_id => @model.id
+      get :index, :model_id => @model
       response.should be_success
       assigns[:model].should be_kind_of Model
       assigns[:nodes].should include(@node1, @node2) 
       assigns[:nodes].should_not include(@different_pool_node) 
       assigns[:nodes].should_not include(@different_model_node) 
+      assigns[:models].should == [@model] # for sidebar
     end
     it "should load all the nodes" do
       get :index
       response.should be_success
       assigns[:nodes].should include(@node1, @node2, @different_model_node) 
       assigns[:nodes].should_not include(@different_pool_node) 
+      assigns[:models].should == [@model] # for sidebar
+    end
+  end
+
+  describe "show" do
+    before do
+      @user = FactoryGirl.create :login_credential
+      @model = FactoryGirl.create(:model, owner: @user.identities.first)
+      @node1 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)
+      @node2 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)
+      @different_pool_node = FactoryGirl.create(:node, model: @model )
+      @different_model_node = FactoryGirl.create(:node, pool: @user.identities.first.pools.first )
+      sign_in @user
+    end
+    it "should load the node and the models" do
+      get :show, :id => @node1
+      response.should be_success
+      assigns[:models].should == [@model] # for sidebar
+      assigns[:node].should == @node1 
+    end
+    it "should not load node we don't have access to" do
+      get :show, :id => @different_pool_node 
+      response.should redirect_to root_path
+      flash[:alert].should == "You are not authorized to access this page."
     end
   end
 
@@ -47,6 +72,7 @@ describe NodesController do
       response.should be_success
       assigns[:node].should be_kind_of Node
       assigns[:node].model.should == @my_model
+      assigns[:models].should == [@my_model] # for sidebar
     end
     it "should be redirect when an unreadable model is passed" do 
       get :new, :model_id => @not_my_model

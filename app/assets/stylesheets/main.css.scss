@@ -30,7 +30,19 @@ body.no-grad {
   padding: 20px;
   min-height: 400px;
   min-width: 1075px;  // so that the .editor never goes below the .models.nav.nav-pills.nav-stacked
+
+  .content {
+    border: 1px solid #333;
+    width: 850px;
+    min-height: 400px;
+    margin-left: 10px;
+    float: left;
+    padding: 5px;
+
+
+  }
 }
+
 
 footer {
   clear: both;

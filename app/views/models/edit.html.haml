@@ -1,5 +1,5 @@
 =render partial: 'models_list'
-%div.editor
+%div.content.editor
   %h2 What a #{@model.name} Looks Like
 
   =form_tag model_fields_path(@model), :action=>:post, :id=>'add_field' do

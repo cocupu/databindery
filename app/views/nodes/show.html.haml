@@ -1,26 +1,28 @@
-%h1=@node.model.name
+=render partial: 'models/models_list'
+%div.content
+  %h1=@node.model.name
 
-=form_for @node do |f|
-  %h2 File Info
-  %dl
-    %dt File Name
-    %dd Look this up from google? #{@node.binding}
+  =form_for @node do |f|
+    %h2 File Info
+    %dl
+      %dt File Name
+      %dd Look this up from google? #{@node.binding}
 
-  -unless @node.model.fields.empty?
-    %h2 Metadata
-    -@node.model.fields.each do |field|
-      =draw_field(field, @node.data[field[:code]])
-
-
-  -unless @node.model.inbound_associations.empty?
-    %h2 Bindings/Associations
-    -@node.model.inbound_associations.each do |assoc|
-      .control-group
-        =label_tag "node[association][#{assoc.name}]", assoc.label
-        .controls
-          =text_field_tag "node[association][#{assoc.name}]", nil, :placeholder=>"enter the name of the #{assoc.model.name}"
+    -unless @node.model.fields.empty?
+      %h2 Metadata
+      -@node.model.fields.each do |field|
+        =draw_field(field, @node.data[field[:code]])
 
 
-  -unless @node.model.inbound_associations.empty? && @node.model.fields.empty?
-    .form-actions
-      =f.submit "Save", :class=>'btn btn-primary'
+    -unless @node.model.inbound_associations.empty?
+      %h2 Bindings/Associations
+      -@node.model.inbound_associations.each do |assoc|
+        .control-group
+          =label_tag "node[association][#{assoc.name}]", assoc.label
+          .controls
+            =text_field_tag "node[association][#{assoc.name}]", nil, :placeholder=>"enter the name of the #{assoc.model.name}"
+
+
+    -unless @node.model.inbound_associations.empty? && @node.model.fields.empty?
+      .form-actions
+        =f.submit "Save", :class=>'btn btn-primary'

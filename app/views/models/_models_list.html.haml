@@ -1,7 +1,7 @@
 .subnav.subnav-fixed
   %ul.models.nav.nav-pills.nav-stacked
     -@models.limit(20).each do |m|
-      %li{:class=> @model && m.id == @model.id ? 'active dropdown' : 'dropdown', :id=>"menu#{m.id}"}
+      %li{:class=> (@model && m.id == @model.id) || (@node && m.id == @node.model_id) ? 'active dropdown' : 'dropdown', :id=>"menu#{m.id}"}
         =link_to "#menu#{m.id}", 'data-toggle'=> 'dropdown', :class=> 'dropdown-toggle' do
           =m.name
           %b.caret
