@@ -75,6 +75,8 @@ class Model < ActiveRecord::Base
   belongs_to :owner, class_name: "Identity", :foreign_key => 'identity_id'
   validates :owner, presence: true
 
+  validates :label, :inclusion => {:in=> lambda {|foo| foo.keys }, :message=>"must be a field"}, :if=>Proc.new { |a| a.label }
+
   def init
     self.fields ||= []
     self.associations ||= []

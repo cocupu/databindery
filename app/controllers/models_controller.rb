@@ -14,7 +14,7 @@ class ModelsController < ApplicationController
   def create
     @model.owner = current_identity
     if @model.save
-      redirect_to edit_model_path(@model), :notice=>"Entity has been created"
+      redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been created"
     else
       render action: :new
     end
@@ -26,5 +26,10 @@ class ModelsController < ApplicationController
     @association= {name: '', type: '', references: ''}
     @association_types = Model::Association::TYPES
     @field_types = ['Text Field', 'Text Area', 'Date']
+  end
+
+  def update
+    @model.update_attributes(params[:model]) 
+    redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been updated"
   end
 end

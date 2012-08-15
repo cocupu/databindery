@@ -102,4 +102,32 @@ describe ModelsController do
     end
   end
 
+  describe "update" do
+    describe "when not logged on" do
+      it "should redirect to root" do
+        put :update, :id=>@my_model, :model=>{:label=>'title'}
+        response.should redirect_to root_path
+      end
+    end
+
+    describe "when logged on" do
+      before do
+        sign_in @user
+      end
+      it "should redirect on a model that's not mine " do
+        put :update, :id=>@not_my_model, :model=>{:label=>'title'}
+        response.should redirect_to root_path
+        flash[:alert].should == "You are not authorized to access this page."
+      end
+
+      it "should be able to set the identifier" do
+        put :update, :id=>@my_model, :model=>{:label=>'description'}
+
+        response.should redirect_to edit_model_path(@my_model)
+        flash[:notice].should == "#{@my_model.name} has been updated"
+        @my_model.reload.label.should == 'description'
+      end
+    end
+  end
+
 end

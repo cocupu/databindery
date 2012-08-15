@@ -14,12 +14,19 @@ describe Node do
   it "should store a hash of data" do
     subject.data = {:foo =>'bar', 'boop' =>'bop'}
     subject.data.should == {:foo =>'bar', 'boop' =>'bop'}
+    subject.pool = @pool
+    subject.save!
+    subject.reload.data.should == {:foo =>'bar', 'boop' =>'bop'}
   end
   it "should create a persistent_id when created" do
     subject.pool = @pool
     subject.persistent_id.should be_nil
     subject.save!
     subject.persistent_id.should_not be_nil
+  end
+
+  it "should have a title" do
+    subject.title.should == subject.persistent_id
   end
   it "should create a new version when it's changed" do
     subject.pool = @pool
@@ -28,6 +35,14 @@ describe Node do
     subject.update_attributes(:identity_id=>identity.id, :data=>{'boo'=>'bap'})
     new = Node.find_all_by_persistent_id(subject.persistent_id)
     new.length.should == 2
+  end
+  it "should get the latest version" do
+    subject.pool = @pool
+    subject.save!
+    subject.attributes = {:data=>{'boo'=>'bap'}}
+    new_subject = subject.update
+
+    Node.latest_version(subject.persistent_id).should == new_subject
   end
   it "should create a new changeset when it's changed"
   it "should store it's parent"
@@ -62,15 +77,18 @@ describe Node do
       @pool = FactoryGirl.create(:pool)
       @model = Model.create(name: "Mods and Rockers")
       @model.fields = [{code: 'f1', name: 'Field one'}]
+      @model.label = 'f1'
       @model.save
-
-      @instance = Node.new(data: {'f1'=>'good'})
-      @instance.model = @model
-      @instance.pool = @pool 
+      subject.model = @model
+      subject.pool = @pool 
+      subject.data = {'f1'=>'good'}
     end
 
     it "should produce a solr document" do
-      @instance.to_solr.should == {'id'=>@instance.persistent_id, 'version_s'=>@instance.id, 'model' =>'Mods and Rockers', "f1_t"=>"good", 'pool_s' => @pool.id}
+      subject.to_solr.should == {'id'=>subject.persistent_id, 'version_s'=>subject.id, 'model' =>'Mods and Rockers', "f1_t"=>"good", 'pool_s' => @pool.id}
+    end
+    it "should have a title" do
+      subject.title.should == 'good'
     end
   end
 

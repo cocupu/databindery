@@ -103,4 +103,32 @@ describe NodesController do
     end
   end
 
+  describe "update" do
+    before do
+      @user = FactoryGirl.create :login_credential
+      @model = FactoryGirl.build(:model, owner: @user.identities.first)
+      @model.fields = [{code: 'f1', name: 'Field one'}]
+      @model.save!
+      @node1 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)
+      @node2 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)
+      @different_pool_node = FactoryGirl.create(:node, model: @model )
+      @different_model_node = FactoryGirl.create(:node, pool: @user.identities.first.pools.first )
+      sign_in @user
+    end
+    it "should load the node and the models" do
+      put :update, :id => @node1, :node=>{:data=>{ 'f1' => 'Updated val' }}
+      new_version = Node.latest_version(@node1.persistent_id)
+      response.should redirect_to node_path(new_version)
+      new_version.data['f1'].should == "Updated val"
+      flash[:notice].should == "#{@model.name} updated"
+      
+    end
+    it "should not load node we don't have access to" do
+      put :update, :id => @different_pool_node, :node=>{:data=>{ }}
+      response.should redirect_to root_path
+      flash[:alert].should == "You are not authorized to access this page."
+    end
+    
+  end
+
 end

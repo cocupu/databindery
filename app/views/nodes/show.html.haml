@@ -20,7 +20,7 @@
         .control-group
           =label_tag "node[association][#{assoc.name}]", assoc.label
           .controls
-            =text_field_tag "node[association][#{assoc.name}]", nil, :placeholder=>"enter the name of the #{assoc.model.name}"
+            =text_field_tag "node[association][#{assoc.name}]", nil, :placeholder=>"enter the #{assoc.model.label} of the #{assoc.model.name}"
 
 
     -unless @node.model.inbound_associations.empty? && @node.model.fields.empty?

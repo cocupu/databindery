@@ -6,9 +6,11 @@ describe Model do
   end
 
   it "should have many fields" do
-    subject.fields = {'one' => {:name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}}
-    subject.fields['two'] = {:name=>'Two', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}
-    subject.fields['one'].should == {:name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}
+    subject.owner = Identity.create
+    subject.fields << {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}
+    subject.fields << {:code=>'two', :name=>'Two', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}
+    subject.save!
+    subject.reload.fields.first.should == {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}
   end
 
   describe "associations" do
@@ -46,6 +48,14 @@ describe Model do
   it "should have a label" do
     subject.label = "title"
     subject.label.should == "title"
+  end
+
+  it "should validate that label is a field" do
+    subject.owner = Identity.create
+    subject.label = "title"
+    subject.should_not be_valid
+    subject.errors.full_messages.should == ["Label must be a field"]
+#    subject.fields
   end
 
   it "should belong to an identity" do

@@ -36,35 +36,39 @@
     .control-group
       =submit_tag "Create", :class=>'btn btn-primary'
 
-  
-  %table#fields
-    %thead
-      %tr
-        %th Order
-        %th Field Name
-        %th Field Type
-        %th Points To
-        %th URI
-        %th Multi-valued
-    %tbody
-      -cumulative = 0
-      -@model.fields.each_with_index do |value, index|
-        -cumulative = index + 1
+  =form_for @model do |f|  
+    %table#fields
+      %thead
         %tr
-          %td=cumulative
-          %td=value[:name]
-          %td=value[:type]
-          %td=value[:references]
-          %td=value[:uri]
-          %td=value[:multivalued]
-      -@model.associations.each_with_index do |value, index|
-        %tr
-          %td=index+cumulative + 1
-          %td=value[:name]
-          %td=value[:type]
-          %td=Model.find(value[:references]).name
-          %td
-          %td
+          %th Label
+          %th Order
+          %th Field Name
+          %th Field Type
+          %th Points To
+          %th URI
+          %th Multi-valued
+      %tbody
+        -cumulative = 0
+        -@model.fields.each_with_index do |value, index|
+          -cumulative = index + 1
+          %tr
+            %td=f.radio_button :label, value[:code]
+            %td=cumulative
+            %td=value[:name]
+            %td=value[:type]
+            %td=value[:references]
+            %td=value[:uri]
+            %td=value[:multivalued]
+        -@model.associations.each_with_index do |value, index|
+          %tr
+            %td
+            %td=index+cumulative + 1
+            %td=value[:name]
+            %td=value[:type]
+            %td=Model.find(value[:references]).name
+            %td
+            %td
+    =f.submit "Update #{@model.name}", :class=>'btn btn-primary', :style=>"margin-top: 5px"
 
   %p{:style=>"margin-top: 10px"}
     =link_to pluralize(@model.nodes.count, "instance"), model_nodes_path(@model)

@@ -13,11 +13,19 @@ describe Ability do
       ability = Ability.new(FactoryGirl.create :identity)
       ability.can?(:read, @model).should_not be_true
     end
+    it "can be updated by an owner" do
+      ability = Ability.new(@model.owner)
+      ability.can?(:update, @model).should be_true
+    end
+    it "can't be updated by a non-owner" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:update, @model).should_not be_true
+    end
     it "can be created by a logged in user" do
       ability = Ability.new(FactoryGirl.create :identity)
       ability.can?(:create, Model).should be_true
     end
-    it "can't be created by a logged in user" do
+    it "can't be created by a not logged in user" do
       ability = Ability.new(nil)
       ability.can?(:create, Model).should_not be_true
     end
@@ -37,6 +45,14 @@ describe Ability do
     it "are not readable by a non-owner of the pool" do
       ability = Ability.new(FactoryGirl.create :identity)
       ability.can?(:read, @node).should_not be_true
+    end
+    it "can be updated by an owner" do
+      ability = Ability.new(@node.pool.owner)
+      ability.can?(:update, @node).should be_true
+    end
+    it "can't be updated by a non-owner" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:update, @node).should_not be_true
     end
   end
 

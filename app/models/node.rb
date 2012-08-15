@@ -44,7 +44,17 @@ class Node < ActiveRecord::Base
     doc
   end
 
+  def title
+    data[model.label].present? ? data[model.label] : persistent_id
+  end
+
   def self.solr_name(field_name)
     field_name.downcase.gsub(' ','_') + "_t"
   end
+
+  # Get the latest version of the node with this persistent id
+  def self.latest_version(persistent_id) 
+    Node.where(:persistent_id=>persistent_id).order('created_at desc').first
+  end
+
 end

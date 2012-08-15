@@ -44,5 +44,11 @@ class NodesController < ApplicationController
     @node.save!
     redirect_to node_path(@node.id), :notice=>"#{model.name} created"
   end
+
+  def update
+    @node.attributes = params[:node]
+    new_version = @node.update
+    redirect_to node_path(new_version), :notice=>"#{@node.model.name} updated"
+  end
 end
   
