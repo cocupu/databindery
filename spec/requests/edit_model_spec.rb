@@ -11,6 +11,10 @@ describe 'as a signed in user' do
   end
 
   it 'adds fields and associations' do
+    within(".navbar") do
+      page.should have_link("Entities", :href=>nodes_path) 
+    end
+
     within("#add_field") do
       
       fill_in "Field Name", :with=>'Title'

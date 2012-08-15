@@ -19,6 +19,12 @@ describe NodesController do
       assigns[:nodes].should_not include(@different_pool_node) 
       assigns[:nodes].should_not include(@different_model_node) 
     end
+    it "should load all the nodes" do
+      get :index
+      response.should be_success
+      assigns[:nodes].should include(@node1, @node2, @different_model_node) 
+      assigns[:nodes].should_not include(@different_pool_node) 
+    end
   end
 
   describe "new" do

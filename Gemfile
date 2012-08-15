@@ -11,10 +11,10 @@ group :assets do
   gem 'coffee-rails', '~> 3.2.2'
   gem 'uglifier', '>= 1.2.3'
   gem 'therubyracer' # required on linux
+  gem 'jquery-rails'
+  gem "bootstrap-sass-rails"
 end
 
-gem 'jquery-rails'
-gem "bootstrap-sass-rails"
 gem 'haml'
 gem 'roo', github: 'Empact/roo'
 

@@ -23,11 +23,11 @@ Cocupu::Application.routes.draw do
   resources :models do
     resources :fields
     resources :associations
-    resources :nodes, :only=>:index
+    resources :nodes
   end
 
 
-  resources :nodes, :except=>:index
+  resources :nodes
 
   resources :exhibits 
 

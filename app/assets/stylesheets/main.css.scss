@@ -29,9 +29,11 @@ body.no-grad {
 .full-width-container {
   padding: 20px;
   min-height: 400px;
+  min-width: 1075px;  // so that the .editor never goes below the .models.nav.nav-pills.nav-stacked
 }
 
 footer {
+  clear: both;
   margin-left: 20px;
 }
 

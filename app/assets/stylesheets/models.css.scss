@@ -11,7 +11,7 @@ ul.models {
 
 .editor {
   border: 1px solid #333;
-  width: 850px;
+  //width: 850px;
   min-height: 400px;
   margin-left: 10px;
   float: left;
@@ -40,11 +40,4 @@ ul.models {
     @include zebra_stripe();
     width: 98%;
   }
-}
-.editor:after {
-    content: ".";
-    display: block;
-    height: 0;
-    clear: both;
-    visibility: hidden;
 }

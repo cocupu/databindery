@@ -1,9 +1,14 @@
 class NodesController < ApplicationController
-  load_and_authorize_resource :model, :only=>:index
-  load_and_authorize_resource :through => :model, :only=>:index
   load_and_authorize_resource :except=>:index
 
   def index
+    if params[:model_id]
+      @model = Model.find(params[:model_id])
+      authorize! :read, @model
+      @nodes = @model.nodes.accessible_by(current_ability)
+    else
+      @nodes = Node.accessible_by(current_ability)
+    end
   end
 
   def new
