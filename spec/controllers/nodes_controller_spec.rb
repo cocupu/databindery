@@ -30,7 +30,11 @@ describe NodesController do
     it "should respond with json" do
       get :index, :format=>'json'
       response.should be_success
-      response.body.should == [@node1, @node2, @different_model_node].to_json
+      json = JSON.parse(response.body)
+      json.map { |n| n["id"]}.should == [@node1.id, @node2.id, @different_model_node.id]
+      json.first.keys.should == ["data", "id", "persistent_id", "title", "model"]
+      json.first["model"].keys.should == ['fields', 'label', 'name']
+      json.first["title"].should == @node1.title 
     end
   end
 

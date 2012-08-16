@@ -111,6 +111,10 @@ GEM
       signet (>= 0.4.1)
       uuidtools (>= 2.1.0)
     haml (3.1.6)
+    handlebars_assets (0.6.2)
+      execjs (>= 1.2.9)
+      sprockets (>= 2.0.3)
+      tilt
     hike (1.2.1)
     httparty (0.8.3)
       multi_json (~> 1.0)
@@ -256,6 +260,7 @@ DEPENDENCIES
   foreigner
   google-api-client (= 0.4.5)
   haml
+  handlebars_assets
   jettywrapper
   jquery-rails
   json

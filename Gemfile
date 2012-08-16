@@ -13,6 +13,7 @@ group :assets do
   gem 'therubyracer' # required on linux
   gem 'jquery-rails'
   gem "bootstrap-sass-rails"
+  gem 'handlebars_assets'
 end
 
 gem 'haml'

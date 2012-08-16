@@ -1,24 +1,33 @@
+-if @model
+  -title = "Instances of #{@model.name}"
+  :javascript
+    $(Cocupu.controllers.searchEntities('#{@model.id}'));
+-else
+  -title = "Entities"
+  :javascript
+    $(Cocupu.controllers.searchEntities(null));
+
+  /*$($('.model_instances').after(HandlebarsTemplates['node_list_item']({data: 'three'})));*/
+  /*$(console.log(HandlebarsTemplates['node_list_item']({data: 'three'})));*/
+
 =render partial: 'models/models_list'
 %div.content
-  -if @model
-    %h1="Instances of #{@model.name}"
-  -else
-    %h1 Entities
+  %h1=title
 
   =pluralize @nodes.count, "total record"
 
   %ul.model_instances
-    -@nodes.each do |inst|
-      %li.node{id: "node_#{inst.persistent_id}"}
-        =link_to inst.title, node_path(inst)
-        %dl
-          %dt ID:
-          %dd=inst.persistent_id
-          -unless @model
-            %dt Type:
-            %dd=inst.model.name
-          -inst.model.fields.each do |field|
-            -if inst.data[field[:code]].present?
-              %dt #{field[:name]}: 
-              %dd=inst.data[field[:code]]
+    /*-@nodes.each do |inst|*/
+    /*  %li.node{id: "node_#{inst.persistent_id}"}*/
+    /*    =link_to inst.title, node_path(inst)*/
+    /*    %dl*/
+    /*      %dt ID:*/
+    /*      %dd=inst.persistent_id*/
+    /*      -unless @model*/
+    /*        %dt Type:*/
+    /*        %dd=inst.model.name*/
+    /*      -inst.model.fields.each do |field|*/
+    /*        -if inst.data[field[:code]].present?*/
+    /*          %dt #{field[:name]}: */
+    /*          %dd=inst.data[field[:code]]*/
        

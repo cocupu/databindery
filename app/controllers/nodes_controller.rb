@@ -14,7 +14,12 @@ class NodesController < ApplicationController
       format.html do
         @models = Model.accessible_by(current_ability) # for the sidebar
       end
-      format.json { render json: @nodes }
+      format.json do
+        render json: 
+          @nodes.to_json(:only=>[:id, :persistent_id, :data], 
+                         :methods=>[:title],
+                         :include=>[:model => {:only=>[:fields, :label, :name]}]) 
+      end
     end
   end
 

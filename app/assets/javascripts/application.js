@@ -7,7 +7,9 @@
 //= require jquery
 //= require jquery_ujs
 //= require twitter/bootstrap
+//= require handlebars.runtime
 //= require_tree .
+//= require_tree ./templates
 
 // activate bootstrap dropdowns
 $('.dropdown-toggle').dropdown()
