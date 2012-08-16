@@ -10,7 +10,12 @@ class NodesController < ApplicationController
     else
       @nodes = Node.accessible_by(current_ability)
     end
-    @models = Model.accessible_by(current_ability) # for the sidebar
+    respond_to do |format|
+      format.html do
+        @models = Model.accessible_by(current_ability) # for the sidebar
+      end
+      format.json { render json: @nodes }
+    end
   end
 
   def new
@@ -27,7 +32,12 @@ class NodesController < ApplicationController
   end
 
   def show
-    @models = Model.accessible_by(current_ability) # for the sidebar
+    respond_to do |format|
+      format.html do
+        @models = Model.accessible_by(current_ability) # for the sidebar
+      end
+      format.json { render json: @node }
+    end
   end
   
   def create

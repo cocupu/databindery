@@ -27,6 +27,11 @@ describe NodesController do
       assigns[:nodes].should_not include(@different_pool_node) 
       assigns[:models].should == [@model] # for sidebar
     end
+    it "should respond with json" do
+      get :index, :format=>'json'
+      response.should be_success
+      response.body.should == [@node1, @node2, @different_model_node].to_json
+    end
   end
 
   describe "show" do
@@ -44,6 +49,11 @@ describe NodesController do
       response.should be_success
       assigns[:models].should == [@model] # for sidebar
       assigns[:node].should == @node1 
+    end
+    it "should respond with json" do
+      get :show, :id => @node1, :format=>'json'
+      response.should be_success
+      response.body.should == @node1.to_json
     end
     it "should not load node we don't have access to" do
       get :show, :id => @different_pool_node 
