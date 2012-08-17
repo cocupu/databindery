@@ -1,3 +1,12 @@
-%h1 Models
+:javascript
+  $(function() {
+    // Blog is the app name
+    window.router = new Cocupu.Routers.ModelsRouter({models: #{@models.to_json.html_safe}});
+    Backbone.history.start();
+  });
 
-=render partial: 'models_list'
+
+#models
+
+#panels
+

@@ -14,6 +14,7 @@ group :assets do
   gem 'jquery-rails'
   gem "bootstrap-sass-rails"
   gem 'handlebars_assets'
+  gem 'rails-backbone'
 end
 
 gem 'haml'

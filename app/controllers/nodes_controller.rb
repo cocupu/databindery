@@ -16,9 +16,10 @@ class NodesController < ApplicationController
       end
       format.json do
         render json: 
-          @nodes.to_json(:only=>[:id, :persistent_id, :data], 
-                         :methods=>[:title],
-                         :include=>[:model => {:only=>[:fields, :label, :name]}]) 
+          @nodes.to_json
+          # @nodes.to_json(:only=>[:id, :persistent_id, :data], 
+          #                :methods=>[:title],
+          #                :include=>[:model => {:only=>[:fields, :label, :name]}]) 
       end
     end
   end

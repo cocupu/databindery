@@ -4,6 +4,21 @@
 
 @import "common";
 
+.searchPane {
+  float: left;
+  width: 300px;
+  border: 1px solid gray;
+  padding: 5px;
+  margin-left: 10px;
+
+}
+
+table.results {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px gray
+}
+
 ul.models {
   float: left;
   width: 200px;
