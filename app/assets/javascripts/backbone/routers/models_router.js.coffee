@@ -32,7 +32,8 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
     @index() if $(".models").length == 0
 
-    $("#panels").append("<div class=\"searchPane\">Show " + id + "</div>")
+    $("#panels .showView").remove()
+    $("#panels").append("<div class=\"showView searchPane\">Show " + id + "</div>")
     
 
   search: (id) ->

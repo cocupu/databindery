@@ -16,7 +16,7 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
     @searchItems = []
     target = $("table", this.el)
     target.empty()
-    results = [{title: 'One result for ' + @field.val()}, {title: 'Another result for ' + @field.val()}]
+    results = [{id: 5235, title: 'One result for ' + @field.val()}, {id: 2080, title: 'Another result for ' + @field.val()}]
     self = this
     $.each(results, (n, result) ->
       self.searchItems.push(new Cocupu.Views.Entities.SearchResultView(result: result)))
