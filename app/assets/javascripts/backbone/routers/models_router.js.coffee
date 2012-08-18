@@ -7,6 +7,7 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     "new"        : "newEntity"
     "index"      : "index"
     ":id/search" : "search"
+    "entity/:id" : "showEntity"
     ":id/edit"   : "edit"
     ":id"        : "show"
     ".*"         : "index"
@@ -26,6 +27,13 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
 
     @view = new Cocupu.Views.Models.ShowView(model: model)
     $("#panels").html(@view.render().el)
+
+  showEntity: (id) ->
+    # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
+    @index() if $(".models").length == 0
+
+    $("#panels").append("<div class=\"searchPane\">Show " + id + "</div>")
+    
 
   search: (id) ->
     # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
