@@ -11,6 +11,7 @@ describe 'as a signed in user' do
   end
 
   it 'should allow us to create a new entity' do
+    pending "Need to do this in backbone.js"
     within(".subnav #menu#{@my_model.id}.dropdown .dropdown-menu") do
       click_link("Create New")
     end

@@ -121,6 +121,15 @@ GEM
       multi_json (~> 1.0)
       multi_xml
     i18n (0.6.0)
+    jasmine (1.2.1)
+      jasmine-core (>= 1.2.0)
+      rack (~> 1.0)
+      rspec (>= 1.3.1)
+      selenium-webdriver (>= 0.1.3)
+    jasmine-core (1.2.0)
+    jasminerice (0.0.9)
+      coffee-rails
+      haml
     jettywrapper (1.3.1)
       activesupport (>= 3.0.0)
       childprocess
@@ -266,6 +275,8 @@ DEPENDENCIES
   google-api-client (= 0.4.5)
   haml
   handlebars_assets
+  jasmine
+  jasminerice
   jettywrapper
   jquery-rails
   json

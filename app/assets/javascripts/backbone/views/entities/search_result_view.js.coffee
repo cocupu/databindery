@@ -10,16 +10,15 @@ class Cocupu.Views.Entities.SearchResultView extends Backbone.View
 
   clicked: ->
     $("#panels .showView").remove()
-    view = new Cocupu.Views.Entities.ShowView(entity: @options.result)
+    view = new Cocupu.Views.Entities.ShowView(model: @model)
     $("#panels").append(view.render().el)
 
     false
 
 
   render : ->
-    result = @options.result
-    dict = result.toJSON()
-    dict.title = result.title()
+    dict = @model.toJSON()
+    dict.title = @model.title()
     $(@el).addClass('searchResult').html(@template(dict))
 
     return this

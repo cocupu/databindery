@@ -32,9 +32,9 @@ describe NodesController do
       response.should be_success
       json = JSON.parse(response.body)
       json.map { |n| n["id"]}.should == [@node1.id, @node2.id, @different_model_node.id]
-      json.first.keys.should == ["data", "id", "persistent_id", "title", "model"]
-      json.first["model"].keys.should == ['fields', 'label', 'name']
-      json.first["title"].should == @node1.title 
+      json.first.keys.should include("data", "id", "persistent_id", "model_id")
+      #json.first["model"].keys.should == ['fields', 'label', 'name']
+      #json.first["title"].should == @node1.title 
     end
   end
 

@@ -14,7 +14,7 @@ class Cocupu.Views.Entities.ShowView extends Backbone.View
     false
 
   render: ->
-    dict = @options.entity.toJSON()
-    dict.title = @options.entity.title()
+    dict = @model.toJSON()
+    dict.title = @model.title()
     $(@el).addClass('showView').addClass('panel').html(@template(dict))
     return this

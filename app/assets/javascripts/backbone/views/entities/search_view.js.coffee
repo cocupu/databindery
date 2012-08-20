@@ -28,7 +28,7 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
     this.collection.each(@addOne)
 
   addOne: (result) ->
-    view = new Cocupu.Views.Entities.SearchResultView(result: result)
+    view = new Cocupu.Views.Entities.SearchResultView(model: result)
     this.$('.results').append(view.render().el)
     
   initialize: ->

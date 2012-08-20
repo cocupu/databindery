@@ -16,7 +16,7 @@ class NodesController < ApplicationController
       end
       format.json do
         render json: 
-          @nodes.to_json
+          @nodes.to_json(:only=>[:id, :persistent_id, :data, :model_id])
           # @nodes.to_json(:only=>[:id, :persistent_id, :data], 
           #                :methods=>[:title],
           #                :include=>[:model => {:only=>[:fields, :label, :name]}]) 

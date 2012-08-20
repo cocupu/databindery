@@ -36,6 +36,8 @@ group :test, :development do
   gem "rspec-rails"
   gem 'unicorn'  # Use unicorn as the webserver
   gem "factory_girl_rails"
+  gem 'jasmine'
+  gem 'jasminerice'
 end
 group :test do
   gem "database_cleaner", ">= 0.7.0"
