@@ -5,26 +5,40 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
   
   searchItems: []
 
-
   events: {
     "keyup input.search-query": "search"
+    "click .close": "close"
   }
+
+  close: ->
+    @remove()
+    @unbind()
+#    @model.unbind("change", @modelChanged)
+    false
+
 
   search : ->
     #TODO searches may come back out of sequence, so send a seq number with
     return if @field.val().length < 3
-    @searchItems = []
-    target = $("table", this.el)
-    target.empty()
-    results = [{id: 5235, title: 'One result for ' + @field.val()}, {id: 2080, title: 'Another result for ' + @field.val()}]
-    self = this
-    $.each(results, (n, result) ->
-      self.searchItems.push(new Cocupu.Views.Entities.SearchResultView(result: result)))
-    $.each(@searchItems, (n, result) ->
-      target.append(result.render().el))
+    #TODO set url for @collection
+    @collection.fetch()
+
+  addAll : ->
+    this.$('.results').empty()
+    this.collection.each(@addOne)
+
+  addOne: (result) ->
+    view = new Cocupu.Views.Entities.SearchResultView(result: result)
+    this.$('.results').append(view.render().el)
+    
+  initialize: ->
+      _.bindAll(this, 'addOne', 'addAll');
+      @collection = @model.entities()
+      @collection.bind('reset', @addAll)
+      @collection.fetch()
 
   render : ->
-    $(@el).addClass('searchPane').html(@template(@model.toJSON() ))
+    $(@el).addClass('searchPane').addClass('panel').html(@template(@model.toJSON() ))
     @field = $(".search-query", @el)
 
     this.$("form").backboneLink(@model)

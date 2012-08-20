@@ -26,14 +26,14 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     model = @models.get(id)
 
     @view = new Cocupu.Views.Models.ShowView(model: model)
-    $("#panels").html(@view.render().el)
+    $("#panels").prepend(@view.render().el)
 
   showEntity: (id) ->
     # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
     @index() if $(".models").length == 0
 
     $("#panels .showView").remove()
-    $("#panels").append("<div class=\"showView searchPane\">Show " + id + "</div>")
+    $("#panels").append("<div class=\"showView panel\"><div class=\"panel-header\"><h3>Show " + id + "</h3></div></div>")
     
 
   search: (id) ->
@@ -41,8 +41,9 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     @index() if $(".models").length == 0
     model = @models.get(id)
 
+    $("#panels .searchPane").remove()
     @view = new Cocupu.Views.Entities.SearchView(model: model)
-    $("#panels").html(@view.render().el)
+    $("#panels").prepend(@view.render().el)
     
 
   edit: (id) ->

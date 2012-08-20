@@ -9,7 +9,7 @@ class Cocupu.Models.Model extends Backbone.Model
   entities: (options) ->
     collection = new Cocupu.Collections.EntitiesCollection
     collection.url = '/models/' + @id + '/nodes.json'
-    collection.fetch(success: options.success)
+    collection
 
 class Cocupu.Collections.ModelsCollection extends Backbone.Collection
   model: Cocupu.Models.Model
