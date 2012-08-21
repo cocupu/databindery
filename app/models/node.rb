@@ -11,7 +11,7 @@ class Node < ActiveRecord::Base
   after_save :update_index
   after_destroy :remove_from_index
   attr_accessible :data
-  attr_accessible :data, :associations, :binding, :model_id, :pool_id, :persistent_id, :as => :admin
+  attr_accessible :data, :associations, :binding, :model_id, :pool_id, :persistent_id, :parent_id,  :identity_id, :as => :admin
 
   def remove_from_index
     Cocupu.solr.delete_by_id self.id
@@ -30,7 +30,9 @@ class Node < ActiveRecord::Base
   # override activerecord to copy-on-write
   def update
     n = Node.new
-    n.assign_attributes(self.attributes, :as=>:admin)
+    copied_values = self.attributes.select {|k, v| !['created_at', 'updated_at', 'id'].include?(k) }
+    copied_values[:parent_id] = id
+    n.assign_attributes(copied_values, :as=>:admin)
     n.save
     n
   end

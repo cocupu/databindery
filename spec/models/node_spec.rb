@@ -27,7 +27,7 @@ describe Node do
     subject.associations['authors'] << 888
 
     ### Test copy-on-write
-    ns = subject.save!
+    subject.save!
     new_subject = Node.latest_version(subject.persistent_id)
     new_subject.associations.should == { 'authors' =>[ 123, 3232, 888], 'undefined' =>[882]}
   end
@@ -49,6 +49,25 @@ describe Node do
     subject.update_attributes(:identity_id=>identity.id, :data=>{'boo'=>'bap'})
     new = Node.find_all_by_persistent_id(subject.persistent_id)
     new.length.should == 2
+  end
+  it "should copy on write (except id, parent_id and timestamps)" do
+    subject.pool = @pool
+    subject.save!
+    subject.attributes = {:data=>{'boo'=>'bap'}}
+    new_subject = subject.update
+    old_attributes = subject.attributes
+    old_attributes.delete('id')
+    old_attributes.delete('parent_id')
+    old_attributes.delete('created_at')
+    old_attributes.delete('updated_at')
+
+    new_attributes = new_subject.attributes
+    new_attributes.delete('id')
+    new_attributes.delete('created_at')
+    new_attributes.delete('updated_at')
+    new_attributes.delete('parent_id').should == subject.id
+
+    new_attributes.should == old_attributes
   end
   it "should get the latest version" do
     subject.pool = @pool
