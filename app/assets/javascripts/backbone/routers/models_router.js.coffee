@@ -33,6 +33,8 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
     @index() if $(".models").length == 0
 
+
+
     $("#panels .showView").remove()
     entity = new Cocupu.Models.Entity({id: id})
     view = new Cocupu.Views.Entities.ShowView(model: entity)

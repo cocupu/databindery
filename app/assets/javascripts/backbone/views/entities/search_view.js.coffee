@@ -13,7 +13,7 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
   close: ->
     @remove()
     @unbind()
-#    @model.unbind("change", @modelChanged)
+    @collection.unbind("reset", @addAll)
     false
 
 
