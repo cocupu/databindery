@@ -1,4 +1,5 @@
 class Cocupu.Models.Entity extends Backbone.Model
+  urlRoot : '/nodes'
   paramRoot: 'entity'
 
   defaults:

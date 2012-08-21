@@ -1,7 +1,7 @@
 module NodesHelper
   def draw_field(field, default=nil)
     case field["type"]
-    when "Text Field"
+    when "text"
       draw_text_field(field, default)
     end
   end

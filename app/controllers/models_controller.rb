@@ -25,7 +25,7 @@ class ModelsController < ApplicationController
     @field = {name: '', type: '', uri: '', multivalued: false}
     @association= {name: '', type: '', references: ''}
     @association_types = Model::Association::TYPES
-    @field_types = ['Text Field', 'Text Area', 'Date']
+    @field_types = [['Text Field', 'text'], ['Text Area', 'textarea'], ['Date', 'date']]
   end
 
   def update

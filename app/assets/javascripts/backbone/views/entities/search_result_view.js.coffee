@@ -12,6 +12,7 @@ class Cocupu.Views.Entities.SearchResultView extends Backbone.View
     $("#panels .showView").remove()
     view = new Cocupu.Views.Entities.ShowView(model: @model)
     $("#panels").append(view.render().el)
+    view.changed() #force a call to changed, because the model is already loaded
 
     false
 

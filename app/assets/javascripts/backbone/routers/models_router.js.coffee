@@ -29,12 +29,16 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     $("#panels").prepend(@view.render().el)
 
   showEntity: (id) ->
+  
     # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
     @index() if $(".models").length == 0
 
     $("#panels .showView").remove()
-    $("#panels").append("<div class=\"showView panel\"><div class=\"panel-header\"><h3>Show " + id + "</h3></div></div>")
-    
+    entity = new Cocupu.Models.Entity({id: id})
+    view = new Cocupu.Views.Entities.ShowView(model: entity)
+    $("#panels").append(view.render().el)
+    entity.fetch()
+
 
   search: (id) ->
     # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
