@@ -23,6 +23,7 @@ class Cocupu.Views.Entities.SearchResultView extends Backbone.View
     dict = @model.toJSON()
     dict.title = @model.title()
     $(@el).addClass('searchResult').html(@template(dict))
+    $(@el).draggable(	appendTo: "body", helper: "clone")
 
     return this
 
