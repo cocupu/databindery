@@ -3,7 +3,7 @@ require 'spec_helper'
 describe NodesHelper do
 
   before do
-    @field = {"name"=>"Description", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"description"}
+    @field = {"name"=>"Description", "type"=>"text", "uri"=>"dc:description", "code"=>"description"}
   end
 
   it "should draw field without default" do

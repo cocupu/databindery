@@ -65,7 +65,8 @@
             %td=index+cumulative + 1
             %td=value[:name]
             %td=value[:type]
-            %td=Model.find(value[:references]).name
+            -model = Model.find(value[:references])
+            %td=link_to model.name, edit_model_path(model)
             %td
             %td
     =f.submit "Update #{@model.name}", :class=>'btn btn-primary', :style=>"margin-top: 5px"

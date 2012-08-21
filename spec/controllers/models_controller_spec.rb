@@ -51,7 +51,7 @@ describe ModelsController do
         assigns[:field].should == {name: '', type: '', uri: '', multivalued: false}.stringify_keys
         assigns[:association].should == {name: '', type: '', references: ''}.stringify_keys
         assigns[:association_types].should == ['Has Many', 'Has One', 'Ordered List', 'Unordered List']
-        assigns[:field_types].should == ['Text Field', 'Text Area', 'Date']
+        assigns[:field_types].should == [["Text Field", "text"], ["Text Area", "textarea"], ["Date", "date"]]
       end
     end
   end
