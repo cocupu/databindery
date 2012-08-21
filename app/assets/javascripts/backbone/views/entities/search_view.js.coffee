@@ -17,11 +17,17 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
     false
 
 
-  search : ->
-    #TODO searches may come back out of sequence, so send a seq number with
+  search : (event) ->
     return if @field.val().length < 3
-    #TODO set url for @collection
-    @collection.fetch()
+    clearTimeout(@searching )
+    self = this
+    @searching = setTimeout \
+      ->
+        #TODO set url for @collection
+        self.collection.fetch()
+        false
+      ,
+      300  #delay of 300ms
 
   addAll : ->
     this.$('.results').empty()
