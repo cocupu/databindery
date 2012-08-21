@@ -5,7 +5,7 @@ describe NodesController do
     before do
       @user = FactoryGirl.create :login_credential
       @model = FactoryGirl.create(:model, owner: @user.identities.first)
-      @node1 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)
+      @node1 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first, :associations=>{'authors'=>[1231, 2227], 'undefined'=>'123721'})
       @node2 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)
       @different_pool_node = FactoryGirl.create(:node, model: @model )
       @different_model_node = FactoryGirl.create(:node, pool: @user.identities.first.pools.first )
@@ -32,8 +32,8 @@ describe NodesController do
       response.should be_success
       json = JSON.parse(response.body)
       json.map { |n| n["id"]}.should == [@node1.id, @node2.id, @different_model_node.id]
-      json.first.keys.should include("data", "id", "persistent_id", "model_id")
-      #json.first["model"].keys.should == ['fields', 'label', 'name']
+      json.first.keys.should include("data", 'associations', "id", "persistent_id", "model_id")
+      json.first["associations"].should == {'authors'=>[1231, 2227], 'undefined'=>'123721'}
       #json.first["title"].should == @node1.title 
     end
   end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120814185830) do
+ActiveRecord::Schema.define(:version => 20120821202946) do
 
   create_table "change_sets", :force => true do |t|
     t.text     "data"
@@ -117,6 +117,7 @@ ActiveRecord::Schema.define(:version => 20120814185830) do
     t.datetime "updated_at",    :null => false
     t.integer  "model_id"
     t.string   "binding"
+    t.text     "associations"
   end
 
   add_index "nodes", ["binding"], :name => "index_nodes_on_binding"

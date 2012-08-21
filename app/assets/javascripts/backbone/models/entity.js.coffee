@@ -4,6 +4,7 @@ class Cocupu.Models.Entity extends Backbone.Model
 
   defaults:
     data: null
+    associations: {}
     content: null
     persistent_id: null
     model_id: null

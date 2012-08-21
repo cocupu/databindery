@@ -5,7 +5,7 @@ describe Node do
     @pool = Pool.create!(:owner=>Identity.create!)
   end
   before do
-    subject.model = Model.create!(name: "Test Model", :owner=>Identity.create!)
+    subject.model = Model.create!(name: "Test Model", :owner=>Identity.create!, :associations=>[{type: 'Has Many', name: 'authors', references: 39}])
   end
   it "should have a binding" do
     subject.binding = '0B4oXai2d4yz6eENDUVJpQ1NkV3M'
@@ -18,6 +18,20 @@ describe Node do
     subject.save!
     subject.reload.data.should == {:foo =>'bar', 'boop' =>'bop'}
   end
+  it "should store a hash of associations" do
+    subject.associations = { 'authors' =>[ 123, 3232], 'undefined' =>[882]}
+    subject.associations.should == { 'authors' =>[ 123, 3232], 'undefined' =>[882]}
+    subject.pool = @pool
+    subject.save!
+    subject.associations.should == { 'authors' =>[ 123, 3232], 'undefined' =>[882]}
+    subject.associations['authors'] << 888
+
+    ### Test copy-on-write
+    ns = subject.save!
+    new_subject = Node.latest_version(subject.persistent_id)
+    new_subject.associations.should == { 'authors' =>[ 123, 3232, 888], 'undefined' =>[882]}
+  end
+
   it "should create a persistent_id when created" do
     subject.pool = @pool
     subject.persistent_id.should be_nil

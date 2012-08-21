@@ -6,10 +6,12 @@ class Node < ActiveRecord::Base
   validates :pool, presence: true
 
   serialize :data, Hash
+  serialize :associations, Hash
 
   after_save :update_index
   after_destroy :remove_from_index
   attr_accessible :data
+  attr_accessible :data, :associations, :binding, :model_id, :pool_id, :persistent_id, :as => :admin
 
   def remove_from_index
     Cocupu.solr.delete_by_id self.id
@@ -27,10 +29,8 @@ class Node < ActiveRecord::Base
 
   # override activerecord to copy-on-write
   def update
-    n = Node.new(self.attributes)
-    n.model = self.model
-    n.pool = self.pool
-    n.persistent_id = self.persistent_id
+    n = Node.new
+    n.assign_attributes(self.attributes, :as=>:admin)
     n.save
     n
   end
