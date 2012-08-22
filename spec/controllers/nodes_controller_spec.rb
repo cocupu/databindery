@@ -142,7 +142,7 @@ describe NodesController do
     end
     it "should be successful using a model I own" do 
       post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@my_model}
-      response.should redirect_to node_path(assigns[:node].persistent_id)
+      response.should redirect_to node_path(assigns[:node])
       assigns[:node].binding.should == '0B4oXai2d4yz6bUstRldTeXV0dHM'
       assigns[:node].model.should == @my_model
       flash[:notice].should == "#{@my_model.name} created"

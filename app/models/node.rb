@@ -16,6 +16,11 @@ class Node < ActiveRecord::Base
   ## Id is our version, so this ensures that find_by_persistent_id always returns the most recent version
   default_scope order('id desc')
 
+  def to_param
+    # Do we need to_key also?
+    persistent_id
+  end
+
   def remove_from_index
     Cocupu.solr.delete_by_id self.id
     Cocupu.solr.commit

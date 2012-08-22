@@ -9,6 +9,12 @@ describe Node do
                       fields: [{code: 'first_name'}, {code: 'last_name'}, {code: 'title'}],
                       label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: 39}])
   end
+
+  it "should use persistent_id as to_param" do
+    subject.pool = @pool
+    subject.save!
+    subject.to_param.should == subject.persistent_id
+  end
   it "should have a binding" do
     subject.binding = '0B4oXai2d4yz6eENDUVJpQ1NkV3M'
     subject.binding.should == '0B4oXai2d4yz6eENDUVJpQ1NkV3M'
