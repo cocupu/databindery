@@ -50,6 +50,10 @@ class Node < ActiveRecord::Base
     data[model.label].present? ? data[model.label] : persistent_id
   end
 
+  def association_display
+    serializable_hash(:only=>[:id, :persistent_id], :methods=>[:title])
+  end
+
   def self.solr_name(field_name)
     field_name.downcase.gsub(' ','_') + "_t"
   end

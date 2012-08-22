@@ -77,6 +77,14 @@ class Model < ActiveRecord::Base
 
   validates :label, :inclusion => {:in=> lambda {|foo| foo.keys }, :message=>"must be a field"}, :if=>Proc.new { |a| a.label }
 
+  validate :association_cannot_be_named_undefined
+
+  def association_cannot_be_named_undefined
+    if associations.any?{|a| a[:name] == 'undefined'}
+      errors.add(:associations, "name can't be 'undefined'")
+    end
+  end
+
   def init
     self.fields ||= []
     self.associations ||= []

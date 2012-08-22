@@ -28,6 +28,13 @@ describe Model do
         {type: 'Unordered List', name: 'members', references: 41}]
     end
 
+    it "should not allow an association to be named undefined" do
+      subject.associations << {type: 'Has One', name: 'undefined', references: 77}
+      subject.owner = Identity.create
+      subject.should_not be_valid
+      subject.errors.full_messages.should == ["Associations name can't be 'undefined'"]
+    end
+
     it "should have labels" do
       subject.inbound_associations.map(&:label).should include("Has One Talk", "Has Many Authors")
     end

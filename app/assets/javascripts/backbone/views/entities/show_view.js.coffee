@@ -25,13 +25,12 @@ class Cocupu.Views.Entities.ShowView extends Backbone.View
       elm = new Cocupu.Views.Entities.ShowFieldView(model: field).render().el
       self.$('form .form-actions').before(elm)
     )
-    $.each(structure.get('associations'), (n, field) ->
-      elm = new Cocupu.Views.Entities.ShowAssociationView(model: field, values: dict.associations[field.name]).render().el
-      self.$('.associations').append(elm)
-    )
-    # any undefined associations
-    elm = new Cocupu.Views.Entities.ShowAssociationView(model: {name: 'Uncategorized'}, values: dict.associations['undefined']).render().el
-    @$('.associations').append(elm)
+      
+    associations = new Cocupu.Models.Association
+    associations.url = '/nodes/' + @model.id + '/associations'
+    elm = new Cocupu.Views.Entities.ShowAssociationsView(model: associations, structure: structure).render().el
+    this.$('.panel-body').append(elm)
+    associations.fetch()
 
   close: ->
     @remove()

@@ -18,7 +18,7 @@ class Cocupu.Views.Entities.ShowAssociationView extends Backbone.View
     node = $(@el)
     count = 0
     $.each(@values, (n, val)->
-      $('table', node).append("<tr><td>" + val + "</td></tr>")
+      $('table', node).append("<tr><td>" + val.title + "</td></tr>")
       count++
     )
     while count < 4
