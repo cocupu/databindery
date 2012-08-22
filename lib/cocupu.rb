@@ -10,7 +10,18 @@ module Cocupu
   def self.solr_config
     @solr_config ||= begin
         raise "You are missing a solr configuration file: #{solr_file}. Have you run \"rails generate cocupu:jetty\"?" unless File.exists?(solr_file) 
-        solr_config = YAML::load(File.open(solr_file))
+
+        begin
+          @solr_erb = ERB.new(IO.read(solr_file)).result(binding)
+        rescue Exception => e
+          raise("solr.yml was found, but could not be parsed with ERB. \n#{$!.inspect}")
+        end
+        begin
+          solr_config = YAML::load(@solr_erb)
+        rescue StandardError => e
+          raise("solr.yml was found, but could not be parsed.\n")
+        end
+
         raise "The #{::Rails.env} environment settings were not found in the solr.yml config" unless solr_config[::Rails.env]
         solr_config[::Rails.env].symbolize_keys
       end
