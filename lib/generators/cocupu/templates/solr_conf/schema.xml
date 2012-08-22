@@ -541,8 +541,13 @@
    we use 'tint' for faster range-queries. -->
    <!-- <field name="pub_date_sort" type="tint" indexed="true" stored="true" multiValued="false"/> -->
      
-   <!-- format is used for facet, display, and choosing which partial to use for the show view, so it must be stored and indexed -->
-   <field name="model" type="string" indexed="true" stored="true"/>
+   <!-- these are the terms that Cocupu reserves for its own use -->
+   <field name="model" type="pint" indexed="true" stored="true"/>
+   <field name="model_name" type="string" indexed="true" stored="true"/>
+   <field name="format" type="string" indexed="true" stored="true"/>
+   <field name="version" type="pint" indexed="true" stored="true"/>
+   <field name="pool" type="pint" indexed="true" stored="true"/>
+   <field name="title" type="text" indexed="true" stored="true"/>
 
    
 

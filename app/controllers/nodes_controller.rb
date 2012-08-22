@@ -1,5 +1,6 @@
 class NodesController < ApplicationController
-  load_and_authorize_resource :except=>:index
+  include Cocupu::Search
+  load_and_authorize_resource :except=>[:index, :search]
   layout 'full_width'
 
   def index
@@ -20,6 +21,31 @@ class NodesController < ApplicationController
           # @nodes.to_json(:only=>[:id, :persistent_id, :data], 
           #                :methods=>[:title],
           #                :include=>[:model => {:only=>[:fields, :label, :name]}]) 
+      end
+    end
+  end
+
+  def search
+    if params[:model_id]
+      @model = Model.find(params[:model_id])
+      authorize! :read, @model
+    end
+
+    # Constrain results to this pool
+    fq = "pool:#{current_pool.id}"
+    fq += " AND model:#{@model.id}" if @model
+    fq += " AND format:Node"
+
+    ## TODO need a better way to get the query fields.  Not all these models are necessarily in this pool
+    query_fields = Model.all.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
+    (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', :fq=>fq, 'facet.field' => ['name_s', 'model']})
+    
+    @results = Node.find(solr_response['docs'].map{|d| d['version']})
+    
+
+    respond_to do |format|
+      format.json do
+        render json: @results
       end
     end
   end
@@ -66,5 +92,6 @@ class NodesController < ApplicationController
     new_version = @node.update
     redirect_to node_path(new_version), :notice=>"#{@node.model.name} updated"
   end
+
 end
   

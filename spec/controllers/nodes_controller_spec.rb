@@ -38,6 +38,36 @@ describe NodesController do
     end
   end
 
+  describe "search" do
+    before do
+      @user = FactoryGirl.create :login_credential
+      pool = @user.identities.first.pools.first
+      @model = FactoryGirl.create(:model, owner: @user.identities.first, label: 'first_name',
+                  fields: [{:code=>'first_name'}, {:code=>'last_name'}, {:code=>'title'}])
+      @node1 = FactoryGirl.create(:node, model: @model, pool: pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
+      @node2 = FactoryGirl.create(:node, model: @model, pool: pool, :data=>{'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'})
+      @different_pool_node = FactoryGirl.create(:node, model: @model )
+      @different_model_node = FactoryGirl.create(:node, pool: pool)
+      sign_in @user
+    end
+    it "when model is not provided" do
+      get :search, :format=>'json'
+      response.should be_success
+      json = JSON.parse(response.body)
+      json.map { |n| n["id"]}.should == [@node1.id, @node2.id, @different_model_node.id]
+      json.first.keys.should include("data", 'associations', "id", "persistent_id", "model_id")
+      json.first["data"].should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
+    end
+    it "when model is provided" do
+      get :search, :format=>'json', :model_id=>@model.id
+      response.should be_success
+      json = JSON.parse(response.body)
+      json.map { |n| n["id"]}.should == [@node1.id, @node2.id]
+      json.first["data"].should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
+    end
+  end
+
+
   describe "show" do
     before do
       @user = FactoryGirl.create :login_credential

@@ -38,7 +38,7 @@ class Node < ActiveRecord::Base
   end
 
   def to_solr() 
-    doc = {'id' => persistent_id, 'version_s'=>id, 'model' => model.name, 'pool_s' => pool_id}
+    doc = {'format'=>'Node', 'title'=> title, 'id' => persistent_id, 'version'=>id, 'model' => model.id, 'model_name' => model.name, 'pool' => pool_id}
     return doc if data.nil?
     model.fields.each do |f|
       doc[Node.solr_name(f[:code])] = data[f[:code]]
