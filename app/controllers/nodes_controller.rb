@@ -1,6 +1,6 @@
 class NodesController < ApplicationController
   include Cocupu::Search
-  load_and_authorize_resource :except=>[:index, :search]
+  load_and_authorize_resource :except=>[:index, :search], :find_by => :persistent_id
   layout 'full_width'
 
   def index
@@ -40,7 +40,7 @@ class NodesController < ApplicationController
     query_fields = Model.all.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
     (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', :fq=>fq, 'facet.field' => ['name_s', 'model']})
     
-    @results = Node.find(solr_response['docs'].map{|d| d['version']})
+    @results = solr_response['docs'].map{|d| Node.find_by_persistent_id(d['id'])}
     
 
     respond_to do |format|

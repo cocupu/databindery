@@ -1,6 +1,6 @@
 class AssociationsController < ApplicationController
   load_and_authorize_resource :model, :only=>:create
-  load_and_authorize_resource :node, :only=>[:index, :create]
+  load_and_authorize_resource :node, :only=>[:index, :create], :find_by => :persistent_id
   def create
     if @model
       @model.associations << params[:association]
@@ -23,13 +23,13 @@ class AssociationsController < ApplicationController
       associations[assoc_name] = []
       if @node.associations[assoc_name]
         @node.associations[assoc_name].each do |id|
-          associations[assoc_name] <<  Node.find(id).association_display
+          associations[assoc_name] <<  Node.find_by_persistent_id(id).association_display
         end
       end
       associations['undefined'] = []
       if @node.associations['undefined']
         @node.associations['undefined'].each do |id| 
-          associations['undefined'] << Node.find(id).association_display
+          associations['undefined'] << Node.find_by_persistent_id(id).association_display
         end
       end
     end

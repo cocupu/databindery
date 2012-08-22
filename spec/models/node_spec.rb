@@ -68,9 +68,9 @@ describe Node do
     new_attributes.delete('created_at')
     new_attributes.delete('updated_at')
     new_attributes.delete('parent_id').should == subject.id
-
     new_attributes.should == old_attributes
   end
+
   it "should get the latest version" do
     subject.pool = @pool
     subject.save!
@@ -78,6 +78,15 @@ describe Node do
     new_subject = subject.update
 
     Node.latest_version(subject.persistent_id).should == new_subject
+  end
+  describe "find_by_persistent_id" do
+    it "should always return the latest version" do
+      subject.pool = @pool
+      subject.save!
+      subject.attributes = {:data=>{'boo'=>'bap'}}
+      new_subject = subject.update
+      Node.latest_version(subject.persistent_id).should == Node.find_by_persistent_id(subject.persistent_id) 
+    end
   end
   it "should create a new changeset when it's changed"
   it "should store it's parent"

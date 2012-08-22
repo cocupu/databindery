@@ -31,9 +31,9 @@ describe NodesController do
       get :index, :format=>'json'
       response.should be_success
       json = JSON.parse(response.body)
-      json.map { |n| n["id"]}.should == [@node1.id, @node2.id, @different_model_node.id]
-      json.first.keys.should include("data", 'associations', "id", "persistent_id", "model_id")
-      json.first["associations"].should == {'authors'=>[1231, 2227], 'undefined'=>'123721'}
+      json.map { |n| n["id"]}.should == [ @different_model_node.persistent_id, @node2.persistent_id, @node1.persistent_id]
+      json.last.keys.should include("data", 'associations', "id", "persistent_id", "model_id")
+      json.last["associations"].should == {'authors'=>[1231, 2227], 'undefined'=>'123721'}
       #json.first["title"].should == @node1.title 
     end
   end
@@ -54,7 +54,7 @@ describe NodesController do
       get :search, :format=>'json'
       response.should be_success
       json = JSON.parse(response.body)
-      json.map { |n| n["id"]}.should == [@node1.id, @node2.id, @different_model_node.id]
+      json.map { |n| n["id"]}.should == [@node1.persistent_id, @node2.persistent_id, @different_model_node.persistent_id]
       json.first.keys.should include("data", 'associations', "id", "persistent_id", "model_id")
       json.first["data"].should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
     end
@@ -62,7 +62,7 @@ describe NodesController do
       get :search, :format=>'json', :q=>'Coyne'
       response.should be_success
       json = JSON.parse(response.body)
-      json.map { |n| n["id"]}.should == [@node1.id]
+      json.map { |n| n["id"]}.should == [@node1.persistent_id]
       json.first.keys.should include("data", 'associations', "id", "persistent_id", "model_id")
       json.first["data"].should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
     end
@@ -70,7 +70,7 @@ describe NodesController do
       get :search, :format=>'json', :model_id=>@model.id
       response.should be_success
       json = JSON.parse(response.body)
-      json.map { |n| n["id"]}.should == [@node1.id, @node2.id]
+      json.map { |n| n["id"]}.should == [@node1.persistent_id, @node2.persistent_id]
       json.first["data"].should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
     end
   end
@@ -87,18 +87,18 @@ describe NodesController do
       sign_in @user
     end
     it "should load the node and the models" do
-      get :show, :id => @node1
+      get :show, :id => @node1.persistent_id
       response.should be_success
       assigns[:models].should == [@model] # for sidebar
       assigns[:node].should == @node1 
     end
     it "should respond with json" do
-      get :show, :id => @node1, :format=>'json'
+      get :show, :id => @node1.persistent_id, :format=>'json'
       response.should be_success
       response.body.should == @node1.to_json
     end
     it "should not load node we don't have access to" do
-      get :show, :id => @different_pool_node 
+      get :show, :id => @different_pool_node.persistent_id 
       response.should redirect_to root_path
       flash[:alert].should == "You are not authorized to access this page."
     end
@@ -168,7 +168,7 @@ describe NodesController do
       sign_in @user
     end
     it "should load the node and the models" do
-      put :update, :id => @node1, :node=>{:data=>{ 'f1' => 'Updated val' }}
+      put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }}
       new_version = Node.latest_version(@node1.persistent_id)
       response.should redirect_to node_path(new_version)
       new_version.data['f1'].should == "Updated val"
@@ -176,7 +176,7 @@ describe NodesController do
       
     end
     it "should not load node we don't have access to" do
-      put :update, :id => @different_pool_node, :node=>{:data=>{ }}
+      put :update, :id => @different_pool_node.persistent_id, :node=>{:data=>{ }}
       response.should redirect_to root_path
       flash[:alert].should == "You are not authorized to access this page."
     end

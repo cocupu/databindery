@@ -15,8 +15,6 @@ class Cocupu.Views.Entities.ShowAssociationView extends Backbone.View
   
 
   add: (node) ->
-    #TODO perhaps (PUT /nodes/37/associations  {name: recordings, target: node.id?})
-    # save this model
     association = new Cocupu.Models.Association(name: @model.name, target_id: node.attr('data-id'))
     association.url = "/nodes/" +@options.node.id+ "/associations"
     association.save()

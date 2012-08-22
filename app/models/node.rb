@@ -13,6 +13,9 @@ class Node < ActiveRecord::Base
   attr_accessible :data
   attr_accessible :data, :associations, :binding, :model_id, :pool_id, :persistent_id, :parent_id,  :identity_id, :as => :admin
 
+  ## Id is our version, so this ensures that find_by_persistent_id always returns the most recent version
+  default_scope order('id desc')
+
   def remove_from_index
     Cocupu.solr.delete_by_id self.id
     Cocupu.solr.commit
@@ -52,6 +55,12 @@ class Node < ActiveRecord::Base
 
   def association_display
     serializable_hash(:only=>[:id, :persistent_id], :methods=>[:title])
+  end
+
+  def serializable_hash(args)
+    hash = super
+    hash['id'] = hash['persistent_id']
+    hash
   end
 
   def self.solr_name(field_name)

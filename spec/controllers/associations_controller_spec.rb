@@ -9,7 +9,7 @@ describe AssociationsController do
       describe "when not logged on" do
         it "should redirect to root" do
           @book = FactoryGirl.create(:node)
-          get :index, :node_id=>@book.id 
+          get :index, :node_id=>@book.persistent_id 
           response.should redirect_to root_path
         end
       end
@@ -20,7 +20,7 @@ describe AssociationsController do
         end
         it "should redirect on a model that's not mine " do
           @not_my_node = FactoryGirl.create(:node)
-          get :index, :node_id=>@not_my_node.id 
+          get :index, :node_id=>@not_my_node.persistent_id 
           response.should redirect_to root_path
         end
         describe "on a model that is mine" do
@@ -42,17 +42,17 @@ describe AssociationsController do
                     :associations=>{'authors'=>[@author1.id, @author2.id], 'undefined'=>[@publisher.id]})
           end
           it "should be successful" do
-            get :index, :node_id=>@book.id, :format=>:json
+            get :index, :node_id=>@book.persistent_id, :format=>:json
             response.should be_success
             json = JSON.parse(response.body)
             json.keys.should == ['authors', 'undefined']
-            json['authors'].should == [{"id"=>@author1.id,
+            json['authors'].should == [{"id"=>@author1.persistent_id,
                 "persistent_id"=>@author1.persistent_id,
                 "title"=>"Agatha Christie"},
-               {"id"=>@author2.id,
+               {"id"=>@author2.persistent_id,
                 "persistent_id"=>@author2.persistent_id,
                 "title"=>"Raymond Chandler"}]
-            json['undefined'].should == [{'id'=>@publisher.id, "persistent_id"=>@publisher.persistent_id,
+            json['undefined'].should == [{'id'=>@publisher.persistent_id, "persistent_id"=>@publisher.persistent_id,
                 "title"=>'Simon & Schuster Ltd.'}]
           end
         end
@@ -65,7 +65,7 @@ describe AssociationsController do
         end
         it "should redirect on a model that's not mine " do
           @not_my_node = FactoryGirl.create(:node)
-          post :create, :node_id=>@not_my_node.id 
+          post :create, :node_id=>@not_my_node.persistent_id 
           response.should redirect_to root_path
         end
         describe "on a model that is mine" do
@@ -87,7 +87,7 @@ describe AssociationsController do
                     :associations=>{'authors'=>[@author1.id, @author2.id], 'undefined'=>[@publisher.id]})
           end
           it "should be very successful" do
-            post :create, :node_id=>@book.id, :name=>'recordings', :target_id=>'5678'
+            post :create, :node_id=>@book.persistent_id, :name=>'recordings', :target_id=>'5678'
             response.should be_success
           end
         end
