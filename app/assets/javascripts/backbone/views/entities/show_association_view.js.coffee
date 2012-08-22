@@ -5,24 +5,34 @@ class Cocupu.Views.Entities.ShowAssociationView extends Backbone.View
   values: []
 
   initialize: (options) ->
-    #TODO look these up. perhaps (/nodes/37/associations/recordings)
     if options.values
       @values = options.values
+
+  addToTable: (text) ->
+    $('table', $(@el)).append("<tr><td>" + text + "</td></tr>")
+  
+
+  add: (node) ->
+    #TODO perhaps (PUT /nodes/37/associations  {name: recordings, target: node.id?})
+    # save this model
+    console.log node
+    @addToTable(node.text())
 
   render: ->
     dict = @model
     $(@el).addClass('association').html(@template(dict))
-    $(@el).droppable(drop: ( event, ui ) ->
-      $( "<div></div>" ).text( ui.draggable.text() ).appendTo( this )
-    )
     node = $(@el)
+    $(@el).droppable(drop: ( event, ui ) ->
+      self.add(ui.draggable)
+    )
     count = 0
+    self = this
     $.each(@values, (n, val)->
-      $('table', node).append("<tr><td>" + val.title + "</td></tr>")
+      self.addToTable(val.title)
       count++
     )
     while count < 4
-      $('table', node).append("<tr><td></td></tr>")
+      self.addToTable('')
       count++
     return this
 

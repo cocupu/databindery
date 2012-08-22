@@ -6,17 +6,14 @@
 //
 //= require jquery
 //= require jquery_ujs
+// we're just using core and droppable from jquery-ui
+//= require jquery-ui-1.8.23.min 
 //= require twitter/bootstrap
-//= require handlebars.runtime
 //= require underscore
 //= require backbone
 //= require backbone_rails_sync
 //= require backbone_datalink
 //= require backbone/cocupu
 //= require_tree .
-//= require_tree ./templates
-
-// activate bootstrap dropdowns
-$('.dropdown-toggle').dropdown()
 
 
