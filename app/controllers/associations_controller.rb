@@ -3,6 +3,7 @@ class AssociationsController < ApplicationController
   load_and_authorize_resource :node, :only=>[:index, :create], :find_by => :persistent_id
   def create
     if @model
+      params[:association][:label] = params[:association][:name].capitalize
       @model.associations << params[:association]
       @model.save!
       redirect_to edit_model_path(@model)

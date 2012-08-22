@@ -17,16 +17,16 @@ describe Model do
     before do
       #TODO associations need a label so that name can be an internal code.
       @other_model = FactoryGirl.create(:model)
-      subject.associations << {type: 'Has One', name: 'talk', references: @other_model.id}
-      subject.associations << {type: 'Has Many', name: 'authors', references: 39}
-      subject.associations << {type: 'Ordered List', name: 'tracks', references: 40}
-      subject.associations << {type: 'Unordered List', name: 'members', references: 41}
+      subject.associations << {type: 'Has One', name: 'talk', label: "Talk", references: @other_model.id}
+      subject.associations << {type: 'Has Many', name: 'authors', label: "Authors", references: 39}
+      subject.associations << {type: 'Ordered List', name: 'tracks', label: "Tracks", references: 40}
+      subject.associations << {type: 'Unordered List', name: 'members', label: "Members", references: 41}
     end
     it "should have many associations" do
-      subject.associations.should == [{type: 'Has One', name: 'talk', references: @other_model.id},
-        {type: 'Has Many', name: 'authors', references: 39}, 
-        {type: 'Ordered List', name: 'tracks', references: 40}, 
-        {type: 'Unordered List', name: 'members', references: 41}]
+      subject.associations.should == [{type: 'Has One', name: 'talk', label: "Talk", references: @other_model.id},
+        {type: 'Has Many', name: 'authors', label: "Authors", references: 39}, 
+        {type: 'Ordered List', name: 'tracks', label: "Tracks", references: 40}, 
+        {type: 'Unordered List', name: 'members', label: "Members", references: 41}]
     end
 
     it "should not allow an association to be named undefined" do
@@ -46,10 +46,10 @@ describe Model do
 
 
     it "should have many outbound associations" do
-      subject.outbound_associations.should == [{type: 'Ordered List', name: 'tracks', references: 40}, {type: 'Unordered List', name: 'members', references: 41}]
+      subject.outbound_associations.should == [{type: 'Ordered List', name: 'tracks', label: 'Tracks', references: 40}, {type: 'Unordered List', name: 'members', label: 'Members', references: 41}]
     end
     it "should have many inbound associations" do
-      subject.inbound_associations.should == [{type: 'Has One', name: 'talk', references: @other_model.id}, {type: 'Has Many', name: 'authors', references: 39}]
+      subject.inbound_associations.should == [{type: 'Has One', name: 'talk', label: 'Talk', references: @other_model.id}, {type: 'Has Many', name: 'authors', label: 'Authors', references: 39}]
     end
   end
 
