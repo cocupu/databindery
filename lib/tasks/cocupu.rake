@@ -12,3 +12,17 @@ task :index => :environment do
   Cocupu.solr.commit
 end
 
+desc "Run ci"
+task :ci do 
+  puts %x[rails g cocupu:solr_config]
+  
+  require 'jettywrapper'
+  jetty_params = Jettywrapper.load_config.merge({:jetty_home => File.join(Rails.root , 'jetty'), :startup_wait=>30 })
+  
+  error = nil
+  error = Jettywrapper.wrap(jetty_params) do
+      # Rake::Task['narm:fixtures:refresh'].invoke
+      Rake::Task['spec'].invoke
+  end
+  raise "test failures: #{error}" if error
+end
