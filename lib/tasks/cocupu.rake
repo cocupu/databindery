@@ -15,7 +15,7 @@ end
 desc "Run ci"
 task :ci do 
   puts "Updating Solr config"
-  puts %x[rails g -f cocupu:solr_conf]
+  puts %x[rails g cocupu:solr_conf -f]
   
   require 'jettywrapper'
   jetty_params = Jettywrapper.load_config.merge({:jetty_home => File.join(Rails.root , 'jetty'), :startup_wait=>30 })
