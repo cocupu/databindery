@@ -5,6 +5,8 @@ class Cocupu.Views.Entities.ShowAssociationView extends Backbone.View
   values: []
 
   initialize: (options) ->
+    @options = options
+    _.bindAll(this, 'add')
     if options.values
       @values = options.values
 
@@ -15,7 +17,9 @@ class Cocupu.Views.Entities.ShowAssociationView extends Backbone.View
   add: (node) ->
     #TODO perhaps (PUT /nodes/37/associations  {name: recordings, target: node.id?})
     # save this model
-    console.log node
+    association = new Cocupu.Models.Association(name: @model.name, target_id: node.attr('data-id'))
+    association.url = "/nodes/" +@options.node.id+ "/associations"
+    association.save()
     @addToTable(node.text())
 
   render: ->

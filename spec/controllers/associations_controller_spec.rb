@@ -58,6 +58,41 @@ describe AssociationsController do
         end
       end
     end
+    describe "create" do
+      describe "when logged on" do
+        before do
+          sign_in @user
+        end
+        it "should redirect on a model that's not mine " do
+          @not_my_node = FactoryGirl.create(:node)
+          post :create, :node_id=>@not_my_node.id 
+          response.should redirect_to root_path
+        end
+        describe "on a model that is mine" do
+          before do
+            owner = @user.identities.first
+            pool = owner.pools.first
+            @book_model = FactoryGirl.create(:model, name: 'Book', owner: owner, :associations=>[{:name=>'authors', :type=>'Ordered List'}])
+            @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
+                fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
+                owner: owner, :associations=>[{:name=>'books', :type=>'Belongs To'}])
+            @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name', 
+                fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"name"}.with_indifferent_access],
+                owner: owner)
+
+            @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
+            @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
+            @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {'name' => 'Simon & Schuster Ltd.'})
+            @book = FactoryGirl.create(:node, model: @book_model, pool: pool, 
+                    :associations=>{'authors'=>[@author1.id, @author2.id], 'undefined'=>[@publisher.id]})
+          end
+          it "should be very successful" do
+            post :create, :node_id=>@book.id, :name=>'recordings', :target_id=>'5678'
+            response.should be_success
+          end
+        end
+      end
+    end
   end
   describe "for models" do
     before do

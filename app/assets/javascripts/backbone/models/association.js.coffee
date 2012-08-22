@@ -3,7 +3,6 @@ class Cocupu.Models.Association extends Backbone.Model
 
   defaults:
     name: null
-    node_id: null
     target_id: null
 
 

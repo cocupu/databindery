@@ -1,11 +1,19 @@
 class AssociationsController < ApplicationController
   load_and_authorize_resource :model, :only=>:create
-  load_and_authorize_resource :node, :only=>:index
+  load_and_authorize_resource :node, :only=>[:index, :create]
   def create
-    #TODO ensure that no-one creates an association on model called 'undefined'
-    @model.associations << params[:association]
-    @model.save!
-    redirect_to edit_model_path(@model)
+    if @model
+      @model.associations << params[:association]
+      @model.save!
+      redirect_to edit_model_path(@model)
+    elsif @node
+      association = @node.associations[params[:name]] || []
+      association << params[:target_id]
+      @node.associations[params[:name]] = association
+      @node.save
+
+      render :text=>'ok'
+    end
   end
 
   def index

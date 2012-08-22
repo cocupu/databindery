@@ -28,7 +28,7 @@ class Cocupu.Views.Entities.ShowView extends Backbone.View
       
     associations = new Cocupu.Models.Association
     associations.url = '/nodes/' + @model.id + '/associations'
-    elm = new Cocupu.Views.Entities.ShowAssociationsView(model: associations, structure: structure).render().el
+    elm = new Cocupu.Views.Entities.ShowAssociationsView(model: associations, node: @model).render().el
     this.$('.panel-body').append(elm)
     associations.fetch()
 

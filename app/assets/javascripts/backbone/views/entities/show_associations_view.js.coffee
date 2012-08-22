@@ -1,8 +1,8 @@
 Cocupu.Views.Entities ||= {}
 
 class Cocupu.Views.Entities.ShowAssociationsView extends Backbone.View
-  #template: JST["backbone/templates/entities/showAssociations"]
-  initialize: ->
+  initialize: (options) ->
+    @options = options
     _.bindAll(this, 'changed')
     @model.bind('change', @changed)
   close: ->
@@ -12,14 +12,14 @@ class Cocupu.Views.Entities.ShowAssociationsView extends Backbone.View
     false
 
   changed: ->
-    structure = @options.structure
     self = this
+    structure = @options.node.model() #TODO make sure this is memoize and not reloading from the server.
     $.each(structure.get('associations'), (n, field) ->
-      elm = new Cocupu.Views.Entities.ShowAssociationView(model: field, values: self.model.attributes[field.name]).render().el
+      elm = new Cocupu.Views.Entities.ShowAssociationView(model: field, node: self.options.node, values: self.model.attributes[field.name]).render().el
       $(self.el).append(elm)
     )
     # any undefined associations
-    elm = new Cocupu.Views.Entities.ShowAssociationView(model: {name: 'Uncategorized'}, values: @model.attributes['undefined']).render().el
+    elm = new Cocupu.Views.Entities.ShowAssociationView(model: {name: 'Uncategorized'}, node: self.options.node, values: @model.attributes['undefined']).render().el
     $(@el).append(elm)
     
 

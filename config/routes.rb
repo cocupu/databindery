@@ -32,7 +32,7 @@ Cocupu::Application.routes.draw do
 
 
   resources :nodes do
-    resources :associations, :only=>:index
+    resources :associations, :only=>[:index, :create]
     collection do
       get 'search'
     end
