@@ -10,6 +10,13 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
     "click .close": "close"
   }
 
+  initialize: ->
+      _.bindAll(this, 'addOne', 'addAll', 'search');
+      @collection = @model.entities()
+      @collection.bind('reset', @addAll)
+      @collection.fetch()
+
+
   close: ->
     @remove()
     @unbind()
@@ -20,10 +27,11 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
   search : (event) ->
     return if @field.val().length < 3
     clearTimeout(@searching )
+    search_url = '/models/' + @model.id + '/nodes/search.json?q='
     self = this
     @searching = setTimeout \
       ->
-        #TODO set url for @collection
+        self.collection.url = search_url + self.$('#query').val()
         self.collection.fetch()
         false
       ,
@@ -37,12 +45,6 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
     view = new Cocupu.Views.Entities.SearchResultView(model: result)
     this.$('.results').append(view.render().el)
     
-  initialize: ->
-      _.bindAll(this, 'addOne', 'addAll');
-      @collection = @model.entities()
-      @collection.bind('reset', @addAll)
-      @collection.fetch()
-
   render : ->
     $(@el).addClass('searchPane').addClass('panel').html(@template(@model.toJSON() ))
     @field = $(".search-query", @el)

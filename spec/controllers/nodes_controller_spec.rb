@@ -58,6 +58,14 @@ describe NodesController do
       json.first.keys.should include("data", 'associations', "id", "persistent_id", "model_id")
       json.first["data"].should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
     end
+    it "when query is  provided" do
+      get :search, :format=>'json', :q=>'Coyne'
+      response.should be_success
+      json = JSON.parse(response.body)
+      json.map { |n| n["id"]}.should == [@node1.id]
+      json.first.keys.should include("data", 'associations', "id", "persistent_id", "model_id")
+      json.first["data"].should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
+    end
     it "when model is provided" do
       get :search, :format=>'json', :model_id=>@model.id
       response.should be_success

@@ -13,11 +13,13 @@ class AssociationsController < ApplicationController
     associations = {}
     model.associations.map{|a| a[:name]}.each do |assoc_name|
       associations[assoc_name] = []
-      @node.associations[assoc_name].each do |id|
-        associations[assoc_name] <<  Node.find(id).association_display
+      if @node.associations[assoc_name]
+        @node.associations[assoc_name].each do |id|
+          associations[assoc_name] <<  Node.find(id).association_display
+        end
       end
       associations['undefined'] = []
-      if (@node.associations['undefined']) 
+      if @node.associations['undefined']
         @node.associations['undefined'].each do |id| 
           associations['undefined'] << Node.find(id).association_display
         end

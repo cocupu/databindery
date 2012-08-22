@@ -8,7 +8,7 @@ class Cocupu.Models.Model extends Backbone.Model
 
   entities: (options) ->
     collection = new Cocupu.Collections.EntitiesCollection
-    collection.url = '/models/' + @id + '/nodes.json'
+    collection.url = '/models/' + @id + '/nodes/search.json'
     collection
 
 class Cocupu.Collections.ModelsCollection extends Backbone.Collection
