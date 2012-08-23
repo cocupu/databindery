@@ -180,6 +180,13 @@ describe NodesController do
       response.should redirect_to root_path
       flash[:alert].should == "You are not authorized to access this page."
     end
+
+    it "should not show anything for json" do
+      put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }}, :format=>'json'
+      new_version = Node.latest_version(@node1.persistent_id)
+      response.code.should == "204" # no content
+      new_version.data['f1'].should == "Updated val"
+    end
     
   end
 

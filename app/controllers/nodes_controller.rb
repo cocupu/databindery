@@ -90,7 +90,10 @@ class NodesController < ApplicationController
   def update
     @node.attributes = params[:node]
     new_version = @node.update
-    redirect_to node_path(new_version), :notice=>"#{@node.model.name} updated"
+    respond_to do |format|
+      format.html { redirect_to node_path(new_version), :notice=>"#{@node.model.name} updated" }
+      format.json { head :no_content }
+    end
   end
 
 end

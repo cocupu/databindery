@@ -5,11 +5,30 @@ class Cocupu.Views.Entities.ShowView extends Backbone.View
 
   events: {
     "click .close": "close"
-  }
+    "change input":  "contentChanged"
+    "click button":  "saveButtonAction"
+  },
 
   initialize: ->
-    _.bindAll(this, 'changed')
+    _.bindAll(this, 'changed', 'contentChanged')
     @model.bind('change', @changed)
+
+  saveButtonAction: (e) ->
+    e.preventDefault()
+    @setDateSaved()
+
+  setDateSaved: ->
+    now = new Date()
+    clock = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
+    $('#lastSavedAt', @el).html("last saved at " + clock)
+    
+
+  contentChanged: (e) ->
+    data = @model.get('data')
+    data[$(e.currentTarget).attr('name')] = $(e.currentTarget).val()
+    @model.save(data: data)
+    @setDateSaved()
+  
 
   changed: ->
     dict = @model.toJSON()
