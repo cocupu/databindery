@@ -37,7 +37,9 @@ describe DrivesController do
       end
       describe "and authorized" do
         before do
-          @files = [stub('file1', :parents=>[]), stub('file2', :parents=>[{:id=>'file1'}])]
+          s1 =  Google::APIClient::Resource.new('val1', 'val2', 'mock1', {})
+          s2 =  Google::APIClient::Resource.new('val1', 'val4', 'mock2', {})
+          @files = [s1, s2]#stub('file2', :parents=>[{:id=>'file1'}], :to_json=>'two')]
           controller.should_receive(:authorized?).and_return(true)
           mock_client = stub("Api client")
           mock_client.should_receive(:execute!).with(:api_method => kind_of(Google::APIClient::Method)).and_return(stub("result", :data => stub("data", :items=>@files)))
@@ -49,6 +51,13 @@ describe DrivesController do
           response.should be_success
           # it returns a list of files, see: https://developers.google.com/drive/v2/reference/files
           assigns[:files].should == @files
+        end
+        it "should list files for json" do
+          get :index, :format=>:json
+          response.should be_success
+          # it returns a list of files, see: https://developers.google.com/drive/v2/reference/files
+          #json = JSON.parse(response.body)
+          response.body.should == @files.to_json
         end
       end
     end

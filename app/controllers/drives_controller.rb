@@ -26,8 +26,11 @@ class DrivesController < ApplicationController
     result = api_client.execute!(:api_method => drive.files.list)
     # a list of files. see https://developers.google.com/drive/v2/reference/files
     # TODO OPTIMIZE cache this result
-    items = result.data.items
-    @files = items
+    @files = result.data.items
+    respond_to do |format|
+      format.json { render :json=>@files }
+      format.html {}
+    end
   end
 
   ###
