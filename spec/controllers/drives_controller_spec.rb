@@ -4,7 +4,7 @@ describe DrivesController do
 
   describe "index" do
     describe "when not signed in" do
-      it "should list files" do
+      it "should redirect" do
         get :index
         response.should redirect_to new_user_session_path
       end
@@ -15,9 +15,15 @@ describe DrivesController do
         sign_in @user
       end
       describe "and not authorized" do
-        it "should list files" do
+        it "should redirect to get an oauth token" do
           get :index
           response.should redirect_to "https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&client_id=840123515072-bi3cnnt361ek7tnqfgbc05npt4h096k8.apps.googleusercontent.com&redirect_uri=http://bindery.cocupu.com:3001/drives&response_type=code&scope=https://www.googleapis.com/auth/drive.readonly%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&user_id="
+        end
+        it "should redirect to get an oauth token" do
+          get :index, :format=>:json
+          response.code.should == '401'
+          json = JSON.parse response.body
+          json.should == {'redirect'=>"https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&client_id=840123515072-bi3cnnt361ek7tnqfgbc05npt4h096k8.apps.googleusercontent.com&redirect_uri=http://bindery.cocupu.com:3001/drives&response_type=code&scope=https://www.googleapis.com/auth/drive.readonly%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&user_id="}
         end
       end
       describe "with code" do

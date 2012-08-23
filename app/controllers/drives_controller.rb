@@ -12,7 +12,14 @@ class DrivesController < ApplicationController
       authorize_code(params[:code])
     end	
     unless authorized?
-      redirect_to auth_url(params[:state])
+      respond_to do |format|
+        format.json do
+          render :status=>:unauthorized, :json=>{'redirect' => auth_url(params[:state])}
+        end
+        format.html do
+          redirect_to auth_url(params[:state])
+        end
+      end
       return
     end
 

@@ -6,6 +6,7 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
   routes:
     "new"        : "newEntity"
     "index"      : "index"
+    "drive"      : "drive"
     ":id/search" : "search"
     "entity/:id" : "showEntity"
     ":id/edit"   : "edit"
@@ -27,6 +28,15 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
 
     @view = new Cocupu.Views.Models.ShowView(model: model)
     $("#panels").prepend(@view.render().el)
+
+  drive: (id) ->
+    @index() if $(".models").length == 0
+
+    $("#panels .showView").remove()
+    entity = new Cocupu.Models.DataSource()
+    view = new Cocupu.Views.DataSources.ShowView(model: entity)
+    $("#panels").append(view.render().el)
+    entity.fetch()
 
   showEntity: (id) ->
   
