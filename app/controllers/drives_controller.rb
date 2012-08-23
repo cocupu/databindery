@@ -28,7 +28,11 @@ class DrivesController < ApplicationController
     # TODO OPTIMIZE cache this result
     @files = result.data.items
     respond_to do |format|
-      format.json { render :json=>@files }
+      format.json do
+        # TODO put this in a method
+        result = @files.map {|f| { title: f.title, owner: f.userPermission.id, date: f.modifiedDate > 1.day.ago ? f.modifiedDate.to_formatted_s(:time) : f.modifiedDate.to_formatted_s(:short), bindings: Node.find_all_by_binding(f.id).map(&:persistent_id) }}
+        render :json=>result 
+      end
       format.html {}
     end
   end

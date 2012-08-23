@@ -1,6 +1,11 @@
 class Cocupu.Models.DataSource extends Backbone.Model
   urlRoot : '/drives'
 
+  defaults:
+    title: null
+    owner: null
+    bindings: null
+
   initialize: (attributes, options) ->
       options || (options = {})
       this.bind("error", this.errorHandler)
