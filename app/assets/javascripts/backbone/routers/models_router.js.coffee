@@ -17,8 +17,8 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     $("#models").html(@view.render().el)
 
   index: ->
-    @view = new Cocupu.Views.Models.IndexView(models: @models)
-    $("#models").html(@view.render().el)
+    @view = new Cocupu.Views.RootView(models: @models)
+    $(".full-width-container").append(@view.render().el)
 
   show: (id) ->
     # Draw the model bar if it's not on the page (e.g. direct to url #/:id)

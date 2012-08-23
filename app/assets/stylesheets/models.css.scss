@@ -4,6 +4,23 @@
 
 @import "common";
 
+#menu-nav {
+  width: 200px;
+  position: fixed;
+  // top: 75px;
+  // left: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #EEEEEE;
+  padding: 5px;
+  @include rounded(6px);
+}
+#panels {
+  // position: absolute;
+  // top: 75px;
+  // left: 100px;
+  margin-left: 210px;
+}
+
 .showView {
   form.metadata, .association {
     border: 1px solid #EEEEEE;
@@ -31,7 +48,7 @@
   background-clip: padding-box;
   background-color: #FFFFFF;
   border: 1px solid rgba(0, 0, 0, 0.3);
-  border-radius: 6px 6px 6px 6px;
+  @include rounded(6px);
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
   overflow: auto;
 

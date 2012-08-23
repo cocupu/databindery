@@ -19,11 +19,14 @@ class AssociationsController < ApplicationController
 
   def index
     model = @node.model
+puts "NOde is: #{@node.inspect}"
+puts "Id: #{params[:node_id]}"
     associations = {}
     model.associations.map{|a| a[:name]}.each do |assoc_name|
       associations[assoc_name] = []
       if @node.associations[assoc_name]
         @node.associations[assoc_name].each do |id|
+puts "Finding ID: #{id}"
           associations[assoc_name] <<  Node.find_by_persistent_id(id).association_display
         end
       end

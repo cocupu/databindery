@@ -3,6 +3,9 @@ Cocupu.Views.Models ||= {}
 class Cocupu.Views.Models.IndexView extends Backbone.View
   template: JST["backbone/templates/models/index"]
 
+  tagName: 'ul'
+  id: 'models'
+
   initialize: () ->
     @options.models.bind('reset', @addAll)
 
@@ -20,10 +23,10 @@ class Cocupu.Views.Models.IndexView extends Backbone.View
 
   addOne: (model) =>
     view = new Cocupu.Views.Models.ModelView({model : model})
-    @$("ul").append(view.render().el)
+    $('#new-entity', $(@el)).before(view.render().el)
 
   render: =>
-    $(@el).html(@template(models: @options.models.toJSON() ))
+    $(@el).addClass('tab-pane active models nav nav-pills nav-stacked').html(@template(models: @options.models.toJSON() ))
     @addAll()
 
     return this
