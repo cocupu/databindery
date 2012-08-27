@@ -6,7 +6,6 @@ class Cocupu.Views.DataSources.DriveFileView extends Backbone.View
 
   render : ->
     dict = @model.toJSON()
-    console.log "Id is ", @model.id
     $(@el).addClass('driveFile').attr('data-id', @model.id).html(@template(dict))
     $(@el).draggable(	appendTo: "body", helper: "clone")
 

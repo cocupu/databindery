@@ -30,11 +30,11 @@ puts "Finding ID: #{id}"
           associations[assoc_name] <<  Node.find_by_persistent_id(id).association_display
         end
       end
-      associations['undefined'] = []
-      if @node.associations['undefined']
-        @node.associations['undefined'].each do |id| 
-          associations['undefined'] << Node.find_by_persistent_id(id).association_display
-        end
+    end
+    associations['undefined'] = []
+    if @node.associations['undefined']
+      @node.associations['undefined'].each do |id| 
+        associations['undefined'] << Node.find_by_persistent_id(id).association_display
       end
     end
     respond_to do |format|
