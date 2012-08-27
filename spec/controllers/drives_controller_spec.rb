@@ -57,7 +57,10 @@ describe DrivesController do
             response.should be_success
             # it returns a list of files, see: https://developers.google.com/drive/v2/reference/files
             json = JSON.parse(response.body)
-            json.should == [{'title' => 'Title one', 'type'=>'file', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => []}, {'title' => 'Title two', 'type'=>'file', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => []}, {'title' => 'Title three', 'type'=>'folder', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => nil } ]
+            json.should == [
+                {'title' => 'Title one', 'id'=>'12303230', 'type'=>'file', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => []}, 
+                {'title' => 'Title two', 'id'=>'230920398209', 'type'=>'file', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => []},
+                {'title' => 'Title three', 'id'=>'230920398200', 'type'=>'folder', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => nil } ]
           end
         end
       end

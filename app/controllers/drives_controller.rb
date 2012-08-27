@@ -54,6 +54,6 @@ class DrivesController < ApplicationController
     type = file.mime_type == 'application/vnd.google-apps.folder' ? 'folder' : 'file'
     date = file.modifiedDate > 1.day.ago ? file.modifiedDate.to_formatted_s(:time) : file.modifiedDate.to_formatted_s(:short)
     bindings = Node.find_all_by_binding(file.id).map(&:persistent_id) if type == 'file'
-    { title: file.title, type: type, owner: file.userPermission.id, date: date, bindings: bindings }
+    { title: file.title, id: file.id, type: type, owner: file.userPermission.id, date: date, bindings: bindings }
   end
 end
