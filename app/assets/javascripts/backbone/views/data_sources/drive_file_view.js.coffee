@@ -1,4 +1,4 @@
-Cocupu.Views.Entities ||= {}
+Cocupu.Views.DataSources ||= {}
 
 class Cocupu.Views.DataSources.DriveFileView extends Backbone.View
   template : JST["backbone/templates/data_sources/drive_file"]
