@@ -17,24 +17,24 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     @view = new Cocupu.Views.Models.NewView(collection: @models)
     $("#models").html(@view.render().el)
 
+  addToPanels: (pane)->
+    orig_width = $('#panels').width()
+    new_width = $(pane).width()
+    $('#panels').width( orig_width + new_width)
+    $('#panels').append(pane)
+    
+
   index: ->
     @view = new Cocupu.Views.RootView(models: @models)
     $(".full-width-container").append(@view.render().el)
-
-  show: (id) ->
-    # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
-    @index() if $(".models").length == 0
-    model = @models.get(id)
-
-    @view = new Cocupu.Views.Models.ShowView(model: model)
-    $("#panels").prepend(@view.render().el)
 
   drive: (id) ->
     @index() if $(".models").length == 0
 
     entity = new Cocupu.Collections.DataSourcesCollection()
     view = new Cocupu.Views.DataSources.ShowView(collection: entity)
-    $("#panels").append(view.render().el)
+    #$("#panels").append(view.render().el)
+    @addToPanels(view.render().el)
     entity.fetch()
 
   showEntity: (id) ->
@@ -47,7 +47,8 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     $("#panels .showView").remove()
     entity = new Cocupu.Models.Entity({id: id})
     view = new Cocupu.Views.Entities.ShowView(model: entity)
-    $("#panels").append(view.render().el)
+    @addToPanels(view.render().el)
+    #$("#panels").append(view.render().el)
     entity.fetch()
 
 
