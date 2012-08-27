@@ -1,4 +1,8 @@
 <td><%= title %></td>
-<td><%=  bindings.length == 0 ? 'bind' : bindings %></td>
+<td>
+  <% if bindings %>
+    <%=  bindings.length == 0 ? 'bind' : bindings %>
+  <% end %>
+</td>
 <td><%= owner %></td>
 <td><%= date %></td>
