@@ -12,7 +12,8 @@ class Cocupu.Views.Entities.SearchResultView extends Backbone.View
     e.preventDefault()
     #$("#panels .showView").remove()
     view = new Cocupu.Views.Entities.ShowView(model: @model)
-    $("#panels").append(view.render().el)
+    window.router.addToPanels(view.render().el)
+    #$("#panels").append(view.render().el)
     view.changed() #force a call to changed, because the model is already loaded
 
     # don't trigger the route handler, just update the url
