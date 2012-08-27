@@ -50,6 +50,7 @@ class Cocupu.Views.Entities.ShowView extends Backbone.View
     elm = new Cocupu.Views.Entities.ShowAssociationsView(model: associations, node: @model).render().el
     this.$('.panel-body').append(elm)
     associations.fetch()
+    window.router.updateWidth()
 
   close: ->
     @remove()

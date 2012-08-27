@@ -20,6 +20,7 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
   close: ->
     @remove()
     @unbind()
+    window.router.updateWidth()
     @collection.unbind("reset", @addAll)
     false
 
@@ -40,6 +41,7 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
   addAll : ->
     this.$('.results').empty()
     this.collection.each(@addOne)
+    window.router.updateWidth()
 
   addOne: (result) ->
     view = new Cocupu.Views.Entities.SearchResultView(model: result)

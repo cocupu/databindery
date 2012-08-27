@@ -21,6 +21,7 @@ class Cocupu.Views.Entities.ShowAssociationsView extends Backbone.View
     # any undefined associations
     elm = new Cocupu.Views.Entities.ShowAssociationView(model: {name: 'undefined', label: 'Uncategorized'}, node: self.options.node, values: @model.attributes['undefined']).render().el
     $(@el).append(elm)
+    window.router.updateWidth()
     
 
   render: ->

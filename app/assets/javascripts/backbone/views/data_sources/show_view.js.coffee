@@ -11,6 +11,7 @@ class Cocupu.Views.DataSources.ShowView extends Backbone.View
   close: ->
     @remove()
     @unbind()
+    window.router.updateWidth()
     @collection.unbind("reset", @addAll)
     false
 

@@ -17,11 +17,17 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     @view = new Cocupu.Views.Models.NewView(collection: @models)
     $("#models").html(@view.render().el)
 
+
+  updateWidth: ->
+    # 10 is for the margin width
+    result = ($(item).width() for item in $('#panels').children()).reduce (t, i) ->
+      t + i
+    console.log "result: ", result
+    $('#panels').width(result + 210)
+
   addToPanels: (pane)->
-    orig_width = $('#panels').width()
     $('#panels').append(pane)
-    new_width = $(pane).width()
-    $('#panels').width( orig_width + new_width)
+    @updateWidth()
     
 
   index: ->
