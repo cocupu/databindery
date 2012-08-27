@@ -37,7 +37,7 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
 
   index: ->
     @view = new Cocupu.Views.RootView(models: @models)
-    $(".full-width-container").append(@view.render().el)
+    $(".full-width-container").replaceWith(@view.render().el)
 
   drive: (id) ->
     @index() if $(".models").length == 0

@@ -1,8 +1,8 @@
-:javascript
-  $(function() {
-    // Blog is the app name
-    window.router = new Cocupu.Routers.ModelsRouter({models: #{@models.to_json.html_safe}});
-    Backbone.history.start();
-  });
+-content_for :head do
+  :javascript
+    $(function() {
+      window.router = new Cocupu.Routers.ModelsRouter({models: #{@models.to_json.html_safe}});
+      Backbone.history.start();
+    });
 
 
