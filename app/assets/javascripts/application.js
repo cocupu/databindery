@@ -8,6 +8,7 @@
 //= require jquery_ujs
 // we're just using core and droppable from jquery-ui
 //= require jquery-ui-1.8.23.min 
+//= require jquery.scrollTo-min.js
 //= require twitter/bootstrap
 //= require underscore
 //= require backbone

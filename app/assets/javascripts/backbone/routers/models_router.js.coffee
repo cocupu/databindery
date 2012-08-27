@@ -13,20 +13,25 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     ":id"        : "show"
     ".*"         : "index"
 
+  scrolling: false
+
   newModel: ->
     @view = new Cocupu.Views.Models.NewView(collection: @models)
     $("#models").html(@view.render().el)
 
 
-  updateWidth: ->
+  updateWidth: (options) ->
     # 10 is for the margin width
     result = ($(item).width() for item in $('#panels').children()).reduce (t, i) ->
       t + i
-    console.log "result: ", result
     $('#panels').width(result + 210)
+    if !options || options.scroll == true
+      $pane = $($('#panels').children().last())
+      $.scrollTo({top: '+=0px', left: $pane.position()['left']}, 800)
 
   addToPanels: (pane)->
-    $('#panels').append(pane)
+    $pane = $(pane)
+    $('#panels').append($pane)
     @updateWidth()
     
 
