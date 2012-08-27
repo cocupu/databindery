@@ -8,6 +8,10 @@ class Cocupu.Views.DataSources.ShowView extends Backbone.View
     _.bindAll(this, 'addAll', 'addOne')
     @collection.bind('reset', @addAll)
 
+  events: {
+    "click .close": "close"
+  }
+
   close: ->
     @remove()
     @unbind()

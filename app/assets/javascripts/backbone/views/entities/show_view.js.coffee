@@ -55,6 +55,7 @@ class Cocupu.Views.Entities.ShowView extends Backbone.View
   close: ->
     @remove()
     @unbind()
+    window.router.updateWidth()
     @model.unbind("change", @changed)
     false
 
