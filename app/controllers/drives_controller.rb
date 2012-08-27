@@ -23,18 +23,16 @@ class DrivesController < ApplicationController
       return
     end
 
-    result = api_client.execute!(:api_method => drive.files.list)
-    # a list of files. see https://developers.google.com/drive/v2/reference/files
-    # TODO OPTIMIZE cache this result
-    @files = result.data.items
     respond_to do |format|
       format.json do
-        # TODO put this in a method
-        result = @files.map {|f| file_json(f)
-        }
+        result = api_client.execute!(:api_method => drive.files.list)
+        # a list of files. see https://developers.google.com/drive/v2/reference/files
+        # TODO OPTIMIZE cache this result
+        @files = result.data.items
+        result = @files.map {|f| file_json(f) }
         render :json=>result 
       end
-      format.html {}
+      format.html { redirect_to models_path(:anchor=>'drives') }
     end
   end
 
