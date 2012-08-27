@@ -19,9 +19,9 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
 
   addToPanels: (pane)->
     orig_width = $('#panels').width()
+    $('#panels').append(pane)
     new_width = $(pane).width()
     $('#panels').width( orig_width + new_width)
-    $('#panels').append(pane)
     
 
   index: ->
