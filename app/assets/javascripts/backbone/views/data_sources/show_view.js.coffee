@@ -17,6 +17,7 @@ class Cocupu.Views.DataSources.ShowView extends Backbone.View
 
   addAll: ->
     this.collection.each(@addOne)
+    window.router.updateWidth()
 
   addOne: (result) ->
     view = new Cocupu.Views.DataSources.DriveFileView(model: result)

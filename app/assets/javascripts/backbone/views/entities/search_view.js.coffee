@@ -11,7 +11,7 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
   }
 
   initialize: ->
-      _.bindAll(this, 'addOne', 'addAll', 'search');
+      _.bindAll(this, 'addOne', 'addAll', 'search')
       @collection = @model.entities()
       @collection.bind('reset', @addAll)
       @collection.fetch()
