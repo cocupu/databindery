@@ -6,10 +6,10 @@ class Cocupu.Views.DataSources.ShowView extends Backbone.View
 
   initialize: ->
     _.bindAll(this, 'changed')
-    @model.bind('change', @changed)
+    @collection.bind('reset', @changed)
 
   changed: ->
-    console.log @model.toJSON()
+    console.log @collection.toJSON()
      
     this.$('.panel').append("hulloo!")
 
