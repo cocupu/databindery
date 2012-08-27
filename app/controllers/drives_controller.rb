@@ -30,7 +30,8 @@ class DrivesController < ApplicationController
     respond_to do |format|
       format.json do
         # TODO put this in a method
-        result = @files.map {|f| { title: f.title, owner: f.userPermission.id, date: f.modifiedDate > 1.day.ago ? f.modifiedDate.to_formatted_s(:time) : f.modifiedDate.to_formatted_s(:short), bindings: Node.find_all_by_binding(f.id).map(&:persistent_id) }}
+        result = @files.map {|f| file_json(f)
+        }
         render :json=>result 
       end
       format.html {}
@@ -50,5 +51,11 @@ class DrivesController < ApplicationController
     render json: file
   end
 
-
+  private
+  def file_json(file) 
+    type = file.mime_type == 'application/vnd.google-apps.folder' ? 'folder' : 'file'
+    date = file.modifiedDate > 1.day.ago ? file.modifiedDate.to_formatted_s(:time) : file.modifiedDate.to_formatted_s(:short)
+    bindings = Node.find_all_by_binding(file.id).map(&:persistent_id) if type == 'file'
+    { title: file.title, type: type, owner: file.userPermission.id, date: date, bindings: bindings }
+  end
 end
