@@ -15,13 +15,12 @@ class Cocupu.Views.DataSources.ShowView extends Backbone.View
     false
 
   addAll: ->
-    console.log @collection.toJSON()
-     
     this.collection.each(@addOne)
 
   addOne: (result) ->
+    console.log result
     view = new Cocupu.Views.DataSources.DriveFileView(model: result)
-    this.$('.results').append(view.render().el)
+    this.$('table').append(view.render().el)
 
   render: ->
     $(@el).addClass('showView').addClass('panel').html(@template())
