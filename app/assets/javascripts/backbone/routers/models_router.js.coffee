@@ -32,7 +32,6 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
   drive: (id) ->
     @index() if $(".models").length == 0
 
-    $("#panels .showView").remove()
     entity = new Cocupu.Collections.DataSourcesCollection()
     view = new Cocupu.Views.DataSources.ShowView(collection: entity)
     $("#panels").append(view.render().el)
