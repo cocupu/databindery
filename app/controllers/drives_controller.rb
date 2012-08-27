@@ -32,7 +32,7 @@ class DrivesController < ApplicationController
         result = @files.map {|f| file_json(f) }
         render :json=>result 
       end
-      format.html { redirect_to models_path(:anchor=>'drives') }
+      format.html { redirect_to models_path(:anchor=>'drive') }
     end
   end
 

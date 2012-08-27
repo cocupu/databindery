@@ -44,7 +44,7 @@ describe DrivesController do
         end
         it "should list files" do
           get :index
-          response.should redirect_to models_path(:anchor=>'drives')
+          response.should redirect_to models_path(:anchor=>'drive')
         end
         describe "Requesting json" do
           before do
