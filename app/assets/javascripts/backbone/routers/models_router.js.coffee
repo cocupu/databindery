@@ -68,9 +68,9 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     @index() if $(".models").length == 0
     model = @models.get(id)
 
-    $("#panels .searchPane").remove()
+    $(".searchPane").remove()
     @view = new Cocupu.Views.Entities.SearchView(model: model)
-    $("#panels").prepend(@view.render().el)
+    $("#panels").before(@view.render().el)
     
 
   edit: (id) ->
