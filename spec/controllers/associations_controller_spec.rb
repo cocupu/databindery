@@ -122,6 +122,12 @@ describe AssociationsController do
              [{"type" => 'Has One', "name"=>"talks", "references" => @associated_model.id.to_s, "label"=>"Talks"}]
           response.should redirect_to edit_model_path(@my_model)
         end
+        it "should not redirect when json" do
+          post :create, :model_id=>@my_model.id, :association=>{type: 'Has Many', name: 'talks', references: @associated_model.id}, :format=>:json
+          @my_model.reload.associations.should == 
+             [{"type" => 'Has Many', "name"=>"talks", "references" => @associated_model.id, "label"=>"Talks"}]
+          response.should be_successful 
+        end
       end
     end
   end

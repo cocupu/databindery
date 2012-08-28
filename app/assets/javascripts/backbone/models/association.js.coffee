@@ -1,12 +1,8 @@
 class Cocupu.Models.Association extends Backbone.Model
-  urlRoot : '/nodes'
-
-  defaults:
-    name: null
-    target_id: null
-
+  paramRoot: 'association'
 
 class Cocupu.Collections.AssociationsCollection extends Backbone.Collection
   model: Cocupu.Models.Association
-  url: '/Associations'
+  url: () ->
+    '/models/' + this.model_id + "/associations"
 

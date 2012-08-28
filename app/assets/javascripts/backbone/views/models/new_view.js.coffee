@@ -1,7 +1,7 @@
-Cocupu.Views.Entities ||= {}
+Cocupu.Views.Models ||= {}
 
-class Cocupu.Views.Entities.NewView extends Backbone.View
-  template: JST["backbone/templates/entities/new"]
+class Cocupu.Views.Models.NewView extends Backbone.View
+  template: JST["backbone/templates/models/new"]
 
   events:
     "submit": "save"
@@ -35,22 +35,3 @@ class Cocupu.Views.Entities.NewView extends Backbone.View
     )
     return this
   
-  changed: ->
-    dict = @model.toJSON()
-    dict.title = @model.title()
-    template = @template(dict)
-  
-    $(@el).addClass('showView').addClass('panel').html(template)
-    self = this
-    data = @model.get('data')
-    structure = @model.model()
-    $.each(structure.get('fields'), (n, field) ->
-      field.value = data[field.code]
-      elm = new Cocupu.Views.Entities.ShowFieldView(model: field).render().el
-      self.$('form .form-actions').before(elm)
-    )
-    $(@el).html(@template(@model.toJSON() ))
-
-    this.$("form").backboneLink(@model)
-
-    return this

@@ -58,7 +58,6 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
   newEntity: (id) ->
     # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
     @index() if $(".models").length == 0
-    #model = @models.get(id)
 
     $(".searchPane").remove()
     model = new Cocupu.Models.Entity({model_id: id})
@@ -75,10 +74,11 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     @view = new Cocupu.Views.Entities.SearchView(model: model)
     $("#panels").before(@view.render().el)
     
-
   edit: (id) ->
+    # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
+    @index() if $(".models").length == 0
     model = @models.get(id)
-
+    $(".searchPane").remove()
     @view = new Cocupu.Views.Models.EditView(model: model)
-    $("#entities").html(@view.render().el)
+    $("#panels").before(@view.render().el)
 

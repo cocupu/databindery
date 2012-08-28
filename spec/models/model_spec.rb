@@ -22,7 +22,6 @@ describe Model do
 
   describe "associations" do
     before do
-      #TODO associations need a label so that name can be an internal code.
       @other_model = FactoryGirl.create(:model)
       subject.associations << {type: 'Has One', name: 'talk', label: "Talk", references: @other_model.id}
       subject.associations << {type: 'Has Many', name: 'authors', label: "Authors", references: 39}

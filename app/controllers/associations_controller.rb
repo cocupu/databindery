@@ -6,7 +6,10 @@ class AssociationsController < ApplicationController
       params[:association][:label] = params[:association][:name].capitalize
       @model.associations << params[:association]
       @model.save!
-      redirect_to edit_model_path(@model)
+      respond_to do |format|
+        format.html { redirect_to edit_model_path(@model) }
+        format.json { head :no_content }
+      end
     elsif @node
       association = @node.associations[params[:name]] || []
       association << params[:target_id]
