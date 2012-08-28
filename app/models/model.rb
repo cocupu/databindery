@@ -79,6 +79,10 @@ class Model < ActiveRecord::Base
 
   validate :association_cannot_be_named_undefined
 
+  def self.file_entity(owner)
+    Model.find_or_create_by_name_and_identity_id('File Entity', owner.id)
+  end
+
   def association_cannot_be_named_undefined
     if associations.any?{|a| a[:name] == 'undefined'}
       errors.add(:associations, "name can't be 'undefined'")

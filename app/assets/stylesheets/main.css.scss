@@ -5,11 +5,14 @@ body {
   background-repeat: repeat-x;
   color: #333;
   /* text-shadow: 0 1px 0 white; */
+  position: relative;
+  padding-top: 40px;
 }
 
 body.no-grad {
   background: none;
 }
+
 
 /* The white background content wrapper */
 .content {

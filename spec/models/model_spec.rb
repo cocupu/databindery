@@ -5,6 +5,13 @@ describe Model do
     subject.name = "Test Name"
   end
 
+  it "should have a file entity" do
+    owner = Identity.create
+    file_entity = Model.file_entity(owner)
+    file_entity.should be_kind_of Model
+    file_entity.owner.should == owner
+
+  end
   it "should have many fields" do
     subject.owner = Identity.create
     subject.fields << {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}

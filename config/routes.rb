@@ -31,6 +31,8 @@ Cocupu::Application.routes.draw do
   end
 
 
+  resources :file_entities
+
   resources :nodes do
     resources :associations, :only=>[:index, :create]
     collection do
