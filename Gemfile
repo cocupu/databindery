@@ -12,7 +12,7 @@ group :assets do
   gem 'uglifier', '>= 1.2.3'
   gem 'therubyracer' # required on linux
   gem 'jquery-rails'
-  gem "bootstrap-sass-rails"
+  gem "bootstrap-sass-rails", "~> 2.1.0.0"
   gem 'handlebars_assets'
   gem 'rails-backbone'
 end
