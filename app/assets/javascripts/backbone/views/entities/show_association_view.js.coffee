@@ -16,11 +16,14 @@ class Cocupu.Views.Entities.ShowAssociationView extends Backbone.View
 
   add: (node) ->
     # TODO if it's a file, need to make a new FileEntity and associate it.
+    association = new Cocupu.Models.Association(name: @model.name)
     if node.hasClass('driveFile')
       file = new Cocupu.Models.FileEntity(binding: node.attr('data-id'))
-      file.save
+      file.save()
       console.log('file id is: ', file.id)
-    association = new Cocupu.Models.Association(name: @model.name, target_id: node.attr('data-id'))
+      association.set(target_id: file.id)
+    else
+      association.set(target_id: node.attr('data-id'))
     association.url = "/nodes/" +@options.node.id+ "/associations"
     association.save()
     @addToTable(node.text())
