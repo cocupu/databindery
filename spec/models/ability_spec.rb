@@ -55,31 +55,6 @@ describe Ability do
       ability.can?(:update, @node).should_not be_true
     end
   end
-  describe "file_entities" do
-    before do
-      @node = FactoryGirl.create :node
-    end
-    it "can be created by a logged in user" do
-      ability = Ability.new(FactoryGirl.create :identity)
-      ability.can?(:create, Node).should be_true
-    end
-    it "are readable by the owner of the pool they are in" do
-      ability = Ability.new(@node.pool.owner)
-      ability.can?(:read, @node).should be_true
-    end
-    it "are not readable by a non-owner of the pool" do
-      ability = Ability.new(FactoryGirl.create :identity)
-      ability.can?(:read, @node).should_not be_true
-    end
-    it "can be updated by an owner" do
-      ability = Ability.new(@node.pool.owner)
-      ability.can?(:update, @node).should be_true
-    end
-    it "can't be updated by a non-owner" do
-      ability = Ability.new(FactoryGirl.create :identity)
-      ability.can?(:update, @node).should_not be_true
-    end
-  end
 
   describe "exhibits" do
     before :all do
