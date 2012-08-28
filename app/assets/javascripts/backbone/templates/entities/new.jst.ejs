@@ -1,20 +1,14 @@
-<h1>New entity</h1>
+<div class="panel-header">
+  <a href="#" class="close">×</a>
+  <h3>New Entity</h3>
+</div>
 
-<form id="new-entity" name="entity">
-  <div class="field">
-    <label for="title"> title:</label>
-    <input type="text" name="title" id="title" value="<%= title %>" >
-  </div>
+<div class="panel-body">
+  <form accept-charset="UTF-8" class="metadata">
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  </form>
+</div>
 
-  <div class="field">
-    <label for="content"> content:</label>
-    <input type="text" name="content" id="content" value="<%= content %>" >
-  </div>
 
-  <div class="actions">
-    <input type="submit" value="Create Entity" />
-  </div>
-
-</form>
-
-<a href="#/index">Back</a>

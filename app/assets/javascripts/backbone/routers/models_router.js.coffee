@@ -4,7 +4,7 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     @models.reset options.models
 
   routes:
-    "new"        : "newEntity"
+    ":id/new"    : "newEntity"
     "index"      : "index"
     "drive"      : "drive"
     ":id/search" : "search"
@@ -14,10 +14,6 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     ".*"         : "index"
 
   scrolling: false
-
-  newModel: ->
-    @view = new Cocupu.Views.Models.NewView(collection: @models)
-    $("#models").html(@view.render().el)
 
 
   updateWidth: (options) ->
@@ -36,7 +32,6 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     $('#panels').append($pane)
     @updateWidth()
     
-
   index: ->
     @view = new Cocupu.Views.RootView(models: @models)
     $(".full-width-container").replaceWith(@view.render().el)
@@ -59,6 +54,16 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     view = new Cocupu.Views.Entities.ShowView(model: entity)
     @addToPanels(view.render().el)
     entity.fetch()
+
+  newEntity: (id) ->
+    # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
+    @index() if $(".models").length == 0
+    #model = @models.get(id)
+
+    $(".searchPane").remove()
+    model = new Cocupu.Models.Entity({model_id: id})
+    @view = new Cocupu.Views.Entities.NewView(model: model)
+    $("#panels").before(@view.render().el)
 
 
   search: (id) ->
