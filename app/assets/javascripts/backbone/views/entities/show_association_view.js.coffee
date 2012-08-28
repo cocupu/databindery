@@ -10,25 +10,26 @@ class Cocupu.Views.Entities.ShowAssociationView extends Backbone.View
     if options.values
       @values = options.values
 
-  addToTable: (text) ->
-    $('table', $(@el)).append("<tr><td>" + text + "</td></tr>")
+  addToTable: (num, text) ->
+    $('table', $(@el)).append("<tr><td><a href=\"#entity/" + num + "\">" + text + "</a></td></tr>")
   
 
   add: (node) ->
-    # TODO if it's a file, need to make a new FileEntity and associate it.
     association = new Cocupu.Models.Association(name: @model.name)
     association.url = "/nodes/" +@options.node.id+ "/associations"
     if node.hasClass('driveFile')
+      ## TODO, send the file_name too?
       file = new Cocupu.Models.FileEntity(binding: node.attr('data-id'))
       file.save({}, success: (model, response) ->
           console.log "success", model.id
           association.set(target_id: file.id)
           association.save()
+          @addToTable(file.id, node.text())
       )
     else
       association.set(target_id: node.attr('data-id'))
       association.save()
-    @addToTable(node.text())
+      @addToTable(node.attr('data-id'), node.text())
 
   render: ->
     dict = @model
@@ -40,11 +41,11 @@ class Cocupu.Views.Entities.ShowAssociationView extends Backbone.View
     count = 0
     self = this
     $.each(@values, (n, val)->
-      self.addToTable(val.title)
+      self.addToTable(val.id, val.title)
       count++
     )
     while count < 4
-      self.addToTable('')
+      self.addToTable(null, '')
       count++
     return this
 

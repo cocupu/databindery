@@ -22,7 +22,9 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
 
   updateWidth: (options) ->
     # 10 is for the margin width
-    result = ($(item).width() for item in $('#panels').children()).reduce (t, i) ->
+    children = ($(item).width() for item in $('#panels').children())
+    return if children.length == 0
+    result = children.reduce (t, i) ->
       t + i
     $('#panels').width(result + 210)
     if !options || options.scroll == true
@@ -53,13 +55,9 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
     @index() if $(".models").length == 0
 
-
-
-    $("#panels .showView").remove()
     entity = new Cocupu.Models.Entity({id: id})
     view = new Cocupu.Views.Entities.ShowView(model: entity)
     @addToPanels(view.render().el)
-    #$("#panels").append(view.render().el)
     entity.fetch()
 
 
