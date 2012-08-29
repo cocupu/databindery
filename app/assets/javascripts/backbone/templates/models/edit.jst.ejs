@@ -74,11 +74,13 @@
         </tr>
       </thead>
       <tbody>
+        <% order=0; %>
         <% $.each(fields, function(n, field) { %>
+            <% order++; %>
             <tr>
               <td><input name="label" type="radio" value="<%= field.code %>"<%= label == field.code ? " checked" : ''  %>></td>
-              <td></td>
-              <td><%= field.name %></td>
+              <td><%= order %></td>
+              <td class="field-name" data-code="<%= field.code %>" data-type="fields"><%= field.name %></td>
               <td><%= field.type %></td>
               <td><%= field.references %></td>
               <td><%= field.uri %></td>
@@ -86,10 +88,11 @@
             </tr>
         <% }); %>
         <% $.each(associations, function(n, field) { %>
+            <% order++; %>
             <tr>
-              <td><%= field.code %></td>
               <td></td>
-              <td><%= field.name %></td>
+              <td><%= order %></td>
+              <td class="association-name" data-code="<%= field.code %>" data-type="associations"><%= field.name %></td>
               <td><%= field.type %></td>
               <td><%= field.label %></td>
               <td></td>

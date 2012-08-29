@@ -8,6 +8,12 @@ class ModelsController < ApplicationController
 
   end 
 
+  def show
+    respond_to do |format|
+      format.json { render :json=>@model }
+    end
+  end
+
   def new
   end
 
