@@ -127,6 +127,11 @@ describe ModelsController do
         flash[:notice].should == "#{@my_model.name} has been updated"
         @my_model.reload.label.should == 'description'
       end
+      it "should be able to set the identifier via json" do
+        put :update, :id=>@my_model, :model=>{:label=>'description'}, :format=>:json
+        response.should be_successful 
+        @my_model.reload.label.should == 'description'
+      end
     end
   end
 

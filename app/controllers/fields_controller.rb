@@ -4,6 +4,9 @@ class FieldsController < ApplicationController
     field_code = Model.field_name(params[:field][:name])
     @model.fields << params[:field].merge(code: field_code)
     @model.save!
-    redirect_to edit_model_path(@model)
+    respond_to do |format|
+      format.html { redirect_to edit_model_path(@model) }
+      format.json { head :no_content }
+    end
   end
 end

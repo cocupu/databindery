@@ -60,7 +60,7 @@
         <button type="submit" class="btn btn-primary">Create</button>
      </div>
   </form>
-  <form accept-charset="UTF-8" class="associations">
+  <form accept-charset="UTF-8" class="fields">
     <table id="fields" class="table table-striped">
       <thead>
         <tr>
@@ -76,7 +76,7 @@
       <tbody>
         <% $.each(fields, function(n, field) { %>
             <tr>
-              <td><%= field.code %></td>
+              <td><input name="label" type="radio" value="<%= field.code %>"<%= label == field.code ? " checked" : ''  %>></td>
               <td></td>
               <td><%= field.name %></td>
               <td><%= field.type %></td>

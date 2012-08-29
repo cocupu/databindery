@@ -6,10 +6,8 @@ class Cocupu.Views.Models.EditView extends Backbone.View
   events :
     "submit .metadata" : "addField"
     "submit .associations" : "addAssociation"
+    "change input[name='label']" : "saveLabel"
 
-  # TODO - save label
-  # Refresh after adding field/association
-  # Question, should we re-index after changing label?
   addField : (e) ->
     e.preventDefault()
     e.stopPropagation()
@@ -20,7 +18,12 @@ class Cocupu.Views.Models.EditView extends Backbone.View
     $.each(this.$('form.metadata').serializeArray(), (n, o) ->
       data[o.name] = o.value
     )
-    collection.create(data)
+    self = this
+    collection.create data, success: (element) ->
+      fields = self.model.get('fields')
+      fields.push(element.toJSON())
+      self.model.set('fields', fields)
+      self.render()
 
   addAssociation: (e) ->
     e.preventDefault()
@@ -29,17 +32,30 @@ class Cocupu.Views.Models.EditView extends Backbone.View
     collection = new Cocupu.Collections.AssociationsCollection()
     collection.model_id = @model.id
     data = {}
-    $.each(this.$('form.metadata').serializeArray(), (n, o) ->
+    $.each(this.$('form.associations').serializeArray(), (n, o) ->
       data[o.name] = o.value
     )
-    collection.create(data)
+    self = this
+    collection.create data, success: (element) ->
+      fields = self.model.get('associations')
+      fields.push(element.toJSON())
+      #TODO, set the element.label?
+      self.model.set('associations', fields)
+      self.render()
+
+  # TODO should we re-index after changing label?
+  saveLabel: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    @model.set(label: $(e.currentTarget).val())
+    @model.save()
+    
 
 
   render : ->
     dict = @model.toJSON()
+    console.log "Rendering", dict
     dict.models = window.router.models
     $(@el).addClass('searchPane').addClass('editor').addClass('panel').html(@template(dict))
-
-    this.$("form").backboneLink(@model)
 
     return this

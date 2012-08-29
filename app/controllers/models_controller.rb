@@ -30,6 +30,9 @@ class ModelsController < ApplicationController
 
   def update
     @model.update_attributes(params[:model]) 
-    redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been updated"
+    respond_to do |format|
+      format.html { redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been updated" }
+      format.json { head :no_content }
+    end
   end
 end
