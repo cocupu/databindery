@@ -12,6 +12,9 @@
 //= require twitter/bootstrap
 //= require underscore
 //= require backbone
+// AJAX adapter for rails, that uses paramRoot to set up requests as rails expects 
+// (see http://stackoverflow.com/questions/8016296/backbone-model-save)
+//= require backbone_rails_sync 
 //= require backbone/cocupu
 //= require_tree .
 
