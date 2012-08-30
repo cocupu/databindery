@@ -4,8 +4,9 @@ describe 'as a signed in user' do
 
   before do
     @user = FactoryGirl.create :login
-    @my_model = FactoryGirl.create(:model, owner: @user.identities.first)
-    @associated_model = FactoryGirl.create(:model, owner: @user.identities.first)
+    pool = @user.identities.first.pools.first
+    @my_model = FactoryGirl.create(:model, pool: pool)
+    @associated_model = FactoryGirl.create(:model, pool: pool)
     log_in(@user)
     visit edit_model_path(@my_model) 
   end

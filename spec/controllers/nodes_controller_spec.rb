@@ -4,11 +4,12 @@ describe NodesController do
   describe "index" do
     before do
       @user = FactoryGirl.create :login_credential
-      @model = FactoryGirl.create(:model, owner: @user.identities.first)
-      @node1 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first, :associations=>{'authors'=>[1231, 2227], 'undefined'=>'123721'})
-      @node2 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)
+      pool = @user.identities.first.pools.first
+      @model = FactoryGirl.create(:model, pool: pool)
+      @node1 = FactoryGirl.create(:node, model: @model, pool: pool, :associations=>{'authors'=>[1231, 2227], 'undefined'=>'123721'})
+      @node2 = FactoryGirl.create(:node, model: @model, pool: pool)
       @different_pool_node = FactoryGirl.create(:node, model: @model )
-      @different_model_node = FactoryGirl.create(:node, pool: @user.identities.first.pools.first )
+      @different_model_node = FactoryGirl.create(:node, pool: pool )
       sign_in @user
     end
     it "should load the model and its nodes" do
@@ -42,7 +43,7 @@ describe NodesController do
     before do
       @user = FactoryGirl.create :login_credential
       pool = @user.identities.first.pools.first
-      @model = FactoryGirl.create(:model, owner: @user.identities.first, label: 'first_name',
+      @model = FactoryGirl.create(:model, pool: pool, label: 'first_name',
                   fields: [{:code=>'first_name'}, {:code=>'last_name'}, {:code=>'title'}])
       @node1 = FactoryGirl.create(:node, model: @model, pool: pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
       @node2 = FactoryGirl.create(:node, model: @model, pool: pool, :data=>{'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'})
@@ -79,11 +80,12 @@ describe NodesController do
   describe "show" do
     before do
       @user = FactoryGirl.create :login_credential
-      @model = FactoryGirl.create(:model, owner: @user.identities.first)
-      @node1 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)
-      @node2 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)
+      pool = @user.identities.first.pools.first
+      @model = FactoryGirl.create(:model, pool: pool)
+      @node1 = FactoryGirl.create(:node, model: @model, pool: pool)
+      @node2 = FactoryGirl.create(:node, model: @model, pool: pool)
       @different_pool_node = FactoryGirl.create(:node, model: @model )
-      @different_model_node = FactoryGirl.create(:node, pool: @user.identities.first.pools.first )
+      @different_model_node = FactoryGirl.create(:node, pool: pool )
       sign_in @user
     end
     it "should load the node and the models" do
@@ -107,7 +109,8 @@ describe NodesController do
   describe "new" do
     before do
       @user = FactoryGirl.create :login_credential
-      @my_model = FactoryGirl.create(:model, owner: @user.identities.first)
+      pool = @user.identities.first.pools.first
+      @my_model = FactoryGirl.create(:model, pool: pool)
       @not_my_model = FactoryGirl.create(:model)
       sign_in @user
     end
@@ -136,7 +139,8 @@ describe NodesController do
   describe "create" do
     before do
       @user = FactoryGirl.create :login_credential
-      @my_model = FactoryGirl.create(:model, owner: @user.identities.first)
+      pool = @user.identities.first.pools.first
+      @my_model = FactoryGirl.create(:model, pool: pool)
       @not_my_model = FactoryGirl.create(:model)
       sign_in @user
     end
@@ -158,7 +162,8 @@ describe NodesController do
   describe "update" do
     before do
       @user = FactoryGirl.create :login_credential
-      @model = FactoryGirl.build(:model, owner: @user.identities.first)
+      pool = @user.identities.first.pools.first
+      @model = FactoryGirl.create(:model, pool: pool)
       @model.fields = [{code: 'f1', name: 'Field one'}]
       @model.save!
       @node1 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)

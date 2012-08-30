@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120821202946) do
+ActiveRecord::Schema.define(:version => 20120830194806) do
 
   create_table "change_sets", :force => true do |t|
     t.text     "data"
@@ -103,6 +103,7 @@ ActiveRecord::Schema.define(:version => 20120821202946) do
     t.string   "label"
     t.integer  "identity_id"
     t.text     "associations"
+    t.integer  "pool_id"
   end
 
   add_index "models", ["identity_id"], :name => "index_models_on_identity_id"
@@ -162,6 +163,7 @@ ActiveRecord::Schema.define(:version => 20120821202946) do
   add_foreign_key "mapping_templates", "identities", :name => "mapping_templates_identity_id_fk"
 
   add_foreign_key "models", "identities", :name => "models_identity_id_fk"
+  add_foreign_key "models", "pools", :name => "models_pool_id_fk"
 
   add_foreign_key "nodes", "identities", :name => "nodes_identity_id_fk"
   add_foreign_key "nodes", "pools", :name => "nodes_pool_id_fk"

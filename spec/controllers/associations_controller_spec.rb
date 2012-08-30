@@ -89,7 +89,6 @@ describe AssociationsController do
           it "should be very successful" do
             post :create, :node_id=>@book.persistent_id, :association=> {:code=>'authors', :target_id=>'5678'}
             response.should be_success
-            puts @book.reload.associations
             @book.latest_version.associations['authors'].should == [@author1.persistent_id, @author2.persistent_id, '5678']
           end
         end
@@ -98,8 +97,8 @@ describe AssociationsController do
   end
   describe "for models" do
     before do
-      @my_model = FactoryGirl.create(:model, owner: @user.identities.first)
-      @associated_model = FactoryGirl.create(:model, owner: @user.identities.first)
+      @my_model = FactoryGirl.create(:model, pool: @user.identities.first.pools.first)
+      @associated_model = FactoryGirl.create(:model, pool: @user.identities.first.pools.first)
       @not_my_model = FactoryGirl.create(:model)
     end
     describe "create" do

@@ -19,7 +19,7 @@ describe Ability do
       @model = FactoryGirl.create :model
     end
     it "are readable by their owner" do
-      ability = Ability.new(@model.owner)
+      ability = Ability.new(@model.pool.owner)
       ability.can?(:read, @model).should be_true
     end
     it "are not readable by a non-owner" do
@@ -27,7 +27,7 @@ describe Ability do
       ability.can?(:read, @model).should_not be_true
     end
     it "can be updated by an owner" do
-      ability = Ability.new(@model.owner)
+      ability = Ability.new(@model.pool.owner)
       ability.can?(:update, @model).should be_true
     end
     it "can't be updated by a non-owner" do

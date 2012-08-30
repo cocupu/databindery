@@ -24,11 +24,12 @@ FactoryGirl.define do
   end
 
   factory :model do
+    pool
     sequence :name do |n|
       "Factory model name #{n}"
     end
     fields [{"name"=>"Description", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"description"}.with_indifferent_access]
-    owner
+    owner # TODO remove?
   end
 
   factory :spreadsheet, :class=>Cocupu::Spreadsheet do

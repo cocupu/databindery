@@ -39,7 +39,7 @@ describe PoolsController do
     describe "when logged on" do
       before do
         sign_in @user
-        @my_model = FactoryGirl.create(:model, owner: @user.identities.first)
+        @my_model = FactoryGirl.create(:model, pool: @user.identities.first.pools.first)
         @not_my_model = FactoryGirl.create(:model)
       end
       describe "requesting a pool I don't own" do
