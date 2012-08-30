@@ -41,8 +41,8 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
 
     entity = new Cocupu.Collections.DataSourcesCollection()
     view = new Cocupu.Views.DataSources.ShowView(collection: entity)
-    #$("#panels").append(view.render().el)
-    @addToPanels(view.render().el)
+    $(".searchPane").remove()
+    $("#panels").before(view.render().el)
     entity.fetch()
 
   showEntity: (id) ->
