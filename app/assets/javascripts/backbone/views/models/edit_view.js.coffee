@@ -97,5 +97,6 @@ class Cocupu.Views.Models.EditView extends Backbone.View
     dict = @model.toJSON()
     dict.models = window.router.models
     $(@el).addClass('palate-drawer').addClass('editor').addClass('panel').html(@template(dict))
+    window.router.updateWidth()
 
     return this

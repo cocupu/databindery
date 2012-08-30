@@ -22,7 +22,9 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     return if children.length == 0
     result = children.reduce (t, i) ->
       t + i
-    $('#panels').width(result + 210)
+    result += $('.palate-drawer').width() 
+    console.log("width is now" , result)
+    $('#panels').width(result )
     if !options || options.scroll == true
       $pane = $($('#panels').children().last())
       $.scrollTo({top: '+=0px', left: $pane.position()['left']}, 800)
