@@ -14,4 +14,14 @@ class PoolsController < ApplicationController
       format.json { render :json=>@pool }
     end
   end
+
+  def create
+    @pool.name = params[:pool][:name]
+    #@pool.description = params[:pool][:description]
+    @pool.owner = current_identity
+    @pool.save!
+    respond_to do |format|
+      format.json { render :json=>@pool}
+    end
+  end
 end

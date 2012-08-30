@@ -7,7 +7,7 @@ class Cocupu.Routers.PoolsRouter extends Backbone.Router
       @pools.reset options.pools
 
   routes:
-    "new"      : "newEntity"
+    "new"      : "newPool"
     "index"    : "index"
     ":id"      : "show"
     ".*"        : "index"
@@ -15,14 +15,19 @@ class Cocupu.Routers.PoolsRouter extends Backbone.Router
   index: ->
     if @pool
       @view = new Cocupu.Views.Pools.ShowView(model: @pool)
-      $(".full-width-container").append(@view.render().el)
+      $(".full-width-container").html(@view.render().el)
     else
       @view = new Cocupu.Views.Pools.IndexView(collection: @pools)
-      $(".full-width-container").append(@view.render().el)
+      $(".full-width-container").html(@view.render().el)
+
+  newPool: ->
+      @view = new Cocupu.Views.Pools.NewView(model: new Cocupu.Models.Pool)
+      $(".full-width-container").html(@view.render().el)
+    
 
   show: (id) ->
     pool = @pools.get(id)
 
     @view = new Cocupu.Views.Pools.ShowView(model: pool)
-    $(".full-width-container").append(@view.render().el)
+    $(".full-width-container").html(@view.render().el)
 

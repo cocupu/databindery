@@ -6,9 +6,9 @@ class Ability
 
     # Logged in users:
     unless identity.new_record?
-      can :read, Pool, :owner_id => identity.id
+      can [:read, :edit, :update], Pool, :owner_id => identity.id
       can [:read, :edit, :update], [Node, Model, Exhibit], :pool=>{ :owner_id => identity.id}
-      can :create, [Model, Node, Exhibit]
+      can :create, [Exhibit, Model, Node,  Pool]
     end
   end
 end

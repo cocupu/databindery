@@ -66,4 +66,28 @@ describe PoolsController do
       end
     end
   end
+
+  describe "create" do
+    describe "when not logged on" do
+      it "should redirect to home" do
+        post :create, :pool=>{:name=>"New Pool"} 
+        response.should redirect_to(root_path)
+      end
+    end
+
+    describe "when logged on" do
+      before do
+        sign_in @user
+        # @my_model = FactoryGirl.create(:model, pool: @user.identities.first.pools.first)
+        # @not_my_model = FactoryGirl.create(:model)
+      end
+      it "should be successful when rendering json" do
+        post :create, :pool=>{:name=>"New Pool"}, :format=>:json 
+        response.should  be_successful
+        json = JSON.parse(response.body)
+        json['owner_id'].should == @user.identities.first.id
+        json['name'].should == "New Pool"
+      end
+    end
+  end
 end

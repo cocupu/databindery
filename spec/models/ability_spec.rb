@@ -13,6 +13,22 @@ describe Ability do
       ability = Ability.new(FactoryGirl.create :identity)
       ability.can?(:read, @pool).should_not be_true
     end
+    it "can be updated by an owner" do
+      ability = Ability.new(@pool.owner)
+      ability.can?(:update, @pool).should be_true
+    end
+    it "can't be updated by a non-owner" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:update, @pool).should_not be_true
+    end
+    it "can be created by a logged in user" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:create, Pool).should be_true
+    end
+    it "can't be created by a not logged in user" do
+      ability = Ability.new(nil)
+      ability.can?(:create, Pool).should_not be_true
+    end
   end
   describe "models" do
     before do
