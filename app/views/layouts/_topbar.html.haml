@@ -5,10 +5,8 @@
       -if user_signed_in?
         .nav-collapse.collapse
           %ul.nav
-            %li= link_to "Entities", models_path
-            %li= link_to "Files", drives_path 
-            %li= link_to "Exhibits", exhibits_path 
-            //%li= link_to "Data Sources", "#"
+            %li= link_to controller.current_identity.login_credential.email, pools_path
+            %li= link_to controller.current_pool.name, pool_path(controller.current_pool)
           %ul.nav.pull-right
             %li= link_to "Log Out",  signout_path
       -else

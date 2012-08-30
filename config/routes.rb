@@ -8,6 +8,7 @@ Cocupu::Application.routes.draw do
   end
   
   resources :drives
+  resources :pools
 
   resources :chattels do
     member do

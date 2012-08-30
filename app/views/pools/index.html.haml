@@ -1,0 +1,9 @@
+-content_for :head do
+  :javascript
+    $(function() {
+      window.router = new Cocupu.Routers.PoolsRouter({pools: #{@pools.to_json.html_safe}});
+      Backbone.history.start();
+    });
+
+
+

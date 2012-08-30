@@ -1,6 +1,19 @@
 require 'spec_helper'
 
 describe Ability do
+  describe "pools" do
+    before do
+      @pool = FactoryGirl.create :pool
+    end
+    it "are readable by their owner" do
+      ability = Ability.new(@pool.owner)
+      ability.can?(:read, @pool).should be_true
+    end
+    it "are not readable by a non-owner" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:read, @pool).should_not be_true
+    end
+  end
   describe "models" do
     before do
       @model = FactoryGirl.create :model
