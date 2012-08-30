@@ -25,7 +25,7 @@ class Cocupu.Views.Models.NewView extends Backbone.View
     )
 
   render: ->
-    $(@el).addClass('searchPane').addClass('panel').html(@template())
+    $(@el).addClass('palate-drawer').addClass('panel').html(@template())
     structure = @model.model()
     self = this
     $.each(structure.get('fields'), (n, field) ->

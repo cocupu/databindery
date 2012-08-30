@@ -28,6 +28,6 @@ class Cocupu.Views.DataSources.ShowView extends Backbone.View
     this.$('table').append(view.render().el)
 
   render: ->
-    $(@el).addClass('searchPane').addClass('drive').addClass('panel').html(@template())
+    $(@el).addClass('palate-drawer').addClass('drive').addClass('panel').html(@template())
     return this
 

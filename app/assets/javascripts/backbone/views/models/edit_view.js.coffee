@@ -96,6 +96,6 @@ class Cocupu.Views.Models.EditView extends Backbone.View
   render : ->
     dict = @model.toJSON()
     dict.models = window.router.models
-    $(@el).addClass('searchPane').addClass('editor').addClass('panel').html(@template(dict))
+    $(@el).addClass('palate-drawer').addClass('editor').addClass('panel').html(@template(dict))
 
     return this

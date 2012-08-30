@@ -48,7 +48,7 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
     this.$('.results').append(view.render().el)
     
   render : ->
-    $(@el).addClass('searchPane').addClass('panel').html(@template(@model.toJSON() ))
+    $(@el).addClass('palate-drawer').addClass('panel').html(@template(@model.toJSON() ))
     @field = $(".search-query", @el)
 
     return this

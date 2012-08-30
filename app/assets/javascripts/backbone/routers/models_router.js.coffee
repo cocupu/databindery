@@ -41,7 +41,7 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
 
     entity = new Cocupu.Collections.DataSourcesCollection()
     view = new Cocupu.Views.DataSources.ShowView(collection: entity)
-    $(".searchPane").remove()
+    $(".palate-drawer").remove()
     $("#panels").before(view.render().el)
     entity.fetch()
 
@@ -59,7 +59,7 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
     @index() if $(".models").length == 0
 
-    $(".searchPane").remove()
+    $(".palate-drawer").remove()
     model = new Cocupu.Models.Entity({model_id: id})
     @view = new Cocupu.Views.Entities.NewView(model: model)
     $("#panels").before(@view.render().el)
@@ -70,7 +70,7 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     @index() if $(".models").length == 0
     model = @models.get(id)
 
-    $(".searchPane").remove()
+    $(".palate-drawer").remove()
     @view = new Cocupu.Views.Entities.SearchView(model: model)
     $("#panels").before(@view.render().el)
     
@@ -78,7 +78,7 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     # Draw the model bar if it's not on the page (e.g. direct to url #/:id)
     @index() if $(".models").length == 0
     model = @models.get(id)
-    $(".searchPane").remove()
+    $(".palate-drawer").remove()
     @view = new Cocupu.Views.Models.EditView(model: model)
     $("#panels").before(@view.render().el)
 
