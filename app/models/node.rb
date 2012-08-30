@@ -77,4 +77,8 @@ class Node < ActiveRecord::Base
     Node.where(:persistent_id=>persistent_id).order('created_at desc').first
   end
 
+  def latest_version
+    Node.latest_version(persistent_id)
+  end
+
 end

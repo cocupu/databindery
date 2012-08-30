@@ -84,11 +84,13 @@ describe AssociationsController do
             @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
             @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {'name' => 'Simon & Schuster Ltd.'})
             @book = FactoryGirl.create(:node, model: @book_model, pool: pool, 
-                    :associations=>{'authors'=>[@author1.id, @author2.id], 'undefined'=>[@publisher.id]})
+                    :associations=>{'authors'=>[@author1.persistent_id, @author2.persistent_id], 'undefined'=>[@publisher.id]})
           end
           it "should be very successful" do
-            post :create, :node_id=>@book.persistent_id, :name=>'recordings', :target_id=>'5678'
+            post :create, :node_id=>@book.persistent_id, :association=> {:code=>'authors', :target_id=>'5678'}
             response.should be_success
+            puts @book.reload.associations
+            @book.latest_version.associations['authors'].should == [@author1.persistent_id, @author2.persistent_id, '5678']
           end
         end
       end
@@ -119,13 +121,13 @@ describe AssociationsController do
         it "should be successful" do
           post :create, :model_id=>@my_model.id, :association=>{type: 'Has One', name: 'talks', references: @associated_model.id}
           @my_model.reload.associations.should == 
-             [{"type" => 'Has One', "name"=>"talks", "references" => @associated_model.id.to_s, "label"=>"Talks"}]
+             [{"type" => 'Has One', "name"=>"talks", "references" => @associated_model.id.to_s, "label"=>@associated_model.name, "code"=>'talks'}]
           response.should redirect_to edit_model_path(@my_model)
         end
         it "should not redirect when json" do
           post :create, :model_id=>@my_model.id, :association=>{type: 'Has Many', name: 'talks', references: @associated_model.id}, :format=>:json
           @my_model.reload.associations.should == 
-             [{"type" => 'Has Many', "name"=>"talks", "references" => @associated_model.id, "label"=>"Talks"}]
+             [{"type" => 'Has Many', "name"=>"talks", "references" => @associated_model.id, "label"=>@associated_model.name, "code"=>'talks'}]
           response.should be_successful 
         end
       end

@@ -12,7 +12,7 @@ describe 'as a signed in user' do
 
   it 'adds fields and associations' do
     within(".navbar") do
-      page.should have_link("Entities", :href=>models_path) 
+      page.should have_link(@user.email, :href=>pools_path) 
     end
 
     within("#add_field") do

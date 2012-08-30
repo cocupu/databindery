@@ -15,7 +15,7 @@ class Cocupu.Views.Entities.ShowAssociationView extends Backbone.View
   
 
   add: (node) ->
-    association = new Cocupu.Models.Association(name: @model.name)
+    association = new Cocupu.Models.Association(code: @model.code)
     association.url = "/nodes/" +@options.node.id+ "/associations"
     if node.hasClass('driveFile')
       ## TODO, send the file_name too?

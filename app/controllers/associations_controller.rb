@@ -13,9 +13,12 @@ class AssociationsController < ApplicationController
         format.json { head :no_content }
       end
     elsif @node
-      association = @node.associations[params[:name]] || []
-      association << params[:target_id]
-      @node.associations[params[:name]] = association
+    puts "GOT node #{params.inspect}"
+      association = @node.associations[params[:association][:code]] || []
+      puts "association is #{association}"
+      association << params[:association][:target_id]
+      puts "now association is #{association}"
+      @node.associations[params[:association][:code]] = association
       @node.save
 
       render :text=>'ok'
