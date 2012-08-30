@@ -40,6 +40,8 @@ describe PoolsController do
       before do
         sign_in @user
         @my_model = FactoryGirl.create(:model, pool: @user.identities.first.pools.first)
+        @other_pool = FactoryGirl.create(:pool, owner: @user.identities.first)
+        @my_model_different_pool = FactoryGirl.create(:model, pool: @other_pool)
         @not_my_model = FactoryGirl.create(:model)
       end
       describe "requesting a pool I don't own" do
@@ -53,7 +55,8 @@ describe PoolsController do
           get :show, :id=>@my_pool
           response.should  be_successful
           assigns[:pool].should == @my_pool
-          assigns[:models].should == [@my_model] 
+          assigns[:models].should include(@my_model)
+          assigns[:models].should_not include(@my_model_different_pool) 
         end
       end
       describe "requesting a pool I own" do

@@ -9,7 +9,7 @@ class PoolsController < ApplicationController
   def show
     respond_to do |format|
       format.html do
-        @models = Model.accessible_by(current_ability) # for the js client
+        @models = @pool.models.accessible_by(current_ability) # for the js client
       end
       format.json { render :json=>@pool }
     end

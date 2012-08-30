@@ -4,4 +4,5 @@ class Pool < ActiveRecord::Base
   validates :owner, presence: true
   has_many :exhibits, :dependent => :destroy
   has_many :nodes, :dependent => :destroy
+  has_many :models, :dependent => :destroy
 end
