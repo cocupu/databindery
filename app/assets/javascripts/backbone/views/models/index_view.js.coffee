@@ -27,6 +27,7 @@ class Cocupu.Views.Models.IndexView extends Backbone.View
 
 
   addAll: () =>
+    this.$('li.model').remove()
     @collection.each(@addOne)
 
   addOne: (model) =>

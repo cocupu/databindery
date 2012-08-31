@@ -3,9 +3,10 @@ class Cocupu.Models.Model extends Backbone.Model
   paramRoot: 'model'
 
   url: ->
-    base = '/pools/' + window.router.pool.id + @urlRoot
-    base += @id if @id
-    base
+    if @id
+      @urlRoot + '/' + @id
+    else
+     '/pools/' + window.router.pool.id + @urlRoot
 
   defaults:
     name: null
