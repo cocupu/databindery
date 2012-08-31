@@ -6,10 +6,4 @@ class Identity < ActiveRecord::Base
   has_many :mapping_templates, :dependent => :destroy
   has_many :google_accounts, :foreign_key=>'owner_id', :dependent => :destroy
 
-  after_create :create_pool
-
-  def create_pool
-    Pool.create!(:owner=>self)
-  end
-
 end

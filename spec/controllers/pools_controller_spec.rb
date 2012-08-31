@@ -3,7 +3,7 @@ require 'spec_helper'
 describe PoolsController do
   before do
     @user = FactoryGirl.create :login
-    @my_pool = @user.identities.first.pools.first
+    @my_pool = FactoryGirl.create :pool, :owner=>@user.identities.first
     @not_my_pool = FactoryGirl.create(:pool)
   end
   describe "index" do
@@ -81,15 +81,14 @@ describe PoolsController do
     describe "when logged on" do
       before do
         sign_in @user
-        # @my_model = FactoryGirl.create(:model, pool: @user.identities.first.pools.first)
-        # @not_my_model = FactoryGirl.create(:model)
       end
       it "should be successful when rendering json" do
-        post :create, :pool=>{:name=>"New Pool"}, :format=>:json 
+        post :create, :pool=>{:name=>"New Pool", :short_name=>'new_pool'}, :format=>:json 
         response.should  be_successful
         json = JSON.parse(response.body)
         json['owner_id'].should == @user.identities.first.id
         json['name'].should == "New Pool"
+        json['short_name'].should == "new_pool"
       end
     end
   end

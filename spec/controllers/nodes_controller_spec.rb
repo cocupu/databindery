@@ -4,7 +4,7 @@ describe NodesController do
   describe "index" do
     before do
       @user = FactoryGirl.create :login_credential
-      pool = @user.identities.first.pools.first
+      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
       @model = FactoryGirl.create(:model, pool: pool)
       @node1 = FactoryGirl.create(:node, model: @model, pool: pool, :associations=>{'authors'=>[1231, 2227], 'undefined'=>'123721'})
       @node2 = FactoryGirl.create(:node, model: @model, pool: pool)
@@ -42,7 +42,7 @@ describe NodesController do
   describe "search" do
     before do
       @user = FactoryGirl.create :login_credential
-      pool = @user.identities.first.pools.first
+      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
       @model = FactoryGirl.create(:model, pool: pool, label: 'first_name',
                   fields: [{:code=>'first_name'}, {:code=>'last_name'}, {:code=>'title'}])
       @node1 = FactoryGirl.create(:node, model: @model, pool: pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
@@ -80,7 +80,7 @@ describe NodesController do
   describe "show" do
     before do
       @user = FactoryGirl.create :login_credential
-      pool = @user.identities.first.pools.first
+      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
       @model = FactoryGirl.create(:model, pool: pool)
       @node1 = FactoryGirl.create(:node, model: @model, pool: pool)
       @node2 = FactoryGirl.create(:node, model: @model, pool: pool)
@@ -109,7 +109,7 @@ describe NodesController do
   describe "new" do
     before do
       @user = FactoryGirl.create :login_credential
-      pool = @user.identities.first.pools.first
+      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
       @my_model = FactoryGirl.create(:model, pool: pool)
       @not_my_model = FactoryGirl.create(:model)
       sign_in @user
@@ -139,13 +139,13 @@ describe NodesController do
   describe "create" do
     before do
       @user = FactoryGirl.create :login_credential
-      pool = @user.identities.first.pools.first
-      @my_model = FactoryGirl.create(:model, pool: pool)
+      @pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+      @my_model = FactoryGirl.create(:model, pool: @pool)
       @not_my_model = FactoryGirl.create(:model)
       sign_in @user
     end
     it "should be successful using a model I own" do 
-      post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@my_model}
+      post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@my_model}, :pool_id=>@pool.id
       response.should redirect_to node_path(assigns[:node])
       assigns[:node].binding.should == '0B4oXai2d4yz6bUstRldTeXV0dHM'
       assigns[:node].model.should == @my_model
@@ -162,7 +162,7 @@ describe NodesController do
   describe "update" do
     before do
       @user = FactoryGirl.create :login_credential
-      pool = @user.identities.first.pools.first
+      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
       @model = FactoryGirl.create(:model, pool: pool)
       @model.fields = [{code: 'f1', name: 'Field one'}]
       @model.save!

@@ -9,7 +9,7 @@ describe ReifyEachSpreadsheetRowJob do
     @template.model_mappings = [{:model_id=>@model.id, :field_mappings=> [{:source=>"B", :label=>"Wheels", :field=>"wheels"}, {:source=>"A", :label=>''}]}]
     @template.save!
     @ss_row = SpreadsheetRow.create!(:values=>['one', 'two', 'three'])
-    @pool = Pool.create!(:owner=>Identity.create!)
+    @pool = FactoryGirl.create :pool
     @ticket = JobLogItem.new(:data=>{:id=>@ss_row.id, :template_id => @template.id, :pool_id => @pool.id})
   end
   it "should process" do

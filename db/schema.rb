@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120830194806) do
+ActiveRecord::Schema.define(:version => 20120831161020) do
 
   create_table "change_sets", :force => true do |t|
     t.text     "data"
@@ -127,10 +127,14 @@ ActiveRecord::Schema.define(:version => 20120830194806) do
   create_table "pools", :force => true do |t|
     t.string   "name"
     t.integer  "owner_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
     t.integer  "head_id"
+    t.string   "short_name"
+    t.text     "description"
   end
+
+  add_index "pools", ["short_name"], :name => "index_pools_on_short_name", :unique => true
 
   create_table "spreadsheet_rows", :force => true do |t|
     t.integer  "row_number"

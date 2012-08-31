@@ -25,7 +25,7 @@ describe Worksheet do
   end
   it "reify should initiate a ConcurrentJob but not enqueue header rows" do
     template = MappingTemplate.create!(owner: Identity.create!, row_start: 2)
-    pool = Pool.create!(owner: Identity.create!)
+    pool = FactoryGirl.create :pool
     ws = Worksheet.new()
     ws.stub(:rows => ['one', 'two', 'three'])
     job = mock("job")

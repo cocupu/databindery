@@ -1,6 +1,7 @@
 class NodesController < ApplicationController
   include Cocupu::Search
   load_and_authorize_resource :except=>[:index, :search], :find_by => :persistent_id
+  load_and_authorize_resource :pool, :only=>:create
   layout 'full_width'
 
   def index
@@ -82,7 +83,7 @@ class NodesController < ApplicationController
       return
     end
     @node.model = model
-    @node.pool = current_pool
+    @node.pool = @pool
     @node.save!
     redirect_to node_path(@node), :notice=>"#{model.name} created"
   end

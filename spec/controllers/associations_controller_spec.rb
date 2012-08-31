@@ -26,7 +26,7 @@ describe AssociationsController do
         describe "on a model that is mine" do
           before do
             owner = @user.identities.first
-            pool = owner.pools.first
+            pool = FactoryGirl.create :pool, :owner=>owner
             @book_model = FactoryGirl.create(:model, name: 'Book', owner: owner, :associations=>[{:name=>'authors', :type=>'Ordered List'}])
             @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
                 fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
@@ -71,7 +71,7 @@ describe AssociationsController do
         describe "on a model that is mine" do
           before do
             owner = @user.identities.first
-            pool = owner.pools.first
+            pool = FactoryGirl.create :pool, :owner=>owner
             @book_model = FactoryGirl.create(:model, name: 'Book', owner: owner, :associations=>[{:name=>'authors', :type=>'Ordered List'}])
             @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
                 fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
@@ -97,8 +97,9 @@ describe AssociationsController do
   end
   describe "for models" do
     before do
-      @my_model = FactoryGirl.create(:model, pool: @user.identities.first.pools.first)
-      @associated_model = FactoryGirl.create(:model, pool: @user.identities.first.pools.first)
+      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+      @my_model = FactoryGirl.create(:model, pool: pool)
+      @associated_model = FactoryGirl.create(:model, pool: pool)
       @not_my_model = FactoryGirl.create(:model)
     end
     describe "create" do

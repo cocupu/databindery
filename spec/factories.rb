@@ -20,6 +20,10 @@ FactoryGirl.define do
   end
 
   factory :pool do
+    sequence :short_name do |n|
+      "factory-pool_#{n}"
+    end
+
     owner
   end
 

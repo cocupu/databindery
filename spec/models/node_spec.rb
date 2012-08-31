@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Node do
   before :all do
-    @pool = Pool.create!(:owner=>Identity.create!)
+    @pool = FactoryGirl.create :pool
   end
   before do
     subject.model = Model.create!(name: "Test Model", owner: Identity.create!, 

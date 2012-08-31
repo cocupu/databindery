@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ModelsController do
   before do
     @user = FactoryGirl.create :login
-    pool = @user.identities.first.pools.first
+    pool = FactoryGirl.create :pool, :owner=>@user.identities.first
     @my_model = FactoryGirl.create(:model, pool: pool)
     @not_my_model = FactoryGirl.create(:model)
   end

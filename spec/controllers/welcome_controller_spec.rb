@@ -15,7 +15,8 @@ describe WelcomeController do
     describe "when logged on" do
       before do
         @user = FactoryGirl.create :login
-        @exhibit = FactoryGirl.create(:exhibit, pool: @user.identities.first.pools.first)
+        pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+        @exhibit = FactoryGirl.create(:exhibit, pool: pool)
         sign_in @user
       end
       it "should be successful" do

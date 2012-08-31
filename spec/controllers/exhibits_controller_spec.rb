@@ -7,7 +7,8 @@ describe ExhibitsController do
 
   before do
     @login = FactoryGirl.create :login
-    @exhibit = FactoryGirl.create(:exhibit, pool: @login.identities.first.pools.first)
+    pool = FactoryGirl.create :pool, :owner=>@login.identities.first
+    @exhibit = FactoryGirl.create(:exhibit, pool: pool)
   end
 
   describe "when signed in" do
@@ -72,9 +73,8 @@ describe ExhibitsController do
         @instance.save!
         @instance2 = Node.new(data: {'f1' => 'bazaar'})
         @instance2.model = @model
-        @instance2.pool = Pool.create!(owner: Identity.create!) 
+        @instance2.pool = FactoryGirl.create :pool
         @instance2.save!
-        #@model.index
 
       end
       it "should be success" do
