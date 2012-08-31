@@ -28,7 +28,7 @@ class Cocupu.Views.Entities.SearchView extends Backbone.View
   search : (event) ->
     return if @field.val().length < 3
     clearTimeout(@searching )
-    search_url = '/models/' + @model.id + '/nodes/search.json?q='
+    search_url = '/pools/' + window.router.pool.id + '/models/' + @model.id + '/nodes/search.json?q='
     self = this
     @searching = setTimeout \
       ->

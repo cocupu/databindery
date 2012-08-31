@@ -15,7 +15,7 @@ class Cocupu.Models.Model extends Backbone.Model
 
   entities: (options) ->
     collection = new Cocupu.Collections.EntitiesCollection
-    collection.url = '/models/' + @id + '/nodes/search.json'
+    collection.url = '/pools/' + window.router.pool.id + '/models/' + @id + '/nodes/search.json'
     collection
  
   setTypeName: (type, code, name) ->

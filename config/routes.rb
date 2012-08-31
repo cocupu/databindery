@@ -9,7 +9,18 @@ Cocupu::Application.routes.draw do
   
   resources :drives
   resources :pools do
-    resources :models, :only=>:create
+    resources :models, :only=>:create do
+      resources :nodes, :only=>[] do
+        collection do
+          get 'search'
+        end
+      end
+    end
+    resources :nodes, :only=>[:create] do
+      collection do
+        get 'search'
+      end
+    end
   end
 
   resources :chattels do
@@ -26,21 +37,14 @@ Cocupu::Application.routes.draw do
   resources :models, :except=>:create do
     resources :fields
     resources :associations, :only=>:create
-    resources :nodes do
-      collection do
-        get 'search'
-      end
-    end
+    resources :nodes 
   end
 
 
   resources :file_entities
 
-  resources :nodes do
+  resources :nodes, :except=>[:create] do
     resources :associations, :only=>[:index, :create]
-    collection do
-      get 'search'
-    end
   end
 
   resources :exhibits 

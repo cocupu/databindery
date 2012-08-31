@@ -1,7 +1,7 @@
 class NodesController < ApplicationController
   include Cocupu::Search
   load_and_authorize_resource :except=>[:index, :search], :find_by => :persistent_id
-  load_and_authorize_resource :pool, :only=>:create
+  load_and_authorize_resource :pool, :only=>[:create, :search]
   layout 'full_width'
 
   def index
@@ -33,7 +33,7 @@ class NodesController < ApplicationController
     end
 
     # Constrain results to this pool
-    fq = "pool:#{current_pool.id}"
+    fq = "pool:#{@pool.id}"
     fq += " AND model:#{@model.id}" if @model
     fq += " AND format:Node"
 

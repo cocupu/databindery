@@ -2,6 +2,13 @@ class Cocupu.Models.Entity extends Backbone.Model
   urlRoot : '/nodes'
   paramRoot: 'node'
 
+  url: ->
+    base = '/pools/' + window.router.pool.id + @urlRoot
+    if @id
+      base + '/' + @id
+    else
+      base
+
   defaults:
     data: null
     associations: {}

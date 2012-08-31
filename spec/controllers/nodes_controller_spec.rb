@@ -42,17 +42,17 @@ describe NodesController do
   describe "search" do
     before do
       @user = FactoryGirl.create :login_credential
-      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
-      @model = FactoryGirl.create(:model, pool: pool, label: 'first_name',
+      @pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+      @model = FactoryGirl.create(:model, pool: @pool, label: 'first_name',
                   fields: [{:code=>'first_name'}, {:code=>'last_name'}, {:code=>'title'}])
-      @node1 = FactoryGirl.create(:node, model: @model, pool: pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
-      @node2 = FactoryGirl.create(:node, model: @model, pool: pool, :data=>{'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'})
+      @node1 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
+      @node2 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'})
       @different_pool_node = FactoryGirl.create(:node, model: @model )
-      @different_model_node = FactoryGirl.create(:node, pool: pool)
+      @different_model_node = FactoryGirl.create(:node, pool: @pool)
       sign_in @user
     end
     it "when model is not provided" do
-      get :search, :format=>'json'
+      get :search, :format=>'json', :pool_id => @pool
       response.should be_success
       json = JSON.parse(response.body)
       json.map { |n| n["id"]}.should == [@node1.persistent_id, @node2.persistent_id, @different_model_node.persistent_id]
@@ -60,7 +60,7 @@ describe NodesController do
       json.first["data"].should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
     end
     it "when query is  provided" do
-      get :search, :format=>'json', :q=>'Coyne'
+      get :search, :format=>'json', :q=>'Coyne', :pool_id => @pool
       response.should be_success
       json = JSON.parse(response.body)
       json.map { |n| n["id"]}.should == [@node1.persistent_id]
@@ -68,7 +68,7 @@ describe NodesController do
       json.first["data"].should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
     end
     it "when model is provided" do
-      get :search, :format=>'json', :model_id=>@model.id
+      get :search, :format=>'json', :model_id=>@model.id, :pool_id => @pool
       response.should be_success
       json = JSON.parse(response.body)
       json.map { |n| n["id"]}.should == [@node1.persistent_id, @node2.persistent_id]
