@@ -1,10 +1,12 @@
 class Cocupu.Routers.ModelsRouter extends Backbone.Router
   initialize: (options) ->
+    @pool = options.pool
     @models = new Cocupu.Collections.ModelsCollection()
     @models.reset options.models
 
   routes:
     ":id/new"    : "newEntity"
+    "new"        : "newModel"
     "index"      : "index"
     "drive"      : "drive"
     ":id/search" : "search"
@@ -64,6 +66,14 @@ class Cocupu.Routers.ModelsRouter extends Backbone.Router
     $(".palate-drawer").remove()
     model = new Cocupu.Models.Entity({model_id: id})
     @view = new Cocupu.Views.Entities.NewView(model: model)
+    $("#panels").before(@view.render().el)
+
+  newModel: ->
+    # Draw the model bar if it's not on the page (e.g. direct to url #new)
+    @index() if $(".models").length == 0
+    $(".palate-drawer").remove()
+    model = new Cocupu.Models.Model()
+    @view = new Cocupu.Views.Models.NewView(model: model)
     $("#panels").before(@view.render().el)
 
 

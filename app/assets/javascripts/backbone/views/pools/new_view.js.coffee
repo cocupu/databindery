@@ -12,9 +12,6 @@ class Cocupu.Views.Pools.NewView extends Backbone.View
     @model.unset("errors")
 
     @model.set(o.name, o.value) for o in this.$('form').serializeArray()
-    # $.each(this.$('form').serializeArray(), (n, o) ->
-    #   @model.set(o.name, o.value)
-    # )
     @model.save({},
       success: (entity) ->
         @model = entity

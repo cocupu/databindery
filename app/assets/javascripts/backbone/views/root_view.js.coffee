@@ -9,7 +9,7 @@ class Cocupu.Views.RootView extends Backbone.View
       e.preventDefault()
       $(this).tab('show')
     )
-    view = new Cocupu.Views.Models.IndexView(models: @options.models)
+    view = new Cocupu.Views.Models.IndexView(collection: @options.models)
     $("#menu-tab-content", $(@el)).append(view.render().el)
     view = new Cocupu.Views.DataSources.IndexView()
     $("#menu-tab-content", $(@el)).append(view.render().el)

@@ -110,7 +110,7 @@ describe ModelsController do
   describe "create" do
     describe "when not logged on" do
       it "should redirect to root" do
-        post :create
+        post :create, :pool_id=>@user.identities.first.pools.first.id
         response.should redirect_to root_path
       end
     end
@@ -120,16 +120,30 @@ describe ModelsController do
         sign_in @user
       end
       it "should redirect to form when validation fails" do
-        post :create, :model=>{}
+        post :create, :model=>{}, :pool_id=>@user.identities.first.pools.first.id
         response.should be_successful
         response.should render_template(:new)
         assigns[:model].should be_kind_of Model
       end
       it "should be successful" do
-        post :create, :model=>{:name=>'Turkey'}
+        post :create, :model=>{:name=>'Turkey'}, :pool_id=>@user.identities.first.pools.first.id
         response.should redirect_to edit_model_path(assigns[:model])
         assigns[:model].should be_kind_of Model
         assigns[:model].name.should == 'Turkey'
+      end
+      it "should be successful with json" do
+        in_pool = FactoryGirl.create(:pool, owner: @user.identities.first)
+        post :create, :model=>{:name=>'Turkey'}, :pool_id=>in_pool.id, :format=>:json
+        response.should be_successful
+        json = JSON.parse response.body
+        json["name"].should == 'Turkey'
+        json["pool_id"].should == in_pool.id
+        json["id"].should_not be_nil
+      end
+      it "should not allow you to create models in someone elses pool" do
+        in_pool = FactoryGirl.create(:pool)
+        post :create, :model=>{:name=>'Turkey'}, :pool_id=>in_pool.id, :format=>:json
+        response.response_code.should == 403
       end
     end
   end

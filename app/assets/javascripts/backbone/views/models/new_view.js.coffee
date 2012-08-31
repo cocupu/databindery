@@ -11,14 +11,12 @@ class Cocupu.Views.Models.NewView extends Backbone.View
     e.stopPropagation()
     @model.unset("errors")
 
-    data = {}
-    $.each(this.$('form').serializeArray(), (n, o) ->
-      data[o.name] = o.value
-    )
-    @model.save(data: data,
+    @model.set(o.name, o.value) for o in this.$('form').serializeArray()
+    @model.save({},
       success: (entity) ->
         @model = entity
-        window.router.navigate(@model.get('model_id') + "/search", true)
+        window.router.models.add(entity)
+        window.router.navigate(@model.id + "/edit", true)
 
       error: (entity, jqXHR) =>
          @model.set({errors: $.parseJSON(jqXHR.responseText)})
@@ -26,12 +24,5 @@ class Cocupu.Views.Models.NewView extends Backbone.View
 
   render: ->
     $(@el).addClass('palate-drawer').addClass('panel').html(@template())
-    structure = @model.model()
-    self = this
-    $.each(structure.get('fields'), (n, field) ->
-      field.value = ''
-      elm = new Cocupu.Views.Entities.ShowFieldView(model: field).render().el
-      self.$('form .form-actions').before(elm)
-    )
     return this
   

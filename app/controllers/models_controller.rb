@@ -1,5 +1,6 @@
 class ModelsController < ApplicationController
 
+  load_and_authorize_resource :pool, :only=>:create
   load_and_authorize_resource
 
   layout 'full_width'
@@ -19,8 +20,12 @@ class ModelsController < ApplicationController
 
   def create
     @model.owner = current_identity
+    @model.pool = @pool 
     if @model.save
-      redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been created"
+      respond_to do |format|
+        format.json { render :json=>@model}
+        format.html { redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been created" }
+      end
     else
       render action: :new
     end

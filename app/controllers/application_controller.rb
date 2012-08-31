@@ -2,7 +2,18 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   
   rescue_from CanCan::AccessDenied do |exception|
-    redirect_to root_path, alert: exception.message
+    respond_to do |format|
+      format.json do 
+        if signed_in?
+          message = "You don't have permission to #{exception.action} #{exception.subject.class.to_s.pluralize}"
+          render :json=>{:status=>:error, :message=>message}, :status => :forbidden
+        else
+          message = "You must be logged in to do that!"
+          render :json=>{:status=>:error, :message=>message}, :status => :unauthorized
+        end
+      end 
+      format.html { redirect_to root_path, alert: exception.message }
+    end
   end
 
   ## Just assuming the first identity for now.  Later we may allow the user to pick the identity they want to use.

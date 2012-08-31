@@ -3,9 +3,6 @@ Cocupu.Views.Pools ||= {}
 class Cocupu.Views.Pools.IndexView extends Backbone.View
   template: JST["backbone/templates/pools/index"]
 
-  # initialize: () ->
-  #   @collection.bind('reset', @addAll)
-
   addAll: () =>
     @collection.each(@addOne)
 

@@ -8,7 +8,9 @@ Cocupu::Application.routes.draw do
   end
   
   resources :drives
-  resources :pools
+  resources :pools do
+    resources :models, :only=>:create
+  end
 
   resources :chattels do
     member do
@@ -21,7 +23,7 @@ Cocupu::Application.routes.draw do
   end
   resources :mapping_templates
   
-  resources :models do
+  resources :models, :except=>:create do
     resources :fields
     resources :associations, :only=>:create
     resources :nodes do

@@ -7,7 +7,15 @@ class Cocupu.Views.Models.IndexView extends Backbone.View
   id: 'models'
 
   initialize: () ->
-    @options.models.bind('reset', @addAll)
+    @collection.bind('reset', @addAll)
+    @collection.bind('add', @addOne)
+
+  close: ->
+    @remove()
+    @unbind()
+    @collection.unbind("reset", @addAll)
+    @collection.unbind('add', @addOne)
+    false
 
   events: {
     "click li.model > a" : "highlightModel"
@@ -19,14 +27,14 @@ class Cocupu.Views.Models.IndexView extends Backbone.View
 
 
   addAll: () =>
-    @options.models.each(@addOne)
+    @collection.each(@addOne)
 
   addOne: (model) =>
     view = new Cocupu.Views.Models.ModelView({model : model})
     $('#new-entity', $(@el)).before(view.render().el)
 
   render: =>
-    $(@el).addClass('tab-pane active models nav nav-pills nav-stacked').html(@template(models: @options.models.toJSON() ))
+    $(@el).addClass('tab-pane active models nav nav-pills nav-stacked').html(@template(models: @collection.toJSON() ))
     @addAll()
 
     return this
