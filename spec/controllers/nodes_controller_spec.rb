@@ -152,7 +152,7 @@ describe NodesController do
       flash[:notice].should == "#{@my_model.name} created"
     end
     it "should not be successful using a model I don't own" do 
-      post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@not_my_model}
+      post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@not_my_model}, :pool_id=>@pool.id
       response.should redirect_to new_node_path(:binding=>'0B4oXai2d4yz6bUstRldTeXV0dHM')
       assigns[:node].model.should be_nil
       
