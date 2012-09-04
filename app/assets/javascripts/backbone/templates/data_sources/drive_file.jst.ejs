@@ -1,7 +1,7 @@
 <td><%= title %></td>
 <td>
-  <% if (bindings) { %>
-    <%=  bindings.length == 0 ? 'bind' : bindings %>
+  <% if (type == 'spreadsheet') { %>
+    <%=  spawn %>
   <% } %>
 </td>
 <td><%= owner %></td>
