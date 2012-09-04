@@ -58,9 +58,9 @@ describe DrivesController do
             # it returns a list of files, see: https://developers.google.com/drive/v2/reference/files
             json = JSON.parse(response.body)
             json.should == [
-                {'title' => 'Title one', 'id'=>'12303230', 'type'=>'file', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => []}, 
-                {'title' => 'Title two', 'id'=>'230920398209', 'type'=>'file', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => []},
-                {'title' => 'Title three', 'id'=>'230920398200', 'type'=>'folder', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => nil } ]
+                {'title' => 'Title one', 'id'=>'12303230', 'type'=>'file', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => [], "mime_type"=>"text/html"}, 
+                {'title' => 'Title two', 'id'=>'230920398209', 'type'=>'file', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => [], "mime_type"=>"application/pdf"},
+                {'title' => 'Title three', 'id'=>'230920398200', 'type'=>'folder', 'owner' => 'me', 'date' => '23 Aug 21:28', 'bindings' => nil , "mime_type"=>"application/vnd.google-apps.folder"} ]
           end
         end
       end
