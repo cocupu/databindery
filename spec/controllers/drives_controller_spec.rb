@@ -67,4 +67,27 @@ describe DrivesController do
     end
   end
 
+  describe "spawn" do
+    before do
+      @user = FactoryGirl.create :login
+      sign_in @user
+    end
+    it "should be successfull" do
+      @mock_client = stub("Api client")
+      @mock_client.stub(:authorization).and_return(stub("authorization", :update_token! => true, :refresh_token=>false, :access_token=>'131', :expires_in => '9999', :issued_at=>'34234'))
+      @mock_client.should_receive(:execute!).with(:api_method => kind_of(Google::APIClient::Method),:parameters=>{"fileId"=>"12312415201"}).and_return(stub("result", :data => stub("data", :to_hash=>{}, :downloadUrl=>'theRemoteFile')))
+      @mock_client.should_receive(:execute).with(:uri=>"theRemoteFile").and_return(stub("result", :data => stub("data", :mime_type=>'text/html', :title=>'hey.xls'), :body=>"resulting content"))
+      controller.stub(:api_client).and_return(@mock_client)
+      mock_queue = mock('queue')
+      Carrot.should_receive(:queue).with('decompose_spreadsheet').and_return(mock_queue)
+      mock_log = stub("log", :id=>'6HceCIKd3ucLNco9583DVnmGW5E')
+      JobLogItem.should_receive(:create).and_return(mock_log)
+      mock_queue.should_receive(:publish).with('6HceCIKd3ucLNco9583DVnmGW5E')
+
+      get :spawn, :id => '12312415201'
+      assigns[:chattel].attachment.should_not be_nil
+      response.should redirect_to(describe_chattel_path(assigns[:chattel], :log=>assigns[:log].id))
+    end
+  end
+
 end

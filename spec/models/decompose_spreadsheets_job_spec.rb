@@ -11,9 +11,9 @@ describe DecomposeSpreadsheetJob do
 
   it "should break up the Excel spreadsheet" do
     @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
-    @file.stub(:original_filename => 'dechen_rangdrol_archives_database.xls')
-    @file.stub(:content_type => 'application/vnd.ms-excel')
-    @chattel = Cocupu::Spreadsheet.create(owner: FactoryGirl.create(:identity), attachment: @file)
+    @chattel = Cocupu::Spreadsheet.create(owner: FactoryGirl.create(:identity))
+    @chattel.attach(@file.read, 'application/vnd.ms-excel', 'dechen_rangdrol_archives_database.xls')
+    @chattel.save!
     @job = DecomposeSpreadsheetJob.new(@chattel.id, JobLogItem.new)
     @job.enqueue #start the logger
     @job.perform
@@ -23,9 +23,9 @@ describe DecomposeSpreadsheetJob do
   end
   it "should break up the ODS spreadsheet" do
     @file = File.new(Rails.root + 'spec/fixtures/Stock Check 2.ods')
-    @file.stub(:original_filename => 'Stock Check 2.ods')
-    @file.stub(:content_type => 'application/vnd.oasis.opendocument.spreadsheet')
-    @chattel = Cocupu::Spreadsheet.create(owner: FactoryGirl.create(:identity), attachment: @file)
+    @chattel = Cocupu::Spreadsheet.create(owner: FactoryGirl.create(:identity))
+    @chattel.attach(@file.read, 'application/vnd.oasis.opendocument.spreadsheet', 'Stock Check 2.ods')
+    @chattel.save!
     @job = DecomposeSpreadsheetJob.new(@chattel.id, JobLogItem.new)
     @job.enqueue #start the logger
     @job.perform

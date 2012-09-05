@@ -7,31 +7,39 @@ class Chattel < ActiveRecord::Base
   end
 
   def attachment
-    #call .url_for(:read) (public signed), .public_url (unsigned), or .read() on this object
-    s3 = AWS::S3.new
-    s3.buckets[bucket_name].objects[file_key]
+    File.open(file_name).read if id && File.readable?(file_name)
   end 
 
-  def attachment= file
-    self.save if new_record?  ## Generate a key
-    self.attachment_content_type = file.content_type
-    self.attachment_file_name = file.original_filename
+  def attach(file_content, content_type, original_filename)
+    self.attachment_content_type = content_type
+    self.attachment_file_name = original_filename
     self.attachment_extension = /\.([^.]+)$/.match(attachment_file_name)[1]
 
-    # get an instance of the S3 interface using the default configuration
-    s3 = AWS::S3.new
-
-    # create a bucket
-    b = s3.buckets.create(bucket_name)
-
-    # upload a file
-    o = b.objects[file_key]
-    o.write(file.read, :content_type=> attachment_content_type)
+    store_file(file_content)
   end
+
+  def file_name
+    File.join(dir, file_key)
+  end
+
 
   private
 
+  def store_file(file_content)
+    FileUtils.mkdir_p(dir) unless File.exists?(dir)
+    #TODO avoid name collision
+    stored = File.new(file_name, 'w')
+    stored.write file_content
+    stored.close
+  end
+
+  def dir
+    #Platform independant way of showing a File path. Empty String ('') means the root
+    File.join('', 'tmp', 'cocupu')
+  end
+
   def file_key
+    raise "Can't make a key until the record is saved" unless id
     "#{id}.#{attachment_extension}"
   end
 
