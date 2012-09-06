@@ -42,14 +42,14 @@ class DrivesController < ApplicationController
     result = api_client.execute!(
       :api_method => drive.files.get,
       :parameters => { 'fileId' => params['id'] })
-    #file = result.data.to_hash
+    file = result.data#.to_hash
     result = api_client.execute(:uri => result.data.downloadUrl)
     #file['content'] = result.body
 
 
 
     # From ChattelsController#create
-    if ['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet'].include?(result.data.mime_type)
+    if ['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet'].include?(file.mime_type)
       @chattel = Cocupu::Spreadsheet.new
     else
       @chattel = Chattel.new
@@ -57,7 +57,7 @@ class DrivesController < ApplicationController
     @chattel.owner = current_identity
     @chattel.save!
     # TODO save the original version id (from google drive)?
-    @chattel.attach(result.body, result.data.mime_type, result.data.title)
+    @chattel.attach(result.body, file.mime_type, file.title)
     @chattel.save!
     #TODO check to see if this is a valid spreadsheet.
     @log = JobLogItem.create(:status=>"READY", :name=>DecomposeSpreadsheetJob.to_s, :data=>@chattel.id)

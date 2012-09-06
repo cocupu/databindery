@@ -75,7 +75,7 @@ describe DrivesController do
     it "should be successfull" do
       @mock_client = stub("Api client")
       @mock_client.stub(:authorization).and_return(stub("authorization", :update_token! => true, :refresh_token=>false, :access_token=>'131', :expires_in => '9999', :issued_at=>'34234'))
-      @mock_client.should_receive(:execute!).with(:api_method => kind_of(Google::APIClient::Method),:parameters=>{"fileId"=>"12312415201"}).and_return(stub("result", :data => stub("data", :to_hash=>{}, :downloadUrl=>'theRemoteFile')))
+      @mock_client.should_receive(:execute!).with(:api_method => kind_of(Google::APIClient::Method),:parameters=>{"fileId"=>"12312415201"}).and_return(stub("result", :data => stub("data", :mime_type=>'text/html', :title=>'hey.xls', :downloadUrl=>'theRemoteFile')))
       @mock_client.should_receive(:execute).with(:uri=>"theRemoteFile").and_return(stub("result", :data => stub("data", :mime_type=>'text/html', :title=>'hey.xls'), :body=>"resulting content"))
       controller.stub(:api_client).and_return(@mock_client)
       mock_queue = mock('queue')
