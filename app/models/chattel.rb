@@ -28,7 +28,7 @@ class Chattel < ActiveRecord::Base
   def store_file(file_content)
     FileUtils.mkdir_p(dir) unless File.exists?(dir)
     #TODO avoid name collision
-    stored = File.new(file_name, 'w')
+    stored = File.new(file_name, 'wb')
     stored.write file_content
     stored.close
   end
