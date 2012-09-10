@@ -35,7 +35,7 @@ class Chattel < ActiveRecord::Base
 
   def dir
     #Platform independant way of showing a File path. Empty String ('') means the root
-    File.join('', 'tmp', 'cocupu')
+    File.join('', 'tmp', 'cocupu', Rails.env)
   end
 
   def file_key
