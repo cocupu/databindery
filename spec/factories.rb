@@ -33,12 +33,17 @@ FactoryGirl.define do
       "Factory model name #{n}"
     end
     fields [{"name"=>"Description", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"description"}.with_indifferent_access]
-    owner # TODO remove?
+    owner
   end
 
   factory :spreadsheet, :class=>Cocupu::Spreadsheet do
     owner
 
+  end
+
+  factory :mapping_template do
+    owner
+    pool
   end
 
   factory :worksheet do

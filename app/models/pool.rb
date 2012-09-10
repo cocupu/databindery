@@ -5,6 +5,7 @@ class Pool < ActiveRecord::Base
   has_many :exhibits, :dependent => :destroy
   has_many :nodes, :dependent => :destroy
   has_many :models, :dependent => :destroy
+  has_many :mapping_templates, :dependent => :destroy
 
   validates :short_name, :format=>{:with => /\A[\w-]+\Z/}, :uniqueness => true
   

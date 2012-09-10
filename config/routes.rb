@@ -25,6 +25,7 @@ Cocupu::Application.routes.draw do
         get 'search'
       end
     end
+    resources :mapping_templates
   end
 
   resources :chattels do
@@ -36,14 +37,12 @@ Cocupu::Application.routes.draw do
     resources :worksheets do
     end
   end
-  resources :mapping_templates
   
   resources :models, :except=>:create do
     resources :fields
     resources :associations, :only=>:create
     resources :nodes 
   end
-
 
   resources :file_entities
 

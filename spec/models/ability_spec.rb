@@ -30,6 +30,35 @@ describe Ability do
       ability.can?(:create, Pool).should_not be_true
     end
   end
+  describe "mapping_template" do
+    before do
+      @mapping_template = FactoryGirl.create(:mapping_template)
+    end
+    it "are readable by their owner" do
+      ability = Ability.new(@mapping_template.pool.owner)
+      ability.can?(:read, @mapping_template).should be_true
+    end
+    it "are not readable by a non-owner" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:read, @mapping_template).should_not be_true
+    end
+    it "can be updated by an owner" do
+      ability = Ability.new(@mapping_template.pool.owner)
+      ability.can?(:update, @mapping_template).should be_true
+    end
+    it "can't be updated by a non-owner" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:update, @mapping_template).should_not be_true
+    end
+    it "can be created by a logged in user" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:create, MappingTemplate).should be_true
+    end
+    it "can't be created by a not logged in user" do
+      ability = Ability.new(nil)
+      ability.can?(:create, MappingTemplate).should_not be_true
+    end
+  end
   describe "models" do
     before do
       @model = FactoryGirl.create :model
