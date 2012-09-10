@@ -15,7 +15,11 @@ describe MappingTemplatesController do
       end
     end
     describe "when logged in" do
-      before { sign_in FactoryGirl.create :login }
+      before do
+        cred = FactoryGirl.create :login_credential
+        pool = FactoryGirl.create(:pool, owner: cred.identities.first)
+        sign_in cred
+      end
       it "should create" do
         Worksheet.any_instance.should_receive(:reify)
 
@@ -52,7 +56,8 @@ describe MappingTemplatesController do
 
   describe "show" do
     before do
-      @template = MappingTemplate.new(owner: FactoryGirl.create(:identity))
+      pool = FactoryGirl.create(:pool)
+      @template = MappingTemplate.new(owner: pool.owner, pool: pool)
       @template.attributes = {"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}} 
       @template.save
       sign_in FactoryGirl.create :login 

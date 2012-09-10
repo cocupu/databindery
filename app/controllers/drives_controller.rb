@@ -42,11 +42,8 @@ class DrivesController < ApplicationController
     result = api_client.execute!(
       :api_method => drive.files.get,
       :parameters => { 'fileId' => params['id'] })
-    file = result.data#.to_hash
+    file = result.data
     result = api_client.execute(:uri => result.data.downloadUrl)
-    #file['content'] = result.body
-
-
 
     # From ChattelsController#create
     if ['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet'].include?(file.mime_type)

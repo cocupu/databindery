@@ -14,7 +14,7 @@ class MappingTemplatesController < ApplicationController
 
   def create
     @worksheet = Worksheet.find(params[:worksheet_id])
-    @mapping_template = MappingTemplate.new(owner: current_identity)
+    @mapping_template = MappingTemplate.new(owner: current_identity, pool: current_pool)
     params[:mapping_template][:model_mappings_attributes].each do |key, mma|
       #remove template fields
       mma['field_mappings_attributes'].delete('new_field_mappings')
