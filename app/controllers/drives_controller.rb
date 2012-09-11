@@ -68,7 +68,7 @@ class DrivesController < ApplicationController
     q = Carrot.queue('decompose_spreadsheet')
     q.publish(@log.id);
 
-    redirect_to describe_chattel_path(@chattel, :log=>@log.id)
+    redirect_to describe_pool_chattel_path(@pool, @chattel, :log=>@log.id)
   end
 
   private

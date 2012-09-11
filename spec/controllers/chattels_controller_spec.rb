@@ -5,7 +5,7 @@ describe ChattelsController do
   it "should have routes" do
     {:get=>'/chattels/new'}.should route_to(:controller=>'chattels', :action=>'new')
     {:post=>'/chattels'}.should route_to(:controller=>'chattels', :action=>'create')
-    {:get=>'/chattels/3/describe'}.should route_to(:controller=>'chattels', :action=>'describe', :id=>'3')
+    {:get=>'/pools/8/chattels/3/describe'}.should route_to(:controller=>'chattels', :action=>'describe', :id=>'3', :pool_id=>'8')
   end
 
   describe "new" do

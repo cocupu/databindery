@@ -18,13 +18,13 @@ describe DrivesController do
       describe "and not authorized" do
         it "should redirect to get an oauth token" do
           get :index, :pool_id=>@pool
-          response.should redirect_to "https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&client_id=840123515072-bi3cnnt361ek7tnqfgbc05npt4h096k8.apps.googleusercontent.com&redirect_uri=http://bindery.cocupu.com:3001/pool/#{@pool.id}/drives&response_type=code&scope=https://www.googleapis.com/auth/drive.readonly%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&user_id="
+          response.should redirect_to "https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&client_id=840123515072-bi3cnnt361ek7tnqfgbc05npt4h096k8.apps.googleusercontent.com&redirect_uri=http://bindery.cocupu.com:3001/drives&response_type=code&scope=https://www.googleapis.com/auth/drive.readonly%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&user_id="
         end
         it "should redirect to get an oauth token" do
           get :index, :pool_id=>@pool, :format=>:json
           response.code.should == '401'
           json = JSON.parse response.body
-          json.should == {'redirect'=>"https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&client_id=840123515072-bi3cnnt361ek7tnqfgbc05npt4h096k8.apps.googleusercontent.com&redirect_uri=http://bindery.cocupu.com:3001/pool/#{@pool.id}/drives&response_type=code&scope=https://www.googleapis.com/auth/drive.readonly%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&user_id="}
+          json.should == {'redirect'=>"https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&client_id=840123515072-bi3cnnt361ek7tnqfgbc05npt4h096k8.apps.googleusercontent.com&redirect_uri=http://bindery.cocupu.com:3001/drives&response_type=code&scope=https://www.googleapis.com/auth/drive.readonly%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&user_id="}
         end
       end
       describe "with code" do
@@ -38,13 +38,14 @@ describe DrivesController do
       end
       describe "and authorized" do
         before do
+          session[:pool_id] = @pool.id # this gets set before leaving for the oauth (via current_pool=).
           controller.should_receive(:authorized?).and_return(true)
           @mock_client = stub("Api client")
           @mock_client.stub(:authorization).and_return(stub("authorization", :update_token! => true, :refresh_token=>false, :access_token=>'131', :expires_in => '9999', :issued_at=>'34234'))
           controller.stub(:api_client).and_return(@mock_client)
         end
         it "should list files" do
-          get :index, pool_id: @pool
+          get :index
           response.should redirect_to pool_path(@pool, :anchor=>'drive')
         end
         describe "Requesting json" do
@@ -88,7 +89,7 @@ describe DrivesController do
 
       get :spawn, :pool_id=>@pool, :id => '12312415201'
       assigns[:chattel].attachment.should_not be_nil
-      response.should redirect_to(describe_chattel_path(assigns[:chattel], :log=>assigns[:log].id))
+      response.should redirect_to(describe_pool_chattel_path(@pool, assigns[:chattel], :log=>assigns[:log].id))
     end
   end
 

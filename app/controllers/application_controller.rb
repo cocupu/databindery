@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
   ## Just assuming the first pool for now.  Later we may allow the user to pick the pool to use.
   def current_pool
     return nil if current_identity.nil?
-    current_identity.pools.find(session[:pool_id]) || current_identity.pools.first
+    session[:pool_id] ? current_identity.pools.find(session[:pool_id]) : current_identity.pools.first
   end
 
   def current_pool= (pool_id)

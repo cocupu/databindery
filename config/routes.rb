@@ -34,13 +34,14 @@ Cocupu::Application.routes.draw do
       resources :worksheets do
       end
     end
-  end
-
-  resources :chattels do
-    member do
-      get 'describe'
+    resources :chattels, :only=>[] do
+      member do
+        get 'describe'
+      end
     end
   end
+
+  resources :chattels
   
   resources :models, :except=>:create do
     resources :fields
