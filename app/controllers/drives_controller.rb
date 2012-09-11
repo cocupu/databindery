@@ -26,7 +26,7 @@ class DrivesController < ApplicationController
     end
 
     if !params[:pool_id]
-      redirect_to pool_drives_path(current_pool)
+      redirect_to pool_path(current_pool, :anchor=>'drive')
       return
     end
 
