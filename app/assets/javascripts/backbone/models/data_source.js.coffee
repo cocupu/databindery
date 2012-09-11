@@ -1,6 +1,9 @@
 class Cocupu.Models.DataSource extends Backbone.Model
   urlRoot : '/drives'
 
+  url: ->
+    '/pools/' + window.router.pool.id + @urlRoot
+
   defaults:
     title: null
     owner: null
