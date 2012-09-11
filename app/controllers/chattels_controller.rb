@@ -12,7 +12,6 @@ class ChattelsController < ApplicationController
 
   def describe
     @log = JobLogItem.find(params[:log])
-    @chattel= Chattel.find(params[:id])
   end
 
   private 

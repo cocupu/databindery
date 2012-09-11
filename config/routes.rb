@@ -7,12 +7,12 @@ Cocupu::Application.routes.draw do
     get "signout", :to => "devise/sessions#destroy"
   end
   
-  resources :drives do
-    collection do
-      get 'spawn'
-    end
-  end
   resources :pools do
+    resources :drives do
+      collection do
+        get 'spawn'
+      end
+    end
     resources :models, :only=>:create do
       resources :nodes, :only=>[] do
         collection do

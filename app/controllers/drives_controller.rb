@@ -3,6 +3,7 @@ class DrivesController < ApplicationController
   include GoogleAuthorization
   before_filter :authenticate_user!
   layout 'full_width'
+  load_and_authorize_resource :pool
 
   ##
   # Main entry point for the app. Ensures the user is authorized & inits the editor
@@ -32,7 +33,7 @@ class DrivesController < ApplicationController
         result = @files.map {|f| file_json(f) }
         render :json=>result 
       end
-      format.html { redirect_to models_path(:anchor=>'drive') }
+      format.html { redirect_to pool_path(@pool, :anchor=>'drive') }
     end
   end
 

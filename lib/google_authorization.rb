@@ -75,7 +75,7 @@ puts "client error"
 
       client.authorization.client_id = credentials.client_id
       client.authorization.client_secret = credentials.client_secret
-      client.authorization.redirect_uri = credentials.redirect_uris.first
+      client.authorization.redirect_uri = 'http://bindery.cocupu.com:3001/pool/247/drives' #credentials.redirect_uris.first
       client.authorization.scope = SCOPES
       client
     end)

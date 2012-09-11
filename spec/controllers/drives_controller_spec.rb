@@ -5,25 +5,26 @@ describe DrivesController do
   describe "index" do
     describe "when not signed in" do
       it "should redirect" do
-        get :index
+        get :index, pool_id: FactoryGirl.create(:pool)
         response.should redirect_to new_user_session_path
       end
     end
     describe "when signed in" do
       before do
         @user = FactoryGirl.create :login
+        @pool = FactoryGirl.create(:pool, owner: @user.identities.first)
         sign_in @user
       end
       describe "and not authorized" do
         it "should redirect to get an oauth token" do
-          get :index
-          response.should redirect_to "https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&client_id=840123515072-bi3cnnt361ek7tnqfgbc05npt4h096k8.apps.googleusercontent.com&redirect_uri=http://bindery.cocupu.com:3001/drives&response_type=code&scope=https://www.googleapis.com/auth/drive.readonly%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&user_id="
+          get :index, :pool_id=>@pool
+          response.should redirect_to "https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&client_id=840123515072-bi3cnnt361ek7tnqfgbc05npt4h096k8.apps.googleusercontent.com&redirect_uri=http://bindery.cocupu.com:3001/pool/#{@pool.id}/drives&response_type=code&scope=https://www.googleapis.com/auth/drive.readonly%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&user_id="
         end
         it "should redirect to get an oauth token" do
-          get :index, :format=>:json
+          get :index, :pool_id=>@pool, :format=>:json
           response.code.should == '401'
           json = JSON.parse response.body
-          json.should == {'redirect'=>"https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&client_id=840123515072-bi3cnnt361ek7tnqfgbc05npt4h096k8.apps.googleusercontent.com&redirect_uri=http://bindery.cocupu.com:3001/drives&response_type=code&scope=https://www.googleapis.com/auth/drive.readonly%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&user_id="}
+          json.should == {'redirect'=>"https://accounts.google.com/o/oauth2/auth?access_type=offline&approval_prompt=force&client_id=840123515072-bi3cnnt361ek7tnqfgbc05npt4h096k8.apps.googleusercontent.com&redirect_uri=http://bindery.cocupu.com:3001/pool/#{@pool.id}/drives&response_type=code&scope=https://www.googleapis.com/auth/drive.readonly%20https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&user_id="}
         end
       end
       describe "with code" do
@@ -31,7 +32,7 @@ describe DrivesController do
         end
         it "should authorize code" do
           controller.should_receive(:authorize_code).with('1235')
-          get :index, :code=>'1235'
+          get :index, :pool_id=>@pool, :code=>'1235'
           response.should be_redirect
         end
       end
@@ -43,8 +44,8 @@ describe DrivesController do
           controller.stub(:api_client).and_return(@mock_client)
         end
         it "should list files" do
-          get :index
-          response.should redirect_to models_path(:anchor=>'drive')
+          get :index, pool_id: @pool
+          response.should redirect_to pool_path(@pool, :anchor=>'drive')
         end
         describe "Requesting json" do
           before do
@@ -53,7 +54,7 @@ describe DrivesController do
             @mock_client.should_receive(:execute!).with(:api_method => kind_of(Google::APIClient::Method)).and_return(stub("result", :data => stub("data", :items=>@files)))
           end
           it "should list files for json" do
-            get :index, :format=>:json
+            get :index, :pool_id=>@pool, :format=>:json
             response.should be_success
             # it returns a list of files, see: https://developers.google.com/drive/v2/reference/files
             json = JSON.parse(response.body)
@@ -70,6 +71,7 @@ describe DrivesController do
   describe "spawn" do
     before do
       @user = FactoryGirl.create :login
+      @pool = FactoryGirl.create(:pool, owner: @user.identities.first)
       sign_in @user
     end
     it "should be successfull" do
@@ -84,7 +86,7 @@ describe DrivesController do
       JobLogItem.should_receive(:create).and_return(mock_log)
       mock_queue.should_receive(:publish).with('6HceCIKd3ucLNco9583DVnmGW5E')
 
-      get :spawn, :id => '12312415201'
+      get :spawn, :pool_id=>@pool, :id => '12312415201'
       assigns[:chattel].attachment.should_not be_nil
       response.should redirect_to(describe_chattel_path(assigns[:chattel], :log=>assigns[:log].id))
     end
