@@ -73,12 +73,15 @@ describe MappingTemplatesController do
 
   describe 'new' do
     before do
-      @pool = FactoryGirl.create(:pool)
+      cred = FactoryGirl.create :login_credential
+      @pool = FactoryGirl.create(:pool, owner: cred.identities.first)
       @one = FactoryGirl.create :worksheet
-      sign_in FactoryGirl.create :login 
+      sign_in cred
     end
     it "should be success" do
       get :new, :mapping_template=>{:worksheet_id => @one.id}, :pool_id=>@pool
+      response.should be_success
+      assigns[:pool].should == @pool
       assigns[:worksheet].should == @one
       assigns[:mapping_template].should_not be_nil
       assigns[:mapping_template].model_mappings.length.should == 1
@@ -89,7 +92,6 @@ describe MappingTemplatesController do
           {:source=>"C", :label=>vals[2]},
           {:source =>"D", :label=>vals[3]},
           {:source=>"E", :label=>vals[4]}]
-      response.should be_success
     end
   end
 

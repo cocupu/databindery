@@ -26,15 +26,15 @@ Cocupu::Application.routes.draw do
       end
     end
     resources :mapping_templates
+    resources :spreadsheets do
+      resources :worksheets do
+      end
+    end
   end
 
   resources :chattels do
     member do
       get 'describe'
-    end
-  end
-  resources :spreadsheets do
-    resources :worksheets do
     end
   end
   

@@ -1,7 +1,7 @@
 class MappingTemplatesController < ApplicationController
   layout 'full_width'
   before_filter :authenticate_user!
-  load_and_authorize_resource :pool, :only=>:create
+  load_and_authorize_resource :pool, :only=>[:create, :new]
   load_and_authorize_resource :except=>[:create, :new]
 
 

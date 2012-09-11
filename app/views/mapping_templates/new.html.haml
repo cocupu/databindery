@@ -1,6 +1,6 @@
 - content_for :page_name do
   Create a data model for the worksheet:
-=form_for( @mapping_template, :url=>mapping_templates_path(:worksheet_id=>@worksheet), :html=>{:class=>'form-horizontal'}) do |f|
+=form_for( @mapping_template, :url=>pool_mapping_templates_path(pool_id: @pool, worksheet_id: @worksheet), :html=>{:class=>'form-horizontal'}) do |f|
   .control-group
     =f.label :file_type, 'This file is an example of a(n):', class: "control-label"
     .controls
