@@ -5,14 +5,19 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.json do 
         if signed_in?
+          logger.debug "permission denied #{exception.action} #{exception.subject}"
           message = "You don't have permission to #{exception.action} #{exception.subject.class.to_s.pluralize}"
           render :json=>{:status=>:error, :message=>message}, :status => :forbidden
         else
+          logger.debug "Not logged in"
           message = "You must be logged in to do that!"
           render :json=>{:status=>:error, :message=>message}, :status => :unauthorized
         end
       end 
-      format.html { redirect_to root_path, alert: exception.message }
+      format.html do 
+        logger.debug "permission denied #{exception.action} #{exception.subject}"
+        redirect_to root_path, alert: exception.message
+      end
     end
   end
 

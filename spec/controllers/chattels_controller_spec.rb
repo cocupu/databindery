@@ -9,6 +9,10 @@ describe ChattelsController do
   end
 
   describe "new" do
+    before do
+      cred = FactoryGirl.create :login_credential
+      sign_in cred
+    end
     render_views
     let(:page) { Capybara::Node::Simple.new(@response.body) }
     it "should be successfull" do
@@ -23,6 +27,7 @@ describe ChattelsController do
   describe "index" do
     before do
       @c = Chattel.create(owner: FactoryGirl.create(:identity))
+      sign_in @c.owner.login_credential
     end
     it "should get a list" do
       get :index
@@ -33,14 +38,18 @@ describe ChattelsController do
 
   describe "describe" do
     before do
-      @c = Chattel.create(owner: FactoryGirl.create(:identity))
+      cred = FactoryGirl.create :login_credential
+      @pool = FactoryGirl.create(:pool, owner: cred.identities.first)
+      @c = Chattel.create(owner: @pool.owner)
       @l = JobLogItem.create
+      sign_in @pool.owner.login_credential
     end
     it "should be successful" do
-      get :describe, :id=>@c.id, :log=>@l.id
+      get :describe, :id=>@c, :log=>@l, :pool_id => @pool
+      response.should be_success
+      assigns[:pool].should == @pool
       assigns[:chattel].should == @c
       assigns[:log].should == @l
-      response.should be_success
     end
   
   end

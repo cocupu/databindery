@@ -1,5 +1,7 @@
 class ChattelsController < ApplicationController
-
+  load_and_authorize_resource
+  load_and_authorize_resource :pool, :only=>[:describe]
+  
   def index
     @chattels = Chattel.all
   end 

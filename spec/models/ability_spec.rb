@@ -30,6 +30,35 @@ describe Ability do
       ability.can?(:create, Pool).should_not be_true
     end
   end
+  describe "chattels" do
+    before do
+      @ss = FactoryGirl.create :spreadsheet
+    end
+    it "are readable by their owner" do
+      ability = Ability.new(@ss.owner)
+      ability.can?(:read, @ss).should be_true
+    end
+    it "are not readable by a non-owner" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:read, @ss).should_not be_true
+    end
+    it "can be updated by an owner" do
+      ability = Ability.new(@ss.owner)
+      ability.can?(:update, @ss).should be_true
+    end
+    it "can't be updated by a non-owner" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:update, @ss).should_not be_true
+    end
+    it "can be created by a logged in user" do
+      ability = Ability.new(FactoryGirl.create :identity)
+      ability.can?(:create, Chattel).should be_true
+    end
+    it "can't be created by a not logged in user" do
+      ability = Ability.new(nil)
+      ability.can?(:create, Chattel).should_not be_true
+    end
+  end
   describe "mapping_template" do
     before do
       @mapping_template = FactoryGirl.create(:mapping_template)
