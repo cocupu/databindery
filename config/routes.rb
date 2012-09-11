@@ -6,9 +6,13 @@ Cocupu::Application.routes.draw do
     post "signin", :to => "devise/sessions#create"
     get "signout", :to => "devise/sessions#destroy"
   end
+
+
+  # Drives is a redirect point for google oauth, so it can't have any dynamic segments
+  resources :drives, :only=>[:index]
   
   resources :pools do
-    resources :drives do
+    resources :drives, :only=>[:index] do
       collection do
         get 'spawn'
       end

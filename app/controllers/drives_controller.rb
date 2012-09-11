@@ -3,7 +3,7 @@ class DrivesController < ApplicationController
   include GoogleAuthorization
   before_filter :authenticate_user!
   layout 'full_width'
-  load_and_authorize_resource :pool
+  load_and_authorize_resource :pool, :except=>:index
 
   ##
   # Main entry point for the app. Ensures the user is authorized & inits the editor
@@ -13,6 +13,7 @@ class DrivesController < ApplicationController
       authorize_code(params[:code])
     end	
     unless authorized?
+      self.current_pool = params[:pool_id] if params[:pool_id]
       respond_to do |format|
         format.json do
           render :status=>:unauthorized, :json=>{'redirect' => auth_url(params[:state])}
@@ -21,6 +22,11 @@ class DrivesController < ApplicationController
           redirect_to auth_url(params[:state])
         end
       end
+      return
+    end
+
+    if !params[:pool_id]
+      redirect_to pool_drives_path(current_pool)
       return
     end
 
