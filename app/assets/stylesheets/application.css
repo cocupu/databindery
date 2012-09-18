@@ -12,6 +12,7 @@
  *= require mapping_templates
  *= require drives
  *= require forms
+ *= require pools
  *= depend_on _common 
 */
 
