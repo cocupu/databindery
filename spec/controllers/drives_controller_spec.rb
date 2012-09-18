@@ -11,9 +11,9 @@ describe DrivesController do
     end
     describe "when signed in" do
       before do
-        @user = FactoryGirl.create :login
-        @pool = FactoryGirl.create(:pool, owner: @user.identities.first)
-        sign_in @user
+        @identity = FactoryGirl.create :identity
+        @pool = FactoryGirl.create(:pool, owner: @identity)
+        sign_in @identity.login_credential
       end
       describe "and not authorized" do
         it "should redirect to get an oauth token" do
@@ -71,9 +71,9 @@ describe DrivesController do
 
   describe "spawn" do
     before do
-      @user = FactoryGirl.create :login
-      @pool = FactoryGirl.create(:pool, owner: @user.identities.first)
-      sign_in @user
+      @identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create(:pool, owner: @identity)
+      sign_in @identity.login_credential
     end
     it "should be successfull" do
       @mock_client = stub("Api client")

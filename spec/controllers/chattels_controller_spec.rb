@@ -10,8 +10,8 @@ describe ChattelsController do
 
   describe "new" do
     before do
-      cred = FactoryGirl.create :login_credential
-      sign_in cred
+      identity = FactoryGirl.create :identity
+      sign_in identity.login_credential
     end
     render_views
     let(:page) { Capybara::Node::Simple.new(@response.body) }
@@ -38,8 +38,8 @@ describe ChattelsController do
 
   describe "describe" do
     before do
-      cred = FactoryGirl.create :login_credential
-      @pool = FactoryGirl.create(:pool, owner: cred.identities.first)
+      identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create(:pool, owner: identity)
       @c = Chattel.create(owner: @pool.owner)
       @l = JobLogItem.create
       sign_in @pool.owner.login_credential

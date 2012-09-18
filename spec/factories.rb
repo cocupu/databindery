@@ -7,6 +7,9 @@ FactoryGirl.define do
   end
   
   factory :identity, aliases: [:owner] do
+    sequence :short_name do |n|
+      "person#{n}"
+    end
     login_credential
   end
 

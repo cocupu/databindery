@@ -6,7 +6,7 @@ describe Model do
   end
 
   it "should have a file entity" do
-    owner = Identity.create
+    owner = FactoryGirl.create :identity
     file_entity = Model.file_entity(owner)
     file_entity.should be_kind_of Model
     file_entity.owner.should == owner

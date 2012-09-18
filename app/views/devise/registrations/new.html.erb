@@ -2,6 +2,11 @@
 
 <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f| %>
   <%= devise_error_messages! %>
+  <%= f.fields_for :identities do |ident_form| %>
+    <div><%= ident_form.label :short_name %><br />
+    <%= ident_form.text_field :short_name, :placeholder=>"Username", :class=>'large'%>
+    <span class="help-block">Username may only contain alphanumeric characters or dashes and cannot begin with a dash.</span>
+  <% end %>
 
   <div><%= f.label :email %><br />
   <%= f.email_field :email %></div>
@@ -9,8 +14,8 @@
   <div><%= f.label :password %><br />
   <%= f.password_field :password %></div>
 
-  <div><%= f.label :password_confirmation %><br />
-  <%= f.password_field :password_confirmation %></div>
+  <%# <div><%= f.label :password_confirmation %><br />
+  <%# <%= f.password_field :password_confirmation %></div>
 
   <div><%= f.submit "Sign up" %></div>
 <% end %>

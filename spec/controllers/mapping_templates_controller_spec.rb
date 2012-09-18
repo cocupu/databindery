@@ -17,9 +17,9 @@ describe MappingTemplatesController do
     end
     describe "when logged in" do
       before do
-        cred = FactoryGirl.create :login_credential
-        @pool = FactoryGirl.create(:pool, owner: cred.identities.first)
-        sign_in cred
+        identity = FactoryGirl.create :identity
+        @pool = FactoryGirl.create(:pool, owner: identity)
+        sign_in identity.login_credential
       end
       it "should create" do
         Worksheet.any_instance.should_receive(:reify)
@@ -57,12 +57,12 @@ describe MappingTemplatesController do
 
   describe "show" do
     before do
-      cred = FactoryGirl.create :login_credential
-      @pool = FactoryGirl.create(:pool, owner: cred.identities.first)
+      identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create(:pool, owner: identity)
       @template = MappingTemplate.new(owner: @pool.owner, pool: @pool)
       @template.attributes = {"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}} 
       @template.save!
-      sign_in cred
+      sign_in identity.login_credential
     end
     it "should show" do
       get :show, :spreadsheet_id=>7, :id=>@template.id, :pool_id=>@pool
@@ -73,10 +73,10 @@ describe MappingTemplatesController do
 
   describe 'new' do
     before do
-      cred = FactoryGirl.create :login_credential
-      @pool = FactoryGirl.create(:pool, owner: cred.identities.first)
+      identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create(:pool, owner: identity)
       @one = FactoryGirl.create :worksheet
-      sign_in cred
+      sign_in identity.login_credential
     end
     it "should be success" do
       get :new, :mapping_template=>{:worksheet_id => @one.id}, :pool_id=>@pool

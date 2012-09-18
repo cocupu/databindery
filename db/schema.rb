@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120906220029) do
+ActiveRecord::Schema.define(:version => 20120918075017) do
 
   create_table "change_sets", :force => true do |t|
     t.text     "data"
@@ -53,7 +53,10 @@ ActiveRecord::Schema.define(:version => 20120906220029) do
     t.integer  "login_credential_id"
     t.datetime "created_at",          :null => false
     t.datetime "updated_at",          :null => false
+    t.string   "short_name"
   end
+
+  add_index "identities", ["short_name"], :name => "index_identities_on_short_name", :unique => true
 
   create_table "job_log_items", :force => true do |t|
     t.string   "status"

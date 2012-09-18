@@ -3,14 +3,14 @@ require 'spec_helper'
 describe NodesController do
   describe "index" do
     before do
-      @user = FactoryGirl.create :login_credential
-      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+      @identity = FactoryGirl.create :identity
+      pool = FactoryGirl.create :pool, :owner=>@identity
       @model = FactoryGirl.create(:model, pool: pool)
       @node1 = FactoryGirl.create(:node, model: @model, pool: pool, :associations=>{'authors'=>[1231, 2227], 'undefined'=>'123721'})
       @node2 = FactoryGirl.create(:node, model: @model, pool: pool)
       @different_pool_node = FactoryGirl.create(:node, model: @model )
       @different_model_node = FactoryGirl.create(:node, pool: pool )
-      sign_in @user
+      sign_in @identity.login_credential
     end
     it "should load the model and its nodes" do
       get :index, :model_id => @model
@@ -41,15 +41,15 @@ describe NodesController do
 
   describe "search" do
     before do
-      @user = FactoryGirl.create :login_credential
-      @pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+      @identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create :pool, :owner=>@identity
       @model = FactoryGirl.create(:model, pool: @pool, label: 'first_name',
                   fields: [{:code=>'first_name'}, {:code=>'last_name'}, {:code=>'title'}])
       @node1 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
       @node2 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'})
       @different_pool_node = FactoryGirl.create(:node, model: @model )
       @different_model_node = FactoryGirl.create(:node, pool: @pool)
-      sign_in @user
+      sign_in @identity.login_credential
     end
     it "when model is not provided" do
       get :search, :format=>'json', :pool_id => @pool
@@ -79,14 +79,14 @@ describe NodesController do
 
   describe "show" do
     before do
-      @user = FactoryGirl.create :login_credential
-      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+      @identity = FactoryGirl.create :identity
+      pool = FactoryGirl.create :pool, :owner=>@identity
       @model = FactoryGirl.create(:model, pool: pool)
       @node1 = FactoryGirl.create(:node, model: @model, pool: pool)
       @node2 = FactoryGirl.create(:node, model: @model, pool: pool)
       @different_pool_node = FactoryGirl.create(:node, model: @model )
       @different_model_node = FactoryGirl.create(:node, pool: pool )
-      sign_in @user
+      sign_in @identity.login_credential
     end
     it "should load the node and the models" do
       get :show, :id => @node1.persistent_id
@@ -108,11 +108,11 @@ describe NodesController do
 
   describe "new" do
     before do
-      @user = FactoryGirl.create :login_credential
-      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+      @identity = FactoryGirl.create :identity
+      pool = FactoryGirl.create :pool, :owner=>@identity
       @my_model = FactoryGirl.create(:model, pool: pool)
       @not_my_model = FactoryGirl.create(:model)
-      sign_in @user
+      sign_in @identity.login_credential
     end
     it "should be successful when a binding is passed" do 
       get :new, :binding => '0B4oXai2d4yz6bUstRldTeXV0dHM'
@@ -138,11 +138,11 @@ describe NodesController do
 
   describe "create" do
     before do
-      @user = FactoryGirl.create :login_credential
-      @pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+      @identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create :pool, :owner=>@identity
       @my_model = FactoryGirl.create(:model, pool: @pool)
       @not_my_model = FactoryGirl.create(:model)
-      sign_in @user
+      sign_in @identity.login_credential
     end
     it "should be successful using a model I own" do 
       post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@my_model}, :pool_id=>@pool.id
@@ -161,16 +161,16 @@ describe NodesController do
 
   describe "update" do
     before do
-      @user = FactoryGirl.create :login_credential
-      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+      @identity = FactoryGirl.create :identity
+      pool = FactoryGirl.create :pool, :owner=>@identity
       @model = FactoryGirl.create(:model, pool: pool)
       @model.fields = [{code: 'f1', name: 'Field one'}]
       @model.save!
-      @node1 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)
-      @node2 = FactoryGirl.create(:node, model: @model, pool: @user.identities.first.pools.first)
+      @node1 = FactoryGirl.create(:node, model: @model, pool: @identity.pools.first)
+      @node2 = FactoryGirl.create(:node, model: @model, pool: @identity.pools.first)
       @different_pool_node = FactoryGirl.create(:node, model: @model )
-      @different_model_node = FactoryGirl.create(:node, pool: @user.identities.first.pools.first )
-      sign_in @user
+      @different_model_node = FactoryGirl.create(:node, pool: @identity.pools.first )
+      sign_in @identity.login_credential
     end
     it "should load the node and the models" do
       put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }}

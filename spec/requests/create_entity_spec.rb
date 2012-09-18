@@ -3,10 +3,10 @@ require 'spec_helper'
 describe 'as a signed in user' do
 
   before do
-    @user = FactoryGirl.create :login
-    @my_model = FactoryGirl.create(:model, owner: @user.identities.first)
-    @associated_model = FactoryGirl.create(:model, owner: @user.identities.first)
-    log_in(@user)
+    @identity = FactoryGirl.create :identity
+    @my_model = FactoryGirl.create(:model, owner: @identity)
+    @associated_model = FactoryGirl.create(:model, owner: @identity)
+    log_in(@identity.login_credential)
     visit edit_model_path(@my_model) 
   end
 

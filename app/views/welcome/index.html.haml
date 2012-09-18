@@ -10,7 +10,9 @@
 
     %h3 Get started today!
     =form_for LoginCredential.new, :as=>:user, :url=>user_registration_path  do |f|
-      = text_field_tag :name, nil, :placeholder=>"Full Name", :class=>'large' 
+      = f.fields_for :identities do |ident_form| 
+        = ident_form.text_field :short_name, :placeholder=>"Username", :class=>'large' 
+        .help-block Username may only contain alphanumeric characters or dashes and cannot begin with a dash.
       %br
       = f.email_field :email, :placeholder=>"E-Mail", :class=>'', :autocomplete=>'off' 
       %br

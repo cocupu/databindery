@@ -3,12 +3,12 @@ require 'spec_helper'
 describe 'as a signed in user' do
 
   before do
-    @user = FactoryGirl.create :login_credential
-    @pool = FactoryGirl.create(:pool, owner: @user.identities.first)
+    @identity = FactoryGirl.create :identity
+    @pool = FactoryGirl.create(:pool, owner: @identity)
     @worksheet = FactoryGirl.create :worksheet
     visit root_path
-    fill_in 'top_login_email', :with => @user.email
-    fill_in 'top_login_password', :with => @user.password 
+    fill_in 'top_login_email', :with => @identity.login_credential.email
+    fill_in 'top_login_password', :with => @identity.login_credential.password 
     click_button 'Sign in'
     page.should have_link('Log Out', :href=>'/signout')
     visit new_pool_mapping_template_path(@pool, :mapping_template=>{:worksheet_id =>@worksheet.id}) 

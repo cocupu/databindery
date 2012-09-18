@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe ModelsController do
   before do
-    @user = FactoryGirl.create :login
-    pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+    @identity = FactoryGirl.create :identity
+    pool = FactoryGirl.create :pool, :owner=>@identity
     @my_model = FactoryGirl.create(:model, pool: pool)
     @not_my_model = FactoryGirl.create(:model)
   end
@@ -18,7 +18,7 @@ describe ModelsController do
 
     describe "when logged on" do
       before do
-        sign_in @user
+        sign_in @identity.login_credential
       end
       it "should be successful" do
         get :index 
@@ -39,7 +39,7 @@ describe ModelsController do
 
     describe "when logged on" do
       before do
-        sign_in @user
+        sign_in @identity.login_credential
       end
       describe "requesting a model I don't own" do
         it "should redirect to root" do
@@ -69,7 +69,7 @@ describe ModelsController do
 
     describe "when logged on" do
       before do
-        sign_in @user
+        sign_in @identity.login_credential
       end
       it "should redirect on a model that's not mine " do
         get :edit, :id=>@not_my_model.id 
@@ -98,7 +98,7 @@ describe ModelsController do
 
     describe "when logged on" do
       before do
-        sign_in @user
+        sign_in @identity.login_credential
       end
       it "should be successful" do
         get :new
@@ -110,29 +110,29 @@ describe ModelsController do
   describe "create" do
     describe "when not logged on" do
       it "should redirect to root" do
-        post :create, :pool_id=>@user.identities.first.pools.first.id
+        post :create, :pool_id=>@identity.pools.first.id
         response.should redirect_to root_path
       end
     end
 
     describe "when logged on" do
       before do
-        sign_in @user
+        sign_in @identity.login_credential
       end
       it "should redirect to form when validation fails" do
-        post :create, :model=>{}, :pool_id=>@user.identities.first.pools.first.id
+        post :create, :model=>{}, :pool_id=>@identity.pools.first.id
         response.should be_successful
         response.should render_template(:new)
         assigns[:model].should be_kind_of Model
       end
       it "should be successful" do
-        post :create, :model=>{:name=>'Turkey'}, :pool_id=>@user.identities.first.pools.first.id
+        post :create, :model=>{:name=>'Turkey'}, :pool_id=>@identity.pools.first.id
         response.should redirect_to edit_model_path(assigns[:model])
         assigns[:model].should be_kind_of Model
         assigns[:model].name.should == 'Turkey'
       end
       it "should be successful with json" do
-        in_pool = FactoryGirl.create(:pool, owner: @user.identities.first)
+        in_pool = FactoryGirl.create(:pool, owner: @identity)
         post :create, :model=>{:name=>'Turkey'}, :pool_id=>in_pool.id, :format=>:json
         response.should be_successful
         json = JSON.parse response.body
@@ -158,7 +158,7 @@ describe ModelsController do
 
     describe "when logged on" do
       before do
-        sign_in @user
+        sign_in @identity.login_credential
       end
       it "should redirect on a model that's not mine " do
         put :update, :id=>@not_my_model, :model=>{:label=>'title'}

@@ -3,9 +3,9 @@ require 'spec_helper'
 describe WorksheetsController do
   describe 'a signed in user going to index' do
     before do
-      cred = FactoryGirl.create :login_credential
-      @pool = FactoryGirl.create(:pool, owner: cred.identities.first)
-      sign_in cred
+      identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create(:pool, owner: identity)
+      sign_in identity.login_credential
     end
     describe 'with multiple worksheets' do
       before do

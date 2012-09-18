@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe FieldsController do
   before do
-    @user = FactoryGirl.create :login
-    pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+    @identity = FactoryGirl.create :identity
+    pool = FactoryGirl.create :pool, :owner=>@identity
     @my_model = FactoryGirl.create(:model, pool: pool)
     @not_my_model = FactoryGirl.create(:model)
   end
@@ -17,7 +17,7 @@ describe FieldsController do
 
     describe "when logged on" do
       before do
-        sign_in @user
+        sign_in @identity.login_credential
       end
       it "should redirect on a model that's not mine " do
         post :create, :model_id=>@not_my_model.id 

@@ -6,14 +6,15 @@ describe ExhibitsController do
   end
 
   before do
-    @login = FactoryGirl.create :login
-    pool = FactoryGirl.create :pool, :owner=>@login.identities.first
+   # @login = FactoryGirl.create :login
+    @identity = FactoryGirl.create :identity
+    pool = FactoryGirl.create :pool, :owner=>@identity
     @exhibit = FactoryGirl.create(:exhibit, pool: pool)
   end
 
   describe "when signed in" do
     before do
-      sign_in @login
+      sign_in @identity.login_credential
     end
     describe "index" do
       it "should be success" do
@@ -63,7 +64,7 @@ describe ExhibitsController do
         raw_results = Cocupu.solr.get 'select', :params => {:q => 'bazaar', :fl=>'id', :qf=>'field_good_s'}
         Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
         Cocupu.solr.commit
-        @model = Model.create!(:name=>"Mods and Rockers", owner: Identity.create!)
+        @model = Model.create!(:name=>"Mods and Rockers", owner: FactoryGirl.create(:identity))
         @model.fields = [{code: 'f1', name: 'Field good'}]
         @model.save
 

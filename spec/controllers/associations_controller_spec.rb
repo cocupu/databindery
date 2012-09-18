@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe AssociationsController do
   before do
-    @user = FactoryGirl.create :login
+    @identity = FactoryGirl.create :identity
   end
   describe "For nodes" do
     describe "index" do
@@ -16,7 +16,7 @@ describe AssociationsController do
 
       describe "when logged on" do
         before do
-          sign_in @user
+          sign_in @identity.login_credential
         end
         it "should redirect on a model that's not mine " do
           @not_my_node = FactoryGirl.create(:node)
@@ -25,15 +25,14 @@ describe AssociationsController do
         end
         describe "on a model that is mine" do
           before do
-            owner = @user.identities.first
-            pool = FactoryGirl.create :pool, :owner=>owner
-            @book_model = FactoryGirl.create(:model, name: 'Book', owner: owner, :associations=>[{:name=>'authors', :type=>'Ordered List'}])
+            pool = FactoryGirl.create :pool, :owner=>@identity
+            @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations=>[{:name=>'authors', :type=>'Ordered List'}])
             @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
                 fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
-                owner: owner, :associations=>[{:name=>'books', :type=>'Belongs To'}])
+                owner: @identity, :associations=>[{:name=>'books', :type=>'Belongs To'}])
             @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name', 
                 fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"name"}.with_indifferent_access],
-                owner: owner)
+                owner: @identity)
 
             @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
             @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
@@ -61,7 +60,7 @@ describe AssociationsController do
     describe "create" do
       describe "when logged on" do
         before do
-          sign_in @user
+          sign_in @identity.login_credential
         end
         it "should redirect on a model that's not mine " do
           @not_my_node = FactoryGirl.create(:node)
@@ -70,15 +69,14 @@ describe AssociationsController do
         end
         describe "on a model that is mine" do
           before do
-            owner = @user.identities.first
-            pool = FactoryGirl.create :pool, :owner=>owner
-            @book_model = FactoryGirl.create(:model, name: 'Book', owner: owner, :associations=>[{:name=>'authors', :type=>'Ordered List'}])
+            pool = FactoryGirl.create :pool, :owner=>@identity
+            @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations=>[{:name=>'authors', :type=>'Ordered List'}])
             @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
                 fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
-                owner: owner, :associations=>[{:name=>'books', :type=>'Belongs To'}])
+                owner: @identity, :associations=>[{:name=>'books', :type=>'Belongs To'}])
             @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name', 
                 fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"name"}.with_indifferent_access],
-                owner: owner)
+                owner: @identity)
 
             @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
             @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
@@ -97,7 +95,7 @@ describe AssociationsController do
   end
   describe "for models" do
     before do
-      pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+      pool = FactoryGirl.create :pool, :owner=>@identity
       @my_model = FactoryGirl.create(:model, pool: pool)
       @associated_model = FactoryGirl.create(:model, pool: pool)
       @not_my_model = FactoryGirl.create(:model)
@@ -112,7 +110,7 @@ describe AssociationsController do
 
       describe "when logged on" do
         before do
-          sign_in @user
+          sign_in @identity.login_credential
         end
         it "should redirect on a model that's not mine " do
           post :create, :model_id=>@not_my_model.id 

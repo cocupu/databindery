@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe PoolsController do
   before do
-    @user = FactoryGirl.create :login
-    @my_pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+    @identity = FactoryGirl.create :identity
+    @my_pool = FactoryGirl.create :pool, :owner=>@identity
     @not_my_pool = FactoryGirl.create(:pool)
   end
   describe "index" do
@@ -17,7 +17,7 @@ describe PoolsController do
 
     describe "when logged on" do
       before do
-        sign_in @user
+        sign_in @identity.login_credential
       end
       it "should be successful" do
         get :index 
@@ -38,9 +38,9 @@ describe PoolsController do
 
     describe "when logged on" do
       before do
-        sign_in @user
-        @my_model = FactoryGirl.create(:model, pool: @user.identities.first.pools.first)
-        @other_pool = FactoryGirl.create(:pool, owner: @user.identities.first)
+        sign_in @identity.login_credential
+        @my_model = FactoryGirl.create(:model, pool: @identity.pools.first)
+        @other_pool = FactoryGirl.create(:pool, owner: @identity)
         @my_model_different_pool = FactoryGirl.create(:model, pool: @other_pool)
         @not_my_model = FactoryGirl.create(:model)
       end
@@ -80,13 +80,13 @@ describe PoolsController do
 
     describe "when logged on" do
       before do
-        sign_in @user
+        sign_in @identity.login_credential
       end
       it "should be successful when rendering json" do
         post :create, :pool=>{:name=>"New Pool", :short_name=>'new_pool'}, :format=>:json 
         response.should  be_successful
         json = JSON.parse(response.body)
-        json['owner_id'].should == @user.identities.first.id
+        json['owner_id'].should == @identity.id
         json['name'].should == "New Pool"
         json['short_name'].should == "new_pool"
       end

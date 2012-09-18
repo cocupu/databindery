@@ -14,10 +14,10 @@ describe WelcomeController do
     end
     describe "when logged on" do
       before do
-        @user = FactoryGirl.create :login
-        pool = FactoryGirl.create :pool, :owner=>@user.identities.first
+        @identity = FactoryGirl.create :identity
+        pool = FactoryGirl.create :pool, :owner=>@identity
         @exhibit = FactoryGirl.create(:exhibit, pool: pool)
-        sign_in @user
+        sign_in @identity.login_credential
       end
       it "should be successful" do
         get :index 
