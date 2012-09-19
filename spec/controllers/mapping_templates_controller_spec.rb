@@ -52,12 +52,11 @@ describe MappingTemplatesController do
            {"label"=>"", "source"=>"D"}]
         assigns[:mapping_template].model_mappings[0][:label].should == 'C'
       end
-      it "should raise errors when identity does not belong to the logged in user" do
+      it "should raise not_found errors when identity does not belong to the logged in user" do
         Worksheet.any_instance.should_receive(:reify).never
 
         post :create, :worksheet_id=>@ss.id, :identity_id=>FactoryGirl.create(:identity).short_name, :mapping_template=>{"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"", :label=>'C', :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>"D"}}}}}, :pool_id=>@pool
-        response.should redirect_to root_path
-        flash[:alert].should == "You can't create for that identity"
+        response.should be_not_found
       end
     end
   end

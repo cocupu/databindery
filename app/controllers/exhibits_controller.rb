@@ -2,7 +2,8 @@ class ExhibitsController < ApplicationController
   include Cocupu::Search
 
   load_and_authorize_resource 
-  load_and_authorize_resource :pool, :only=>[:create, :update]
+  load_and_authorize_resource :pool, :only=>[:create, :update], :find_by => :short_name, :through=>:identity
+
 
   def index
   end

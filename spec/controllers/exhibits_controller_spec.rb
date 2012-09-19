@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ExhibitsController do
   it "should route" do
-    identity_pool_exhibits_path('matt', 'marpa').should == '/matt/pools/marpa/exhibits'
+    identity_pool_exhibits_path('matt', 'marpa').should == '/matt/marpa/exhibits'
   end
 
   before do
@@ -39,7 +39,7 @@ describe ExhibitsController do
       end
       it "should not allow create for a pool you don't own" do
         post :create, pool_id: FactoryGirl.create(:pool), identity_id: @identity.short_name, :exhibit=> {:title => 'Foresooth', :facets=>'looketh, overmany, thither' }
-        response.should redirect_to root_path
+        response.should be_not_found
       end
     end
 

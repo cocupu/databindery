@@ -1,5 +1,6 @@
 class WorksheetsController < ApplicationController
-  load_and_authorize_resource :pool
+  load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
+
 
   def index
     spreadsheet = Cocupu::Spreadsheet.find(params[:spreadsheet_id])

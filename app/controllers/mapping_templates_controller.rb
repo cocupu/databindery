@@ -1,15 +1,12 @@
 class MappingTemplatesController < ApplicationController
   layout 'full_width'
   before_filter :authenticate_user!
-  load_and_authorize_resource :pool, :only=>[:create, :new]
+  load_and_authorize_resource :pool, :only=>[:create, :new], :find_by => :short_name, :through=>:identity
   load_and_authorize_resource :except=>[:create, :new]
 
 
   def new
     authorize! :create, MappingTemplate
-    ### TODO identity must belong to current_logged in user
-    @identity = Identity.find_by_short_name(params[:identity_id])
-
     raise ArgumentError unless params[:mapping_template] && params[:mapping_template][:worksheet_id]
     @worksheet = Worksheet.find(params[:mapping_template][:worksheet_id])
     mappings = []

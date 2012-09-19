@@ -12,4 +12,8 @@ class Pool < ActiveRecord::Base
   def short_name=(name)
     write_attribute :short_name, name.downcase
   end
+
+  def to_param
+    short_name
+  end
 end

@@ -1,5 +1,5 @@
 class PoolsController < ApplicationController
-  load_and_authorize_resource
+  load_and_authorize_resource :find_by => :short_name, :through=>:identity
 
   layout 'full_width'
 

@@ -1,6 +1,7 @@
 class ChattelsController < ApplicationController
   load_and_authorize_resource
-  load_and_authorize_resource :pool, :only=>[:describe]
+  load_and_authorize_resource :pool, :only=>[:describe], :find_by => :short_name, :through=>:identity
+
   
   def index
     @chattels = Chattel.all

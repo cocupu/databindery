@@ -10,11 +10,29 @@ Cocupu::Application.routes.draw do
 
   # Drives is a redirect point for google oauth, so it can't have any dynamic segments
   resources :drives, :only=>[:index]
+
+  
+  resources :models, :except=>:create do
+    resources :fields
+    resources :associations, :only=>:create
+    resources :nodes 
+  end
+
+
+  resources :nodes, :except=>[:create] do
+    resources :associations, :only=>[:index, :create]
+  end
+
+
+  resources :jobs
+  resources :job_log_items
+  resources :spreadsheet_rows
+  root :to => 'welcome#index'
   
   resources :identities, :path=>'', :only=>[] do
     resources :file_entities
     resources :chattels
-    resources :pools do
+    resources :pools, :path=>'' do
       resources :exhibits 
       resources :drives, :only=>[:index] do
         collection do
@@ -45,23 +63,5 @@ Cocupu::Application.routes.draw do
       end
     end
   end
-
-  
-  resources :models, :except=>:create do
-    resources :fields
-    resources :associations, :only=>:create
-    resources :nodes 
-  end
-
-
-  resources :nodes, :except=>[:create] do
-    resources :associations, :only=>[:index, :create]
-  end
-
-
-  resources :jobs
-  resources :job_log_items
-  resources :spreadsheet_rows
-  root :to => 'welcome#index'
 
 end

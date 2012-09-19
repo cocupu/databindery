@@ -46,7 +46,7 @@ describe PoolsController do
       describe "requesting a pool I don't own" do
         it "should redirect to root" do
           get :show, :id=>@not_my_pool, identity_id: @identity.short_name
-          response.should redirect_to root_path
+          response.should be_not_found
         end
       end
       describe "requesting a pool I own" do

@@ -24,6 +24,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  rescue_from ActiveRecord::RecordNotFound do |exception|
+    respond_to do |format|
+      format.html do
+        render :file => "public/404", :status => :not_found
+      end
+    end
+  end
+
   def load_identity
     if params[:identity_id]
       @identity = Identity.find_by_short_name(params[:identity_id])
