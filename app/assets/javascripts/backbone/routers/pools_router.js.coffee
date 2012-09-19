@@ -1,5 +1,6 @@
 class Cocupu.Routers.PoolsRouter extends Backbone.Router
   initialize: (options) ->
+    @identity = options.identity
     if (options.pool)
       @pool = new Cocupu.Models.Pool(options.pool)
     else

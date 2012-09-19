@@ -1,5 +1,6 @@
 class Cocupu.Routers.ModelsRouter extends Backbone.Router
   initialize: (options) ->
+    @identity = options.identity
     @pool = options.pool
     @models = new Cocupu.Collections.ModelsCollection()
     @models.reset options.models

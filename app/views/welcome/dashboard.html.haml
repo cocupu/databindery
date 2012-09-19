@@ -10,7 +10,13 @@
         =button_to "Connect to Google Drive", drives_path, :method=>:get, :class=>'btn btn-primary'
   .span4
     &nbsp;
-    %h3 Your Pools
-    =link_to "New Pool", identity_pools_path(controller.current_identity.short_name, :anchor=>'new')
-    %ul
-      %li hi
+    %h3
+      Your Pools
+      %span.pool-count="(#{@pools.count})"
+      =link_to "New Pool", identity_pools_path(controller.current_identity.short_name, :anchor=>'new'), :class=>'btn btn-new-pool'
+    %ul.pools
+      -controller.current_identity.pools.each do |pool|
+        %li
+          %h2=link_to(pool.name, pool_path(controller.current_identity, pool))
+          %div.body
+            %p.description=pool.description

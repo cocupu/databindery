@@ -6,7 +6,7 @@ class Cocupu.Models.Model extends Backbone.Model
     if @id
       @urlRoot + '/' + @id
     else
-     '/pools/' + window.router.pool.id + @urlRoot
+     window.router.identity + '/' + window.router.pool.short_name + @urlRoot
 
   defaults:
     name: null
@@ -15,7 +15,7 @@ class Cocupu.Models.Model extends Backbone.Model
 
   entities: (options) ->
     collection = new Cocupu.Collections.EntitiesCollection
-    collection.url = '/pools/' + window.router.pool.id + '/models/' + @id + '/nodes/search.json'
+    collection.url = '/' + window.router.identity + '/' + window.router.pool.short_name + @urlRoot + '/' + @id + '/nodes/search.json'
     collection
  
   setTypeName: (type, code, name) ->

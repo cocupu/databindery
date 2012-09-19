@@ -13,6 +13,7 @@
  *= require drives
  *= require forms
  *= require pools
+ *= require welcome
  *= depend_on _common 
 */
 
