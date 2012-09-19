@@ -9,7 +9,7 @@ describe FileEntitiesController do
       sign_in @identity.login_credential
     end
     it "should create and return json" do
-      post :create, :format=>:json, :binding=>'1231249', :pool_id=>@pool.id
+      post :create, :format=>:json, :binding=>'1231249', :pool_id=>@pool.id, :identity_id=>@identity.short_name
       response.should be_successful
       json = JSON.parse(response.body)
       json.keys.should include('id')

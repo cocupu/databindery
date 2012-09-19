@@ -18,7 +18,9 @@ class PoolsController < ApplicationController
   def create
     @pool.name = params[:pool][:name]
     #@pool.description = params[:pool][:description]
-    @pool.owner = current_identity
+    identity = current_user.identities.find_by_short_name(params[:identity_id])
+    raise CanCan::AccessDenied.new "You can't create for that identity" if identity.nil?
+    @pool.owner = identity
     @pool.save!
     respond_to do |format|
       format.json { render :json=>@pool}

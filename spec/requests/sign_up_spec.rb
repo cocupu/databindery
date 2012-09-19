@@ -9,7 +9,7 @@ describe 'as a guest on the sign in page' do
 
   #Fill in the form with the user’s credentials and submit it.
   it "should be able to sign up" do
-    fill_in 'user_identities_attributes_0_short_name', :with => 'Joe Blow'
+    fill_in 'user_identities_attributes_0_short_name', :with => 'Joe_Blow'
     fill_in 'user_email', :with => 'joe@example.com'
     fill_in 'user_password', :with => 'password'
     click_button 'Sign Up'

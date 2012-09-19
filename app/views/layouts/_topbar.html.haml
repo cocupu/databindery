@@ -4,10 +4,11 @@
       =link_to 'Data Bindery', root_path, :class=>"brand"
       -if user_signed_in?
         .nav-collapse.collapse
-          %ul.nav
-            %li= link_to controller.current_identity.login_credential.email, pools_path
-            -if @pool
-              %li= link_to @pool.name, pool_path(@pool)
+          -if @identity
+            %ul.nav
+              %li= link_to @identity.short_name, identity_pools_path(@identity.short_name)
+              -if @pool
+                %li= link_to @pool.name, identity_pool_path(@identity.short_name, @pool)
 
           %ul.nav.pull-right
             %li= link_to "Log Out",  signout_path

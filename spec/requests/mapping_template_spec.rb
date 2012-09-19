@@ -11,7 +11,7 @@ describe 'as a signed in user' do
     fill_in 'top_login_password', :with => @identity.login_credential.password 
     click_button 'Sign in'
     page.should have_link('Log Out', :href=>'/signout')
-    visit new_pool_mapping_template_path(@pool, :mapping_template=>{:worksheet_id =>@worksheet.id}) 
+    visit new_identity_pool_mapping_template_path(@identity.short_name, @pool, :mapping_template=>{:worksheet_id =>@worksheet.id}) 
   end
 
   it 'creates a mapping' do

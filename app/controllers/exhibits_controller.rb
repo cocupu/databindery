@@ -2,6 +2,7 @@ class ExhibitsController < ApplicationController
   include Cocupu::Search
 
   load_and_authorize_resource 
+  load_and_authorize_resource :pool, :only=>[:create, :update]
 
   def index
   end
@@ -24,18 +25,18 @@ class ExhibitsController < ApplicationController
   end
 
   def create
-    @exhibit.pool = current_pool
+    @exhibit.pool = @pool
     @exhibit.title = params[:exhibit][:title]
     @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/)
     @exhibit.save
-    redirect_to @exhibit
+    redirect_to identity_pool_exhibit_path(@identity.short_name, @pool, @exhibit)
   end
 
   def update
     @exhibit.title = params[:exhibit][:title]
     @exhibit.facets = params[:exhibit][:facets].split(/\s*,\s*/)
     @exhibit.save
-    redirect_to @exhibit
+    redirect_to identity_pool_exhibit_path(@identity.short_name, @pool, @exhibit)
   end
 
 

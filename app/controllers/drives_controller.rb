@@ -14,6 +14,7 @@ class DrivesController < ApplicationController
     end	
     unless authorized?
       self.current_pool = params[:pool_id] if params[:pool_id]
+      self.stashed_identity = params[:identity_id] if params[:identity_id]
       respond_to do |format|
         format.json do
           render :status=>:unauthorized, :json=>{'redirect' => auth_url(params[:state])}
@@ -26,7 +27,7 @@ class DrivesController < ApplicationController
     end
 
     if !params[:pool_id]
-      redirect_to pool_path(current_pool, :anchor=>'drive')
+      redirect_to identity_pool_path(stashed_identity.short_name, current_pool, :anchor=>'drive')
       return
     end
 
@@ -58,7 +59,7 @@ class DrivesController < ApplicationController
     else
       @chattel = Chattel.new
     end
-    @chattel.owner = current_identity
+    @chattel.owner = stashed_identity
     @chattel.save!
     # TODO save the original version id (from google drive)?
     @chattel.attach(result.body, file.mime_type, file.title)
@@ -68,7 +69,8 @@ class DrivesController < ApplicationController
     q = Carrot.queue('decompose_spreadsheet')
     q.publish(@log.id);
 
-    redirect_to describe_pool_chattel_path(@pool, @chattel, :log=>@log.id)
+
+    redirect_to describe_identity_pool_chattel_path(@chattel.owner.short_name, @pool, @chattel, :log=>@log.id)
   end
 
   private
@@ -84,4 +86,16 @@ class DrivesController < ApplicationController
     bindings = Node.find_all_by_binding(file.id).map(&:persistent_id) if type == 'file'
     { title: file.title, id: file.id, type: type, owner: file.userPermission.id, date: date, bindings: bindings, mime_type: file.mime_type }
   end
+
+
+  ## Stash the identity the current user is looking at in the cache.
+  def stashed_identity
+    return nil if current_user.nil?
+    session[:short_name] ? Identity.find_by_short_name(session[:short_name]) : current_user.identities.first
+  end
+
+  def stashed_identity= (short_name)
+    session[:short_name] = short_name
+  end
+
 end

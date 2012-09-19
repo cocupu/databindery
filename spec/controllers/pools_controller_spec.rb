@@ -8,7 +8,7 @@ describe PoolsController do
   end
   describe "index" do
     describe "when not logged on" do
-      subject { get :index }
+      subject { get :index, identity_id: @identity.short_name }
       it "should show nothing" do
         response.should  be_successful
         assigns[:pools].should be_nil
@@ -20,7 +20,7 @@ describe PoolsController do
         sign_in @identity.login_credential
       end
       it "should be successful" do
-        get :index 
+        get :index, identity_id: @identity.short_name
         response.should  be_successful
         assigns[:pools].should == [@my_pool]
       end
@@ -29,10 +29,9 @@ describe PoolsController do
 
   describe "show" do
     describe "when not logged on" do
-      subject { get :show, :id=>@my_pool }
-      it "should show nothing" do
-        response.should  be_successful
-        assigns[:pools].should be_nil
+      it "should redirect to root" do
+        get :show, id: @my_pool, identity_id: @identity.short_name
+        response.should redirect_to root_path
       end
     end
 
@@ -46,13 +45,13 @@ describe PoolsController do
       end
       describe "requesting a pool I don't own" do
         it "should redirect to root" do
-          get :show, :id=>@not_my_pool
+          get :show, :id=>@not_my_pool, identity_id: @identity.short_name
           response.should redirect_to root_path
         end
       end
       describe "requesting a pool I own" do
         it "should be successful" do
-          get :show, :id=>@my_pool
+          get :show, :id=>@my_pool, identity_id: @identity.short_name
           response.should  be_successful
           assigns[:pool].should == @my_pool
           assigns[:models].should include(@my_model)
@@ -61,7 +60,7 @@ describe PoolsController do
       end
       describe "requesting a pool I own" do
         it "should be successful when rendering json" do
-          get :show, :id=>@my_pool, :format=>:json
+          get :show, :id=>@my_pool, :format=>:json, identity_id: @identity.short_name
           response.should  be_successful
           json = JSON.parse(response.body)
           json['id'].should == @my_pool.id
@@ -73,7 +72,7 @@ describe PoolsController do
   describe "create" do
     describe "when not logged on" do
       it "should redirect to home" do
-        post :create, :pool=>{:name=>"New Pool"} 
+        post :create, :pool=>{:name=>"New Pool"}, identity_id: @identity.short_name
         response.should redirect_to(root_path)
       end
     end
@@ -83,12 +82,18 @@ describe PoolsController do
         sign_in @identity.login_credential
       end
       it "should be successful when rendering json" do
-        post :create, :pool=>{:name=>"New Pool", :short_name=>'new_pool'}, :format=>:json 
+        post :create, :pool=>{:name=>"New Pool", :short_name=>'new_pool'}, :format=>:json, identity_id: @identity.short_name
         response.should  be_successful
         json = JSON.parse(response.body)
         json['owner_id'].should == @identity.id
         json['name'].should == "New Pool"
         json['short_name'].should == "new_pool"
+      end
+      it "should give an error when don't have access to that identity" do
+        post :create, :pool=>{:name=>"New Pool", :short_name=>'new_pool'}, :format=>:json, identity_id: FactoryGirl.create(:identity).short_name
+        response.should be_forbidden
+        json = JSON.parse(response.body)
+        json['message'].should == "You can't create for that identity"
       end
     end
   end

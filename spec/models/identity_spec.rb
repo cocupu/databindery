@@ -12,6 +12,15 @@ describe Identity do
       subject.short_name = "FOO"
       subject.short_name.should == 'foo'
     end
+
+    it "should not allow beginning with a dash" do
+      subject.short_name = '-derp'
+      subject.valid?.should be_false
+    end
+    it "should not allow containing underscore, dash and numbers" do
+      subject.short_name = '12bozo-clowns'
+      subject.valid?.should be_true
+    end
   end
   describe "after save" do
     before do

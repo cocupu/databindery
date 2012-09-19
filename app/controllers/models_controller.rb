@@ -19,7 +19,9 @@ class ModelsController < ApplicationController
   end
 
   def create
-    @model.owner = current_identity
+    identity = current_user.identities.find_by_short_name(params[:identity_id])
+    raise CanCan::AccessDenied.new "You can't create for that identity" if identity.nil?
+    @model.owner = identity
     @model.pool = @pool 
     if @model.save
       respond_to do |format|

@@ -46,7 +46,7 @@ describe DrivesController do
         end
         it "should list files" do
           get :index
-          response.should redirect_to pool_path(@pool, :anchor=>'drive')
+          response.should redirect_to identity_pool_path(@identity.short_name, @pool, :anchor=>'drive')
         end
         describe "Requesting json" do
           before do
@@ -87,9 +87,9 @@ describe DrivesController do
       JobLogItem.should_receive(:create).and_return(mock_log)
       mock_queue.should_receive(:publish).with('6HceCIKd3ucLNco9583DVnmGW5E')
 
-      get :spawn, :pool_id=>@pool, :id => '12312415201'
+      get :spawn, :pool_id=>@pool, :id => '12312415201', identity_id: @identity.short_name
       assigns[:chattel].attachment.should_not be_nil
-      response.should redirect_to(describe_pool_chattel_path(@pool, assigns[:chattel], :log=>assigns[:log].id))
+      response.should redirect_to(describe_identity_pool_chattel_path(@identity.short_name, @pool, assigns[:chattel], :log=>assigns[:log].id))
     end
   end
 

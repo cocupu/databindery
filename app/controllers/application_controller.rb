@@ -1,12 +1,15 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
+
+  before_filter :load_identity
   
   rescue_from CanCan::AccessDenied do |exception|
     respond_to do |format|
       format.json do 
         if signed_in?
           logger.debug "permission denied #{exception.action} #{exception.subject}"
-          message = "You don't have permission to #{exception.action} #{exception.subject.class.to_s.pluralize}"
+          message = exception.message
+          message = "You don't have permission to #{exception.action} #{exception.subject.class.to_s.pluralize}" if message.empty?
           render :json=>{:status=>:error, :message=>message}, :status => :forbidden
         else
           logger.debug "Not logged in"
@@ -21,16 +24,17 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  ## Just assuming the first identity for now.  Later we may allow the user to pick the identity they want to use.
-  def current_identity
-    return nil if current_user.nil?
-    current_user.identities.first
+  def load_identity
+    if params[:identity_id]
+      @identity = Identity.find_by_short_name(params[:identity_id])
+      # TODO check if can-read?
+    end
   end
 
   ## Just assuming the first pool for now.  Later we may allow the user to pick the pool to use.
   def current_pool
-    return nil if current_identity.nil?
-    session[:pool_id] ? current_identity.pools.find(session[:pool_id]) : current_identity.pools.first
+    return nil if current_user.nil?
+    session[:pool_id] ? Pool.find(session[:pool_id]) : current_user.identities.first.pools.first
   end
 
   def current_pool= (pool_id)
@@ -39,5 +43,9 @@ class ApplicationController < ActionController::Base
 
   def current_ability
     @current_ability ||= Ability.new(current_identity)
+  end
+
+  def current_identity
+    current_user.identities.first if current_user
   end
 end

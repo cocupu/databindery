@@ -4,7 +4,7 @@ class FileEntitiesController < ApplicationController
 
   def create
     @file_entity.binding = params[:binding]
-    @file_entity.model = Model.file_entity(current_identity)
+    @file_entity.model = Model.file_entity(@identity)
     @file_entity.pool = @pool
     @file_entity.save!
     render :json=>@file_entity

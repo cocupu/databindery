@@ -7,6 +7,9 @@ class MappingTemplatesController < ApplicationController
 
   def new
     authorize! :create, MappingTemplate
+    ### TODO identity must belong to current_logged in user
+    @identity = Identity.find_by_short_name(params[:identity_id])
+
     raise ArgumentError unless params[:mapping_template] && params[:mapping_template][:worksheet_id]
     @worksheet = Worksheet.find(params[:mapping_template][:worksheet_id])
     mappings = []
@@ -18,7 +21,9 @@ class MappingTemplatesController < ApplicationController
   def create
     @worksheet = Worksheet.find(params[:worksheet_id])
     authorize! :create, MappingTemplate
-    @mapping_template = MappingTemplate.new(owner: current_identity, pool: @pool)
+    identity = current_user.identities.find_by_short_name(params[:identity_id])
+    raise CanCan::AccessDenied.new "You can't create for that identity" if identity.nil?
+    @mapping_template = MappingTemplate.new(owner: identity, pool: @pool)
     params[:mapping_template][:model_mappings_attributes].each do |key, mma|
       #remove template fields
       mma['field_mappings_attributes'].delete('new_field_mappings')
@@ -33,7 +38,7 @@ class MappingTemplatesController < ApplicationController
     end
     @mapping_template.save!
     @worksheet.reify(@mapping_template, current_pool)
-    redirect_to pool_mapping_template_path(@pool, @mapping_template)
+    redirect_to identity_pool_mapping_template_path(identity.short_name, @pool, @mapping_template)
   end
 
   def show

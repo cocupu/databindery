@@ -52,7 +52,7 @@ describe NodesController do
       sign_in @identity.login_credential
     end
     it "when model is not provided" do
-      get :search, :format=>'json', :pool_id => @pool
+      get :search, :format=>'json', :pool_id => @pool, identity_id: @identity.short_name
       response.should be_success
       json = JSON.parse(response.body)
       json.map { |n| n["id"]}.should == [@node1.persistent_id, @node2.persistent_id, @different_model_node.persistent_id]
@@ -60,7 +60,7 @@ describe NodesController do
       json.first["data"].should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
     end
     it "when query is  provided" do
-      get :search, :format=>'json', :q=>'Coyne', :pool_id => @pool
+      get :search, :format=>'json', :q=>'Coyne', :pool_id => @pool, identity_id: @identity.short_name
       response.should be_success
       json = JSON.parse(response.body)
       json.map { |n| n["id"]}.should == [@node1.persistent_id]
@@ -68,7 +68,7 @@ describe NodesController do
       json.first["data"].should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
     end
     it "when model is provided" do
-      get :search, :format=>'json', :model_id=>@model.id, :pool_id => @pool
+      get :search, :format=>'json', :model_id=>@model.id, :pool_id => @pool, identity_id: @identity.short_name
       response.should be_success
       json = JSON.parse(response.body)
       json.map { |n| n["id"]}.should == [@node1.persistent_id, @node2.persistent_id]
@@ -145,14 +145,15 @@ describe NodesController do
       sign_in @identity.login_credential
     end
     it "should be successful using a model I own" do 
-      post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@my_model}, :pool_id=>@pool.id
+      post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@my_model}, pool_id: @pool, identity_id: @identity.short_name
       response.should redirect_to node_path(assigns[:node])
       assigns[:node].binding.should == '0B4oXai2d4yz6bUstRldTeXV0dHM'
       assigns[:node].model.should == @my_model
       flash[:notice].should == "#{@my_model.name} created"
     end
     it "should not be successful using a model I don't own" do 
-      post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@not_my_model}, :pool_id=>@pool.id
+      post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@not_my_model}, pool_id: @pool, identity_id: @identity.short_name
+
       response.should redirect_to new_node_path(:binding=>'0B4oXai2d4yz6bUstRldTeXV0dHM')
       assigns[:node].model.should be_nil
       

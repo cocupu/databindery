@@ -1,7 +1,5 @@
 .row{style: "margin-top: 20px"}
-  .span1
-    &nbsp;
-  .span10
+  .span8
     .hero-unit
       %h1 Data Bindery
       %p
@@ -10,10 +8,9 @@
         and authorize Data Bindery to see your files so you can arrange them.
       %p
         =button_to "Connect to Google Drive", drives_path, :method=>:get, :class=>'btn btn-primary'
-  .span1
+  .span4
     &nbsp;
-/*%h3 Import Data*/
-/*%ul*/
-/*  %li*/
-/*    =link_to "Upload a file", new_chattel_path*/
-/**/
+    %h3 Your Pools
+    =link_to "New Pool", identity_pools_path(controller.current_identity.short_name, :anchor=>'new')
+    %ul
+      %li hi

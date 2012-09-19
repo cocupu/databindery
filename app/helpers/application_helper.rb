@@ -31,13 +31,13 @@ module ApplicationHelper
   def render_facet_link(facet_field, facet_value,  count)
     facet_params = params[:f] ? params[:f].dup : {}
     facet_params[facet_field] = facet_value
-    link_to "#{truncate(facet_value)} (#{count})", exhibit_path(@exhibit, :f=>facet_params, :q=>params[:q]), :title=>facet_value
+    link_to "#{truncate(facet_value)} (#{count})", identity_pool_exhibit_path(@identity.short_name, @pool, @exhibit, :f=>facet_params, :q=>params[:q]), :title=>facet_value
   end
 
   def render_selected_facet(facet_field, facet_value,  count)
     facet_params = params[:f] ? params[:f].dup : {}
     facet_params.delete(facet_field)
     "#{facet_value} (#{count}) ".html_safe +
-    link_to("remove", exhibit_path(@exhibit, :f=>facet_params, :q=>params[:q]), :title=>'Remove facet', :class=>'btn small')
+    link_to("remove", identity_pool_exhibit_path(@identity.short_name, @pool, @exhibit, :f=>facet_params, :q=>params[:q]), :title=>'Remove facet', :class=>'btn small')
   end
 end

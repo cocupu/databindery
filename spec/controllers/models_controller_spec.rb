@@ -110,7 +110,7 @@ describe ModelsController do
   describe "create" do
     describe "when not logged on" do
       it "should redirect to root" do
-        post :create, :pool_id=>@identity.pools.first.id
+        post :create, :pool_id=>@identity.pools.first.id, identity_id: @identity.short_name
         response.should redirect_to root_path
       end
     end
@@ -120,20 +120,20 @@ describe ModelsController do
         sign_in @identity.login_credential
       end
       it "should redirect to form when validation fails" do
-        post :create, :model=>{}, :pool_id=>@identity.pools.first.id
+        post :create, :model=>{}, :pool_id=>@identity.pools.first.id, identity_id: @identity.short_name
         response.should be_successful
         response.should render_template(:new)
         assigns[:model].should be_kind_of Model
       end
       it "should be successful" do
-        post :create, :model=>{:name=>'Turkey'}, :pool_id=>@identity.pools.first.id
+        post :create, :model=>{:name=>'Turkey'}, :pool_id=>@identity.pools.first.id, identity_id: @identity.short_name
         response.should redirect_to edit_model_path(assigns[:model])
         assigns[:model].should be_kind_of Model
         assigns[:model].name.should == 'Turkey'
       end
       it "should be successful with json" do
         in_pool = FactoryGirl.create(:pool, owner: @identity)
-        post :create, :model=>{:name=>'Turkey'}, :pool_id=>in_pool.id, :format=>:json
+        post :create, :model=>{:name=>'Turkey'}, :pool_id=>in_pool.id, :format=>:json, identity_id: @identity.short_name
         response.should be_successful
         json = JSON.parse response.body
         json["name"].should == 'Turkey'
@@ -142,8 +142,15 @@ describe ModelsController do
       end
       it "should not allow you to create models in someone elses pool" do
         in_pool = FactoryGirl.create(:pool)
-        post :create, :model=>{:name=>'Turkey'}, :pool_id=>in_pool.id, :format=>:json
+        post :create, :model=>{:name=>'Turkey'}, :pool_id=>in_pool.id, :format=>:json, identity_id: @identity.short_name
         response.response_code.should == 403
+      end
+      it "should not allow you to create models with someone elses identity" do
+        in_pool = FactoryGirl.create(:pool, owner: @identity)
+        post :create, :model=>{:name=>'Turkey'}, :pool_id=>in_pool.id, :format=>:json, identity_id: FactoryGirl.create(:identity)
+        response.should be_forbidden
+        json = JSON.parse(response.body)
+        json['message'].should == "You can't create for that identity"
       end
     end
   end
