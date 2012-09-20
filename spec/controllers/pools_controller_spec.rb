@@ -97,4 +97,35 @@ describe PoolsController do
       end
     end
   end
+
+  describe "update" do
+    describe "when not logged on" do
+      it "should redirect to home" do
+        put :update, :pool=>{:name=>"New Pool"}, identity_id: @identity.short_name, :id=>@my_pool
+        response.should redirect_to(root_path)
+      end
+    end
+
+    describe "when logged on" do
+      before do
+        sign_in @identity.login_credential
+      end
+      it "should be successful when rendering json" do
+        put :update, :pool=>{:name=>"ReName", :short_name=>'updated_pool'}, :format=>:json, identity_id: @identity.short_name, :id=>@my_pool
+        response.should  be_successful
+        @my_pool.reload
+        @my_pool.owner.should == @identity
+        @my_pool.name.should == "ReName"
+        @my_pool.short_name.should == "updated_pool"
+      end
+      it "should give an error when don't have access to that identity" do
+        #put :update, :pool=>{:name=>"New Pool", :short_name=>'new_pool'}, :format=>:json, identity_id: FactoryGirl.create(:identity).short_name, :id=>@my_pool
+        put :update, :pool=>{:name=>"New Pool"}, :format=>:json, identity_id: FactoryGirl.create(:identity).short_name, :id=>@my_pool
+        puts "Resp: #{response.status}"
+        response.should be_success
+        json = JSON.parse(response.body)
+        json['message'].should == "You can't create for that identity"
+      end
+    end
+  end
 end

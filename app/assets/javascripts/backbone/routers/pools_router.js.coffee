@@ -11,7 +11,8 @@ class Cocupu.Routers.PoolsRouter extends Backbone.Router
     "new"      : "newPool"
     "index"    : "index"
     ":id"      : "show"
-    ".*"        : "index"
+    ":id/edit" : "edit"
+    ".*"       : "index"
 
   index: ->
     if @pool
@@ -31,4 +32,10 @@ class Cocupu.Routers.PoolsRouter extends Backbone.Router
 
     @view = new Cocupu.Views.Pools.ShowView(model: pool)
     $(".full-width-container").html(@view.render().el)
+
+  edit: (id) ->
+    pool = @pools.get(id)
+    @view = new Cocupu.Views.Pools.EditView(model: pool)
+    $(".full-width-container").html(@view.render().el)
+
 

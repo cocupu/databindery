@@ -26,4 +26,12 @@ class PoolsController < ApplicationController
       format.json { render :json=>@pool}
     end
   end
+
+  def update
+    @pool.update_attributes(params[:pool])
+    respond_to do |format|
+      format.html { redirect_to identity_pool_path(@identity.short_name, @pool), :notice=>"#{@pool.name} updated" }
+      format.json { head :no_content }
+    end
+  end
 end

@@ -4,6 +4,9 @@ class Cocupu.Models.Pool extends Backbone.Model
     base += '/' + @id if @id
     base
 
+  initialize: (attributes) ->
+     this.id = attributes['short_name']
+
 class Cocupu.Collections.PoolsCollection extends Backbone.Collection
   model: Cocupu.Models.Pool
   url: '/pools'

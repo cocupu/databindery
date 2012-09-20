@@ -11,8 +11,12 @@ ul.pools {
 
     h2 {
       font-size: 14px;
-      white-space: nowrap;
       margin: 0;
+      
+      .btn-edit-pool {
+
+        float: right;
+      }
 
     }
   }
