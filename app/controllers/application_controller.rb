@@ -26,9 +26,8 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActiveRecord::RecordNotFound do |exception|
     respond_to do |format|
-      format.html do
-        render :file => "public/404", :status => :not_found
-      end
+      format.html { render :file => "public/404", :status => :not_found }
+      format.json { render :json=>{:status=>:error, :message=>"Resource not found"}, :status => :not_found }
     end
   end
 

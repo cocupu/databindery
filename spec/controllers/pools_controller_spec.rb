@@ -119,12 +119,11 @@ describe PoolsController do
         @my_pool.short_name.should == "updated_pool"
       end
       it "should give an error when don't have access to that identity" do
-        #put :update, :pool=>{:name=>"New Pool", :short_name=>'new_pool'}, :format=>:json, identity_id: FactoryGirl.create(:identity).short_name, :id=>@my_pool
-        put :update, :pool=>{:name=>"New Pool"}, :format=>:json, identity_id: FactoryGirl.create(:identity).short_name, :id=>@my_pool
-        puts "Resp: #{response.status}"
-        response.should be_success
+        put :update, :pool=>{:name=>"New Pool", :short_name=>'new_pool'}, :format=>:json, identity_id: FactoryGirl.create(:identity).short_name, :id=>@my_pool
+        #put :update, :pool=>{:name=>"New Pool"}, :format=>:json, identity_id: FactoryGirl.create(:identity).short_name, :id=>@my_pool
+        response.should be_not_found
         json = JSON.parse(response.body)
-        json['message'].should == "You can't create for that identity"
+        json['message'].should == "Resource not found"
       end
     end
   end
