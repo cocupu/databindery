@@ -6,7 +6,7 @@ class Cocupu.Models.Model extends Backbone.Model
     if @id
       @urlRoot + '/' + @id
     else
-     window.router.identity + '/' + window.router.pool.short_name + @urlRoot
+     '/' + window.router.identity + '/' + window.router.pool.short_name + @urlRoot
 
   defaults:
     name: null

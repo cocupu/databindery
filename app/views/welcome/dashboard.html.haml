@@ -17,6 +17,6 @@
     %ul.pools
       -controller.current_identity.pools.each do |pool|
         %li
-          %h2=link_to(pool.name, pool_path(controller.current_identity, pool))
+          %h2=link_to(pool.name, identity_pool_path(controller.current_identity.short_name, pool))
           %div.body
             %p.description=pool.description

@@ -1,5 +1,8 @@
 class Cocupu.Models.Pool extends Backbone.Model
-  urlRoot : '/pools'
+  url: ->
+    base = '/' + window.router.identity 
+    base += '/' + @id if @id
+    base
 
 class Cocupu.Collections.PoolsCollection extends Backbone.Collection
   model: Cocupu.Models.Pool
