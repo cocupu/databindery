@@ -7,7 +7,6 @@ Cocupu::Application.routes.draw do
     get "signout", :to => "devise/sessions#destroy"
   end
 
-
   # Drives is a redirect point for google oauth, so it can't have any dynamic segments
   resources :drives, :only=>[:index]
 
@@ -29,7 +28,9 @@ Cocupu::Application.routes.draw do
   resources :spreadsheet_rows
   root :to => 'welcome#index'
   
-  resources :identities, :path=>'', :only=>[] do
+  #jasmine is the path of our testing library so, we have restricted identities from begining with 'jasmine'
+  constraints = {:id=>/(?!jasmine)[^\/]*/} unless Rails.env.production?
+  resources :identities, :path=>'', :only=>[], :constraints=>constraints do
     resources :file_entities
     resources :chattels
     resources :pools, :path=>'' do

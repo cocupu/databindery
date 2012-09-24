@@ -10,10 +10,11 @@ describe Model do
     file_entity = Model.file_entity(owner)
     file_entity.should be_kind_of Model
     file_entity.owner.should == owner
-
   end
+
   it "should have many fields" do
     subject.owner = Identity.create
+    subject.pool = FactoryGirl.create :pool
     subject.fields << {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}
     subject.fields << {:code=>'two', :name=>'Two', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}
     subject.save!
@@ -38,6 +39,7 @@ describe Model do
     it "should not allow an association to be named undefined" do
       subject.associations << {type: 'Has One', name: 'undefined', references: 77}
       subject.owner = Identity.create
+      subject.pool = FactoryGirl.create :pool
       subject.should_not be_valid
       subject.errors.full_messages.should == ["Associations name can't be 'undefined'"]
     end
@@ -66,6 +68,7 @@ describe Model do
 
   it "should validate that label is a field" do
     subject.owner = Identity.create
+    subject.pool = FactoryGirl.create :pool
     subject.label = "title"
     subject.should_not be_valid
     subject.errors.full_messages.should == ["Label must be a field"]
@@ -73,9 +76,18 @@ describe Model do
   end
 
   it "should belong to an identity" do
+    subject.pool = FactoryGirl.create :pool
     subject.should_not be_valid
     subject.errors.full_messages.should == ["Owner can't be blank"]
     subject.owner = Identity.create
+    subject.should be_valid
+  end
+
+  it "should belong to a pool" do
+    subject.owner = FactoryGirl.create :identity
+    subject.should_not be_valid
+    subject.errors.full_messages.should == ["Pool can't be blank"]
+    subject.pool = FactoryGirl.create :pool
     subject.should be_valid
   end
 end

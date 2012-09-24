@@ -4,7 +4,7 @@ describe ReifyEachSpreadsheetRowJob do
   before do
     ## database should be clean
     Node.count.should == 0 
-    @model = Model.create!(:name=>'Truck', owner: FactoryGirl.create(:identity), :fields=>[{code: 'wheels', name: 'Wheels'}])
+    @model = FactoryGirl.create(:model, fields: [{code: 'wheels', name: 'Wheels'}])
     @template = MappingTemplate.new(owner: FactoryGirl.create(:identity))
     @template.model_mappings = [{:model_id=>@model.id, :field_mappings=> [{:source=>"B", :label=>"Wheels", :field=>"wheels"}, {:source=>"A", :label=>''}]}]
     @template.save!

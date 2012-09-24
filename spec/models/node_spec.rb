@@ -5,7 +5,7 @@ describe Node do
     @pool = FactoryGirl.create :pool
   end
   before do
-    subject.model = Model.create!(name: "Test Model", owner: FactoryGirl.create(:identity), 
+    subject.model = FactoryGirl.create(:model, 
                       fields: [{code: 'first_name'}, {code: 'last_name'}, {code: 'title'}],
                       label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: 39}])
   end
@@ -125,18 +125,13 @@ describe Node do
   describe "with data" do
     before do
       @pool = FactoryGirl.create(:pool)
-#       @model = Model.create(name: "Mods and Rockers")
-# #      @model.fields << [{code: 'f1', name: 'Field one'}]
-# #      @model.label = 'f1'
-#       @model.save
-#       subject.model = @model
       subject.pool = @pool 
       subject.data = {'f1'=>'good', 'first_name' => 'Heathcliff', 'last_name' => 'Huxtable', 'title'=>'Dr.'}
     end
 
     it "should produce a solr document" do
       # f1 is not defined as a field on the model, so it's not indexed.
-      subject.to_solr.should == {'id'=>subject.persistent_id, 'version'=>subject.id, 'model_name' =>'Test Model', 'pool' => @pool.id, 'format'=>'Node', 'model'=>subject.model.id, 'title'=>'Huxtable', 'first_name_t'=>'Heathcliff', 'last_name_t'=>'Huxtable', 'title_t' => 'Dr.'}
+      subject.to_solr.should == {'id'=>subject.persistent_id, 'version'=>subject.id, 'model_name' =>subject.model.name, 'pool' => @pool.id, 'format'=>'Node', 'model'=>subject.model.id, 'title'=>'Huxtable', 'first_name_t'=>'Heathcliff', 'last_name_t'=>'Huxtable', 'title_t' => 'Dr.'}
     end
     it "should have a title" do
       subject.title.should == 'Huxtable'

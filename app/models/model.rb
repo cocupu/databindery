@@ -73,6 +73,7 @@ class Model < ActiveRecord::Base
   has_many :nodes
 
   belongs_to :pool
+  validates :pool, presence: true
 
   belongs_to :owner, class_name: "Identity", :foreign_key => 'identity_id'
   validates :owner, presence: true
