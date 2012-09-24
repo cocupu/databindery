@@ -82,7 +82,8 @@ class Model < ActiveRecord::Base
   validate :association_cannot_be_named_undefined
 
   def self.file_entity(owner)
-    Model.find_or_create_by_name_and_identity_id('File Entity', owner.id)
+    name = 'File Entity'
+    Model.where(name: name, identity_id: owner.id).first_or_create(name: name, identity_id: owner.id)
   end
 
   def association_cannot_be_named_undefined
