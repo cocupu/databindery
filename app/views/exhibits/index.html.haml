@@ -2,6 +2,6 @@
 
 %ul
   -@exhibits.each do |exhibit|
-    %li=link_to exhibit.title, exhibit
+    %li=link_to exhibit.title, identity_pool_exhibit_path(@identity, @pool, exhibit)
 
-=link_to "Create a new exhibit", new_exhibit_path, :class=>'btn btn-primary'
+=link_to "Create a new exhibit", new_identity_pool_exhibit_path(@identity, @pool), :class=>'btn btn-primary'

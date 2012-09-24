@@ -24,29 +24,6 @@ ul.exhibits {
       margin-bottom: 0;
       @include background_gradient(right, #DAFF88, #8DB437);
     }
-    dl {
-      width: 650px;
-      display: block;
-      dt {
-        width: 200px;
-        float: left;
-        text-align: right;
-        font-weight: bold;
-        clear: left;
-      }
-      dd {
-        margin-left: 10px;
-        width: 440px;
-        float:left;
-      }
-    }
-    dl.clearfix:after {
-        content: ".";
-        display: block;
-        height: 0;
-        clear: both;
-        visibility: hidden;
-    }
   }
 }
 

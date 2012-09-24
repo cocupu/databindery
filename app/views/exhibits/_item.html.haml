@@ -1,8 +1,13 @@
-%p.title=item.model.label
-%dl.clearfix
+%p.title=link_to item.data[item.model.label], identity_pool_path(@identity, @pool, :anchor=>"entity/#{item.persistent_id}")
+%dl.dl-horizontal
   %dt ID
-  %dd=item.persistent_id
-  -item.model.fields.each do |k, label|
-    %dt=label
-    %dd=item.data[k]
+  %dd
+    =item.persistent_id
+    \/
+    =item.id
+
+  -item.model.fields.each do |field|
+    -if item.data[field['code']].present?
+      %dt=field['name']
+      %dd=item.data[field['code']]
 .clear

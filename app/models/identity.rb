@@ -12,6 +12,10 @@ class Identity < ActiveRecord::Base
   def short_name=(val)
     write_attribute(:short_name, val.downcase)
   end
+
+  def to_param
+    short_name
+  end
   
 
 end

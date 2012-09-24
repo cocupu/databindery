@@ -2,9 +2,9 @@
   #{@exhibit.title }
 
 -content_for :subtitle do
-  =link_to "edit", edit_exhibit_path(@exhibit), :class=>'btn btn-small'
+  =link_to "edit", edit_identity_pool_exhibit_path(@identity, @pool, @exhibit), :class=>'btn btn-small'
 
-=form_for :search, :url=>exhibit_path(@exhibit), :method=>:get, :html=>{:id=>'search', :class=>'form-inline'} do
+=form_for :search, :url=>identity_pool_exhibit_path(@identity, @pool, @exhibit), :method=>:get, :html=>{:id=>'search', :class=>'form-inline'} do
   =text_field_tag :q, params[:q]
   -facet_params.each do |key, value|
     =hidden_field_tag "f[#{key}]", value
@@ -21,4 +21,4 @@
       -@exhibit.facets.each do |facet_key|
         %li
           .facet=facet_key
-          = render_facet_list(facet_key, @facet_fields[facet_key])
+          = render_facet_list(Node.solr_name(facet_key), @facet_fields[Node.solr_name(facet_key)])

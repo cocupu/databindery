@@ -8,7 +8,19 @@ describe ExhibitsController do
   before do
     @identity = FactoryGirl.create :identity
     @pool = FactoryGirl.create :pool, :owner=>@identity
-    @exhibit = FactoryGirl.create(:exhibit, pool: @pool)
+    @exhibit = FactoryGirl.build(:exhibit, pool: @pool)
+    @exhibit.facets = ['f2']
+    @exhibit.save!
+    @model1 = FactoryGirl.create(:model, :name=>"Mods and Rockers", :pool=>@exhibit.pool)
+
+    @model1.fields = [{code: 'f1', name: 'Field good'}, {code: 'f2', name: "Another one"}]
+    @model1.save!
+
+    @model2 = FactoryGirl.create(:model, :pool=>@exhibit.pool)
+    @model2.fields = [{code: 'style', name: 'Style'}, {code: 'label', name: "Label"}]
+
+    #TODO ensure that code is unique for all fields in a pool, so that Author.name is separate from Book.name
+    @model2.save!
   end
 
   describe "when signed in" do
@@ -25,15 +37,16 @@ describe ExhibitsController do
 
     describe "new" do
       it "should be success" do
-        get :new, :pool_id=>@pool.id, :identity_id=>@identity.short_name
+        get :new, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should be_successful
         assigns[:exhibit].should be_kind_of Exhibit
+        assigns[:fields].should == [{'code' => 'f1', 'name'=> 'Field good'}, {'code' => 'f2', 'name'=> "Another one"}, {'code' => 'style', 'name'=> 'Style'}, {'code' => 'label', 'name'=> "Label"} ]
       end
     end
 
     describe "create" do
       it "should be success" do
-        post :create, :pool_id=>@pool, :identity_id=>@identity.short_name, :exhibit=> {:title => 'Foresooth', :facets=>'looketh, overmany, thither' }
+        post :create, :pool_id=>@pool, :identity_id=>@identity.short_name, :exhibit=> {:title => 'Foresooth', :facets=>['looketh', 'overmany', 'thither'] }
         response.should redirect_to identity_pool_exhibit_path(@identity.short_name, @pool, assigns[:exhibit])
         assigns[:exhibit].facets.should == ['looketh', 'overmany', 'thither']
       end
@@ -48,12 +61,13 @@ describe ExhibitsController do
         get :edit, :id =>@exhibit.id, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should be_successful
         assigns[:exhibit].should be_kind_of Exhibit
+        assigns[:fields].should == [{'code' => 'f1', 'name'=> 'Field good'}, {'code' => 'f2', 'name'=> "Another one"}, {'code' => 'style', 'name'=> 'Style'}, {'code' => 'label', 'name'=> "Label"} ]
       end
     end
 
     describe "update" do
       it "should be success" do
-        put :update, :id=>@exhibit.id, :exhibit=> {:title => 'Foresooth', :facets=>'looketh, overmany, thither' }, :pool_id=>@pool, :identity_id=>@identity.short_name
+        put :update, :id=>@exhibit.id, :exhibit=> {:title => 'Foresooth', :facets=>['looketh', 'overmany', 'thither'] }, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should redirect_to identity_pool_exhibit_path(@identity.short_name, @pool, assigns[:exhibit])
         assigns[:exhibit].facets.should == ['looketh', 'overmany', 'thither']
       end
@@ -67,17 +81,17 @@ describe ExhibitsController do
         raw_results = Cocupu.solr.get 'select', :params => {:q => 'bazaar', :fl=>'id', :qf=>'field_good_s'}
         Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
         Cocupu.solr.commit
-        @model = FactoryGirl.create(:model, :name=>"Mods and Rockers", :pool=>@exhibit.pool)
-
-        @model.fields = [{code: 'f1', name: 'Field good'}]
-        @model.save
 
         @instance = Node.new(data: {'f1' => 'bazaar'})
-        @instance.model = @model
+        @instance.model = @model1
         @instance.pool = @exhibit.pool 
         @instance.save!
+
+        @instance.data['f2'] = 'Bizarre'
+        @instance.save! #Create a new version of this, only one version should show in search results.
+
         @instance2 = Node.new(data: {'f1' => 'bazaar'})
-        @instance2.model = @model
+        @instance2.model = @model1
         @instance2.pool = FactoryGirl.create :pool
         @instance2.save!
 
@@ -87,7 +101,7 @@ describe ExhibitsController do
         assigns[:total].should == 1
         assigns[:results].should_not be_nil
         assigns[:exhibit].should == @exhibit
-        assigns[:facet_fields].should == {"name_s"=>[], "model_name"=>["Mods and Rockers", 1]}
+        assigns[:facet_fields].should == {"f2_t"=>["bizarr", 1], "model_name"=>["Mods and Rockers", 1]}
         response.should be_successful
       end
     end

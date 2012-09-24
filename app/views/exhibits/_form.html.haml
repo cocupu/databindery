@@ -1,13 +1,14 @@
-=form_for @exhibit do |f|
+=form_for @exhibit, url: @exhibit.persisted? ? identity_pool_exhibit_path(@identity, @pool, @exhibit) : identity_pool_exhibits_path(@identity, @pool) do |f|
   .clearfix
     = f.label :title
     .input
       = f.text_field :title
   .clearfix
     = f.label :facets, "Facets"
-    .input
-      = text_field_tag 'exhibit[facets]', @exhibit.facets ? @exhibit.facets.join(', ') : '' 
-      %span.help-block comma separated
+    -@fields.each do |field|
+      =label_tag "exhibit[facets][#{field['code']}]" do
+        =check_box_tag "exhibit[facets][]", field['code'], @exhibit.facets.include?(field['code']), id: "exhibit_facets_#{field['code']}"
+        =field['name']
   .clearfix
     .input
       = f.submit :class=>'btn btn-primary'
