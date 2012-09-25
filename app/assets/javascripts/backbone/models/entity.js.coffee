@@ -4,7 +4,7 @@ class Cocupu.Models.Entity extends Backbone.Model
 
   url: ->
     if @id
-      @urlRoot + '/' + @id
+      '/' + window.router.identity + '/' + window.router.pool.short_name + @urlRoot + '/' + @id
     else
       '/' + window.router.identity + '/' + window.router.pool.short_name + @urlRoot
 

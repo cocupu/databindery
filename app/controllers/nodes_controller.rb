@@ -1,7 +1,7 @@
 class NodesController < ApplicationController
   include Cocupu::Search
   load_and_authorize_resource :except=>[:index, :search, :update, :create], :find_by => :persistent_id
-  load_and_authorize_resource :pool, :only=>[:create, :search], :find_by => :short_name, :through=>:identity
+  load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
   layout 'full_width'
 
   def index
@@ -80,13 +80,13 @@ class NodesController < ApplicationController
       model = Model.accessible_by(current_ability).find(params[:node][:model_id])
     rescue ActiveRecord::RecordNotFound 
       #User didn't have access to the model they were trying to set.
-      redirect_to new_node_path(:binding=>@node.binding)
+      redirect_to new_identity_pool_node_path(@identity, @pool, :binding=>@node.binding)
       return
     end
     @node.model = model
     @node.pool = @pool
     @node.save!
-    redirect_to node_path(@node), :notice=>"#{model.name} created"
+    redirect_to identity_pool_node_path(@identity, @pool, @node), :notice=>"#{model.name} created"
   end
 
   def update
@@ -95,7 +95,7 @@ class NodesController < ApplicationController
     @node.attributes = params.require(:node).permit(:data)
     new_version = @node.update
     respond_to do |format|
-      format.html { redirect_to node_path(new_version), :notice=>"#{@node.model.name} updated" }
+      format.html { redirect_to identity_pool_node_path(@identity, @pool, new_version), :notice=>"#{@node.model.name} updated" }
       format.json { head :no_content }
     end
   end

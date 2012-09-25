@@ -4,16 +4,16 @@ describe NodesController do
   describe "index" do
     before do
       @identity = FactoryGirl.create :identity
-      pool = FactoryGirl.create :pool, :owner=>@identity
-      @model = FactoryGirl.create(:model, pool: pool)
-      @node1 = FactoryGirl.create(:node, model: @model, pool: pool, :associations=>{'authors'=>[1231, 2227], 'undefined'=>'123721'})
-      @node2 = FactoryGirl.create(:node, model: @model, pool: pool)
+      @pool = FactoryGirl.create :pool, :owner=>@identity
+      @model = FactoryGirl.create(:model, pool: @pool)
+      @node1 = FactoryGirl.create(:node, model: @model, pool: @pool, :associations=>{'authors'=>[1231, 2227], 'undefined'=>'123721'})
+      @node2 = FactoryGirl.create(:node, model: @model, pool: @pool)
       @different_pool_node = FactoryGirl.create(:node, model: @model )
-      @different_model_node = FactoryGirl.create(:node, pool: pool )
+      @different_model_node = FactoryGirl.create(:node, pool: @pool )
       sign_in @identity.login_credential
     end
     it "should load the model and its nodes" do
-      get :index, :model_id => @model
+      get :index, :model_id => @model, pool_id: @pool, identity_id: @identity
       response.should be_success
       assigns[:model].should be_kind_of Model
       assigns[:nodes].should include(@node1, @node2) 
@@ -22,14 +22,14 @@ describe NodesController do
       assigns[:models].should == [@model] # for sidebar
     end
     it "should load all the nodes" do
-      get :index
+      get :index, pool_id: @pool, identity_id: @identity
       response.should be_success
       assigns[:nodes].should include(@node1, @node2, @different_model_node) 
       assigns[:nodes].should_not include(@different_pool_node) 
       assigns[:models].should == [@model] # for sidebar
     end
     it "should respond with json" do
-      get :index, :format=>'json'
+      get :index, :format=>'json', pool_id: @pool, identity_id: @identity
       response.should be_success
       json = JSON.parse(response.body)
       json.map { |n| n["id"]}.should == [ @different_model_node.persistent_id, @node2.persistent_id, @node1.persistent_id]
@@ -80,27 +80,27 @@ describe NodesController do
   describe "show" do
     before do
       @identity = FactoryGirl.create :identity
-      pool = FactoryGirl.create :pool, :owner=>@identity
-      @model = FactoryGirl.create(:model, pool: pool)
-      @node1 = FactoryGirl.create(:node, model: @model, pool: pool)
-      @node2 = FactoryGirl.create(:node, model: @model, pool: pool)
+      @pool = FactoryGirl.create :pool, :owner=>@identity
+      @model = FactoryGirl.create(:model, pool: @pool)
+      @node1 = FactoryGirl.create(:node, model: @model, pool: @pool)
+      @node2 = FactoryGirl.create(:node, model: @model, pool: @pool)
       @different_pool_node = FactoryGirl.create(:node, model: @model )
-      @different_model_node = FactoryGirl.create(:node, pool: pool )
+      @different_model_node = FactoryGirl.create(:node, pool: @pool )
       sign_in @identity.login_credential
     end
     it "should load the node and the models" do
-      get :show, :id => @node1.persistent_id
+      get :show, :id => @node1.persistent_id, pool_id: @pool, identity_id: @identity
       response.should be_success
       assigns[:models].should == [@model] # for sidebar
       assigns[:node].should == @node1 
     end
     it "should respond with json" do
-      get :show, :id => @node1.persistent_id, :format=>'json'
+      get :show, :id => @node1.persistent_id, :format=>'json', pool_id: @pool, identity_id: @identity
       response.should be_success
       response.body.should == @node1.to_json
     end
     it "should not load node we don't have access to" do
-      get :show, :id => @different_pool_node.persistent_id 
+      get :show, :id => @different_pool_node.persistent_id, pool_id: @pool, identity_id: @identity 
       response.should redirect_to root_path
       flash[:alert].should == "You are not authorized to access this page."
     end
@@ -109,13 +109,13 @@ describe NodesController do
   describe "new" do
     before do
       @identity = FactoryGirl.create :identity
-      pool = FactoryGirl.create :pool, :owner=>@identity
-      @my_model = FactoryGirl.create(:model, pool: pool)
+      @pool = FactoryGirl.create :pool, :owner=>@identity
+      @my_model = FactoryGirl.create(:model, pool: @pool)
       @not_my_model = FactoryGirl.create(:model)
       sign_in @identity.login_credential
     end
     it "should be successful when a binding is passed" do 
-      get :new, :binding => '0B4oXai2d4yz6bUstRldTeXV0dHM'
+      get :new, :binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', pool_id: @pool, identity_id: @identity
       response.should be_success
       assigns[:node].should be_kind_of Node
       assigns[:node].binding.should == '0B4oXai2d4yz6bUstRldTeXV0dHM'
@@ -123,14 +123,14 @@ describe NodesController do
       response.should render_template :new_binding
     end
     it "should be successful when a readable model is passed" do 
-      get :new, :model_id => @my_model
+      get :new, :model_id => @my_model, pool_id: @pool, identity_id: @identity
       response.should be_success
       assigns[:node].should be_kind_of Node
       assigns[:node].model.should == @my_model
       assigns[:models].should == [@my_model] # for sidebar
     end
     it "should be redirect when an unreadable model is passed" do 
-      get :new, :model_id => @not_my_model
+      get :new, :model_id => @not_my_model, pool_id: @pool, identity_id: @identity
       response.should redirect_to root_path
       flash[:alert].should == "You are not authorized to access this page."
     end
@@ -146,7 +146,7 @@ describe NodesController do
     end
     it "should be successful using a model I own" do 
       post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@my_model}, pool_id: @pool, identity_id: @identity.short_name
-      response.should redirect_to node_path(assigns[:node])
+      response.should redirect_to identity_pool_node_path(@identity, @pool, assigns[:node])
       assigns[:node].binding.should == '0B4oXai2d4yz6bUstRldTeXV0dHM'
       assigns[:node].model.should == @my_model
       flash[:notice].should == "#{@my_model.name} created"
@@ -154,17 +154,24 @@ describe NodesController do
     it "should not be successful using a model I don't own" do 
       post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@not_my_model}, pool_id: @pool, identity_id: @identity.short_name
 
-      response.should redirect_to new_node_path(:binding=>'0B4oXai2d4yz6bUstRldTeXV0dHM')
+      response.should redirect_to new_identity_pool_node_path(@identity, @pool, :binding=>'0B4oXai2d4yz6bUstRldTeXV0dHM')
       assigns[:node].model.should be_nil
       
+    end
+    it "should render errors in json" do 
+      post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@my_model}, pool_id: @pool, identity_id: @identity
+      response.should redirect_to identity_pool_node_path(@identity, @pool, assigns[:node])
+      assigns[:node].binding.should == '0B4oXai2d4yz6bUstRldTeXV0dHM'
+      assigns[:node].model.should == @my_model
+      flash[:notice].should == "#{@my_model.name} created"
     end
   end
 
   describe "update" do
     before do
       @identity = FactoryGirl.create :identity
-      pool = FactoryGirl.create :pool, :owner=>@identity
-      @model = FactoryGirl.create(:model, pool: pool)
+      @pool = FactoryGirl.create :pool, :owner=>@identity
+      @model = FactoryGirl.create(:model, pool: @pool)
       @model.fields = [{code: 'f1', name: 'Field one'}]
       @model.save!
       @node1 = FactoryGirl.create(:node, model: @model, pool: @identity.pools.first)
@@ -174,21 +181,21 @@ describe NodesController do
       sign_in @identity.login_credential
     end
     it "should load the node and the models" do
-      put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }}
+      put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }}, pool_id: @pool, identity_id: @identity
       new_version = Node.latest_version(@node1.persistent_id)
-      response.should redirect_to node_path(new_version)
+      response.should redirect_to identity_pool_node_path(@identity, @pool, new_version)
       new_version.data['f1'].should == "Updated val"
       flash[:notice].should == "#{@model.name} updated"
       
     end
     it "should not load node we don't have access to" do
-      put :update, :id => @different_pool_node.persistent_id, :node=>{:data=>{ }}
+      put :update, :id => @different_pool_node.persistent_id, :node=>{:data=>{ }}, pool_id: @pool, identity_id: @identity
       response.should redirect_to root_path
       flash[:alert].should == "You are not authorized to access this page."
     end
 
     it "should not show anything for json" do
-      put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }}, :format=>'json'
+      put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }}, :format=>'json', pool_id: @pool, identity_id: @identity
       new_version = Node.latest_version(@node1.persistent_id)
       response.code.should == "204" # no content
       new_version.data['f1'].should == "Updated val"

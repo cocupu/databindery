@@ -14,11 +14,11 @@ Cocupu::Application.routes.draw do
   resources :models, :except=>[:create, :index] do
     resources :fields
     resources :associations, :only=>:create
-    resources :nodes 
+    #resources :nodes 
   end
 
 
-  resources :nodes, :except=>[:create] do
+  resources :nodes, :only=>[] do
     resources :associations, :only=>[:index, :create]
   end
 
@@ -56,7 +56,7 @@ Cocupu::Application.routes.draw do
           end
         end
       end
-      resources :nodes, :only=>[:create] do
+      resources :nodes, :only=>[:create, :update, :show, :new, :index] do
         collection do
           get 'search'
         end

@@ -1,4 +1,5 @@
 class ModelsController < ApplicationController
+  skip_before_filter :verify_authenticity_token, :if => Proc.new { |c| c.request.format == 'application/json' && c.request.params.include?(:auth_token) }
 
   load_and_authorize_resource :pool, :only=>[:create, :index], :find_by => :short_name
   load_and_authorize_resource :only=>[:show, :new, :edit]
@@ -10,14 +11,14 @@ class ModelsController < ApplicationController
     respond_to do |format|
       format.html {}
       format.json do
-        render :json=>@models.map { |m| {id: m.id, associations: m.associations, fields: m.fields, name: m.name, label: m.label } }
+        render :json=>@models.map { |m| serialize_model(m) }
       end
     end
   end 
 
   def show
     respond_to do |format|
-      format.json { render :json=>{id: @model.id, associations: @model.associations, fields:  @model.fields, name: @model.name, label:  @model.label } }
+      format.json { render :json=>serialize_model(@model)}
     end
   end
 
@@ -33,7 +34,7 @@ class ModelsController < ApplicationController
     @model.pool = @pool 
     if @model.save
       respond_to do |format|
-        format.json { render :json=>@model}
+        format.json { render :json=>serialize_model(@model)}
         format.html { redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been created" }
       end
     else
@@ -57,5 +58,11 @@ class ModelsController < ApplicationController
       format.html { redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been updated" }
       format.json { head :no_content }
     end
+  end
+
+  private
+
+  def serialize_model(m)
+    {id: m.id, url: model_path(m), pool: m.pool.short_name, identity: m.pool.owner.short_name, associations: m.associations, fields: m.fields, name: m.name, label: m.label }
   end
 end

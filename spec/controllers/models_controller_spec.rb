@@ -31,6 +31,9 @@ describe ModelsController do
         json = JSON.parse(response.body)
         json.should ==  [{"id"=>@my_model.id,
           "associations"=>[],
+          "identity" =>@identity.short_name,
+          "pool" =>@pool.short_name,
+          "url"=>"/models/#{@my_model.id}", 
           "fields"=>
            [{"name"=>"Description",
              "type"=>"Text Field",
@@ -151,7 +154,8 @@ describe ModelsController do
         response.should be_successful
         json = JSON.parse response.body
         json["name"].should == 'Turkey'
-        json["pool_id"].should == in_pool.id
+        json["pool"].should == in_pool.short_name
+        json["identity"].should == @identity.short_name
         json["id"].should_not be_nil
       end
       it "should not allow you to create models in someone elses pool" do
