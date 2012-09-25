@@ -119,8 +119,8 @@ describe ModelsController do
       before do
         sign_in @identity.login_credential
       end
-      it "should redirect to form when validation fails" do
-        post :create, :model=>{}, :pool_id=>@identity.pools.first.id, identity_id: @identity.short_name
+      it "should render the form when validation fails" do
+        post :create, :model=>{:foo=>'bar'}, :pool_id=>@identity.pools.first.id, identity_id: @identity.short_name
         response.should be_successful
         response.should render_template(:new)
         assigns[:model].should be_kind_of Model

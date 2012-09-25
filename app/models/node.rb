@@ -1,4 +1,6 @@
 class Node < ActiveRecord::Base
+  include ActiveModel::ForbiddenAttributesProtection
+
   before_create :generate_uuid
   belongs_to :model
   belongs_to :pool
@@ -10,8 +12,6 @@ class Node < ActiveRecord::Base
 
   after_save :update_index
   after_destroy :remove_from_index
-  attr_accessible :data
-  attr_accessible :data, :associations, :binding, :model_id, :pool_id, :persistent_id, :parent_id,  :identity_id, :as => :admin
 
   ## Id is our version, so this ensures that find_by_persistent_id always returns the most recent version
   default_scope order('id desc')

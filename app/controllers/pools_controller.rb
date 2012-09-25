@@ -1,5 +1,5 @@
 class PoolsController < ApplicationController
-  load_and_authorize_resource :find_by => :short_name, :through=>:identity
+  load_and_authorize_resource :find_by => :short_name, :through=>:identity, :except=>[:update, :create]
 
   layout 'full_width'
 
@@ -16,10 +16,14 @@ class PoolsController < ApplicationController
   end
 
   def create
-    @pool.name = params[:pool][:name]
-    #@pool.description = params[:pool][:description]
+    authorize! :create, Pool
+    # Make sure they own the currently set identity.
     identity = current_user.identities.find_by_short_name(params[:identity_id])
     raise CanCan::AccessDenied.new "You can't create for that identity" if identity.nil?
+    @pool = identity.pools.build(params.require(:pool).permit(:description, :name, :short_name))
+
+    #@pool.name = params[:pool][:name]
+    #@pool.description = params[:pool][:description]
     @pool.owner = identity
     @pool.save!
     respond_to do |format|
@@ -28,7 +32,12 @@ class PoolsController < ApplicationController
   end
 
   def update
-    @pool.update_attributes(params[:pool])
+    raise CanCan::AccessDenied.new if current_user.nil?
+    # Make sure they own the currently set identity.
+    identity = current_user.identities.where(:short_name=>params[:identity_id]).first!
+    @pool = identity.pools.find_by_short_name(params[:id])
+    authorize! :update, @pool
+    @pool.update_attributes(params.require(:pool).permit(:description, :name, :short_name))
     respond_to do |format|
       format.html { redirect_to identity_pool_path(@identity.short_name, @pool), :notice=>"#{@pool.name} updated" }
       format.json { head :no_content }

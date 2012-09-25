@@ -1,6 +1,6 @@
 class NodesController < ApplicationController
   include Cocupu::Search
-  load_and_authorize_resource :except=>[:index, :search], :find_by => :persistent_id
+  load_and_authorize_resource :except=>[:index, :search, :update, :create], :find_by => :persistent_id
   load_and_authorize_resource :pool, :only=>[:create, :search], :find_by => :short_name, :through=>:identity
   layout 'full_width'
 
@@ -74,7 +74,8 @@ class NodesController < ApplicationController
   end
   
   def create
-    @node.binding = params[:node][:binding]
+    authorize! :create, Node
+    @node = Node.new(params.require(:node).permit(:binding))
     begin
       model = Model.accessible_by(current_ability).find(params[:node][:model_id])
     rescue ActiveRecord::RecordNotFound 
@@ -89,7 +90,9 @@ class NodesController < ApplicationController
   end
 
   def update
-    @node.attributes = params[:node]
+    @node = Node.find_by_persistent_id(params[:id])
+    authorize! :update, @node
+    @node.attributes = params.require(:node).permit(:data)
     new_version = @node.update
     respond_to do |format|
       format.html { redirect_to node_path(new_version), :notice=>"#{@node.model.name} updated" }

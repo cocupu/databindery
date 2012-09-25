@@ -1,7 +1,7 @@
 class ModelsController < ApplicationController
 
   load_and_authorize_resource :pool, :only=>:create
-  load_and_authorize_resource
+  load_and_authorize_resource :except=>[:create, :update]
 
   layout 'full_width'
 
@@ -19,6 +19,8 @@ class ModelsController < ApplicationController
   end
 
   def create
+    authorize! :create, Model
+    @model = Model.new(params.require(:model).permit(:name, :label))
     identity = current_user.identities.find_by_short_name(params[:identity_id])
     raise CanCan::AccessDenied.new "You can't create for that identity" if identity.nil?
     @model.owner = identity
@@ -42,7 +44,9 @@ class ModelsController < ApplicationController
   end
 
   def update
-    @model.update_attributes(params[:model]) 
+    @model = Model.find(params[:id])
+    authorize! :update, @model
+    @model.update_attributes(params.require(:model).permit(:name, :label)) 
     respond_to do |format|
       format.html { redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been updated" }
       format.json { head :no_content }

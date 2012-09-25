@@ -1,10 +1,11 @@
 class JobLogItem < ActiveRecord::Base
+  include ActiveModel::ForbiddenAttributesProtection
   belongs_to :parent, :class_name=>'JobLogItem'
   belongs_to :spreadsheet_row
   default_scope order("updated_at desc")
 
   serialize :data
-  attr_accessible :status, :data, :name
+  #attr_accessible :status, :data, :name
   has_many :children, :foreign_key =>'parent_id', :class_name=>"JobLogItem"
   
   after_update :alert_parent_of_status_change

@@ -1,6 +1,6 @@
 Cocupu::Application.routes.draw do
 
-  devise_for :users, class_name: "LoginCredential"
+  devise_for :users, class_name: "LoginCredential", controllers: {registrations:  "users/registrations"}
   as :user do
     get "signin", :to => "devise/sessions#new"
     post "signin", :to => "devise/sessions#create"

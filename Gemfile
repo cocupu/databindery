@@ -30,8 +30,7 @@ gem 'pg'
 gem 'foreigner'
 
 gem 'uuid'
-# Do this before upgrading to rails 4:
-#gem 'strong_parameters'
+gem 'strong_parameters'
 
 
 group :test, :development do

@@ -64,6 +64,9 @@ class Model < ActiveRecord::Base
       end
     end
   end
+
+
+  include ActiveModel::ForbiddenAttributesProtection
   serialize :fields, Array 
   serialize :associations, Array 
 
