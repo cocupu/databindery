@@ -4,6 +4,10 @@ class PoolsController < ApplicationController
   layout 'full_width'
 
   def index
+    respond_to do |format|
+      format.html {}
+      format.json { render :json=>@pools.map {|i| {short_name: i.short_name, url: identity_pool_path(i.owner, i)}} }
+    end
   end
 
   def show

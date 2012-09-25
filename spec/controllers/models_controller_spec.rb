@@ -3,8 +3,8 @@ require 'spec_helper'
 describe ModelsController do
   before do
     @identity = FactoryGirl.create :identity
-    pool = FactoryGirl.create :pool, :owner=>@identity
-    @my_model = FactoryGirl.create(:model, pool: pool)
+    @pool = FactoryGirl.create :pool, :owner=>@identity
+    @my_model = FactoryGirl.create(:model, pool: @pool)
     @not_my_model = FactoryGirl.create(:model)
   end
   describe "index" do
@@ -21,7 +21,7 @@ describe ModelsController do
         sign_in @identity.login_credential
       end
       it "should be successful" do
-        get :index 
+        get :index, :identity_id=>@identity.short_name, :pool_id=>@pool.short_name
         response.should  be_successful
         assigns[:models].should == [@my_model]
       end

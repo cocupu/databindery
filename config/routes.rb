@@ -11,7 +11,7 @@ Cocupu::Application.routes.draw do
   resources :drives, :only=>[:index]
 
   
-  resources :models, :except=>:create do
+  resources :models, :except=>[:create, :index] do
     resources :fields
     resources :associations, :only=>:create
     resources :nodes 
@@ -27,9 +27,18 @@ Cocupu::Application.routes.draw do
   resources :job_log_items
   resources :spreadsheet_rows
   root :to => 'welcome#index'
+
+  namespace :api do
+    namespace :v1 do
+      resources :tokens,:only => [:create, :destroy]
+    end
+  end
   
+  
+  resources :identities, :only=>:index
+
   #jasmine is the path of our testing library so, we have restricted identities from begining with 'jasmine'
-  constraints = {:id=>/(?!jasmine)[^\/]*/} unless Rails.env.production?
+  constraints = {:id=>/(?!jasmine)[^\/\.]*/} unless Rails.env.production?
   resources :identities, :path=>'', :only=>[], :constraints=>constraints do
     resources :file_entities
     resources :chattels
@@ -40,7 +49,7 @@ Cocupu::Application.routes.draw do
           get 'spawn'
         end
       end
-      resources :models, :only=>:create do
+      resources :models, :only=>[:create, :index] do
         resources :nodes, :only=>[] do
           collection do
             get 'search'

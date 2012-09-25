@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120918075017) do
+ActiveRecord::Schema.define(:version => 20120925160649) do
 
   create_table "change_sets", :force => true do |t|
     t.text     "data"
@@ -82,8 +82,10 @@ ActiveRecord::Schema.define(:version => 20120918075017) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
+    t.string   "authentication_token"
   end
 
+  add_index "login_credentials", ["authentication_token"], :name => "index_login_credentials_on_authentication_token", :unique => true
   add_index "login_credentials", ["email"], :name => "index_login_credentials_on_email", :unique => true
   add_index "login_credentials", ["reset_password_token"], :name => "index_login_credentials_on_reset_password_token", :unique => true
 
