@@ -1,17 +1,23 @@
 class ModelsController < ApplicationController
 
-  load_and_authorize_resource :pool, :only=>:create
-  load_and_authorize_resource :except=>[:create, :update]
+  load_and_authorize_resource :pool, :only=>[:create, :index], :find_by => :short_name
+  load_and_authorize_resource :only=>[:show, :new, :edit]
+  load_and_authorize_resource :through=>:pool, :only=>[:index]
 
   layout 'full_width'
 
   def index
-
+    respond_to do |format|
+      format.html {}
+      format.json do
+        render :json=>@models.map { |m| {id: m.id, associations: m.associations, fields: m.fields, name: m.name, label: m.label } }
+      end
+    end
   end 
 
   def show
     respond_to do |format|
-      format.json { render :json=>@model }
+      format.json { render :json=>{id: @model.id, associations: @model.associations, fields:  @model.fields, name: @model.name, label:  @model.label } }
     end
   end
 

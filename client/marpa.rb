@@ -47,13 +47,32 @@ class Bindery
       values["short_name"]
     end
 
-    # def url
-    #   values["url"]
-    # end
+    def url
+      values["url"]
+    end
+
+    def models
+      return @models if @models
+      req_url = "http://#{HOST}#{url}/models.json?auth_token=#{token}"
+      puts "Calling #{req_url}"
+      response = Bindery.get(req_url)
+      #puts "RESP: #{response}"
+      raise "Error getting models: #{response}" unless response.code == 200
+      @pools = response.map {|val| Model.new(val, token)}
+    end
 
   end
 
   class Model
+    attr_accessor :values, :token
+    def initialize(values, token)
+      self.token = token
+      self.values = values
+    end
+
+    def name
+      values['name']
+    end
 
   end
 
@@ -77,7 +96,8 @@ class Bindery
 end
 
 b = Bindery.new('jcoyne@justincoyne.com', 'foobar')
-puts "ident " + b.identity('herp').pool('bergen_library').inspect
+puts "pools " + b.identity('herp').pools.inspect
+puts "models " + b.identity('herp').pool('hob-bies').models.map(&:name).join("\n\n")
 
 
 
