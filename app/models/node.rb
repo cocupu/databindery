@@ -22,7 +22,7 @@ class Node < ActiveRecord::Base
   end
 
   def remove_from_index
-    Cocupu.solr.delete_by_id self.id
+    Cocupu.solr.delete_by_id self.persistent_id
     Cocupu.solr.commit
   end
 

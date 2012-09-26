@@ -199,9 +199,18 @@ describe ModelsController do
         @my_model.reload.label.should == 'description'
       end
       it "should be able to set the identifier via json" do
-        put :update, :id=>@my_model, :model=>{:label=>'description'}, :format=>:json
+        put :update, :id=>@my_model, :model=>{:label=>'name', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>'73'}]}, :format=>:json
         response.should be_successful 
-        @my_model.reload.label.should == 'description'
+        @my_model = Model.find(@my_model.id)
+        @my_model.label.should == 'name'
+        @my_model.fields.should == [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}]
+        @my_model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>'73'}]
+      end
+
+      it "should send errors over json" do
+        put :update, :id=>@my_model, :model=>{:label=>'description', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>'73'}]}, :format=>:json
+        response.code.should eq('422')
+        JSON.parse(response.body).should == {'status'=>'error', 'errors'=>["Label must be a field"]}
       end
     end
   end

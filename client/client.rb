@@ -2,16 +2,14 @@
 
 require 'httparty'
 
-HOST = "localhost:8080"
-
 class Bindery
   include HTTParty
-  attr_accessor :token
+  attr_accessor :token, :host, :port
 
   class Identity
-    attr_accessor :values, :token
-    def initialize(values, token)
-      self.token = token
+    attr_accessor :values, :conn
+    def initialize(values, conn)
+      self.conn = conn
       self.values = values
     end
 
@@ -25,11 +23,9 @@ class Bindery
 
     def pools
       return @pools if @pools
-      req_url = "http://#{HOST}#{url}.json?auth_token=#{token}"
-      puts "Calling #{req_url}"
-      response = Bindery.get(req_url)
+      response = conn.get(url+'.json')
       raise "Error getting pools: #{response}" unless response.code == 200
-      @pools = response.map {|val| Pool.new(val, token)}
+      @pools = response.map {|val| Pool.new(val, conn)}
     end
 
     def pool(short_name)
@@ -39,9 +35,9 @@ class Bindery
   end
 
   class Pool
-    attr_accessor :values, :token
-    def initialize(values, token)
-      self.token = token
+    attr_accessor :values, :conn
+    def initialize(values, conn)
+      self.conn = conn
       self.values = values
     end
     def short_name
@@ -54,25 +50,29 @@ class Bindery
 
     def models
       return @models if @models
-      req_url = "http://#{HOST}#{url}/models.json?auth_token=#{token}"
-      puts "Calling #{req_url}"
-      response = Bindery.get(req_url)
+      # req_url = "http://#{host}:#{port}#{url}/models.json?auth_token=#{token}"
+      # puts "Calling #{req_url}"
+      response = conn.get("#{url}/models.json")
       #puts "RESP: #{response}"
       raise "Error getting models: #{response}" unless response.code == 200
-      @pools = response.map {|val| Model.new(val, token)}
+      @pools = response.map {|val| Model.new(val, conn)}
     end
 
   end
 
   class Model
-    attr_accessor :values, :token
-    def initialize(values, token)
-      self.token = token
+    attr_accessor :values, :conn
+    def initialize(values, conn)
+      self.conn = conn
       self.values = values
     end
 
     def name
       values['name']
+    end
+
+    def label=(label)
+      values['label'] = label
     end
 
     def identity
@@ -104,11 +104,11 @@ class Bindery
     end
 
     def save
-      req_url = "http://#{HOST}#{url}.json?auth_token=#{token}"
+      #req_url = "http://#{host}:#{port}#{url}.json?auth_token=#{token}"
       response = if id
-        Bindery.put(req_url, body: {model: values})
+        conn.put("#{url}.json", body: {model: values})
       else
-        Bindery.post(req_url, body: {model: values})
+        conn.post("#{url}.json", body: {model: values})
       end
       raise "Error saving models: #{response.inspect}" unless response.code >= 200 and response.code < 300
       if (response['id'])
@@ -121,9 +121,9 @@ class Bindery
   end
 
   class Node
-    attr_accessor :values, :token
-    def initialize(values, token)
-      self.token = token
+    attr_accessor :values, :conn
+    def initialize(values, conn)
+      self.conn = conn
       self.values = values
     end
 
@@ -131,8 +131,16 @@ class Bindery
       values['model_id']
     end
 
+    def identity
+      values['identity']
+    end
+
+    def pool
+      values['pool']
+    end
+
     def url
-      values['url'] || "/models/#{model_id}/nodes"
+      values['url'] || "/#{identity}/#{pool}/nodes"
     end
 
     def url=(url)
@@ -152,12 +160,10 @@ class Bindery
     end
 
     def save
-      req_url = "http://#{HOST}#{url}.json?auth_token=#{token}"
-      puts "Req url: #{req_url}"
       response = if persistent_id
-        Bindery.put(req_url, body: {node: values})
+        conn.put("#{url}.json", body: {node: values})
       else
-        Bindery.post(req_url, body: {node: values})
+        conn.post("#{url}.json", body: {node: values})
       end
       raise "Error saving models: #{response.inspect}" unless response.code >= 200 and response.code < 300
       if (response['id'])
@@ -169,17 +175,37 @@ class Bindery
 
   end
 
-  def initialize(email, password)
-    response = self.class.post("http://#{HOST}/api/v1/tokens", body: {email: email, password: password})
+  def initialize(email, password, port=80, host='localhost')
+    self.host = host
+    self.port = port
+    response = self.class.post("http://#{host}:#{port}/api/v1/tokens", body: {email: email, password: password})
     raise "Error logging in: #{response}" unless response.code == 200
     self.token = response["token"]
   end
 
+  def get(path)
+      req_url = "http://#{host}:#{port}#{path}?auth_token=#{token}"
+      puts "GET #{req_url}"
+      self.class.get(req_url)
+  end
+
+  def put(path, args={})
+      req_url = "http://#{host}:#{port}#{path}?auth_token=#{token}"
+      puts "PUT #{req_url}"
+      self.class.put(req_url, args)
+  end
+
+  def post(path, args={})
+      req_url = "http://#{host}:#{port}#{path}?auth_token=#{token}"
+      puts "POST #{req_url}"
+      self.class.post(req_url, args)
+  end
+
   def identities
     return @identities if @identities
-    response = self.class.get("http://#{HOST}/identities?auth_token=#{token}")
+    response = self.class.get("http://#{host}:#{port}/identities?auth_token=#{token}")
     raise "Error getting identities: #{response}" unless response.code == 200
-    @identities = response.map {|val| Identity.new(val, token)}
+    @identities = response.map {|val| Identity.new(val, self)}
   end
 
   def identity(short_name)
@@ -187,27 +213,3 @@ class Bindery
   end
 
 end
- 
-b = Bindery.new('jcoyne@justincoyne.com', 'foobar')
-# puts "\npools:\n" + b.identity('herp').pools.inspect
-# puts "\n\nmodels:\n " + b.identity('herp').pool('hob-bies').models.inspect
-# 
-# puts "\n\nSaving a new one..."
-# m = Bindery::Model.new({'identity' =>'herp', 'pool'=>'hob-bies', 'name'=>"Cars"}, b.token)
-# m.save
-# puts "\n\nModel:\n" + m.inspect
-# m.fields = [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}, {"name"=>"Date Completed", "type"=>"text", "uri"=>"", "code"=>"date_completed"}]
-# puts "\n\nUpdating ..."
-# m.save 
-# puts m.inspect
-
-m = Bindery::Model.new({'id' =>'72'}, b.token)
-
-n = Bindery::Node.new({'model_id' => m.id, 'data' => {"name"=>"Ferrari", "date_completed"=>"Nov 10, 2012"}}, b.token)
-n.save
-puts n.inspect
-
-
-
-
-

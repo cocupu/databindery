@@ -19,9 +19,6 @@ class NodesController < ApplicationController
       format.json do
         render json: 
           @nodes.to_json(:only=>[:id, :persistent_id, :data, :associations, :model_id])
-          # @nodes.to_json(:only=>[:id, :persistent_id, :data], 
-          #                :methods=>[:title],
-          #                :include=>[:model => {:only=>[:fields, :label, :name]}]) 
       end
     end
   end
@@ -41,6 +38,7 @@ class NodesController < ApplicationController
     query_fields = Model.accessible_by(current_ability).map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
     (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', :fq=>fq, 'facet.field' => ['name_s', 'model']})
     
+    #puts "solr_response: #{solr_response}"
     @results = solr_response['docs'].map{|d| Node.find_by_persistent_id(d['id'])}
     
 
@@ -69,13 +67,13 @@ class NodesController < ApplicationController
       format.html do
         @models = Model.accessible_by(current_ability) # for the sidebar
       end
-      format.json { render json: @node }
+      format.json { render json: serialize_node(@node) }
     end
   end
   
   def create
     authorize! :create, Node
-    @node = Node.new(params.require(:node).permit(:binding))
+    @node = Node.new(params.require(:node).permit(:binding, :data))
     begin
       model = Model.accessible_by(current_ability).find(params[:node][:model_id])
     rescue ActiveRecord::RecordNotFound 
@@ -86,7 +84,10 @@ class NodesController < ApplicationController
     @node.model = model
     @node.pool = @pool
     @node.save!
-    redirect_to identity_pool_node_path(@identity, @pool, @node), :notice=>"#{model.name} created"
+    respond_to do |format|
+      format.html { redirect_to identity_pool_node_path(@identity, @pool, @node), :notice=>"#{model.name} created" }
+      format.json { render :json=>serialize_node(@node)}
+    end
   end
 
   def update
@@ -98,6 +99,11 @@ class NodesController < ApplicationController
       format.html { redirect_to identity_pool_node_path(@identity, @pool, new_version), :notice=>"#{@node.model.name} updated" }
       format.json { head :no_content }
     end
+  end
+  private
+
+  def serialize_node(n)
+    {persistent_id: n.persistent_id, url: identity_pool_node_path(n.pool.owner, n.pool, n), pool: n.pool.short_name, identity: n.pool.owner.short_name, associations: n.associations, data: n.data, binding: n.binding, model_id: n.model_id }
   end
 
 end

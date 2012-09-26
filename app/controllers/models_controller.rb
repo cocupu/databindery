@@ -53,10 +53,14 @@ class ModelsController < ApplicationController
   def update
     @model = Model.find(params[:id])
     authorize! :update, @model
-    @model.update_attributes(params.require(:model).permit(:name, :label)) 
     respond_to do |format|
-      format.html { redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been updated" }
-      format.json { head :no_content }
+      if @model.update_attributes(params.require(:model).permit(:name, :label, :associations, :fields)) 
+          format.html { redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been updated" }
+          format.json { head :no_content }
+      else
+          format.html { render :action=>'edit' }
+          format.json { render :json=>{:status=>:error, :errors=>@model.errors.full_messages}, :status=>:unprocessable_entity}
+      end
     end
   end
 

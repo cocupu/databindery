@@ -97,7 +97,7 @@ describe NodesController do
     it "should respond with json" do
       get :show, :id => @node1.persistent_id, :format=>'json', pool_id: @pool, identity_id: @identity
       response.should be_success
-      response.body.should == @node1.to_json
+      JSON.parse(response.body).should == { "persistent_id" => @node1.persistent_id, "url" => identity_pool_node_path(@identity, @pool, @node1), "pool"=>@pool.short_name, "identity"=>@identity.short_name, "binding"=>nil, "model_id"=>@node1.model_id, "associations"=>{}, "data"=>{} }
     end
     it "should not load node we don't have access to" do
       get :show, :id => @different_pool_node.persistent_id, pool_id: @pool, identity_id: @identity 
@@ -158,12 +158,13 @@ describe NodesController do
       assigns[:node].model.should be_nil
       
     end
-    it "should render errors in json" do 
-      post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@my_model}, pool_id: @pool, identity_id: @identity
-      response.should redirect_to identity_pool_node_path(@identity, @pool, assigns[:node])
-      assigns[:node].binding.should == '0B4oXai2d4yz6bUstRldTeXV0dHM'
-      assigns[:node].model.should == @my_model
-      flash[:notice].should == "#{@my_model.name} created"
+    it "should return json" do 
+      post :create, :node=>{:data=> {'f1' => 'New val'}, :model_id=>@my_model}, pool_id: @pool, identity_id: @identity, :format=>:json
+      response.should be_success
+      JSON.parse(response.body).keys.should include('persistent_id', 'model_id', 'url', 'pool', 'identity', 'associations', 'binding')
+      @my_model.nodes.count.should == 1
+      @my_model.nodes.first.data.should == {'f1' => 'New val'}
+
     end
   end
 
