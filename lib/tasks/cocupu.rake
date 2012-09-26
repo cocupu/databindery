@@ -32,7 +32,7 @@ namespace :spec do
   desc "test the client"
   task :client do
     pid = fork do
-      exec("unicorn_rails -p 8888 --env test")
+      exec("unicorn_rails -p 8989 --env test")
     end
     RSpec::Core::RakeTask.new(:client_runner) do |t|
         t.rspec_opts = ["--colour", "--format", "progress"]

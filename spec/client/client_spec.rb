@@ -13,12 +13,12 @@ describe "API" do
   end
 
   it "should sign in" do
-    b = Bindery.new(@ident.login_credential.email, 'notblank', 8888)
+    b = Bindery.new(@ident.login_credential.email, 'notblank', 8989)
   end
 
   describe "when signed in" do
     before do
-      @b = Bindery.new(@ident.login_credential.email, 'notblank', 8888)
+      @b = Bindery.new(@ident.login_credential.email, 'notblank', 8989)
     end
 
     it "should get the pools for an identity" do
