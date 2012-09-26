@@ -5,9 +5,10 @@ describe Node do
     @pool = FactoryGirl.create :pool
   end
   before do
+    @ref = FactoryGirl.create(:model)
     subject.model = FactoryGirl.create(:model, 
                       fields: [{code: 'first_name'}, {code: 'last_name'}, {code: 'title'}],
-                      label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: 39}])
+                      label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: @ref.id}])
   end
 
   it "should use persistent_id as to_param" do

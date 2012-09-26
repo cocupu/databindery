@@ -8,6 +8,20 @@ describe "API" do
     @ident = @pool.owner
   end
 
+  before :all do
+    @pid = fork do
+      exec("unicorn_rails -p 8989 --env test")
+    end
+    sleep (10)
+  end
+
+  after :all do
+    puts "Stopping server"
+    Process.kill('TERM', @pid)
+    puts "stopped"
+    sleep(1)
+  end
+
   after do
     ## TODO, not sure why this doesn't work.
     #@ident.login_credential.destroy

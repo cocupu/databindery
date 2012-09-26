@@ -149,8 +149,9 @@ describe ModelsController do
         assigns[:model].name.should == 'Turkey'
       end
       it "should be successful with json" do
+        reference = FactoryGirl.create(:model)
         in_pool = FactoryGirl.create(:pool, owner: @identity)
-        post :create, :model=>{:name=>'Turkey', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>'73'}]}, :pool_id=>in_pool, :format=>:json, identity_id: @identity
+        post :create, :model=>{:name=>'Turkey', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]}, :pool_id=>in_pool, :format=>:json, identity_id: @identity
         response.should be_successful
         json = JSON.parse response.body
         json["name"].should == 'Turkey'
@@ -159,7 +160,7 @@ describe ModelsController do
         json["id"].should_not be_nil
         model = Model.last
         model.fields.should == [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}]
-        model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>'73'}]
+        model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>reference.name, 'code'=>'workers', 'references'=>reference.id}]
       end
       it "should not allow you to create models in someone elses pool" do
         in_pool = FactoryGirl.create(:pool)
@@ -202,16 +203,18 @@ describe ModelsController do
         @my_model.reload.label.should == 'description'
       end
       it "should be able to set the identifier via json" do
-        put :update, :id=>@my_model, :model=>{:label=>'name', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>'73'}]}, :format=>:json
+        reference = FactoryGirl.create(:model)
+        put :update, :id=>@my_model, :model=>{:label=>'name', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]}, :format=>:json
         response.should be_successful 
         @my_model = Model.find(@my_model.id)
         @my_model.label.should == 'name'
         @my_model.fields.should == [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}]
-        @my_model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>'73'}]
+        @my_model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>reference.name, 'code'=>'workers', 'references'=>reference.id}]
       end
 
       it "should send errors over json" do
-        put :update, :id=>@my_model, :model=>{:label=>'description', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>'73'}]}, :format=>:json
+        reference = FactoryGirl.create(:model)
+        put :update, :id=>@my_model, :model=>{:label=>'description', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>reference.id}]}, :format=>:json
         response.code.should eq('422')
         JSON.parse(response.body).should == {'status'=>'error', 'errors'=>["Label must be a field"]}
       end
