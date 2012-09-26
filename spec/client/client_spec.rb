@@ -8,6 +8,10 @@ describe "API" do
     @ident = @pool.owner
   end
 
+  after do
+    @ident.login_credential.destroy
+  end
+
   it "should sign in" do
     b = Bindery.new(@ident.login_credential.email, 'notblank', 8888)
   end

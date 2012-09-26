@@ -150,13 +150,16 @@ describe ModelsController do
       end
       it "should be successful with json" do
         in_pool = FactoryGirl.create(:pool, owner: @identity)
-        post :create, :model=>{:name=>'Turkey'}, :pool_id=>in_pool, :format=>:json, identity_id: @identity
+        post :create, :model=>{:name=>'Turkey', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>'73'}]}, :pool_id=>in_pool, :format=>:json, identity_id: @identity
         response.should be_successful
         json = JSON.parse response.body
         json["name"].should == 'Turkey'
         json["pool"].should == in_pool.short_name
         json["identity"].should == @identity.short_name
         json["id"].should_not be_nil
+        model = Model.last
+        model.fields.should == [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}]
+        model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>'73'}]
       end
       it "should not allow you to create models in someone elses pool" do
         in_pool = FactoryGirl.create(:pool)

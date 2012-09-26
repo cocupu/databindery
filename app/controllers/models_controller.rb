@@ -27,7 +27,7 @@ class ModelsController < ApplicationController
 
   def create
     authorize! :create, Model
-    @model = Model.new(params.require(:model).permit(:name, :label))
+    @model = Model.new(params.require(:model).permit(:name, :label, :associations, :fields))
     identity = current_user.identities.find_by_short_name(params[:identity_id])
     raise CanCan::AccessDenied.new "You can't create for that identity" if identity.nil?
     @model.owner = identity

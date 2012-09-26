@@ -29,7 +29,6 @@ task :ci do
 end
 
 namespace :spec do
-
   desc "test the client"
   task :client do
     pid = fork do
@@ -38,13 +37,10 @@ namespace :spec do
     RSpec::Core::RakeTask.new(:client_runner) do |t|
         t.rspec_opts = ["--colour", "--format", "progress"]
         t.verbose = true
-        #t.rspec_opts += ["-r #{File.expand_path(File.join(::Rails.root, 'config', 'environment'))}"]
         t.pattern = 'spec/client/client_spec.rb'
     end
     begin
       Rake::Task["client_runner"].invoke
-    # rescue Exception => e
-    #   puts "something went wrong #{e}"
     ensure
       puts "Stopping server"
       Process.kill('TERM', pid)
