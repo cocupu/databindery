@@ -9,7 +9,8 @@ describe "API" do
   end
 
   after do
-    @ident.login_credential.destroy
+    ## TODO, not sure why this doesn't work.
+    #@ident.login_credential.destroy
   end
 
   it "should sign in" do
@@ -37,9 +38,12 @@ describe "API" do
       end
 
       it "should update models" do
+        ref = Bindery::Model.new({'identity' =>@ident.short_name, 'pool'=>@pool.short_name, 'name'=>"Stuff"}, @b)
+        ref.save
         m = Bindery::Model.new({'identity' =>@ident.short_name, 'pool'=>@pool.short_name, 'name'=>"Car"}, @b)
         m.save
         m.fields = [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}, {"name"=>"Date Completed", "type"=>"text", "uri"=>"", "code"=>"date_completed"}]
+        m.associations = [ {"type"=>"Has One","name"=>"recording","references"=>ref.id}] #service throws a 404 if the references isn't a valid model.id
         m.label = 'name'
         m.save 
       end
@@ -52,6 +56,11 @@ describe "API" do
       end
       it "should create nodes" do
         n = Bindery::Node.new({'identity'=>@ident.short_name, 'pool'=>@pool.short_name, 'model_id' => @m.id, 'data' => {"name"=>"Ferrari", "date_completed"=>"Nov 10, 2012"}}, @b)
+        n.save
+      end
+      it "should have associations" do
+        n = Bindery::Node.new({'identity'=>@ident.short_name, 'pool'=>@pool.short_name, 'model_id' => @m.id}, @b)
+        n.associations = {talks: ["12b6e7b0-ea2c-012f-5ad3-3c075405d3d7", "32b6e7b0-ea2c-012f-5ad3-3c075405d3d7"]}
         n.save
       end
     end

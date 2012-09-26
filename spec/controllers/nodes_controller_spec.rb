@@ -159,11 +159,12 @@ describe NodesController do
       
     end
     it "should return json" do 
-      post :create, :node=>{:data=> {'f1' => 'New val'}, :model_id=>@my_model}, pool_id: @pool, identity_id: @identity, :format=>:json
+      post :create, :node=>{:data=> {'f1' => 'New val'}, :associations=>{'talk' => ['68a9ae10-ea2d-012f-5e29-3c075405d3d7']},  :model_id=>@my_model}, pool_id: @pool, identity_id: @identity, :format=>:json
       response.should be_success
       JSON.parse(response.body).keys.should include('persistent_id', 'model_id', 'url', 'pool', 'identity', 'associations', 'binding')
       @my_model.nodes.count.should == 1
       @my_model.nodes.first.data.should == {'f1' => 'New val'}
+      @my_model.nodes.first.associations.should == {'talk' => ['68a9ae10-ea2d-012f-5e29-3c075405d3d7']}
 
     end
   end
@@ -196,10 +197,11 @@ describe NodesController do
     end
 
     it "should not show anything for json" do
-      put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }}, :format=>'json', pool_id: @pool, identity_id: @identity
+      put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }, :associations=>{'talk' => ['68a9ae10-ea2d-012f-5e29-3c075405d3d7']}}, :format=>'json', pool_id: @pool, identity_id: @identity
       new_version = Node.latest_version(@node1.persistent_id)
       response.code.should == "204" # no content
       new_version.data['f1'].should == "Updated val"
+      new_version.associations.should == {'talk' => ['68a9ae10-ea2d-012f-5e29-3c075405d3d7']}
     end
     
   end

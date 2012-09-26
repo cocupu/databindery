@@ -73,7 +73,7 @@ class NodesController < ApplicationController
   
   def create
     authorize! :create, Node
-    @node = Node.new(params.require(:node).permit(:binding, :data))
+    @node = Node.new(params.require(:node).permit(:binding, :data, :associations))
     begin
       model = Model.accessible_by(current_ability).find(params[:node][:model_id])
     rescue ActiveRecord::RecordNotFound 
@@ -93,7 +93,7 @@ class NodesController < ApplicationController
   def update
     @node = Node.find_by_persistent_id(params[:id])
     authorize! :update, @node
-    @node.attributes = params.require(:node).permit(:data)
+    @node.attributes = params.require(:node).permit(:data, :associations)
     new_version = @node.update
     respond_to do |format|
       format.html { redirect_to identity_pool_node_path(@identity, @pool, new_version), :notice=>"#{@node.model.name} updated" }

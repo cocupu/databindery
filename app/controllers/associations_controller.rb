@@ -3,10 +3,7 @@ class AssociationsController < ApplicationController
   load_and_authorize_resource :node, :only=>[:index, :create], :find_by => :persistent_id
   def create
     if @model
-      params[:association][:label] = Model.find(params[:association][:references]).name.capitalize
-      ## TODO association code should be unique
-      params[:association][:code] = Model.field_name(params[:association][:name])
-      @model.associations << params[:association]
+      @model.add_association(params[:association])
       @model.save!
       respond_to do |format|
         format.html { redirect_to edit_model_path(@model) }

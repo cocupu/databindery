@@ -73,7 +73,8 @@ class Model < ActiveRecord::Base
   after_initialize :init
 
   validates :name, :presence=>true
-  has_many :nodes
+  #TODO add a fk on node.model_id
+  has_many :nodes, :dependent => :destroy
 
   belongs_to :pool
   validates :pool, presence: true
@@ -123,5 +124,19 @@ class Model < ActiveRecord::Base
     @outbound ||= AssociationSet.new(associations.select {|assoc| Association::OUTBOUND.include?(assoc[:type]) })
   end
 
+
+  def associations=(attributes)
+    write_attribute :associations, []
+    attributes.each do |attr|
+      add_association(attr)
+    end
+  end
+
+  def add_association(attributes)
+    attributes[:label] = Model.find(attributes[:references]).name.capitalize
+    ## TODO association code should be unique
+    attributes[:code] = Model.field_name(attributes[:name])
+    self.associations << attributes
+  end
   
 end

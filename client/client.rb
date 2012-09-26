@@ -99,6 +99,10 @@ class Bindery
       values['fields'] = fields
     end
 
+    def associations=(fields)
+      values['associations'] = fields
+    end
+
     def id
       values['id']
     end
@@ -151,8 +155,8 @@ class Bindery
       values['persistent_id'] = id
     end
 
-    def fields=(fields)
-      values['fields'] = fields
+    def associations=(associations)
+      values['associations'] = associations
     end
 
     def persistent_id
@@ -166,7 +170,7 @@ class Bindery
         conn.post("#{url}.json", body: {node: values})
       end
       raise "Error saving models: #{response.inspect}" unless response.code >= 200 and response.code < 300
-      if (response['id'])
+      if (response['persistent_id'])
         self.persistent_id = response['persistent_id']
         self.url = response['url']
       end
