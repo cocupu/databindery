@@ -2,7 +2,7 @@ class ExhibitsController < ApplicationController
   include Cocupu::Search
 
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
-  load_and_authorize_resource :through=>:pool
+  load_and_authorize_resource :through=>:pool, :except=>:create
 
   ExhibitsController.solr_search_params_logic += [:add_pool_to_fq]
   
@@ -29,17 +29,15 @@ class ExhibitsController < ApplicationController
   end
 
   def create
+    authorize! :create, Exhibit
+    @exhibit = Exhibit.new(params.require(:exhibit).permit(:title, :facets, :index_fields))
     @exhibit.pool = @pool
-    @exhibit.title = params[:exhibit][:title]
-    @exhibit.facets = params[:exhibit][:facets]
     @exhibit.save
     redirect_to identity_pool_exhibit_path(@identity.short_name, @pool, @exhibit)
   end
 
   def update
-    @exhibit.title = params[:exhibit][:title]
-    @exhibit.facets = params[:exhibit][:facets]
-    @exhibit.save
+    @exhibit.update_attributes(params.require(:exhibit).permit(:title, :facets, :index_fields))
     redirect_to identity_pool_exhibit_path(@identity.short_name, @pool, @exhibit)
   end
 

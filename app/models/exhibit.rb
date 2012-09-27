@@ -1,4 +1,5 @@
 class Exhibit < ActiveRecord::Base
+  include ActiveModel::ForbiddenAttributesProtection
   belongs_to :pool
   validates :pool, presence: true
   serialize :facets
