@@ -15,11 +15,11 @@
         -@fields.each do |field|
           %tr
             %td
-              =label_tag "exhibit[facets][#{field['code']}]", field['name'], :style=>'display:none'
-              =check_box_tag "exhibit[facets][]", field['code'], @exhibit.facets.include?(field['code']), id: "exhibit_facets_#{field['code']}"
-            %td
               =label_tag "exhibit[index_fields][#{field['code']}]", field['name'], :style=>'display:none'
               =check_box_tag "exhibit[index_fields][]", field['code'], @exhibit.index_fields.include?(field['code']), id: "exhibit_index_fields_#{field['code']}"
+            %td
+              =label_tag "exhibit[facets][#{field['code']}]", field['name'], :style=>'display:none'
+              =check_box_tag "exhibit[facets][]", field['code'], @exhibit.facets.include?(field['code']), id: "exhibit_facets_#{field['code']}"
             %td=field['name']
   .control-group
     .input
