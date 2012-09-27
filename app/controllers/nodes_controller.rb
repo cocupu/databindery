@@ -2,7 +2,6 @@ class NodesController < ApplicationController
   include Cocupu::Search
   load_and_authorize_resource :except=>[:index, :search, :update, :create], :find_by => :persistent_id
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
-  layout 'full_width'
 
   def index
     if params[:model_id]

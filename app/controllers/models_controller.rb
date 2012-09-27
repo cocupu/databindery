@@ -5,8 +5,6 @@ class ModelsController < ApplicationController
   load_and_authorize_resource :only=>[:show, :new, :edit]
   load_and_authorize_resource :through=>:pool, :only=>[:index]
 
-  layout 'full_width'
-
   def index
     respond_to do |format|
       format.html {}
@@ -28,11 +26,6 @@ class ModelsController < ApplicationController
   def create
     authorize! :create, Model
     @model = Model.new(params.require(:model).permit(:name, :label, :associations, :fields))
-    # if params[:model][:associations] do
-    #   params[:model][:associations].each do |attr|
-    #     @model.add_associations(attr)
-    #   end
-    # end
     identity = current_user.identities.find_by_short_name(params[:identity_id])
     raise CanCan::AccessDenied.new "You can't create for that identity" if identity.nil?
     @model.owner = identity

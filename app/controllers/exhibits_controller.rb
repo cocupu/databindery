@@ -6,8 +6,6 @@ class ExhibitsController < ApplicationController
 
   ExhibitsController.solr_search_params_logic += [:add_pool_to_fq]
   
-
-
   def index
   end
 

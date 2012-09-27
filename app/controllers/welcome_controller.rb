@@ -1,4 +1,6 @@
 class WelcomeController < ApplicationController
+  layout 'margins'
+
   def index
     if user_signed_in?
       @models = Model.accessible_by(current_ability)

@@ -1,8 +1,6 @@
 class PoolsController < ApplicationController
   load_and_authorize_resource :find_by => :short_name, :through=>:identity, :except=>[:update, :create]
 
-  layout 'full_width'
-
   def index
     respond_to do |format|
       format.html {}

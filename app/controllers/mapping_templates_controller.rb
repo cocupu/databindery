@@ -1,5 +1,4 @@
 class MappingTemplatesController < ApplicationController
-  layout 'full_width'
   before_filter :authenticate_user!
   load_and_authorize_resource :pool, :only=>[:create, :new], :find_by => :short_name, :through=>:identity
   load_and_authorize_resource :except=>[:create, :new]

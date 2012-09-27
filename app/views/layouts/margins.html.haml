@@ -1,0 +1,21 @@
+!!! 5
+%html
+  = render :partial=>'layouts/head'
+
+  %body
+    = render :partial=>'layouts/topbar'
+    .container
+      .content
+        =render :partial=>'layouts/page_header'
+        .row
+          .span12
+            =render :partial=>'layouts/messages'
+            = yield 
+          .span4
+            = content_for(:sidebar)
+
+      %footer.footer
+        %p &copy; Collect Curate Publish 2012
+
+
+
