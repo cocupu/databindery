@@ -24,8 +24,6 @@ class PoolsController < ApplicationController
     raise CanCan::AccessDenied.new "You can't create for that identity" if identity.nil?
     @pool = identity.pools.build(params.require(:pool).permit(:description, :name, :short_name))
 
-    #@pool.name = params[:pool][:name]
-    #@pool.description = params[:pool][:description]
     @pool.owner = identity
     @pool.save!
     respond_to do |format|

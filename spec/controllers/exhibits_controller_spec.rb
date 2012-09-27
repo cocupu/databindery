@@ -41,7 +41,7 @@ describe ExhibitsController do
         get :new, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should be_successful
         assigns[:exhibit].should be_kind_of Exhibit
-        assigns[:fields].should == [{'code' => 'f1', 'name'=> 'Field good'}, {'code' => 'f2', 'name'=> "Another one"}, {'code' => 'style', 'name'=> 'Style'}, {'code' => 'label', 'name'=> "Label"} ]
+        assigns[:fields].should == [{'code' => 'style', 'name'=> 'Style'}, {'code' => 'label', 'name'=> "Label"}, {'code' => 'f1', 'name'=> 'Field good'}, {'code' => 'f2', 'name'=> "Another one"}]
       end
     end
 

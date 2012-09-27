@@ -25,7 +25,7 @@ class ExhibitsController < ApplicationController
   end
 
   def new
-    @fields = @pool.models.map {|m| m.fields}.flatten
+    @fields = @pool.models.sort{|x, y| x.name <=> y.name}.map {|m| m.fields}.flatten
   end
 
   def create
