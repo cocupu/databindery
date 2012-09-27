@@ -18,10 +18,10 @@ class ExhibitsController < ApplicationController
     query_fields = @exhibit.pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
     facets = @exhibit.facets.map{ |key| Node.solr_name(key, 'facet')}
     facets << 'model_name'
-    (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', 'facet.field' => facets})
+    (@response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', 'facet.field' => facets})
     
-    @total = solr_response["numFound"]
-    @results = Node.find(solr_response['docs'].map{|d| d['version']})
+    @total = @response["numFound"]
+    @results = Node.find(@response['docs'].map{|d| d['version']})
   end
 
   def new

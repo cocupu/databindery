@@ -6,7 +6,7 @@ module Cocupu
     end
 
     def default_solr_params
-      {}
+      { 'rows'=>10, 'wt'=>:ruby}.with_indifferent_access
     end
 
     def facet_fields

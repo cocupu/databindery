@@ -31,7 +31,7 @@ gem 'foreigner'
 
 gem 'uuid'
 gem 'strong_parameters'
-
+gem 'kaminari'
 
 group :test, :development do
   gem "rspec-rails"

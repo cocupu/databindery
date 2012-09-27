@@ -40,4 +40,28 @@ module ApplicationHelper
     "#{facet_value} (#{count}) ".html_safe +
     link_to("remove", identity_pool_exhibit_path(@identity.short_name, @pool, @exhibit, :f=>facet_params, :q=>params[:q]), :title=>'Remove facet', :class=>'btn small')
   end
+
+  
+  # Pass in an RSolr::Response (or duck-typed similar) object, 
+  # it translates to a Kaminari-paginatable
+  # object, with the keys Kaminari views expect. 
+  def paginate_params(response)
+    per_page = response["docs"].per_page
+    per_page = 1 if per_page < 1
+    current_page = response["docs"].current_page
+    total_pages = response["docs"].total_pages
+    Struct.new(:current_page, :num_pages, :limit_value).new(current_page, total_pages, per_page)
+  end 
+
+    # Equivalent to kaminari "paginate", but takes an RSolr::Response as first argument. 
+  # Will convert it to something kaminari can deal with (using #paginate_params), and
+  # then call kaminari paginate with that. Other arguments (options and block) same as
+  # kaminari paginate, passed on through. 
+  # will output HTML pagination controls. 
+  def paginate_rsolr_response(response, options = {}, &block)
+    per_page = response["docs"].per_page
+    per_page = 1 if per_page < 1
+    current_page = response["docs"].current_page
+    paginate Kaminari.paginate_array(response['docs'], :total_count => response['docs'].total).page(current_page).per(per_page), options, &block
+  end
 end

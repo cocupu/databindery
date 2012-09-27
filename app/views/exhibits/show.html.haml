@@ -25,3 +25,6 @@
     %ul.exhibits
       -@results.each do |result|
         %li= render :partial=>'item', :locals=>{:item=>result}
+    - if paginate_params(@response).num_pages > 1 
+      .pagination
+        = paginate_rsolr_response @response, :outer_window => 2 
