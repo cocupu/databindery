@@ -11,7 +11,7 @@ describe ExhibitsController do
     @exhibit = FactoryGirl.build(:exhibit, pool: @pool)
     @exhibit.facets = ['f2']
     @exhibit.save!
-    @exhibit2 = FactoryGirl.build(:exhibit) #should not show this exhibit in index.
+    @exhibit2 = FactoryGirl.create(:exhibit, :pool=>FactoryGirl.create(:pool, :owner=>@identity)) #should not show this exhibit in index.
     @model1 = FactoryGirl.create(:model, :name=>"Mods and Rockers", :pool=>@exhibit.pool)
 
     @model1.fields = [{code: 'f1', name: 'Field good'}, {code: 'f2', name: "Another one"}]

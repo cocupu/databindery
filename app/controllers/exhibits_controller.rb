@@ -1,8 +1,8 @@
 class ExhibitsController < ApplicationController
   include Cocupu::Search
 
-  load_and_authorize_resource 
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
+  load_and_authorize_resource :through=>:pool
 
   ExhibitsController.solr_search_params_logic += [:add_pool_to_fq]
   
