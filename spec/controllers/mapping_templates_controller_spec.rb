@@ -3,6 +3,7 @@ require 'spec_helper'
 describe MappingTemplatesController do
   describe "create with a single model" do
     before do
+      Model.delete_all
       Model.count.should == 0  #Make sure the db is clean
       @ss = Worksheet.create!
     end

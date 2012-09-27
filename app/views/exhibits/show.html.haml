@@ -21,4 +21,4 @@
       -@exhibit.facets.each do |facet_key|
         %li
           .facet=facet_key
-          = render_facet_list(Node.solr_name(facet_key), @facet_fields[Node.solr_name(facet_key)])
+          = render_facet_list(Node.solr_name(facet_key, 'facet'), @facet_fields[Node.solr_name(facet_key, 'facet')])

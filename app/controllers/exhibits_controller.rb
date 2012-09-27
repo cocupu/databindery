@@ -18,7 +18,7 @@ class ExhibitsController < ApplicationController
   def show
     # Constrain results to this pool
     query_fields = @exhibit.pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
-    facets = @exhibit.facets.map{ |key| Node.solr_name(key)}
+    facets = @exhibit.facets.map{ |key| Node.solr_name(key, 'facet')}
     facets << 'model_name'
     (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', 'facet.field' => facets})
     

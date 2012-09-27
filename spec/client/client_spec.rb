@@ -19,12 +19,8 @@ describe "API" do
     puts "Stopping server"
     Process.kill('TERM', @pid)
     puts "stopped"
+    LoginCredential.destroy_all #Clean the DB, since we're not using transactions.
     sleep(1)
-  end
-
-  after do
-    ## TODO, not sure why this doesn't work.
-    #@ident.login_credential.destroy
   end
 
   it "should sign in" do

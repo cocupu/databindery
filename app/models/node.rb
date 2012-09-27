@@ -50,6 +50,7 @@ class Node < ActiveRecord::Base
     return doc if data.nil?
     model.fields.each do |f|
       doc[Node.solr_name(f[:code])] = data[f[:code]]
+      doc[Node.solr_name(f[:code], 'facet')] = data[f[:code]]
     end
     doc
   end
@@ -68,8 +69,16 @@ class Node < ActiveRecord::Base
     hash
   end
 
-  def self.solr_name(field_name)
-    field_name.downcase.gsub(' ','_') + "_t"
+  def self.solr_name(field_name, type="text")
+    suffix = case type
+      when "text"
+        '_t'
+      when "facet"
+        '_facet'
+      else
+        raise "Unknown solr suffix for #{type}"
+      end
+    field_name.downcase.gsub(' ','_') + suffix 
   end
 
   # Get the latest version of the node with this persistent id

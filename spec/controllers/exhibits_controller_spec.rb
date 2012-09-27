@@ -11,6 +11,7 @@ describe ExhibitsController do
     @exhibit = FactoryGirl.build(:exhibit, pool: @pool)
     @exhibit.facets = ['f2']
     @exhibit.save!
+    @exhibit2 = FactoryGirl.build(:exhibit) #should not show this exhibit in index.
     @model1 = FactoryGirl.create(:model, :name=>"Mods and Rockers", :pool=>@exhibit.pool)
 
     @model1.fields = [{code: 'f1', name: 'Field good'}, {code: 'f2', name: "Another one"}]
@@ -76,7 +77,7 @@ describe ExhibitsController do
     describe "show" do
       before do
         ## Clear out old results so we start from scratch
-        raw_results = Cocupu.solr.get 'select', :params => {:q => '{!lucene}model:"Mods and Rockers"', :fl=>'id', :qt=>'document', :qf=>'model', :rows=>100}
+        raw_results = Cocupu.solr.get 'select', :params => {:q => '{!lucene}model_name:"Mods and Rockers"', :fl=>'id', :qt=>'document', :qf=>'model', :rows=>100}
         Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
         raw_results = Cocupu.solr.get 'select', :params => {:q => 'bazaar', :fl=>'id', :qf=>'field_good_s'}
         Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
@@ -101,7 +102,7 @@ describe ExhibitsController do
         assigns[:total].should == 1
         assigns[:results].should_not be_nil
         assigns[:exhibit].should == @exhibit
-        assigns[:facet_fields].should == {"f2_t"=>["bizarr", 1], "model_name"=>["Mods and Rockers", 1]}
+        assigns[:facet_fields].should == {"f2_facet"=>["Bizarre", 1], "model_name"=>["Mods and Rockers", 1]}
         response.should be_successful
       end
     end
