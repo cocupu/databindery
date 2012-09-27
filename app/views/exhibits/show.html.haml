@@ -11,14 +11,17 @@
   =submit_tag "Search", :class=>'btn btn-primary'
 
 -if @results
-  %h2 Found #{pluralize(@total, 'result')}
-  %ul.exhibits
-    -@results.each do |result|
-      %li= render :partial=>'item', :locals=>{:item=>result}
-  -content_for :sidebar do
-    %h3 Facets:
-    %ul.tree
+  #facets.span4
+    %h2 Limit your search:
+    %ul.accordion#accordion2
       -@exhibit.facets.each do |facet_key|
-        %li
-          .facet=facet_key
-          = render_facet_list(Node.solr_name(facet_key, 'facet'), @facet_fields[Node.solr_name(facet_key, 'facet')])
+        %li.accordion-group
+          %h3.accordion-heading
+            %a.accordion-toggle{'data-toggle'=>"collapse", 'data-parent'=>"#accordion2", 'href'=>"#collapse_#{facet_key}"}
+              =@exhibit.pool.all_fields.find{ |f| f[:code] == facet_key}[:name]
+          = render_facet_list(Node.solr_name(facet_key, 'facet'), @facet_fields[Node.solr_name(facet_key, 'facet')], "collapse_#{facet_key}")
+  .results.span8
+    %h2 Found #{pluralize(@total, 'result')}
+    %ul.exhibits
+      -@results.each do |result|
+        %li= render :partial=>'item', :locals=>{:item=>result}

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120925160649) do
+ActiveRecord::Schema.define(:version => 20120927164803) do
 
   create_table "change_sets", :force => true do |t|
     t.text     "data"
@@ -34,9 +34,10 @@ ActiveRecord::Schema.define(:version => 20120925160649) do
   create_table "exhibits", :force => true do |t|
     t.string   "title"
     t.text     "facets"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
     t.integer  "pool_id"
+    t.text     "index_fields"
   end
 
   create_table "google_accounts", :force => true do |t|

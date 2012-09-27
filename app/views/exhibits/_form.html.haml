@@ -1,15 +1,27 @@
 =form_for @exhibit, url: @exhibit.persisted? ? identity_pool_exhibit_path(@identity, @pool, @exhibit) : identity_pool_exhibits_path(@identity, @pool) do |f|
-  .clearfix
+  .control-group
     = f.label :title
     .input
       = f.text_field :title
-  .clearfix
-    = f.label :facets, "Facets"
-    -@fields.each do |field|
-      =label_tag "exhibit[facets][#{field['code']}]" do
-        =check_box_tag "exhibit[facets][]", field['code'], @exhibit.facets.include?(field['code']), id: "exhibit_facets_#{field['code']}"
-        =field['name']
-  .clearfix
+  .control-group
+    = f.label :facets, "Facets:"
+    %table.table-bordered.table-striped.select-facets
+      %thead
+        %tr
+          %th Display?
+          %th Facet?
+          %th Field Name
+      %tbody
+        -@fields.each do |field|
+          %tr
+            %td
+              =label_tag "exhibit[facets][#{field['code']}]", field['name'], :style=>'display:none'
+              =check_box_tag "exhibit[facets][]", field['code'], @exhibit.facets.include?(field['code']), id: "exhibit_facets_#{field['code']}"
+            %td
+              =label_tag "exhibit[index_fields][#{field['code']}]", field['name'], :style=>'display:none'
+              =check_box_tag "exhibit[index_fields][]", field['code'], @exhibit.index_fields.include?(field['code']), id: "exhibit_index_fields_#{field['code']}"
+            %td=field['name']
+  .control-group
     .input
       = f.submit :class=>'btn btn-primary'
 

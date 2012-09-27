@@ -18,7 +18,7 @@ describe ExhibitsController do
     @model1.save!
 
     @model2 = FactoryGirl.create(:model, :pool=>@exhibit.pool)
-    @model2.fields = [{code: 'style', name: 'Style'}, {code: 'label', name: "Label"}]
+    @model2.fields = [{code: 'style', name: 'Style'}, {code: 'label', name: "Label"}, {code: 'f2', name: "Another one"}]
 
     #TODO ensure that code is unique for all fields in a pool, so that Author.name is separate from Book.name
     @model2.save!
@@ -41,7 +41,7 @@ describe ExhibitsController do
         get :new, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should be_successful
         assigns[:exhibit].should be_kind_of Exhibit
-        assigns[:fields].should == [{'code' => 'style', 'name'=> 'Style'}, {'code' => 'label', 'name'=> "Label"}, {'code' => 'f1', 'name'=> 'Field good'}, {'code' => 'f2', 'name'=> "Another one"}]
+        assigns[:fields].should == [{'code' => 'f2', 'name'=> "Another one"}, {'code' => 'f1', 'name'=> 'Field good'}, {'code' => 'label', 'name'=> "Label"}, {'code' => 'style', 'name'=> 'Style'} ]
       end
     end
 
@@ -62,7 +62,7 @@ describe ExhibitsController do
         get :edit, :id =>@exhibit.id, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should be_successful
         assigns[:exhibit].should be_kind_of Exhibit
-        assigns[:fields].should == [{'code' => 'f1', 'name'=> 'Field good'}, {'code' => 'f2', 'name'=> "Another one"}, {'code' => 'style', 'name'=> 'Style'}, {'code' => 'label', 'name'=> "Label"} ]
+        assigns[:fields].should == [{'code' => 'f2', 'name'=> "Another one"}, {'code' => 'f1', 'name'=> 'Field good'}, {'code' => 'label', 'name'=> "Label"}, {'code' => 'style', 'name'=> 'Style'} ]
       end
     end
 

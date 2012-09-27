@@ -8,8 +8,8 @@ module ApplicationHelper
   end
 
 
-  def render_facet_list(facet_field, facet_value)
-    content_tag('ul') do
+  def render_facet_list(facet_field, facet_value, html_id)
+    content_tag('ul', :id=>html_id, :class=>'accordion_body collapse') do
       if facet_params.has_key?(facet_field)
         content_tag('li') do
           arg = facet_value.shift(2)

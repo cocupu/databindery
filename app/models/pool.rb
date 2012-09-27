@@ -16,4 +16,8 @@ class Pool < ActiveRecord::Base
   def to_param
     short_name
   end
+
+  def all_fields
+    self.models.map {|m| m.fields}.flatten.uniq.sort{|x, y| x[:name] <=> y[:name]}
+  end
 end
