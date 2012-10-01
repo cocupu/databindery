@@ -15,6 +15,7 @@ group :assets do
   gem "bootstrap-sass-rails", "~> 2.1.0.0"
   gem 'handlebars_assets'
   gem 'rails-backbone'
+  gem 'bootstrap-kaminari-views'
 end
 
 gem 'haml'
