@@ -20,7 +20,7 @@ module Cocupu
       solr_response = {}
       benchmark "get_search_results" do
         params = self.solr_search_params(user_params).merge(extra_controller_params)
-        res = Cocupu.solr.paginate(1, params['rows'], 'select', :params=>params)
+        res = Cocupu.solr.paginate(params[:page], params[:rows], 'select', :params=>params.with_indifferent_access)
         logger.debug "Query to solr: #{params}"
         logger.debug "Solr response :#{res}"
         solr_response = force_to_utf8(res['response'])

@@ -139,19 +139,8 @@ module Blacklight::SolrHelper
     # copy paging params from BL app over to solr, changing
     # app level per_page and page to Solr rows and start. 
     def add_paging_to_solr(solr_params, user_params)
-      # Deprecated behavior was to pass :per_page to RSolr, and we
-      # generated blacklight_config.default_solr_params with that
-      # value. Move it over to rows.
-      if solr_params.has_key?(:per_page)
-        per_page = solr_params.delete(:per_page)
-        solr_params[:rows] ||= per_page
-      end
-
-      # Now any over-rides from current URL?
-      solr_params[:rows] = user_params[:per_page] unless user_params[:per_page].blank?
-      
-      # Do we need to translate :page to Solr :start?      
       unless user_params[:page].blank?
+        solr_params[:page] = user_params[:page]
         # already set solr_params["rows"] might not be the one we just set,
         # could have been from app defaults too. But we need one.
         # raising is consistent with prior RSolr magic keys behavior.
