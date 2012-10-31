@@ -51,5 +51,4 @@ gem "aws-sdk"
 gem "jettywrapper"
 gem "rsolr"
 gem "cancan"
-
-
+gem "blacklight", github: 'projectblacklight/blacklight', branch: 'bootstrap'
