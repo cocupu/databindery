@@ -33,6 +33,7 @@ describe ExhibitsController do
         get :index, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should be_successful
         assigns[:exhibits].should ==[@exhibit]
+        assigns[:exhibits].should_not include @exhibit2
       end
     end
 
@@ -75,38 +76,6 @@ describe ExhibitsController do
       end
     end
 
-    describe "show" do
-      before do
-        ## Clear out old results so we start from scratch
-        raw_results = Cocupu.solr.get 'select', :params => {:q => '{!lucene}model_name:"Mods and Rockers"', :fl=>'id', :qt=>'document', :qf=>'model', :rows=>100}
-        Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
-        raw_results = Cocupu.solr.get 'select', :params => {:q => 'bazaar', :fl=>'id', :qf=>'field_good_s'}
-        Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
-        Cocupu.solr.commit
-
-        @instance = Node.new(data: {'f1' => 'bazaar'})
-        @instance.model = @model1
-        @instance.pool = @exhibit.pool 
-        @instance.save!
-
-        @instance.data['f2'] = 'Bizarre'
-        @instance.save! #Create a new version of this, only one version should show in search results.
-
-        @instance2 = Node.new(data: {'f1' => 'bazaar'})
-        @instance2.model = @model1
-        @instance2.pool = FactoryGirl.create :pool
-        @instance2.save!
-
-      end
-      it "should be success" do
-        get :show, :id=>@exhibit.id, :q=>'bazaar', :pool_id=>@pool, :identity_id=>@identity.short_name
-        assigns[:total].should == 1
-        assigns[:results].should_not be_nil
-        assigns[:exhibit].should == @exhibit
-        assigns[:facet_fields].should == {"f2_facet"=>["Bizarre", 1], "model_name"=>["Mods and Rockers", 1]}
-        response.should be_successful
-      end
-    end
   end
 
   describe "when not signed in" do
@@ -145,12 +114,6 @@ describe ExhibitsController do
       end
     end
 
-    describe "show" do
-      it "should be unauthorized" do
-        get :show, :id=>@exhibit.id, :q=>'bazaar', :pool_id=>@pool, :identity_id=>@identity.short_name
-        response.should redirect_to root_path
-      end
-    end
   end
 
 

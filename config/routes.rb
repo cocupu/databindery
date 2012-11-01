@@ -1,5 +1,12 @@
 Cocupu::Application.routes.draw do
 
+
+  match "bookmarks/clear", :to => "bookmarks#clear", :as => "clear_bookmarks"
+  resources :bookmarks
+  resources :solr_document,  :path => 'catalog', :controller => 'catalog', :only => [:show, :update] 
+
+
+
   devise_for :users, class_name: "LoginCredential", controllers: {registrations:  "users/registrations"}
   as :user do
     get "signin", :to => "devise/sessions#new"
@@ -43,7 +50,8 @@ Cocupu::Application.routes.draw do
     resources :file_entities
     resources :chattels
     resources :pools, :path=>'' do
-      resources :exhibits 
+      resources :exhibits, :except=>[:show]
+      match 'exhibits/:exhibit_id' => 'catalog#index'
       resources :drives, :only=>[:index] do
         collection do
           get 'spawn'

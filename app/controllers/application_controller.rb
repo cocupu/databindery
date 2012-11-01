@@ -1,8 +1,11 @@
 class ApplicationController < ActionController::Base
+  # Please be sure to impelement current_user and user_session. Blacklight depends on 
+  # these methods in order to perform user specific actions. 
+
   protect_from_forgery
 
   before_filter :load_identity
-  
+
   rescue_from CanCan::AccessDenied do |exception|
     respond_to do |format|
       format.json do 

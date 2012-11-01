@@ -13,6 +13,11 @@ body.no-grad {
   background: none;
 }
 
+/* Override blacklight */
+.brand {
+  background: none;
+  text-indent: 0;
+}
 
 /* The white background content wrapper */
 .content {

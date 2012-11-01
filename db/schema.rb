@@ -11,7 +11,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120927164803) do
+ActiveRecord::Schema.define(:version => 20121031182661) do
+
+  create_table "bookmarks", :force => true do |t|
+    t.integer  "user_id",     :null => false
+    t.string   "document_id"
+    t.string   "title"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.string   "user_type"
+  end
 
   create_table "change_sets", :force => true do |t|
     t.text     "data"
@@ -142,6 +151,16 @@ ActiveRecord::Schema.define(:version => 20120927164803) do
   end
 
   add_index "pools", ["short_name"], :name => "index_pools_on_short_name", :unique => true
+
+  create_table "searches", :force => true do |t|
+    t.text     "query_params"
+    t.integer  "user_id"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+    t.string   "user_type"
+  end
+
+  add_index "searches", ["user_id"], :name => "index_searches_on_user_id"
 
   create_table "spreadsheet_rows", :force => true do |t|
     t.integer  "row_number"

@@ -1,5 +1,7 @@
 class LoginCredential < ActiveRecord::Base
   include ActiveModel::ForbiddenAttributesProtection
+
+  include Blacklight::User
   # Include default devise modules. Others available are:
   # :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,

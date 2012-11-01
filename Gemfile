@@ -52,3 +52,5 @@ gem "jettywrapper"
 gem "rsolr"
 gem "cancan"
 gem "blacklight", github: 'projectblacklight/blacklight', branch: 'bootstrap'
+
+gem "bootstrap-sass", "~> 2.1.0.0"

@@ -6,6 +6,9 @@
 //
 //= require jquery
 //= require jquery_ujs
+//
+// Required by Blacklight
+//= require blacklight/blacklight
 // we're just using core and droppable from jquery-ui
 //= require jquery-ui-1.8.23.min 
 //= require jquery.scrollTo-min.js

@@ -1,5 +1,6 @@
 class NodesController < ApplicationController
   include Cocupu::Search
+  include Blacklight::Controller
   load_and_authorize_resource :except=>[:index, :search, :update, :create], :find_by => :persistent_id
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
 
@@ -37,8 +38,8 @@ class NodesController < ApplicationController
     query_fields = Model.accessible_by(current_ability).map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
     (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', :fq=>fq, 'facet.field' => ['name_s', 'model']})
     
-    #puts "solr_response: #{solr_response}"
-    @results = solr_response['docs'].map{|d| Node.find_by_persistent_id(d['id'])}
+    #puts "solr_response: #{solr_response.docs}"
+    @results = solr_response.docs.map{|d| Node.find_by_persistent_id(d['id'])}
     
 
     respond_to do |format|
