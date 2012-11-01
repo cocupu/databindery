@@ -4,10 +4,10 @@ require 'bundler/setup'
 Bundler.require(:default)
 
 FILE = File.join(File.dirname(__FILE__), '../spec/fixtures/dechen_rangdrol_archives_database.xls')
-IDENTITY = 'herp'
+IDENTITY = 'j_coyne'
 POOL = 'marpa'
 
-conn = Bindery.new('jcoyne@justincoyne.com', 'foobar', 8080, 'localhost')
+conn = Bindery.new('justin@cocupu.com', 'password', 3001, 'localhost')
 talk = Bindery::Model.new({'identity' =>IDENTITY, 'pool'=>POOL, 'name'=>"Talk"}, conn)
 talk.fields = [
        {"name"=>"File Name", "type"=>"text", "uri"=>"", "code"=>"file_name"},
