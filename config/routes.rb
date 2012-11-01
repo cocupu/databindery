@@ -3,7 +3,6 @@ Cocupu::Application.routes.draw do
 
   match "bookmarks/clear", :to => "bookmarks#clear", :as => "clear_bookmarks"
   resources :bookmarks
-  resources :solr_document,  :path => 'catalog', :controller => 'catalog', :only => [:show, :update] 
 
   devise_for :users, class_name: "LoginCredential", controllers: {registrations:  "users/registrations"}
   as :user do
@@ -47,7 +46,9 @@ Cocupu::Application.routes.draw do
     resources :file_entities
     resources :chattels
     match 'exhibits/:exhibit_id' => 'catalog#index', :as => 'exhibit'
-    #resources :exhibits, :except=>[:show, :new, :create]
+    resources :exhibits, :only=>[] do
+      resources :solr_document, :path => '', :controller => 'catalog', :only => [:show, :update]
+    end
     resources :pools, :path=>'' do
       resources :exhibits, :except=>[:show]
       resources :drives, :only=>[:index] do

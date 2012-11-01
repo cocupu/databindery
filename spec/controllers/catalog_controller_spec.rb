@@ -1,12 +1,18 @@
 require 'spec_helper'
 
 describe CatalogController do
+  describe "routes" do
+    it "should route" do
+      identity_exhibit_solr_document_path('matt', '88', '9990101-231-1223').should == '/matt/exhibits/88/9990101-231-1223'
+    end
+  end
 
   before do
     @identity = FactoryGirl.create :identity
     @pool = FactoryGirl.create :pool, :owner=>@identity
     @exhibit = FactoryGirl.build(:exhibit, pool: @pool)
     @exhibit.facets = ['f2']
+    @exhibit.index_fields = ['f1', 'f2']
     @exhibit.save!
     @model1 = FactoryGirl.create(:model, :name=>"Mods and Rockers", :pool=>@exhibit.pool)
 
@@ -50,7 +56,7 @@ describe CatalogController do
         get :index, :exhibit_id=>@exhibit.id, :q=>'bazaar', :identity_id=>@identity.short_name
         assigns[:document_list].size.should == 1
         assigns[:exhibit].should == @exhibit
-       puts assigns[:response]['facet_counts']['facet_fields'].should == {"f2_facet"=>["Bizarre", 1], "model_name"=>["Mods and Rockers", 1]}
+        assigns[:response]['facet_counts']['facet_fields'].should == {"f2_facet"=>["Bizarre", 1], "model_name"=>["Mods and Rockers", 1]}
         response.should be_successful
       end
     end
@@ -61,6 +67,7 @@ describe CatalogController do
         get :index, :exhibit_id=>@exhibit.id, :q=>'bazaar', :identity_id=>@identity.short_name
         assigns[:document_list].size.should == 1
         assigns[:exhibit].should == @exhibit
+        assigns[:response]['facet_counts']['facet_fields'].should == {"f2_facet"=>["Bizarre", 1], "model_name"=>["Mods and Rockers", 1]}
         response.should be_successful
       end
     end

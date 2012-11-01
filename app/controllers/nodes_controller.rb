@@ -1,6 +1,6 @@
 class NodesController < ApplicationController
-  include Cocupu::Search
   include Blacklight::Controller
+  include Blacklight::SolrHelper
   load_and_authorize_resource :except=>[:index, :search, :update, :create], :find_by => :persistent_id
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
 

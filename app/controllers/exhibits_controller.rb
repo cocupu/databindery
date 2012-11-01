@@ -11,25 +11,6 @@ class ExhibitsController < ApplicationController
     @fields = @pool.all_fields
   end
 
-
-  # def show
-  #   # Constrain results to this pool
-  #   # (@response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', 'facet.field' => facets})
-  #   # 
-  #   # @total = @response["numFound"]
-  #   # @results = Node.find(@response['docs'].map{|d| d['version']})
-
-  #   # TODO constrain to current pool
-  #   puts "getting search results"
-  #   (@response, @document_list) = get_search_results
-  #   @filters = params[:f] || []
-  #   
-  #   respond_to do |format|
-  #     format.html { save_current_search_params }
-  #   end
-
-  # end
-
   def new
     @fields = @pool.all_fields
   end
