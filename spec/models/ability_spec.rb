@@ -148,12 +148,16 @@ describe Ability do
       @exhibit = FactoryGirl.create :exhibit
       @owner = Ability.new(@exhibit.pool.owner)
       @non_owner = Ability.new(FactoryGirl.create :identity)
+      @not_logged_in = Ability.new(nil)
     end
     it "are readable by the owner of the pool they are in" do
       @owner.can?(:read, @exhibit).should be_true
     end
-    it "are not readable by a non-owner of the pool" do
-      @non_owner.can?(:read, @exhibit).should_not be_true
+    it "are readable by a non-owner of the pool" do
+      @non_owner.can?(:read, @exhibit).should be_true
+    end
+    it "are readable by a not logged in user" do
+      @not_logged_in.can?(:read, @exhibit).should be_true
     end
     it "are editable by the owner of the pool they are in" do
       @owner.can?(:edit, @exhibit).should be_true
@@ -174,5 +178,20 @@ describe Ability do
       ability = Ability.new(Identity.new)
       ability.can?(:create, Exhibit).should_not be_true
     end
+  end
+
+  describe "identities" do
+    before :all do
+      @identity = FactoryGirl.create :identity
+      @owner = Ability.new(@identity)
+      @non_owner = Ability.new(FactoryGirl.create :identity)
+      @not_logged_in = Ability.new(nil)
+    end
+    it "are readable by everyone" do
+      @owner.can?(:read, @identity).should be_true
+      @non_owner.can?(:read, @identity).should be_true
+      @not_logged_in.can?(:read, @identity).should be_true
+    end
+
   end
 end

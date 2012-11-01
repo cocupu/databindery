@@ -5,8 +5,6 @@ Cocupu::Application.routes.draw do
   resources :bookmarks
   resources :solr_document,  :path => 'catalog', :controller => 'catalog', :only => [:show, :update] 
 
-
-
   devise_for :users, class_name: "LoginCredential", controllers: {registrations:  "users/registrations"}
   as :user do
     get "signin", :to => "devise/sessions#new"
@@ -16,7 +14,6 @@ Cocupu::Application.routes.draw do
 
   # Drives is a redirect point for google oauth, so it can't have any dynamic segments
   resources :drives, :only=>[:index]
-
   
   resources :models, :except=>[:create, :index] do
     resources :fields
@@ -49,9 +46,10 @@ Cocupu::Application.routes.draw do
   resources :identities, :path=>'', :only=>[], :constraints=>constraints do
     resources :file_entities
     resources :chattels
+    match 'exhibits/:exhibit_id' => 'catalog#index', :as => 'exhibit'
+    #resources :exhibits, :except=>[:show, :new, :create]
     resources :pools, :path=>'' do
       resources :exhibits, :except=>[:show]
-      match 'exhibits/:exhibit_id' => 'catalog#index'
       resources :drives, :only=>[:index] do
         collection do
           get 'spawn'

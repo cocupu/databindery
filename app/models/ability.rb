@@ -14,6 +14,9 @@ class Ability
       #The owner of the pool that these objects are in can read/edit/update the objects
       can [:read, :edit, :update], [Node, Model, Exhibit, MappingTemplate], :pool=>{ :owner_id => identity.id}
       can :create, [Exhibit, Model, Node,  Pool, MappingTemplate, Chattel]
+
     end
+    can :read, Identity  #necessary for authorizing exhibit view (through identity)
+    can :read, Exhibit
   end
 end

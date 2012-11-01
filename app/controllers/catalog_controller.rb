@@ -1,6 +1,6 @@
 class CatalogController < ApplicationController
-  load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
-  load_and_authorize_resource :exhibit, :through=>:pool
+  load_and_authorize_resource :identity, :find_by => :short_name
+  load_and_authorize_resource :exhibit#, :through=>:identity
 
   include Blacklight::Controller
   def layout_name
