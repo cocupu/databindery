@@ -6,7 +6,6 @@
  * the top of the compiled file, but it's generally better to create a new file per style scope.
  *= require_self
  * ----> Note the missing = require_tree 
- *= require twitter/bootstrap
  *= require main
  *= require exhibits
  *= require models

@@ -12,7 +12,6 @@
 // we're just using core and droppable from jquery-ui
 //= require jquery-ui-1.8.23.min 
 //= require jquery.scrollTo-min.js
-//= require twitter/bootstrap
 //= require underscore
 //= require backbone
 // AJAX adapter for rails, that uses paramRoot to set up requests as rails expects 

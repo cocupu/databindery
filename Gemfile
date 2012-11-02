@@ -12,7 +12,6 @@ group :assets do
   gem 'uglifier', '>= 1.2.3'
   gem 'therubyracer' # required on linux
   gem 'jquery-rails'
-  gem "bootstrap-sass-rails", "~> 2.1.0.0"
   gem 'handlebars_assets'
   gem 'rails-backbone'
   gem 'bootstrap-kaminari-views'
@@ -51,6 +50,6 @@ gem "aws-sdk"
 gem "jettywrapper"
 gem "rsolr"
 gem "cancan"
-gem "blacklight", github: 'projectblacklight/blacklight', branch: 'bootstrap'
+gem "blacklight", github: 'projectblacklight/blacklight', ref: 'bad4ac69'
 
-gem "bootstrap-sass", "~> 2.1.0.0"
+gem "bootstrap-sass"
