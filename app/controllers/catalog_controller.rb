@@ -84,7 +84,9 @@ class CatalogController < ApplicationController
 
       # solr fields to be displayed in the show (single result) view
       #   The ordering of the field names is the order of the display 
-      config.add_show_field 'title', :label => 'Title:' 
+      @exhibit.index_fields.each do |f|
+        config.add_show_field Node.solr_name(f), :label => f.humanize+':' 
+      end
 
       # "fielded" search configuration. Used by pulldown among other places.
       # For supported keys in hash, see rdoc for Blacklight::SearchFields
