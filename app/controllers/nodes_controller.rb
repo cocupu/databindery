@@ -36,7 +36,7 @@ class NodesController < ApplicationController
 
     ## TODO need a better way to get the query fields.  Not all these models are necessarily in this pool
     query_fields = Model.accessible_by(current_ability).map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
-    (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', :fq=>fq, 'facet.field' => ['name_s', 'model']})
+    (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', :fq=>fq, :rows=>10, 'facet.field' => ['name_s', 'model']})
     
     #puts "solr_response: #{solr_response.docs}"
     @results = solr_response.docs.map{|d| Node.find_by_persistent_id(d['id'])}
