@@ -6,7 +6,6 @@ body {
   color: #333;
   /* text-shadow: 0 1px 0 white; */
   position: relative;
-  padding-top: 40px;
 }
 
 body.no-grad {
@@ -19,19 +18,6 @@ body.no-grad {
   text-indent: 0;
 }
 
-/* The white background content wrapper */
-.content {
-  background-color: #fff;
-  padding: 20px;
-  min-height: 400px;
-  margin: 0 -20px 20px 0; /* negative indent the amount of the padding to maintain the grid system */
-  -webkit-border-radius: 0 0 6px 6px;
-     -moz-border-radius: 0 0 6px 6px;
-          border-radius: 0 0 6px 6px;
-  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
-     -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
-          box-shadow: 0 1px 2px rgba(0,0,0,.15);
-}
 
 
 .full-width-container {
