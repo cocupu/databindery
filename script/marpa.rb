@@ -1,14 +1,17 @@
 #!/usr/bin/env ruby
-require File.join(File.dirname(__FILE__), '../client/client.rb')
+#require File.join(File.dirname(__FILE__), '../client/client.rb')
+require 'cocupu'
 require 'bundler/setup'
 Bundler.require(:default)
 
 FILE = File.join(File.dirname(__FILE__), '../spec/fixtures/dechen_rangdrol_archives_database.xls')
-IDENTITY = 'j_coyne'
+#IDENTITY = 'j_coyne'
+IDENTITY = 'herp'
 POOL = 'marpa'
 
-conn = Bindery.new('justin@cocupu.com', 'password', 3001, 'localhost')
-talk = Bindery::Model.new({'identity' =>IDENTITY, 'pool'=>POOL, 'name'=>"Talk"}, conn)
+#conn = Cocupu.start('justin@cocupu.com', 'password', 3001, 'localhost')
+conn = Cocupu.start('jcoyne@justincoyne.com', 'foobar', 3001, 'localhost')
+talk = Cocupu::Model.new({'identity' =>IDENTITY, 'pool'=>POOL, 'name'=>"Talk"})
 talk.fields = [
        {"name"=>"File Name", "type"=>"text", "uri"=>"", "code"=>"file_name"},
        {"name"=>"Tibetan Title", "type"=>"text", "uri"=>"", "code"=>"tibetan_title"},
@@ -27,7 +30,7 @@ talk.fields = [
 talk.label = 'file_name'
 talk.save
 
-recording = Bindery::Model.new({'identity' =>IDENTITY, 'pool'=>POOL, 'name'=>"Recording"}, conn)
+recording = Cocupu::Model.new({'identity' =>IDENTITY, 'pool'=>POOL, 'name'=>"Recording"})
 recording.fields = [
        {"name"=>"File Name", "type"=>"text", "uri"=>"", "code"=>"file_name"},
        {"name"=>"Time", "type"=>"text", "uri"=>"", "code"=>"time"},
@@ -39,7 +42,7 @@ recording.associations = [ {"type"=>"Has One","name"=>"talk","references"=>talk.
 recording.label = 'file_name'
 recording.save
 
-def load_sheet(conn, talk, recording)
+def load_sheet(talk, recording)
   spreadsheet = Roo::Excel.new(FILE)
   worksheet = spreadsheet.sheets.first
 
@@ -48,12 +51,12 @@ def load_sheet(conn, talk, recording)
     node = nil
     if spreadsheet.cell(row_idx, 2, worksheet)
       ## A Talk
-      node = Bindery::Node.new({'identity'=>IDENTITY, 'pool'=>POOL, 'model_id' => talk.id, 'data' => talk_data(spreadsheet, row_idx, worksheet)}, conn)
+      node = Cocupu::Node.new({'identity'=>IDENTITY, 'pool'=>POOL, 'model_id' => talk.id, 'data' => talk_data(spreadsheet, row_idx, worksheet)})
       node.save
       last_talk = node.persistent_id
     else
       ## Recording.
-      node = Bindery::Node.new({'identity'=>IDENTITY, 'pool'=>POOL, 'model_id' => recording.id, 'data' => recording_data(spreadsheet, row_idx, worksheet)}, conn)
+      node = Cocupu::Node.new({'identity'=>IDENTITY, 'pool'=>POOL, 'model_id' => recording.id, 'data' => recording_data(spreadsheet, row_idx, worksheet)})
       node.associations = {"talk" =>[last_talk]}
       node.save
     end
@@ -79,4 +82,4 @@ def recording_data (spreadsheet, row_idx, worksheet)
   data
 end
 
-load_sheet(conn, talk, recording)
+load_sheet(talk, recording)

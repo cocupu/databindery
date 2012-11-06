@@ -1,11 +1,7 @@
 @import "common";
 body {
-  background-color: #03899C;
-  @include background_gradient(top, #03899C, #ffffff);
-  background-repeat: repeat-x;
   color: #333;
   /* text-shadow: 0 1px 0 white; */
-  position: relative;
 }
 
 body.no-grad {
