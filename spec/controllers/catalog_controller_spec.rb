@@ -24,11 +24,11 @@ describe CatalogController do
     #TODO ensure that code is unique for all fields in a pool, so that Author.name is separate from Book.name
     @model2.save!
     ## Clear out old results so we start from scratch
-    raw_results = Cocupu.solr.get 'select', :params => {:q => '{!lucene}model_name:"Mods and Rockers"', :fl=>'id', :qt=>'document', :qf=>'model', :rows=>100}
-    Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
-    raw_results = Cocupu.solr.get 'select', :params => {:q => 'bazaar', :fl=>'id', :qf=>'field_good_s'}
-    Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
-    Cocupu.solr.commit
+    raw_results = Bindery.solr.get 'select', :params => {:q => '{!lucene}model_name:"Mods and Rockers"', :fl=>'id', :qt=>'document', :qf=>'model', :rows=>100}
+    Bindery.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
+    raw_results = Bindery.solr.get 'select', :params => {:q => 'bazaar', :fl=>'id', :qf=>'field_good_s'}
+    Bindery.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
+    Bindery.solr.commit
 
     @instance = Node.new(data: {'f1' => 'bazaar'})
     @instance.model = @model1

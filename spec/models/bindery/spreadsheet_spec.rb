@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Cocupu::Spreadsheet do
+describe Bindery::Spreadsheet do
   it "should have worksheets" do
     ws = Worksheet.new()
     subject.worksheets << ws

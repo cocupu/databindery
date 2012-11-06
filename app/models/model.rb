@@ -112,7 +112,7 @@ class Model < ActiveRecord::Base
   def index
     ## only index the most recent version of each node
     max_ids = Node.unscoped.select('max(id) as max_id').where('model_id = ?', self.id).group(:persistent_id).map(&:max_id)
-    Cocupu.index(Node.find(max_ids).map {|m| m.to_solr })
+    Bindery.index(Node.find(max_ids).map {|m| m.to_solr })
   end
 
   def keys

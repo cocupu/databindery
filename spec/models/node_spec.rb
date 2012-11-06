@@ -129,8 +129,8 @@ describe Node do
   end
 
   it "should index itself when it's saved" do
-    Cocupu.should_receive :index
-    Cocupu.solr.should_receive :commit
+    Bindery.should_receive :index
+    Bindery.solr.should_receive :commit
     subject.pool = @pool 
     subject.model = FactoryGirl.create(:model)
     subject.save!

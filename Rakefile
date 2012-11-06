@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Cocupu::Application.load_tasks
+Bindery::Application.load_tasks

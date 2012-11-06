@@ -30,13 +30,13 @@ class Node < ActiveRecord::Base
   end
 
   def remove_from_index
-    Cocupu.solr.delete_by_id self.persistent_id
-    Cocupu.solr.commit
+    Bindery.solr.delete_by_id self.persistent_id
+    Bindery.solr.commit
   end
 
   def update_index
-    Cocupu.index(self.to_solr)
-    Cocupu.solr.commit
+    Bindery.index(self.to_solr)
+    Bindery.solr.commit
   end
 
   def generate_uuid

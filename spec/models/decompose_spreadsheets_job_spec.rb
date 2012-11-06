@@ -11,25 +11,25 @@ describe DecomposeSpreadsheetJob do
 
   it "should break up the Excel spreadsheet" do
     @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
-    @chattel = Cocupu::Spreadsheet.create(owner: FactoryGirl.create(:identity))
+    @chattel = Bindery::Spreadsheet.create(owner: FactoryGirl.create(:identity))
     @chattel.attach(@file.read, 'application/vnd.ms-excel', 'dechen_rangdrol_archives_database.xls')
     @chattel.save!
     @job = DecomposeSpreadsheetJob.new(@chattel.id, JobLogItem.new)
     @job.enqueue #start the logger
     @job.perform
-    sheets = Cocupu::Spreadsheet.find(@chattel.id).worksheets
+    sheets = Bindery::Spreadsheet.find(@chattel.id).worksheets
     sheets.count.should == 1
     sheets.first.rows.count.should == 434
   end
   it "should break up the ODS spreadsheet" do
     @file = File.new(Rails.root + 'spec/fixtures/Stock Check 2.ods')
-    @chattel = Cocupu::Spreadsheet.create(owner: FactoryGirl.create(:identity))
+    @chattel = Bindery::Spreadsheet.create(owner: FactoryGirl.create(:identity))
     @chattel.attach(@file.read, 'application/vnd.oasis.opendocument.spreadsheet', 'Stock Check 2.ods')
     @chattel.save!
     @job = DecomposeSpreadsheetJob.new(@chattel.id, JobLogItem.new)
     @job.enqueue #start the logger
     @job.perform
-    sheets = Cocupu::Spreadsheet.find(@chattel.id).worksheets
+    sheets = Bindery::Spreadsheet.find(@chattel.id).worksheets
     sheets.count.should == 4
     datasheet = sheets.select{|s| s.name == 'datasheet'}.first
     datasheet.order.should == 0

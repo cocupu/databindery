@@ -39,7 +39,7 @@ FactoryGirl.define do
     owner
   end
 
-  factory :spreadsheet, :class=>Cocupu::Spreadsheet do
+  factory :spreadsheet, :class=>Bindery::Spreadsheet do
     owner
 
   end

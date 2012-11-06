@@ -54,7 +54,7 @@ class DrivesController < ApplicationController
 
     # From ChattelsController#create
     if ['application/vnd.ms-excel', 'application/vnd.oasis.opendocument.spreadsheet'].include?(file.mime_type)
-      @chattel = Cocupu::Spreadsheet.new
+      @chattel = Bindery::Spreadsheet.new
     else
       @chattel = Chattel.new
     end

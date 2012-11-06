@@ -1,5 +1,5 @@
 ### Non-namespaced version is used by roo
-class Cocupu::Spreadsheet < Chattel
+class Bindery::Spreadsheet < Chattel
   has_many :worksheets
 
   def self.detect_type(chattel)

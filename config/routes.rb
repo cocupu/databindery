@@ -1,4 +1,4 @@
-Cocupu::Application.routes.draw do
+Bindery::Application.routes.draw do
 
 
   match "bookmarks/clear", :to => "bookmarks#clear", :as => "clear_bookmarks"

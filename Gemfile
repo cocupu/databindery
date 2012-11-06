@@ -39,6 +39,7 @@ group :test, :development do
   gem "factory_girl_rails"
   gem 'jasmine'
   gem 'jasminerice'
+  gem 'cocupu' # The ruby client 
 end
 group :test do
   gem "database_cleaner", ">= 0.7.0"

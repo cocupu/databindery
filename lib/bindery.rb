@@ -1,4 +1,4 @@
-module Cocupu  
+module Bindery  
   def self.solr
     @solr ||=  RSolr.connect(solr_config)
   end
@@ -34,13 +34,13 @@ module Cocupu
     documents.each do |doc|
       solr.add doc
     end
-    Cocupu.solr.commit
+    Bindery.solr.commit
   end
 
   def self.clear_index
-    raw_results = Cocupu.solr.get 'select', :params => {:q => '{!lucene}*:*', :fl=>'id', :qt=>'document', :rows=>100}
-    Cocupu.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
-    Cocupu.solr.commit
+    raw_results = Bindery.solr.get 'select', :params => {:q => '{!lucene}*:*', :fl=>'id', :qt=>'document', :rows=>100}
+    Bindery.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
+    Bindery.solr.commit
   end
 end
 

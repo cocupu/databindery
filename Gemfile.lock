@@ -88,6 +88,8 @@ GEM
     carrot (1.2.0)
     childprocess (0.3.6)
       ffi (~> 1.0, >= 1.0.6)
+    cocupu (0.0.2)
+      httmultiparty (= 0.3.8)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
       railties (~> 3.2.0)
@@ -133,6 +135,9 @@ GEM
       sprockets (>= 2.0.3)
       tilt
     hike (1.2.1)
+    httmultiparty (0.3.8)
+      httparty (>= 0.7.3)
+      multipart-post
     httparty (0.9.0)
       multi_json (~> 1.0)
       multi_xml
@@ -178,7 +183,7 @@ GEM
     marc (0.5.0)
     mediashelf-loggable (0.4.9)
     mime-types (1.19)
-    multi_json (1.3.6)
+    multi_json (1.3.7)
     multi_xml (0.5.1)
     multipart-post (1.1.5)
     nokogiri (1.5.5)
@@ -295,6 +300,7 @@ DEPENDENCIES
   cancan
   capybara (>= 1.1.2)
   carrot
+  cocupu
   coffee-rails (~> 3.2.2)
   database_cleaner (>= 0.7.0)
   devise

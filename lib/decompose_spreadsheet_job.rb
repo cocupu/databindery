@@ -2,8 +2,8 @@ class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
 
   def perform
     log.update_attributes(:status => 'PROCESSING')
-    ss = Cocupu::Spreadsheet.find(spreadsheet_id)
-    type = Cocupu::Spreadsheet.detect_type(ss)
+    ss = Bindery::Spreadsheet.find(spreadsheet_id)
+    type = Bindery::Spreadsheet.detect_type(ss)
     spreadsheet = type.new(ss.file_name)
     spreadsheet.sheets.each_with_index do |worksheet, index|
       ingest_worksheet(spreadsheet, worksheet, ss, index)

@@ -5,7 +5,6 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'capybara/rspec'
 require 'capybara/rails'
-require 'cocupu'
 
 
 # Requires supporting ruby files with custom matchers and macros, etc,
@@ -29,7 +28,7 @@ RSpec.configure do |config|
 
   # Drop all columns before the test run.
   config.before(:all) do
-    Cocupu.clear_index 
+    Bindery.clear_index 
   end
 end
 

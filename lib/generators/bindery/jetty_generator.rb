@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 require 'openssl'
 
-module Cocupu
+module Bindery
   class Jetty < Rails::Generators::Base
     source_root File.expand_path('../templates', __FILE__)
     

@@ -10,7 +10,7 @@ describe Worksheet do
     @ws.order.should == 3
   end
   it "should belong to a spreadsheet" do
-    @spreadsheet = Cocupu::Spreadsheet.create
+    @spreadsheet = Bindery::Spreadsheet.create
     @ws = Worksheet.new(:name=>"Fred")
     @spreadsheet.worksheets= [@ws]
     @spreadsheet.worksheets.first.should == @ws

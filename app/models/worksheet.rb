@@ -1,5 +1,5 @@
 class Worksheet < ActiveRecord::Base
-  belongs_to :spreadsheet, class_name: 'Cocupu::Spreadsheet'
+  belongs_to :spreadsheet, class_name: 'Bindery::Spreadsheet'
   has_many :rows, class_name: 'SpreadsheetRow'
 
   def reify(mapping_template, pool)

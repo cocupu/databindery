@@ -3,7 +3,7 @@ class WorksheetsController < ApplicationController
 
 
   def index
-    spreadsheet = Cocupu::Spreadsheet.find(params[:spreadsheet_id])
+    spreadsheet = Bindery::Spreadsheet.find(params[:spreadsheet_id])
     @worksheets = spreadsheet.worksheets
 
     if @worksheets.size == 1

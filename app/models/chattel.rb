@@ -3,7 +3,7 @@ class Chattel < ActiveRecord::Base
   validates :owner, presence: true
 
   def spreadsheet?
-    is_a? Cocupu::Spreadsheet
+    is_a? Bindery::Spreadsheet
   end
 
   def attachment
