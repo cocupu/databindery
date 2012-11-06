@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121031182661) do
+ActiveRecord::Schema.define(:version => 20121106033434) do
 
   create_table "bookmarks", :force => true do |t|
     t.integer  "user_id",     :null => false
@@ -120,8 +120,10 @@ ActiveRecord::Schema.define(:version => 20121031182661) do
     t.integer  "identity_id"
     t.text     "associations"
     t.integer  "pool_id"
+    t.string   "code"
   end
 
+  add_index "models", ["code"], :name => "index_models_on_code", :unique => true
   add_index "models", ["identity_id"], :name => "index_models_on_identity_id"
 
   create_table "nodes", :force => true do |t|
@@ -151,6 +153,16 @@ ActiveRecord::Schema.define(:version => 20121031182661) do
   end
 
   add_index "pools", ["short_name"], :name => "index_pools_on_short_name", :unique => true
+
+  create_table "s3_connections", :force => true do |t|
+    t.integer  "pool_id",                                      :null => false
+    t.string   "access_key_id",                                :null => false
+    t.string   "secret_access_key",                            :null => false
+    t.integer  "max_file_size",     :default => 10485760
+    t.string   "acl",               :default => "public-read"
+    t.datetime "created_at",                                   :null => false
+    t.datetime "updated_at",                                   :null => false
+  end
 
   create_table "searches", :force => true do |t|
     t.text     "query_params"

@@ -206,4 +206,32 @@ describe NodesController do
     
   end
 
+  describe "attach_file" do
+    before do
+      @identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create :pool, :owner=>@identity
+      config = YAML.load_file(Rails.root + 'config/s3.yml')[Rails.env]
+      @s3 = FactoryGirl.create(:s3_connection, config.merge(pool: @pool))
+      @model = FactoryGirl.create(:model, pool: @pool)
+      @model.fields = [{code: 'f1', name: 'Field one'}]
+      @model.save!
+      @node = FactoryGirl.create(:node, model: @model, pool: @identity.pools.first)
+      sign_in @identity.login_credential
+    end
+    it "should route" do
+      identity_pool_node_files_path('my_ident', 'my_pool', 567).should == "/my_ident/my_pool/nodes/567/files"
+    end
+    it "should upload files" do
+      post :attach_file, pool_id: @pool, identity_id: @identity, 
+        node_id: @node.persistent_id, file_name: "rails.png",
+        file: fixture_file_upload('/images/rails.png', 'image/png', true)
+      node = Node.latest_version(@node.persistent_id)
+      response.should redirect_to identity_pool_node_path(@identity, @pool, node)
+        
+      file_node = Node.latest_version(node.files.first)
+      file_node.file_name.should == 'rails.png'
+
+    end
+  end
+
 end

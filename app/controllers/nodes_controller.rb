@@ -100,6 +100,19 @@ class NodesController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  def attach_file
+    @node = Node.find_by_persistent_id(params[:node_id])
+    authorize! :attach_file, @node
+    new_version = @node.attach_file(params[:file_name], params[:file])
+
+    respond_to do |format|
+      format.html { redirect_to identity_pool_node_path(@identity, @pool, new_version), :notice=>"Attached file" }
+      format.json { head :no_content }
+    end
+
+  end
+
   private
 
   def serialize_node(n)

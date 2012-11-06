@@ -67,6 +67,7 @@ Cocupu::Application.routes.draw do
         collection do
           get 'search'
         end
+        match 'files' => 'nodes#attach_file', :via=>:post
       end
       resources :mapping_templates
       resources :spreadsheets do

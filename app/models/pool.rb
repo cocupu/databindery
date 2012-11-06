@@ -6,6 +6,7 @@ class Pool < ActiveRecord::Base
   has_many :nodes, :dependent => :destroy
   has_many :models, :dependent => :destroy
   has_many :mapping_templates, :dependent => :destroy
+  has_many :s3_connections, :dependent => :destroy
 
   validates :short_name, :format=>{:with => /\A[\w-]+\Z/}, :uniqueness => true
   
@@ -19,5 +20,9 @@ class Pool < ActiveRecord::Base
 
   def all_fields
     self.models.map {|m| m.fields}.flatten.uniq.sort{|x, y| x[:name] <=> y[:name]}
+  end
+
+  def default_file_store
+    s3_connections.first
   end
 end

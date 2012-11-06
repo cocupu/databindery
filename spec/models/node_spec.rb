@@ -1,10 +1,8 @@
 require 'spec_helper'
 
 describe Node do
-  before :all do
-    @pool = FactoryGirl.create :pool
-  end
   before do
+    @pool = FactoryGirl.create :pool
     @ref = FactoryGirl.create(:model)
     subject.model = FactoryGirl.create(:model, 
                       fields: [{code: 'first_name'}, {code: 'last_name'}, {code: 'title'}],
@@ -39,6 +37,22 @@ describe Node do
     subject.save!
     new_subject = Node.latest_version(subject.persistent_id)
     new_subject.associations.should == { 'authors' =>[ 123, 3232, 888], 'undefined' =>[882]}
+  end
+
+  describe "attaching a file" do
+    before do
+      config = YAML.load_file(Rails.root + 'config/s3.yml')[Rails.env]
+      @s3 = FactoryGirl.create(:s3_connection, config.merge(pool: @pool))
+    end
+    it "should store a list of attached files" do
+      subject.files.size.should == 0
+      subject.pool = @pool
+      subject.attach_file('my_file.png', File.open(fixture_path + '/images/rails.png'))
+      subject.files.size.should == 1
+      file_node = Node.latest_version(subject.files.first)
+      file_node.file_name.should == 'my_file.png'
+      file_node.content.should == File.open(fixture_path + '/images/rails.png', "rb").read
+    end
   end
 
   it "should create a persistent_id when created" do

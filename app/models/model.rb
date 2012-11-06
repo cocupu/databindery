@@ -22,6 +22,8 @@ class Model < ActiveRecord::Base
       @model ||= Model.find(@data[:references])
     end
 
+
+
     private
     def method_missing(method, *args)
       if @data.has_key?(method)
@@ -66,6 +68,7 @@ class Model < ActiveRecord::Base
   end
 
 
+  FILE_ENTITY_CODE = 'FILE'
   include ActiveModel::ForbiddenAttributesProtection
   serialize :fields, Array 
   serialize :associations, Array 
@@ -77,18 +80,22 @@ class Model < ActiveRecord::Base
   has_many :nodes, :dependent => :destroy
 
   belongs_to :pool
-  validates :pool, presence: true
+  validates :pool, presence: true, :unless=>:code
 
   belongs_to :owner, class_name: "Identity", :foreign_key => 'identity_id'
-  validates :owner, presence: true
+  validates :owner, presence: true, :unless=>:code
 
   validates :label, :inclusion => {:in=> lambda {|foo| foo.keys }, :message=>"must be a field"}, :if=>Proc.new { |a| a.label }
 
   validate :association_cannot_be_named_undefined
 
-  def self.file_entity(owner)
-    name = 'File Entity'
-    Model.where(name: name, identity_id: owner.id).first_or_create(name: name, identity_id: owner.id)
+  # Return true if this model is the file_entity for this identity
+  def file_entity?
+    code == FILE_ENTITY_CODE
+  end
+
+  def self.file_entity
+    Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity")
   end
 
   def association_cannot_be_named_undefined

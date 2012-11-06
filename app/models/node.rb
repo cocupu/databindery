@@ -12,9 +12,17 @@ class Node < ActiveRecord::Base
 
   after_save :update_index
   after_destroy :remove_from_index
+  after_find :add_behaviors
 
   ## Id is our version, so this ensures that find_by_persistent_id always returns the most recent version
   default_scope order('id desc')
+
+  # If the type is "File Entity"
+  def add_behaviors
+    if model && model.file_entity?
+      extend FileEntity
+    end
+  end
 
   def to_param
     # Do we need to_key also?
@@ -45,6 +53,24 @@ class Node < ActiveRecord::Base
     n
   end
 
+  def attach_file(file_name, file)
+    node = Node.new
+    node.extend FileEntity
+    node.file_name = file_name
+    node.pool= pool
+    node.model= Model.file_entity
+    node.bucket = 'cocupu' # s3 bucket name
+    node.content = file.read
+    node.save!
+    associations['files'] ||= []
+    associations['files'] << node.persistent_id
+    update
+  end
+
+  def files
+    associations['files'] ||= []
+  end
+
   def to_solr() 
     doc = {'format'=>'Node', 'title'=> title, 'id' => persistent_id, 'version'=>id, 'model' => model.id, 'model_name' => model.name, 'pool' => pool_id}
     return doc if data.nil?
@@ -58,6 +84,7 @@ class Node < ActiveRecord::Base
   def title
     data[model.label].present? ? data[model.label] : persistent_id
   end
+
 
   def association_display
     serializable_hash(:only=>[:id, :persistent_id], :methods=>[:title])

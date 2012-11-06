@@ -7,9 +7,9 @@ describe Model do
 
   it "should have a file entity" do
     owner = FactoryGirl.create :identity
-    file_entity = Model.file_entity(owner)
+    file_entity = Model.file_entity
     file_entity.should be_kind_of Model
-    file_entity.owner.should == owner
+    file_entity.code.should == Model::FILE_ENTITY_CODE
   end
 
   it "should have many fields" do
