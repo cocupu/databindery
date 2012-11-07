@@ -8,19 +8,11 @@ GIT
       spreadsheet (> 0.6.4)
 
 GIT
-  remote: git://github.com/projectblacklight/blacklight.git
-  revision: bad4ac692b67305fbc0c45d4c9d5b2c61c82d1b3
-  ref: bad4ac69
+  remote: git://github.com/cocupu/client.git
+  revision: 9848f3f7968aab4b06dd3e1c2acc77f8e561d48f
   specs:
-    blacklight (3.7.2)
-      bootstrap-sass (~> 2.1.0)
-      kaminari (~> 0.13)
-      marc (>= 0.4.3, < 1.1)
-      nokogiri (~> 1.5)
-      rails (~> 3.1)
-      rsolr (~> 1.0.6)
-      sass-rails
-      unicode
+    cocupu (0.0.2)
+      httmultiparty (= 0.3.8)
 
 GEM
   remote: http://rubygems.org/
@@ -72,6 +64,15 @@ GEM
       nokogiri (>= 1.4.4)
       uuidtools (~> 2.1)
     bcrypt-ruby (3.0.1)
+    blacklight (4.0.0.pre3)
+      bootstrap-sass (~> 2.1.0)
+      kaminari (~> 0.13)
+      marc (>= 0.4.3, < 1.1)
+      nokogiri (~> 1.5)
+      rails (~> 3.1)
+      rsolr (~> 1.0.6)
+      sass-rails
+      unicode
     bootstrap-kaminari-views (0.0.2)
       kaminari (>= 0.13)
       rails (>= 3.1)
@@ -88,8 +89,6 @@ GEM
     carrot (1.2.0)
     childprocess (0.3.6)
       ffi (~> 1.0, >= 1.0.6)
-    cocupu (0.0.2)
-      httmultiparty (= 0.3.8)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
       railties (~> 3.2.0)
@@ -238,7 +237,7 @@ GEM
       rspec (~> 2.11.0)
     ruby-ole (1.2.11.4)
     rubyzip (0.9.9)
-    sass (3.2.1)
+    sass (3.2.2)
     sass-rails (3.2.5)
       railties (~> 3.2.0)
       sass (>= 3.1.10)
@@ -271,7 +270,7 @@ GEM
     treetop (1.4.12)
       polyglot
       polyglot (>= 0.3.1)
-    tzinfo (0.3.34)
+    tzinfo (0.3.35)
     uglifier (1.3.0)
       execjs (>= 0.3.0)
       multi_json (~> 1.0, >= 1.0.2)
@@ -294,13 +293,13 @@ PLATFORMS
 DEPENDENCIES
   amqp
   aws-sdk
-  blacklight!
+  blacklight (= 4.0.0.pre3)
   bootstrap-kaminari-views
   bootstrap-sass
   cancan
   capybara (>= 1.1.2)
   carrot
-  cocupu
+  cocupu!
   coffee-rails (~> 3.2.2)
   database_cleaner (>= 0.7.0)
   devise

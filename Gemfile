@@ -39,7 +39,7 @@ group :test, :development do
   gem "factory_girl_rails"
   gem 'jasmine'
   gem 'jasminerice'
-  gem 'cocupu' # The ruby client 
+  gem 'cocupu', github: 'cocupu/client' # The ruby client 
 end
 group :test do
   gem "database_cleaner", ">= 0.7.0"
@@ -51,6 +51,6 @@ gem "aws-sdk"
 gem "jettywrapper"
 gem "rsolr"
 gem "cancan"
-gem "blacklight", github: 'projectblacklight/blacklight', ref: 'bad4ac69'
+gem "blacklight", '4.0.0.pre3'
 
 gem "bootstrap-sass"

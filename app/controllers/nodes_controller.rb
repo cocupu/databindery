@@ -104,6 +104,16 @@ class NodesController < ApplicationController
   def attach_file
     @node = Node.find_by_persistent_id(params[:node_id])
     authorize! :attach_file, @node
+    if @pool.default_file_store.nil?
+      respond_to do |format|
+        error = "You must set up a file store before attaching a file"
+        format.html { redirect_to identity_pool_node_path(@identity, @pool, @node), :alert=>error   }
+        format.json { render :json=>{:status=>:error, :errors=>[error]}, :status=>:unprocessable_entity}
+      end
+      return
+    end
+
+
     new_version = @node.attach_file(params[:file_name], params[:file])
 
     respond_to do |format|

@@ -37,14 +37,15 @@ describe AssociationsController do
             @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
             @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
             @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {'name' => 'Simon & Schuster Ltd.'})
+            @file = FactoryGirl.create(:node, model: Model.file_entity, pool: pool, data: {})
             @book = FactoryGirl.create(:node, model: @book_model, pool: pool, 
-                    :associations=>{'authors'=>[@author1.persistent_id, @author2.persistent_id], 'undefined'=>[@publisher.persistent_id]})
+                    :associations=>{'authors'=>[@author1.persistent_id, @author2.persistent_id], 'undefined'=>[@publisher.persistent_id], 'files'=>[@file.persistent_id]})
           end
           it "should be successful" do
             get :index, :node_id=>@book.persistent_id, :format=>:json
             response.should be_success
             json = JSON.parse(response.body)
-            json.keys.should == ['authors', 'undefined']
+            json.keys.should == ['authors', 'undefined', 'files']
             json['authors'].should == [{"id"=>@author1.persistent_id,
                 "persistent_id"=>@author1.persistent_id,
                 "title"=>"Agatha Christie"},
@@ -53,6 +54,8 @@ describe AssociationsController do
                 "title"=>"Raymond Chandler"}]
             json['undefined'].should == [{'id'=>@publisher.persistent_id, "persistent_id"=>@publisher.persistent_id,
                 "title"=>'Simon & Schuster Ltd.'}]
+            json['files'].should == [{'id'=>@file.persistent_id, "persistent_id"=>@file.persistent_id,
+                "title"=>@file.persistent_id}]
           end
         end
       end

@@ -38,6 +38,13 @@ class AssociationsController < ApplicationController
         associations['undefined'] << node.association_display if node
       end
     end
+    associations['files'] = []
+    if @node.associations['files']
+      @node.associations['files'].each do |id| 
+        node = Node.find_by_persistent_id(id)
+        associations['files'] << node.association_display if node
+      end
+    end
     respond_to do |format|
       format.json do
         render json: associations.to_json()
