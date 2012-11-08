@@ -13,7 +13,7 @@ class S3Connection < ActiveRecord::Base
   end
 
   def get(bucket, file_name)
-    conn.buckets[bucket].objects[file_name].read
+    conn.buckets[bucket].objects[file_name]
   end
 
   private 

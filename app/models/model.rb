@@ -89,13 +89,20 @@ class Model < ActiveRecord::Base
 
   validate :association_cannot_be_named_undefined
 
+  def self.for_identity_and_pool(identity, pool)
+    # Cancan 1.6.8 was producing incorrect query, for accessible_by:
+    #SELECT "models".* FROM "models" INNER JOIN "pools" ON "pools"."id" = "models"."pool_id" WHERE (("models"."pool_id" IS NULL) OR ("pools"."owner_id" = 134))
+    # So, lets' write something custom:
+    Model.joins("LEFT OUTER JOIN pools ON models.pool_id = pools.id").where("(owner_id = ? AND pool_id = ?) OR pool_id is NULL", identity.id, pool.id)
+  end
+
   # Return true if this model is the file_entity for this identity
   def file_entity?
     code == FILE_ENTITY_CODE
   end
 
   def self.file_entity
-    Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity")
+    Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity", label:'file_name', fields: [{'code' => 'file_name', 'type' => 'textfield' }.with_indifferent_access] )
   end
 
   def association_cannot_be_named_undefined
@@ -116,7 +123,7 @@ class Model < ActiveRecord::Base
   end
 
   def keys
-    fields.map{|f| f[:code]}
+    fields.map{|f| f['code']}
   end
 
   def self.field_name(label)

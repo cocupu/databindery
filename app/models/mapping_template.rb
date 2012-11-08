@@ -25,7 +25,7 @@ class MappingTemplate < ActiveRecord::Base
       model_mapping[:field_mappings].each do |map|
         field_code = Model.field_name(map[:label])
         unless field_code.blank? 
-          model.fields << {code: field_code, :name=>map[:label]}
+          model.fields << {:code => field_code, :name =>map[:label]}.with_indifferent_access
           model.label= field_code if value[:label] == map[:source]
           map[:field] = field_code
         end

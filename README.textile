@@ -26,6 +26,9 @@ h2. Deploying
   I tried this one:
 <pre>gem install therubyracer</pre>
 
+# Install mp3 to ogg transcoding stuff:
+  sudo apt-get install mpg321 vorbis-tools
+
 h2. Jetty
 
 To install jetty run the generator:

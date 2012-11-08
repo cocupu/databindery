@@ -11,7 +11,7 @@ class PoolsController < ApplicationController
   def show
     respond_to do |format|
       format.html do
-        @models = @pool.models.accessible_by(current_ability) # for the js client
+        @models = Model.for_identity_and_pool(current_identity, @pool)
       end
       format.json { render :json=>@pool }
     end

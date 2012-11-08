@@ -5,7 +5,7 @@ describe Node do
     @pool = FactoryGirl.create :pool
     @ref = FactoryGirl.create(:model)
     subject.model = FactoryGirl.create(:model, 
-                      fields: [{code: 'first_name'}, {code: 'last_name'}, {code: 'title'}],
+                      fields: [{'code' => 'first_name'}, {'code' => 'last_name'}, {'code' => 'title'}],
                       label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: @ref.id}])
   end
 
@@ -47,7 +47,9 @@ describe Node do
     it "should store a list of attached files" do
       subject.files.size.should == 0
       subject.pool = @pool
-      subject.attach_file('my_file.png', File.open(fixture_path + '/images/rails.png'))
+      stub_ul = File.open(fixture_path + '/images/rails.png')
+      stub_ul.stub(:content_type => 'image/png')
+      subject.attach_file('my_file.png', stub_ul)
       subject.files.size.should == 1
       file_node = Node.latest_version(subject.files.first)
       file_node.file_name.should == 'my_file.png'

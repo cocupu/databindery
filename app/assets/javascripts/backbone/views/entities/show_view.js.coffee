@@ -44,12 +44,16 @@ class Cocupu.Views.Entities.ShowView extends Backbone.View
       elm = new Cocupu.Views.Entities.ShowFieldView(model: field).render().el
       self.$('form .form-actions').before(elm)
     )
-      
-    associations = new Cocupu.Models.Association
-    associations.url = '/nodes/' + @model.id + '/associations'
-    elm = new Cocupu.Views.Entities.ShowAssociationsView(model: associations, node: @model).render().el
-    this.$('.panel-body').append(elm)
-    associations.fetch()
+    if structure.get('code') == 'FILE' 
+      elm = new Cocupu.Views.Entities.ShowFileView(model: @model).render().el
+      this.$('.panel-body').append(elm)
+    else
+        
+      associations = new Cocupu.Models.Association
+      associations.url = '/nodes/' + @model.id + '/associations'
+      elm = new Cocupu.Views.Entities.ShowAssociationsView(model: associations, node: @model).render().el
+      this.$('.panel-body').append(elm)
+      associations.fetch()
     window.router.updateWidth()
 
   close: ->

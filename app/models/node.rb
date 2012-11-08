@@ -61,6 +61,7 @@ class Node < ActiveRecord::Base
     node.model= Model.file_entity
     node.bucket = 'cocupu' # s3 bucket name
     node.content = file.read
+    node.content_type = file.content_type
     node.save!
     associations['files'] ||= []
     associations['files'] << node.persistent_id
@@ -75,8 +76,8 @@ class Node < ActiveRecord::Base
     doc = {'format'=>'Node', 'title'=> title, 'id' => persistent_id, 'version'=>id, 'model' => model.id, 'model_name' => model.name, 'pool' => pool_id}
     return doc if data.nil?
     model.fields.each do |f|
-      doc[Node.solr_name(f[:code])] = data[f[:code]]
-      doc[Node.solr_name(f[:code], 'facet')] = data[f[:code]]
+      doc[Node.solr_name(f['code'])] = data[f['code']]
+      doc[Node.solr_name(f['code'], 'facet')] = data[f['code']]
     end
     doc
   end

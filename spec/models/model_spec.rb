@@ -10,6 +10,8 @@ describe Model do
     file_entity = Model.file_entity
     file_entity.should be_kind_of Model
     file_entity.code.should == Model::FILE_ENTITY_CODE
+    file_entity.fields.should == [{'code' => 'file_name', 'type'=>'textfield'}]
+    file_entity.label.should == 'file_name'
   end
 
   it "should have many fields" do

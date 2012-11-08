@@ -64,8 +64,25 @@ class NodesController < ApplicationController
 
   def show
     respond_to do |format|
-      format.html do
-        @models = Model.accessible_by(current_ability) # for the sidebar
+      format.mp3 do
+        if @node.model == Model.file_entity
+          send_data @node.content, :type=>@node.content_type, :disposition => 'inline'
+        else
+          render :file => "public/404", :status => :not_found, :layout=>nil
+        end
+      end
+      format.ogg do
+        if @node.model == Model.file_entity
+          require 'open3'
+          #mpg321 - -w -|oggenc - 
+          stdin, stdout, wait_thr = Open3.popen2('mpg321 - -w -|oggenc-')
+          stdin.write @node.content
+          stdin.close
+          send_data stdout.read, :type=>'ogg', :disposition => 'inline'
+          stdout.close
+        else
+          render :file => "public/404", :status => :not_found, :layout=>nil
+        end
       end
       format.json { render json: serialize_node(@node) }
     end

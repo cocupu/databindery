@@ -62,7 +62,6 @@ class Cocupu.Views.Models.EditView extends Backbone.View
     e.preventDefault()
     e.stopPropagation()
     $td = $(e.currentTarget)
-    console.log $td.attr('data-behavior')
     return if $td.attr('data-behavior') == 'editor'
     $td.attr('data-behavior', 'editor')
     text = $td.html()

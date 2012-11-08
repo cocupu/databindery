@@ -13,6 +13,10 @@ class Ability
 
       #The owner of the pool that these objects are in can read/edit/update the objects
       can [:read, :edit, :update], [Node, Model, Exhibit, MappingTemplate], :pool=>{ :owner_id => identity.id}
+      # Allow read access to models without a pool (e.g. Model.file_entity)
+      can :read, Model, :pool_id=>nil
+
+
       can :attach_file, Node, :pool=>{ :owner_id => identity.id}
       can :create, [Exhibit, Model, Node,  Pool, MappingTemplate, Chattel]
 

@@ -47,7 +47,7 @@ describe MappingTemplate do
       model = Model.first
       model.name.should == 'Talk'
       model.label.should == 'title'
-      model.fields.should == [{:code=>"file_name", :name=>"File Name"}, {:code=>"title", :name=>"Title"}]
+      model.fields.should == [{"code"=>"file_name", "name"=>"File Name"}, {"code"=>"title", "name"=>"Title"}]
 
       @template.row_start.should == 2
 

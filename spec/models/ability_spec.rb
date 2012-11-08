@@ -100,6 +100,12 @@ describe Ability do
       ability = Ability.new(FactoryGirl.create :identity)
       ability.can?(:read, @model).should_not be_true
     end
+    describe "that don't have an owner (File model)" do
+      it "are readable by anyone" do
+        ability = Ability.new(FactoryGirl.create :identity)
+        ability.can?(:read, Model.file_entity).should be_true
+      end
+    end
     it "can be updated by an owner" do
       ability = Ability.new(@model.pool.owner)
       ability.can?(:update, @model).should be_true
@@ -144,7 +150,7 @@ describe Ability do
   end
 
   describe "exhibits" do
-    before :all do
+    before do
       @exhibit = FactoryGirl.create :exhibit
       @owner = Ability.new(@exhibit.pool.owner)
       @non_owner = Ability.new(FactoryGirl.create :identity)
@@ -181,7 +187,7 @@ describe Ability do
   end
 
   describe "identities" do
-    before :all do
+    before do
       @identity = FactoryGirl.create :identity
       @owner = Ability.new(@identity)
       @non_owner = Ability.new(FactoryGirl.create :identity)

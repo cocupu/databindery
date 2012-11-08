@@ -16,10 +16,10 @@ describe CatalogController do
     @exhibit.save!
     @model1 = FactoryGirl.create(:model, :name=>"Mods and Rockers", :pool=>@exhibit.pool)
 
-    @model1.fields = [{code: 'f1', name: 'Field good'}, {code: 'f2', name: "Another one"}]
+    @model1.fields = [{code: 'f1', name: 'Field good'}.with_indifferent_access, {code: 'f2', name: "Another one"}.with_indifferent_access]
     @model1.save!
     @model2 = FactoryGirl.create(:model, :pool=>@exhibit.pool)
-    @model2.fields = [{code: 'style', name: 'Style'}, {code: 'label', name: "Label"}, {code: 'f2', name: "Another one"}]
+    @model2.fields = [{code: 'style', name: 'Style'}.with_indifferent_access, {code: 'label', name: "Label"}.with_indifferent_access, {code: 'f2', name: "Another one"}.with_indifferent_access]
 
     #TODO ensure that code is unique for all fields in a pool, so that Author.name is separate from Book.name
     @model2.save!

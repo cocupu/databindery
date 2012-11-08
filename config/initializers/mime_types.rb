@@ -5,6 +5,8 @@ Mime::Type.register "application/marc", :marc
 Mime::Type.register "application/marcxml+xml", :marcxml, 
       ["application/x-marc+xml", "application/x-marcxml+xml", 
        "application/marc+xml"]
+Mime::Type.register 'audio/mpeg' , :mp3
+Mime::Type.register 'audio/ogg' , :ogg
 
 
 # Add new mime types for use in respond_to blocks:

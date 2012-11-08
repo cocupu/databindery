@@ -3,9 +3,9 @@ class ModelsController < ApplicationController
 
   load_and_authorize_resource :pool, :only=>[:create, :index], :find_by => :short_name
   load_and_authorize_resource :only=>[:show, :new, :edit]
-  load_and_authorize_resource :through=>:pool, :only=>[:index]
 
   def index
+    @models = Model.for_identity_and_pool(current_identity, @pool)
     respond_to do |format|
       format.html {}
       format.json do
@@ -65,6 +65,8 @@ class ModelsController < ApplicationController
   private
 
   def serialize_model(m)
-    {id: m.id, url: model_path(m), pool: m.pool.short_name, identity: m.pool.owner.short_name, associations: m.associations, fields: m.fields, name: m.name, label: m.label }
+    json = {id: m.id, url: model_path(m), associations: m.associations, fields: m.fields, name: m.name, label: m.label }
+    json.merge!(pool: m.pool.short_name, identity: m.pool.owner.short_name) if m.pool
+    json
   end
 end

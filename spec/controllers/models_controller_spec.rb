@@ -19,28 +19,36 @@ describe ModelsController do
     describe "when logged on" do
       before do
         sign_in @identity.login_credential
+        @file_model = Model.file_entity
       end
       it "should be successful" do
         get :index, :identity_id=>@identity.short_name, :pool_id=>@pool.short_name
         response.should  be_successful
-        assigns[:models].should == [@my_model]
+        assigns[:models].size.should == 2
+        assigns[:models].should include @my_model, @file_model
       end
       it "should return json" do
         get :index, :identity_id=>@identity.short_name, :pool_id=>@pool.short_name, :format=>:json
         response.should  be_successful
         json = JSON.parse(response.body)
         json.should ==  [{"id"=>@my_model.id,
-          "associations"=>[],
-          "identity" =>@identity.short_name,
-          "pool" =>@pool.short_name,
           "url"=>"/models/#{@my_model.id}", 
+          "associations"=>[],
           "fields"=>
            [{"name"=>"Description",
              "type"=>"Text Field",
              "uri"=>"dc:description",
              "code"=>"description"}],
           "name"=>@my_model.name,
-          "label"=>nil}]
+          "label"=>nil,
+          "pool" =>@pool.short_name,
+          "identity" =>@identity.short_name },
+          {"id"=>@file_model.id,
+          "url"=>"/models/#{@file_model.id}", 
+          "associations"=>[],
+          "fields"=> [{"code"=>"file_name", "type"=>"textfield"}],
+          "name"=>@file_model.name,
+          "label"=>"file_name"}]
       end
     end
   end

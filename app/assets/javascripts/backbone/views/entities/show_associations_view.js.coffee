@@ -21,6 +21,10 @@ class Cocupu.Views.Entities.ShowAssociationsView extends Backbone.View
     # any undefined associations
     elm = new Cocupu.Views.Entities.ShowAssociationView(model: {code: 'undefined', name: 'Uncategorized'}, node: self.options.node, values: @model.attributes['undefined']).render().el
     $(@el).append(elm)
+
+    # any file associations
+    elm = new Cocupu.Views.Entities.ShowAssociationView(model: {code: 'files', name: 'Files'}, node: self.options.node, values: @model.attributes['files']).render().el
+    $(@el).append(elm)
     window.router.updateWidth()
     
 
