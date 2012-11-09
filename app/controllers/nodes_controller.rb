@@ -74,12 +74,18 @@ class NodesController < ApplicationController
       format.ogg do
         if @node.model == Model.file_entity
           require 'open3'
-          #mpg321 - -w -|oggenc - 
-          stdin, stdout, wait_thr = Open3.popen2('mpg321 - -w -|oggenc-')
+          ## by default rails sets the encoding to UTF_8, this causes a UndefinedConversionError
+          ## when dealing with binary data.
+          Encoding.default_internal = nil
+          ## run mpg321 reading from stdin, in quiet mode, encoding to wav
+          ## take that stream and encode it with oggenc in quiet mode 
+          ## read the output (stdout) and stream it to the web client
+          stdin, stdout, wait_thr = Open3.popen2('mpg321 - -q -w -|oggenc - -Q')
           stdin.write @node.content
           stdin.close
           send_data stdout.read, :type=>'ogg', :disposition => 'inline'
           stdout.close
+          Encoding.default_internal = Encoding::UTF_8 #Restore default expected by rails
         else
           render :file => "public/404", :status => :not_found, :layout=>nil
         end
