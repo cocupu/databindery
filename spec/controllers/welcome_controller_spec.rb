@@ -15,14 +15,13 @@ describe WelcomeController do
     describe "when logged on" do
       before do
         @identity = FactoryGirl.create :identity
-        pool = FactoryGirl.create :pool, :owner=>@identity
-        @exhibit = FactoryGirl.create(:exhibit, pool: pool)
+        @pool = FactoryGirl.create :pool, :owner=>@identity
         sign_in @identity.login_credential
       end
       it "should be successful" do
         get :index 
         response.should render_template("dashboard") 
-        assigns[:exhibits].should == [@exhibit]
+        assigns[:pools].should == [@pool]
       end
     end
   end

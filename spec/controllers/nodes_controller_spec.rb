@@ -15,7 +15,7 @@ describe NodesController do
     it "should load the model and its nodes" do
       get :index, :model_id => @model, pool_id: @pool, identity_id: @identity
       response.should be_success
-      assigns[:model].should be_kind_of Model
+      assigns[:model].should == @model
       assigns[:nodes].should include(@node1, @node2) 
       assigns[:nodes].should_not include(@different_pool_node) 
       assigns[:nodes].should_not include(@different_model_node) 

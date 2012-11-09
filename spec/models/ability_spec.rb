@@ -5,22 +5,57 @@ describe Ability do
     before do
       @pool = FactoryGirl.create :pool
     end
-    it "are readable by their owner" do
-      ability = Ability.new(@pool.owner)
-      ability.can?(:read, @pool).should be_true
+    describe "accessed by their owner" do
+      let :ability  do
+         Ability.new(@pool.owner)
+      end
+      it "are readable" do
+        ability.can?(:read, @pool).should be_true
+      end
+      it "can be updated" do
+        ability.can?(:update, @pool).should be_true
+      end
     end
-    it "are not readable by a non-owner" do
-      ability = Ability.new(FactoryGirl.create :identity)
-      ability.can?(:read, @pool).should_not be_true
+
+    describe "accessed by a non-owner" do
+      before do
+        @non_owner = FactoryGirl.create(:identity)
+      end
+      let :ability do
+        ability = Ability.new(@non_owner)
+      end
+      describe "with read access" do
+        before do
+          AccessControl.create!(identity: @non_owner, pool: @pool, access: 'READ')
+        end
+        it "are readable" do
+          ability.can?(:read, @pool).should be_true
+        end
+        it "are not editable" do
+          ability.can?(:edit, @pool).should_not be_true
+          ability.can?(:update, @pool).should_not be_true
+        end
+      end
+      describe "with edit access" do
+        before do
+          AccessControl.create!(identity: @non_owner, pool: @pool, access: 'EDIT')
+        end
+        it "are readable" do
+          ability.can?(:read, @pool).should be_true
+        end
+        it "are editable" do
+          ability.can?(:edit, @pool).should be_true
+          ability.can?(:update, @pool).should be_true
+        end
+      end
+      it "are not readable" do
+        ability.can?(:read, @pool).should_not be_true
+      end
+      it "are not updatable" do
+        ability.can?(:update, @pool).should_not be_true
+      end
     end
-    it "can be updated by an owner" do
-      ability = Ability.new(@pool.owner)
-      ability.can?(:update, @pool).should be_true
-    end
-    it "can't be updated by a non-owner" do
-      ability = Ability.new(FactoryGirl.create :identity)
-      ability.can?(:update, @pool).should_not be_true
-    end
+
     it "can be created by a logged in user" do
       ability = Ability.new(FactoryGirl.create :identity)
       ability.can?(:create, Pool).should be_true
@@ -30,6 +65,7 @@ describe Ability do
       ability.can?(:create, Pool).should_not be_true
     end
   end
+
   describe "chattels" do
     before do
       @ss = FactoryGirl.create :spreadsheet
@@ -123,6 +159,8 @@ describe Ability do
       ability.can?(:create, Model).should_not be_true
     end
   end
+
+
   describe "nodes" do
     before do
       @node = FactoryGirl.create :node
@@ -131,21 +169,55 @@ describe Ability do
       ability = Ability.new(FactoryGirl.create :identity)
       ability.can?(:create, Node).should be_true
     end
-    it "are readable by the owner of the pool they are in" do
-      ability = Ability.new(@node.pool.owner)
-      ability.can?(:read, @node).should be_true
+    describe "accessed by a non-owner of the pool they are in" do
+      before do
+        @non_owner = FactoryGirl.create(:identity)
+      end
+      let :ability do
+        ability = Ability.new(@non_owner)
+      end
+      describe "with read access" do
+        before do
+          AccessControl.create!(identity: @non_owner, pool: @node.pool, access: 'READ')
+        end
+        it "are readable" do
+          ability.can?(:read, @node).should be_true
+        end
+        it "are not editable" do
+          ability.can?(:edit, @node).should_not be_true
+          ability.can?(:update, @node).should_not be_true
+        end
+      end
+      describe "with edit access" do
+        before do
+          AccessControl.create!(identity: @non_owner, pool: @node.pool, access: 'EDIT')
+        end
+        it "are readable" do
+          ability.can?(:read, @node).should be_true
+        end
+        it "are editable" do
+          ability.can?(:edit, @node).should be_true
+          ability.can?(:update, @node).should be_true
+        end
+      end
+
+      it "are not readable" do
+        ability.can?(:read, @node).should_not be_true
+      end
+      it "are not updatable" do
+        ability.can?(:update, @node).should_not be_true
+      end
     end
-    it "are not readable by a non-owner of the pool" do
-      ability = Ability.new(FactoryGirl.create :identity)
-      ability.can?(:read, @node).should_not be_true
-    end
-    it "can be updated by an owner" do
-      ability = Ability.new(@node.pool.owner)
-      ability.can?(:update, @node).should be_true
-    end
-    it "can't be updated by a non-owner" do
-      ability = Ability.new(FactoryGirl.create :identity)
-      ability.can?(:update, @node).should_not be_true
+    describe "accessed by the owner of the pool they are in" do
+      let :ability do
+        ability = Ability.new(@node.pool.owner)
+      end
+      it "are readable by the owner of the pool they are in" do
+        ability.can?(:read, @node).should be_true
+      end
+      it "can be updated by an owner" do
+        ability.can?(:update, @node).should be_true
+      end
     end
   end
 

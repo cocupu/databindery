@@ -8,13 +8,13 @@ class NodesController < ApplicationController
     if params[:model_id]
       @model = Model.find(params[:model_id])
       authorize! :read, @model
-      @nodes = @model.nodes.accessible_by(current_ability)
+      @nodes = @model.nodes.where("nodes.pool_id = ?", @pool)
     else
-      @nodes = Node.accessible_by(current_ability)
+      @nodes = @pool.nodes
     end
     respond_to do |format|
       format.html do
-        @models = Model.accessible_by(current_ability) # for the sidebar
+        @models = @pool.models
       end
       format.json do
         render json: 
@@ -34,8 +34,8 @@ class NodesController < ApplicationController
     fq += " AND model:#{@model.id}" if @model
     fq += " AND format:Node"
 
-    ## TODO need a better way to get the query fields.  Not all these models are necessarily in this pool
-    query_fields = Model.accessible_by(current_ability).map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
+    ## TODO do we need to add query_fields for File entities?
+    query_fields = @pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
     (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', :fq=>fq, :rows=>10, 'facet.field' => ['name_s', 'model']})
     
     #puts "solr_response: #{solr_response.docs}"
@@ -50,7 +50,7 @@ class NodesController < ApplicationController
   end
 
   def new
-    @models = Model.accessible_by(current_ability)
+    @models = @pool.models
     ## IF params[:binding] is passed, they are binding a file.
     ## ELSE IF params[:model_id] is passed, they are creating a new entity.
     if params[:binding] 
@@ -98,7 +98,7 @@ class NodesController < ApplicationController
     authorize! :create, Node
     @node = Node.new(params.require(:node).permit(:binding, :data, :associations))
     begin
-      model = Model.accessible_by(current_ability).find(params[:node][:model_id])
+      model = @pool.models.find(params[:node][:model_id])
     rescue ActiveRecord::RecordNotFound 
       #User didn't have access to the model they were trying to set.
       redirect_to new_identity_pool_node_path(@identity, @pool, :binding=>@node.binding)

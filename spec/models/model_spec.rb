@@ -5,6 +5,43 @@ describe Model do
     subject.name = "Test Name"
   end
 
+
+  describe "#for_identity" do
+    before do
+      @pool = FactoryGirl.create(:pool_with_models)
+      @pool.models.size.should == 5
+    end
+    describe "for a pool owner" do
+      it "should return all the models in the pool" do
+        Model.for_identity(@pool.owner).size.should == 5
+      end
+    end
+    describe "for a non-pool owner" do
+      before do
+        @non_owner = FactoryGirl.create(:identity)
+      end
+      describe "for a user with read-access on the pool" do
+        before do
+          AccessControl.create!(identity: @non_owner, pool: @pool, access: 'READ')
+        end
+        it "should return all the models in the pool" do
+          Model.for_identity(@non_owner).size.should == 5
+        end
+      end
+      describe "for a user with edit-access on the pool" do
+        before do
+          AccessControl.create!(identity: @non_owner, pool: @pool, access: 'EDIT')
+        end
+        it "should return all the models in the pool" do
+          Model.for_identity(@non_owner).size.should == 5
+        end
+      end
+      it "should return an empty set" do
+        Model.for_identity(@non_owner) == []
+      end
+    end
+  end
+
   it "should have a file entity" do
     owner = FactoryGirl.create :identity
     file_entity = Model.file_entity

@@ -96,6 +96,15 @@ class Model < ActiveRecord::Base
     Model.joins("LEFT OUTER JOIN pools ON models.pool_id = pools.id").where("(owner_id = ? AND pool_id = ?) OR pool_id is NULL", identity.id, pool.id)
   end
 
+  def self.for_identity(identity)
+    # Cancan 1.6.8 was producing incorrect query, for accessible_by:
+    #SELECT "models".* FROM "models" INNER JOIN "pools" ON "pools"."id" = "models"."pool_id" WHERE (("models"."pool_id" IS NULL) OR ("pools"."owner_id" = 134))
+    # So, lets' write something custom:
+    Model.joins("LEFT OUTER JOIN pools ON models.pool_id = pools.id\n" +
+    "LEFT OUTER JOIN access_controls ON access_controls.pool_id = models.pool_id").where("(owner_id = ?) OR models.pool_id is NULL OR access_controls.identity_id = ?", identity.id, identity.id)
+  end
+
+
   # Return true if this model is the file_entity for this identity
   def file_entity?
     code == FILE_ENTITY_CODE

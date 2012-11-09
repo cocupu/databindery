@@ -41,7 +41,7 @@ class ModelsController < ApplicationController
   end
 
   def edit
-    @models = Model.accessible_by(current_ability) # for the sidebar
+    @models = Model.for_identity(current_identity) # for the sidebar
     @field = {name: '', type: '', uri: '', multivalued: false}
     @association= {name: '', type: '', references: ''}
     @association_types = Model::Association::TYPES

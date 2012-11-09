@@ -26,7 +26,7 @@ describe PoolsController do
       end
       it "should return json" do
         get :index, identity_id: @identity.short_name, format: :json
-        response.should  be_successful
+        response.should be_successful
         JSON.parse(response.body).should == [{"short_name"=>@my_pool.short_name, "url"=>"/#{@identity.short_name}/#{@my_pool.short_name}"}]
       end
     end

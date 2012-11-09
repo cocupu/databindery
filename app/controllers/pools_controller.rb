@@ -1,7 +1,10 @@
 class PoolsController < ApplicationController
-  load_and_authorize_resource :find_by => :short_name, :through=>:identity, :except=>[:update, :create]
+  load_resource :identity, :find_by => :short_name, :only=>[:index, :show]
+  load_and_authorize_resource :find_by => :short_name, :through=>:identity, :only=>:show
 
   def index
+    ### This query finds all the pools belonging to @identity that can be seen by current_identity
+    @pools = Pool.for_identity(current_identity).where(:owner_id => @identity)
     respond_to do |format|
       format.html {}
       format.json { render :json=>@pools.map {|i| {short_name: i.short_name, url: identity_pool_path(i.owner, i)}} }
@@ -9,9 +12,10 @@ class PoolsController < ApplicationController
   end
 
   def show
+    authorize! :show, @pool
     respond_to do |format|
       format.html do
-        @models = Model.for_identity_and_pool(current_identity, @pool)
+        @models = @pool.models + [Model.file_entity]
       end
       format.json { render :json=>@pool }
     end
