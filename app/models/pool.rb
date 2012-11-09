@@ -14,7 +14,8 @@ class Pool < ActiveRecord::Base
   def self.for_identity(identity)
     # Cancan 1.6.8 was producing incorrect query, for accessible_by so,
     # lets' write something custom:
-    Pool.joins("LEFT OUTER JOIN access_controls ON access_controls.pool_id = pools.id").where("(owner_id = ?) OR access_controls.identity_id = ? ", identity.id, identity.id)
+    # Must call unique or the owner will get multiple rows
+    Pool.joins("LEFT OUTER JOIN access_controls ON access_controls.pool_id = pools.id").where("(owner_id = ?) OR access_controls.identity_id = ? ", identity.id, identity.id).uniq
   end
 
   
