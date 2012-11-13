@@ -1,4 +1,4 @@
-<h1>Create a new pool</h1>
+<h1>Edit pool</h1>
 <form>
   <div class="control-group">
     <label for="name">Name</label>
@@ -14,6 +14,23 @@
     <label for="description">Description</label>
     <textarea name="description"><%=description %></textarea>
   </div>
+
+  <table class="permissions">
+     <tr><th>User</th><th>Access</th></tr>
+     <% for (var c = 0; c < access_controls.length; c++) { %>
+       <tr class="template"><td><input name="permission_identity[<%= c %>]" value="<%=access_controls[c].identity %>"/></td>
+       <td><select name="permission_access[<%= c %>]" class="permission-access">
+          <option value="NONE">No access</option>
+          <option value="READ"<%= access_controls[c].access == "READ" ? " selected" : "" %>>Read-only</option>
+          <option value="EDIT"<%= access_controls[c].access == "EDIT" ? " selected" : "" %>>Read and Write</option>
+       </select></td></tr>
+     <% } %>
+     
+     <tr class="template"><td><input name="permission_identity_new"/></td>
+       <td><select name="permission_access_new" class="permission-access"><option value="READ">Read-only</option><option value="EDIT">Read and Write</option></select></td></tr>
+
+  </table>
+
   <div class="form-actions">
     <button type="submit" class="btn btn-primary">Save</button>
   </div>

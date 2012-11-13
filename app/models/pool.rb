@@ -34,4 +34,11 @@ class Pool < ActiveRecord::Base
   def default_file_store
     s3_connections.first
   end
+
+  # Serialize the pool and it's access_controls to a basic datastruture.
+  def as_json(opts = nil)
+    h = super
+    h['access_controls'] = access_controls.map {|ac| {'identity' => ac.identity.short_name, 'access' => ac.access  }}
+    h
+  end
 end

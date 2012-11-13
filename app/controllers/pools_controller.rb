@@ -41,6 +41,12 @@ class PoolsController < ApplicationController
     identity = current_user.identities.where(:short_name=>params[:identity_id]).first!
     @pool = identity.pools.find_by_short_name(params[:id])
     authorize! :update, @pool
+    @pool.access_controls = []
+    params[:pool][:access_controls].each do |ac|
+      ident = Identity.where(short_name: ac[:identity]).first
+      next if !ident or !['EDIT', 'READ'].include?(ac[:access]) ## TODO add error?
+      @pool.access_controls.build identity: ident, access: ac[:access]
+    end
     @pool.update_attributes(params.require(:pool).permit(:description, :name, :short_name))
     respond_to do |format|
       format.html { redirect_to identity_pool_path(@identity.short_name, @pool), :notice=>"#{@pool.name} updated" }

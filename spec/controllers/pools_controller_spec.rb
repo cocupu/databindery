@@ -64,11 +64,16 @@ describe PoolsController do
         end
       end
       describe "requesting a pool I own" do
+        before do
+          @other_identity = FactoryGirl.create(:identity)
+          AccessControl.create!(:pool=>@my_pool, :identity=>@other_identity, :access=>'EDIT')
+        end
         it "should be successful when rendering json" do
           get :show, :id=>@my_pool, :format=>:json, identity_id: @identity.short_name
           response.should  be_successful
           json = JSON.parse(response.body)
           json['id'].should == @my_pool.id
+          json['access_controls'].should == [{'identity' => @other_identity.short_name, 'access'=>'EDIT'} ]
         end
       end
     end
@@ -113,19 +118,26 @@ describe PoolsController do
 
     describe "when logged on" do
       before do
+        @another_identity = FactoryGirl.create(:identity)
+        @another_identity2 = FactoryGirl.create(:identity)
         sign_in @identity.login_credential
       end
       it "should be successful when rendering json" do
-        put :update, :pool=>{:name=>"ReName", :short_name=>'updated_pool'}, :format=>:json, identity_id: @identity.short_name, :id=>@my_pool
+        put :update, :pool=>{:name=>"ReName", :short_name=>'updated_pool', 
+            :access_controls=>[{identity: @another_identity.short_name, access: 'EDIT'},
+                {identity: @another_identity2.short_name, access: 'NONE'}]},
+            :format=>:json, identity_id: @identity.short_name, :id=>@my_pool
         response.should  be_successful
         @my_pool.reload
         @my_pool.owner.should == @identity
         @my_pool.name.should == "ReName"
         @my_pool.short_name.should == "updated_pool"
+        @my_pool.access_controls.size.should == 1
+        @my_pool.access_controls.first.identity.should == @another_identity
+        @my_pool.access_controls.first.access.should == "EDIT"
       end
       it "should give an error when don't have access to that identity" do
-        put :update, :pool=>{:name=>"New Pool", :short_name=>'new_pool'}, :format=>:json, identity_id: FactoryGirl.create(:identity).short_name, :id=>@my_pool
-        #put :update, :pool=>{:name=>"New Pool"}, :format=>:json, identity_id: FactoryGirl.create(:identity).short_name, :id=>@my_pool
+        put :update, :pool=>{:name=>"New Pool", :short_name=>'new_pool'}, :format=>:json, identity_id: @another_identity.short_name, :id=>@my_pool
         response.should be_not_found
         json = JSON.parse(response.body)
         json['message'].should == "Resource not found"
