@@ -7,7 +7,7 @@ h2. TL;DR.
 <pre>
   rake db:create
   rake db:migrate
-  rails g cocupu:jetty
+  rails g bindery:jetty
   rake jetty:start
   rake spec
   unicorn_rails
@@ -32,7 +32,7 @@ h2. Deploying
 h2. Jetty
 
 To install jetty run the generator:
-<pre>rails g cocupu:jetty</pre>
+<pre>rails g bindery:jetty</pre>
 $ cp contrib/analysis-extras/lib/icu4j-4_8_1_1.jar lib/
 $ cp contrib/analysis-extras/lucene-libs/*.jar lib/
 $ cp contrib/velocity/lib/*.jar lib/
