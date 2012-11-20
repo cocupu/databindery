@@ -25,3 +25,5 @@ public/system
 *.swo
 
 .DS_Store
+
+config/client_secrets.json
