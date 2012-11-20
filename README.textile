@@ -29,7 +29,7 @@ h2. Deploying
 # Install mp3 to ogg transcoding stuff:
   sudo apt-get install mpg321 vorbis-tools
 
-# Copy config/client_secrets.json.example to config/client_secrets.json and put in appropriate values
+# Copy config/client_secrets.json.example to config/client_secrets.json and put in appropriate values.  Get the values from here: https://code.google.com/apis/console/b/3/?pli=1#project:840123515072:access
 
 h2. Jetty
 
