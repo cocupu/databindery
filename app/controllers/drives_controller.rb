@@ -12,7 +12,7 @@ class DrivesController < ApplicationController
       authorize_code(params[:code])
     end	
     unless authorized?
-      self.current_pool = params[:pool_id] if params[:pool_id]
+      session[:pool_id] = params[:pool_id] if params[:pool_id]
       self.stashed_identity = params[:identity_id] if params[:identity_id]
       respond_to do |format|
         format.json do
@@ -26,7 +26,7 @@ class DrivesController < ApplicationController
     end
 
     if !params[:pool_id]
-      redirect_to identity_pool_path(stashed_identity.short_name, current_pool, :anchor=>'drive')
+      redirect_to identity_pool_path(session[:short_name], session[:pool_id], :anchor=>'drive')
       return
     end
 

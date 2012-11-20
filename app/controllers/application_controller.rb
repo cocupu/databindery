@@ -44,7 +44,7 @@ class ApplicationController < ActionController::Base
   ## Just assuming the first pool for now.  Later we may allow the user to pick the pool to use.
   def current_pool
     return nil if current_user.nil?
-    session[:pool_id] ? Pool.find(session[:pool_id]) : current_user.identities.first.pools.first
+    session[:pool_id] ? Pool.where(:short_name=>session[:pool_id]) : current_user.identities.first.pools.first
   end
 
   def current_pool= (pool_id)
