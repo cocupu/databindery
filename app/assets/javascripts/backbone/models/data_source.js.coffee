@@ -20,7 +20,7 @@ class Cocupu.Models.DataSource extends Backbone.Model
 class Cocupu.Collections.DataSourcesCollection extends Backbone.Collection
   model: Cocupu.Models.DataSource
   url: ->
-    '/pools/' + window.router.pool.id + '/drives'
+    '/' + window.router.identity + '/' + window.router.pool.short_name + '/drives'
 
 
   initialize: (attributes, options) ->

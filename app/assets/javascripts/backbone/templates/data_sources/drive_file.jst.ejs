@@ -1,7 +1,7 @@
 <td><%= title %></td>
 <td>
   <% if (type == 'spreadsheet') { %>
-    <a href="<%=  "/pools/" + window.router.pool.id + "/drives/spawn?id=" + id %>">Spawn</a>
+    <a href="<%=  '/' + window.router.identity + '/' + window.router.pool.short_name + "/drives/spawn?id=" + id %>">Spawn</a>
   <% } %>
 </td>
 <td><%= owner %></td>
