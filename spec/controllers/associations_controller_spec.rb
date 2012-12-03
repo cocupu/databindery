@@ -29,7 +29,7 @@ describe AssociationsController do
             @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
                 fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
                 owner: @identity)#, :associations=>[{:name=>'books', :type=>'Belongs To', :references=>@book_model.id}])
-            @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations => [{:name=>'authors', :type=>'Ordered List', :references=>@author_model.id}])
+            @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations => [{:name=>'Contributing Authors', :code=>'contributing_authors', :type=>'Ordered List', :references=>@author_model.id}])
             @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name', 
                 fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"name"}.with_indifferent_access],
                 owner: @identity)
@@ -39,14 +39,14 @@ describe AssociationsController do
             @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {'name' => 'Simon & Schuster Ltd.'})
             @file = FactoryGirl.create(:node, model: Model.file_entity, pool: pool, data: {})
             @book = FactoryGirl.create(:node, model: @book_model, pool: pool, 
-                    :associations=>{'authors'=>[@author1.persistent_id, @author2.persistent_id], 'undefined'=>[@publisher.persistent_id], 'files'=>[@file.persistent_id]})
+                    :associations=>{'contributing_authors'=>[@author1.persistent_id, @author2.persistent_id], 'undefined'=>[@publisher.persistent_id], 'files'=>[@file.persistent_id]})
           end
           it "should be successful" do
             get :index, :node_id=>@book.persistent_id, :format=>:json
             response.should be_success
             json = JSON.parse(response.body)
-            json.keys.should == ['authors', 'undefined', 'files']
-            json['authors'].should == [{"id"=>@author1.persistent_id,
+            json.keys.should == ['Contributing Authors', 'undefined', 'files']
+            json['Contributing Authors'].should == [{"id"=>@author1.persistent_id,
                 "persistent_id"=>@author1.persistent_id,
                 "title"=>"Agatha Christie"},
                {"id"=>@author2.persistent_id,

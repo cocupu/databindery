@@ -97,6 +97,36 @@ class Node < ActiveRecord::Base
     hash
   end
 
+  def associations_for_json
+    output = {}
+    model.associations.each do |a|
+      assoc_name = a[:name]
+      assoc_code = a[:code]
+      output[assoc_name] = []
+      if associations[assoc_code]
+        associations[assoc_code].each do |id|
+          node = Node.find_by_persistent_id(id)
+          output[assoc_name] <<  node.association_display if node
+        end
+      end
+    end
+    output['undefined'] = []
+    if associations['undefined']
+      associations['undefined'].each do |id| 
+        node = Node.find_by_persistent_id(id)
+        output['undefined'] << node.association_display if node
+      end
+    end
+    output['files'] = []
+    if associations['files']
+      associations['files'].each do |id| 
+        node = Node.find_by_persistent_id(id)
+        output['files'] << node.association_display if node
+      end
+    end
+    output
+  end
+
   def self.solr_name(field_name, type="text")
     suffix = case type
       when "text"

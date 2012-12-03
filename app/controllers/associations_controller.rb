@@ -20,34 +20,9 @@ class AssociationsController < ApplicationController
   end
 
   def index
-    model = @node.model
-    associations = {}
-    model.associations.map{|a| a[:name]}.each do |assoc_name|
-      associations[assoc_name] = []
-      if @node.associations[assoc_name]
-        @node.associations[assoc_name].each do |id|
-          node = Node.find_by_persistent_id(id)
-          associations[assoc_name] <<  node.association_display if node
-        end
-      end
-    end
-    associations['undefined'] = []
-    if @node.associations['undefined']
-      @node.associations['undefined'].each do |id| 
-        node = Node.find_by_persistent_id(id)
-        associations['undefined'] << node.association_display if node
-      end
-    end
-    associations['files'] = []
-    if @node.associations['files']
-      @node.associations['files'].each do |id| 
-        node = Node.find_by_persistent_id(id)
-        associations['files'] << node.association_display if node
-      end
-    end
     respond_to do |format|
       format.json do
-        render json: associations.to_json()
+        render json: @node.associations_for_json.to_json()
       end
     end
   end
