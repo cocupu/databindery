@@ -51,6 +51,8 @@ gem "aws-sdk"
 gem "jettywrapper"
 gem "rsolr"
 gem "cancan"
-gem "blacklight", '4.0.0.pre3'
+gem "blacklight", '4.0.0'
 
 gem "bootstrap-sass"
+
+gem "unicode", :platforms => [:mri_18, :mri_19]

@@ -64,15 +64,14 @@ GEM
       nokogiri (>= 1.4.4)
       uuidtools (~> 2.1)
     bcrypt-ruby (3.0.1)
-    blacklight (4.0.0.pre3)
+    blacklight (4.0.0)
       bootstrap-sass (~> 2.1.0)
       kaminari (~> 0.13)
       marc (>= 0.4.3, < 1.1)
       nokogiri (~> 1.5)
-      rails (~> 3.1)
+      rails (~> 3.2)
       rsolr (~> 1.0.6)
       sass-rails
-      unicode
     bootstrap-kaminari-views (0.0.2)
       kaminari (>= 0.13)
       rails (>= 3.1)
@@ -293,7 +292,7 @@ PLATFORMS
 DEPENDENCIES
   amqp
   aws-sdk
-  blacklight (= 4.0.0.pre3)
+  blacklight (= 4.0.0)
   bootstrap-kaminari-views
   bootstrap-sass
   cancan
@@ -324,5 +323,6 @@ DEPENDENCIES
   strong_parameters
   therubyracer
   uglifier (>= 1.2.3)
+  unicode
   unicorn
   uuid
