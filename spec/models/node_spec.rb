@@ -39,6 +39,41 @@ describe Node do
     new_subject.associations.should == { 'authors' =>[ 123, 3232, 888], 'undefined' =>[882]}
   end
 
+  describe "associations_for_json" do
+    before do
+      @identity = FactoryGirl.create :identity
+      pool = FactoryGirl.create :pool, :owner=>@identity
+      @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
+          fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
+          owner: @identity)#, :associations=>[{:name=>'books', :type=>'Belongs To', :references=>@book_model.id}])
+      subject.model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations => [{:name=>'Contributing Authors', :code=>'contributing_authors', :type=>'Ordered List', :references=>@author_model.id}])
+      @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
+      @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
+      @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name', 
+          fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"name"}.with_indifferent_access],
+          owner: @identity)
+      @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {'name' => 'Simon & Schuster Ltd.'})
+      @file = FactoryGirl.create(:node, model: Model.file_entity, pool: pool, data: {})
+      subject.associations['contributing_authors'] = [@author1.persistent_id, @author2.persistent_id]
+      subject.associations['undefined'] = [@publisher.persistent_id]
+      subject.associations['files'] = [@file.persistent_id]
+    end
+
+    it "should return a hash, where the association name is the key" do
+      obj = subject.associations_for_json
+      obj['Contributing Authors'].should == [{"id"=>@author1.persistent_id, "persistent_id"=>@author1.persistent_id,
+          :title=>"Agatha Christie"},
+         {"id"=>@author2.persistent_id, "persistent_id"=>@author2.persistent_id,
+          :title=>"Raymond Chandler"}]
+
+      obj['undefined'].should == [{'id'=>@publisher.persistent_id, "persistent_id"=>@publisher.persistent_id,
+          :title=>'Simon & Schuster Ltd.'}]
+      obj['files'].should == [{'id'=>@file.persistent_id, "persistent_id"=>@file.persistent_id,
+          :title=>@file.persistent_id}]
+    end
+
+  end
+
   describe "attaching a file" do
     before do
       config = YAML.load_file(Rails.root + 'config/s3.yml')[Rails.env]
