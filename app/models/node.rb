@@ -72,14 +72,48 @@ class Node < ActiveRecord::Base
     associations['files'] ||= []
   end
 
+  # Create a solr document for all the attributes as well as all the associations
   def to_solr() 
     doc = {'format'=>'Node', 'title'=> title, 'id' => persistent_id, 'version'=>id, 'model' => model.id, 'model_name' => model.name, 'pool' => pool_id}
-    return doc if data.nil?
-    model.fields.each do |f|
-      doc[Node.solr_name(f['code'])] = data[f['code']]
-      doc[Node.solr_name(f['code'], 'facet')] = data[f['code']]
+    doc.merge!(solr_attributes)
+    doc.merge!(solr_associations)
+    doc
+  end
+
+  # Solrize all the associated models (denormalize) onto this record
+  # For example, if this object is a book, you will be able to search by the associated author's name
+  def solr_associations
+    doc = {}
+    model.associations.each do |f|
+      instances = find_association(f['code'])
+      next unless instances
+      find_association(f['code']).each do |instance|
+        instance.solr_attributes(f['code'] + '__').each do |k, v|
+          doc[k] ||= []
+          doc[k] << v
+        end
+      end
     end
     doc
+  end
+
+  # Produce the part of the solr document that is just the model attributes
+  def solr_attributes(prefix = "")
+    doc = {}
+    return doc if data.nil?
+    model.fields.each do |f|
+      val = data[f['code']]
+      if val
+        doc[Node.solr_name(f['code'], prefix: prefix)] = val
+        doc[Node.solr_name(f['code'], type: 'facet', prefix: prefix)] = val
+      end
+    end
+    doc
+  end
+
+  # TODO grab this info out of solr.
+  def find_association(type) 
+    associations[type] ? associations[type].map { |pid| Node.latest_version(pid) } : nil
   end
 
   def title
@@ -105,7 +139,7 @@ class Node < ActiveRecord::Base
       output[assoc_name] = []
       if associations[assoc_code]
         associations[assoc_code].each do |id|
-          node = Node.find_by_persistent_id(id)
+          node = Node.latest_version(id)
           output[assoc_name] <<  node.association_display if node
         end
       end
@@ -113,21 +147,23 @@ class Node < ActiveRecord::Base
     output['undefined'] = []
     if associations['undefined']
       associations['undefined'].each do |id| 
-        node = Node.find_by_persistent_id(id)
+        node = Node.latest_version(id)
         output['undefined'] << node.association_display if node
       end
     end
     output['files'] = []
     if associations['files']
       associations['files'].each do |id| 
-        node = Node.find_by_persistent_id(id)
+        node = Node.latest_version(id)
         output['files'] << node.association_display if node
       end
     end
     output
   end
 
-  def self.solr_name(field_name, type="text")
+  def self.solr_name(field_name, args = {})
+    type = args[:type] || "text"
+    prefix= args[:prefix] || ''
     suffix = case type
       when "text"
         '_t'
@@ -136,7 +172,7 @@ class Node < ActiveRecord::Base
       else
         raise "Unknown solr suffix for #{type}"
       end
-    field_name.downcase.gsub(' ','_') + suffix 
+    prefix + field_name.downcase.gsub(/\s+/,'_') + suffix 
   end
 
   # Get the latest version of the node with this persistent id

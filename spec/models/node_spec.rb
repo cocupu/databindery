@@ -173,6 +173,18 @@ describe Node do
     subject.save!
   end
 
+  describe "solr_name" do
+    it "should remove whitespaces" do
+      Node.solr_name("one two\t\tthree").should == "one_two_three_t"
+    end
+    it "should use the type" do
+      Node.solr_name("one two", :type=>'facet').should == "one_two_facet"
+    end
+    it "should use the prefix" do
+      Node.solr_name("first name", :prefix=>'related_object__', :type=>'facet').should == "related_object__first_name_facet"
+    end
+  end
+
 
   describe "with data" do
     before do
@@ -187,6 +199,36 @@ describe Node do
     end
     it "should have a title" do
       subject.title.should == 'Huxtable'
+    end
+  end
+
+  describe "with associations" do
+    before do
+      @identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create :pool, :owner=>@identity
+      @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
+          fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
+          owner: @identity)
+      @author1 = FactoryGirl.create(:node, model: @author_model, pool: @pool, data: {'full_name' => 'Agatha Christie'})
+      @author2 = FactoryGirl.create(:node, model: @author_model, pool: @pool, data: {'full_name' => 'Raymond Chandler'})
+
+      subject.model = FactoryGirl.create(:model, name: 'Book', label: 'book_title', owner: @identity,
+          fields: [{"code" => "book_title", "name"=>"Book title"}],
+          :associations => [{:name=>'Contributing Authors', :code=>'contributing_authors', :type=>'Ordered List', :references=>@author_model.id}.with_indifferent_access])
+      subject.data = {'book_title'=>'How to write mysteries'}
+      subject.associations['contributing_authors'] = [@author1.persistent_id, @author2.persistent_id]
+      subject.pool = @pool
+      subject.save!
+    end
+    it "should index the properties of the child associations" do
+      subject.to_solr.should == {'id'=>subject.persistent_id, 'version'=>subject.id, 'model_name' =>subject.model.name, 'pool' => @pool.id, 
+        'format'=>'Node', 'model'=>subject.model.id, 
+        'contributing_authors__full_name_t'=>['Agatha Christie', 'Raymond Chandler'],
+        'contributing_authors__full_name_facet'=>['Agatha Christie', 'Raymond Chandler'],
+        "book_title_facet" => "How to write mysteries",
+        "book_title_t" => "How to write mysteries",
+        "title" => "How to write mysteries",
+      }
     end
   end
 
