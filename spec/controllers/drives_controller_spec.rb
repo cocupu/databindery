@@ -46,7 +46,7 @@ describe DrivesController do
         end
         it "should list files" do
           get :index
-          response.should redirect_to identity_pool_path(@identity.short_name, @pool, :anchor=>'drive')
+          response.should redirect_to identity_pool_path(@identity.short_name, @pool.short_name, :anchor=>'drive')
         end
         describe "Requesting json" do
           before do

@@ -1,4 +1,5 @@
 development:
+  startup_wait: 30
   jetty_port: 8983
 test:
   jetty_port: 8888
