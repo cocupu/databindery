@@ -65,7 +65,7 @@ class CatalogController < ApplicationController
       # facet bar
       config.add_facet_field 'model_name', :label => 'Model'
       @exhibit.facets.each do |key|
-        config.add_facet_field Node.solr_name(key, 'facet'), :label => key.humanize
+        config.add_facet_field Node.solr_name(key, type: 'facet'), :label => key.humanize
       end
 
 

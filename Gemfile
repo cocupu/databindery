@@ -8,9 +8,10 @@ gem 'json'
 # in production environments by default.
 group :assets do
   gem 'sass-rails',   '~> 3.2.5'
+  gem "bootstrap-sass"
   gem 'coffee-rails', '~> 3.2.2'
   gem 'uglifier', '>= 1.2.3'
-  gem 'therubyracer' # required on linux
+  gem 'therubyracer', '~> 0.10.0'# required on linux (ver 0.11.0 wasn't building native extensions)
   gem 'jquery-rails'
   gem 'handlebars_assets'
   gem 'rails-backbone'
@@ -52,7 +53,3 @@ gem "jettywrapper"
 gem "rsolr"
 gem "cancan"
 gem "blacklight", '4.0.0'
-
-gem "bootstrap-sass"
-
-gem "unicode", :platforms => [:mri_18, :mri_19]
