@@ -1,5 +1,6 @@
 class Model < ActiveRecord::Base
-
+  has_many :node
+  
   class Association
     INBOUND = ['Has Many', 'Has One']
     OUTBOUND = ['Ordered List', 'Unordered List']

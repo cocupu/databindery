@@ -2,7 +2,7 @@ class ModelsController < ApplicationController
   skip_before_filter :verify_authenticity_token, :if => Proc.new { |c| c.request.format == 'application/json' && c.request.params.include?(:auth_token) }
 
   load_and_authorize_resource :pool, :only=>[:create, :index], :find_by => :short_name
-  load_and_authorize_resource :only=>[:show, :new, :edit]
+  load_and_authorize_resource :only=>[:show, :new, :edit, :destroy]
 
   def index
     @models = Model.for_identity_and_pool(current_identity, @pool)
@@ -60,6 +60,15 @@ class ModelsController < ApplicationController
           format.json { render :json=>{:status=>:error, :errors=>@model.errors.full_messages}, :status=>:unprocessable_entity}
       end
     end
+  end
+  
+  def destroy
+    @model = Model.find(params[:id])
+    @pool = @model.pool
+    model_name = @model.name
+    @model.destroy
+    flash[:notice] = "Deleted \"#{model_name}\" model."
+    redirect_to identity_pool_models_path(identity_id: current_identity, pool_id: @pool)
   end
 
   private

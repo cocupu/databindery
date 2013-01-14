@@ -228,5 +228,41 @@ describe ModelsController do
       end
     end
   end
+  
+  describe "delete" do
+    describe "when not logged on" do
+      subject { delete }
+      it "should redirect to root" do
+        delete :destroy, :id=>@my_model
+        response.should redirect_to root_path
+      end
+    end
+
+    describe "when logged on" do
+      before do
+        sign_in @identity.login_credential
+        @file_model = Model.file_entity
+      end
+      it "should redirect on a model that's not mine " do
+        delete :destroy, :id=>@not_my_model
+        response.should redirect_to root_path
+        flash[:alert].should == "You are not authorized to access this page."
+      end
+      
+      it "should be able to delete a model" do
+        model_id = @my_model
+        model_name = @my_model.name
+        delete :destroy, :id=>@my_model
+        response.should redirect_to identity_pool_models_path(identity_id: @identity, pool_id: @pool)
+        flash[:notice].should == "Deleted \"#{model_name}\" model."
+        lambda{Model.find(model_id)}.should raise_exception ActiveRecord::RecordNotFound
+        #  Double-checking...
+        get :index, :identity_id=>@identity.short_name, :pool_id=>@pool.short_name
+        assigns[:models].size.should == 1
+        assigns[:models].should_not include @my_model
+        assigns[:models].should include @file_model
+      end
+    end
+  end
 
 end

@@ -14,9 +14,9 @@ class Ability
       can :update, Pool, :access_controls => {:identity_id => identity.id, :access=>'EDIT' }
 
       #The owner of the pool that these objects are in can read/edit/update the objects
-      can [:read, :update], [Node, Model, Exhibit, MappingTemplate], :pool=>{ :owner_id => identity.id}
+      can [:read, :update, :destroy], [Node, Model, Exhibit, MappingTemplate], :pool=>{ :owner_id => identity.id}
       can :read, [Node, Model, Exhibit, MappingTemplate], :pool=>{ :access_controls=> {:identity_id => identity.id}}
-      can :update, [Node, Model, Exhibit, MappingTemplate], :pool=>{ :access_controls=> {:identity_id => identity.id, :access=>'EDIT'}}
+      can [:update, :destroy], [Node, Model, Exhibit, MappingTemplate], :pool=>{ :access_controls=> {:identity_id => identity.id, :access=>'EDIT'}}
 
       # Allow read access to models without a pool (e.g. Model.file_entity)
       can :read, Model, :pool_id=>nil
