@@ -16,6 +16,7 @@ class PoolsController < ApplicationController
     respond_to do |format|
       format.html do
         @models = @pool.models + [Model.file_entity]
+        @data_sources = @pool.s3_connections
       end
       format.json { render :json=>@pool }
     end
