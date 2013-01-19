@@ -1,9 +1,43 @@
 -content_for :head do
   :javascript
-    $(function() {
-      window.router = new Cocupu.Routers.ModelsRouter({pool: #{@pool.to_json.html_safe}, models: #{@models.to_json.html_safe}, identity: "#{@identity.short_name}"});
-      Backbone.history.start();
-    });
+    function Model(data) {
+        this.name = ko.observable(data.name);
+    }
+    
+    function ModelListViewModel() {
+        // Data
+        var self = this;
+        self.models = ko.observableArray([]);
+        
+        // Load initial state from server, convert it to Model instances, then populate self.models
+        $.getJSON("#{params["id"]}/models", function(allData) {
+            var mappedModels = $.map(allData, function(item) { return new Model(item) });
+            self.models(mappedModels);
+        });
+        
+        // Behaviours    
+        self.openModelSearchPane = function(data) {};
+    };
+    
+    ko.applyBindings(new ModelListViewModel());        
+  
+%nav#menu-nav
+  %ul#menu-nav-tabs.nav.nav-tabs
+    %li.active 
+      %a{href:"#models"} Entities
+    %li 
+      %a{href:"#data-sources"} Data Sources
+  #menu-tab-content.tab-content
+    =# render :file => "models/index_compact"
+    %ul#models.tab-pane.active.models.nav.nav-pills.nav-stacked{"data-bind" => "foreach: models"}
+      %li.model
+        %a{href: "#", "data-bind" => "text: name, click: $root.openModelSearchPane"}
+    
+#panels  
+  = render file: "entities/search"
+
+
+  
 
 
 
