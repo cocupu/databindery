@@ -183,5 +183,11 @@ class Node < ActiveRecord::Base
   def latest_version
     Node.latest_version(persistent_id)
   end
+  
+  def as_json(opts = nil)
+    h = super
+    h['title'] = self.title
+    h
+  end
 
 end

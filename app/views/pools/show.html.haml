@@ -2,13 +2,24 @@
   :javascript
     function Model(data) {
         this.name = ko.observable(data.name);
+        this.id = data.id
+        this.relativeUrl = "#" + data.id
+    }
+    function Entity(data) {
+        this.associations = data.associations;
+        this.title = data.title
+        this.fields = data.data;
     }
     
-    function ModelListViewModel() {
+    
+    
+    function PoolExplorerViewModel() {
         // Data
         var self = this;
         self.models = ko.observableArray([]);
-        
+        self.results = ko.observableArray([]);
+        self.selectedModel = ko.observable();
+                
         // Load initial state from server, convert it to Model instances, then populate self.models
         $.getJSON("#{params["id"]}/models", function(allData) {
             var mappedModels = $.map(allData, function(item) { return new Model(item) });
@@ -16,11 +27,15 @@
         });
         
         // Behaviours    
-        self.openModelSearchPane = function(data) {};
+        self.openModelSearchPane = function(model) {
+          $.getJSON("#{params["id"]}/models/"+model.id+"/nodes/search", function(allData) {
+              var mappedResults = $.map(allData, function(item) { return new Entity(item) });
+              self.results(mappedResults);
+              self.selectedModel(model);
+          });
+        };
     };
     
-    ko.applyBindings(new ModelListViewModel());        
-  
 %nav#menu-nav
   %ul#menu-nav-tabs.nav.nav-tabs
     %li.active 
@@ -31,14 +46,15 @@
     =# render :file => "models/index_compact"
     %ul#models.tab-pane.active.models.nav.nav-pills.nav-stacked{"data-bind" => "foreach: models"}
       %li.model
-        %a{href: "#", "data-bind" => "text: name, click: $root.openModelSearchPane"}
+        %a{"data-bind" => "text: name, click: $root.openModelSearchPane, attr: {href: relativeUrl}"}
     
 #panels  
-  = render file: "entities/search"
+  = render file: "nodes/search"
 
 
   
 
-
+%script
+  ko.applyBindings(new PoolExplorerViewModel());
 
 
