@@ -2,24 +2,35 @@
   :javascript
     function Model(data) {
         this.name = ko.observable(data.name);
-        this.id = data.id
-        this.relativeUrl = "#" + data.id
+        this.labelField = data.label;
+        this.id = data.id;
+        this.relativeUrl = "#" + data.id;
+        this.pool = data.pool;
+        this.identity = data.identity;
+        this.fields = ko.observableArray([]);
+        this.fields( $.map(data.fields, function(item) { return new ModelField(item) }) ); 
+        
+    }
+    function ModelField(data) {
+      this.code = data.code;
+      this.name = data.name;
     }
     function Entity(data) {
         this.associations = data.associations;
-        this.title = data.title
-        this.fields = data.data;
+        this.title = data.title;
+        this.values = data.data;
     }
-    
-    
-    
+
     function PoolExplorerViewModel() {
         // Data
         var self = this;
         self.models = ko.observableArray([]);
         self.results = ko.observableArray([]);
         self.selectedModel = ko.observable();
-                
+        
+        self.viewModes = ko.observableArray(['Explore', 'Grid Edit']);
+        self.currentViewMode = ko.observable( self.viewModes()[0] );
+        
         // Load initial state from server, convert it to Model instances, then populate self.models
         $.getJSON("#{params["id"]}/models", function(allData) {
             var mappedModels = $.map(allData, function(item) { return new Model(item) });
@@ -34,6 +45,10 @@
               self.selectedModel(model);
           });
         };
+        
+        self.setViewMode = function(newMode) {
+          self.currentViewMode(newMode);
+        }
     };
     
 %nav#menu-nav
@@ -50,7 +65,7 @@
     
 #panels  
   = render file: "nodes/search"
-
+  
 
   
 

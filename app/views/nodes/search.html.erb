@@ -10,11 +10,13 @@
       <button type="submit" class="btn">Search</button>
     </div>
   </form>
-  <table class="results table table-bordered table-striped" data-bind="foreach: $root.results">
+  <ul data-bind="foreach: $root.viewModes">
+    <li><a href="#" data-bind="text: $data, click: $root.setViewMode"></a></li> 
+  </ul>
+  <table class="results table table-bordered table-striped" data-bind="foreach: $root.results, visible: $root.currentViewMode() == 'Explore'">
     <tr><td><a href="#" data-bind="text: title"></td></tr>
-    <%#= render partial: "nodes/search_result", collection: @results %>
   </table>
-
+  <%= render file: "nodes/edit_grid" %>
   <nav>
     <ul>
       <li><span style="color: gray">Input and Output formats</a></li>
@@ -24,4 +26,3 @@
   </nav>
 </div>
 </div>
-<%= @results.as_json %>
