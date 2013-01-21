@@ -27,6 +27,7 @@
         self.models = ko.observableArray([]);
         self.results = ko.observableArray([]);
         self.selectedModel = ko.observable();
+        self.entityQuery = ko.observable("");
         
         self.viewModes = ko.observableArray(['Explore', 'Grid Edit']);
         self.currentViewMode = ko.observable( self.viewModes()[0] );
@@ -45,6 +46,14 @@
               self.selectedModel(model);
           });
         };
+        
+        self.entitySearch = function(currentModelValue) {
+          var query = "q=" + self.entityQuery();
+          $.getJSON("#{params["id"]}/models/"+self.selectedModel().id+"/nodes/search?"+query, function(allData) {
+              var mappedResults = $.map(allData, function(item) { return new Entity(item) });
+              self.results(mappedResults);
+          });
+        }
         
         self.setViewMode = function(newMode) {
           self.currentViewMode(newMode);
