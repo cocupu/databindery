@@ -6,7 +6,9 @@
     </thead>
     <tbody data-bind='foreach: $root.results'>
         <tr data-bind="foreach: $parent.fields">
-            <td><input data-bind='value: $parent.values, attrs:{name: $data.code}' /></td>
+            <td>
+              <input data-bind='value: $parent.values[$data.code], attrs:{name: $data.code}'/>
+            </td>
         </tr>
     </tbody>
 </table>

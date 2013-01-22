@@ -7,13 +7,13 @@
         this.relativeUrl = "#" + data.id;
         this.pool = data.pool;
         this.identity = data.identity;
-        this.fields = ko.observableArray([]);
-        this.fields( $.map(data.fields, function(item) { return new ModelField(item) }) ); 
-        
+        this.fields = $.map(data.fields, function(item) { return new ModelField(item) });         
+        this.associations = data.associations;  
     }
     function ModelField(data) {
       this.code = data.code;
       this.name = data.name;
+      this.type = data.type;
     }
     function Entity(data) {
         this.associations = data.associations;
@@ -28,6 +28,7 @@
         self.results = ko.observableArray([]);
         self.selectedModel = ko.observable();
         self.entityQuery = ko.observable("");
+        self.selectedEntities = ko.observableArray([]);
         
         self.viewModes = ko.observableArray(['Explore', 'Grid Edit']);
         self.currentViewMode = ko.observable( self.viewModes()[0] );
@@ -58,6 +59,14 @@
         self.setViewMode = function(newMode) {
           self.currentViewMode(newMode);
         }
+        
+        self.openEntity = function(entity) {
+          self.selectedEntities.push(entity);
+        }
+        
+        self.closeEntity = function(entity) {
+          self.selectedEntities.pop(entity);
+        }
     };
     
 %nav#menu-nav
@@ -71,12 +80,11 @@
     %ul#models.tab-pane.active.models.nav.nav-pills.nav-stacked{"data-bind" => "foreach: models"}
       %li.model
         %a{"data-bind" => "text: name, click: $root.openModelSearchPane, attr: {href: relativeUrl}"}
-    
-#panels  
-  = render file: "nodes/search"
-  
 
-  
+= render file: "nodes/search"
+
+#panels{style: "width: 1301px;"}  
+  = render file: "nodes/show"
 
 %script
   ko.applyBindings(new PoolExplorerViewModel());
