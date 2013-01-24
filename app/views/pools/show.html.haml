@@ -16,6 +16,8 @@
       this.type = data.type;
     }
     function Entity(data) {
+        this.persistent_id = data.persistent_id;
+        this.url = data.url;        
         this.associations = data.associations;
         this.title = data.title;
         this.values = data.data;
@@ -65,9 +67,19 @@
         }
         
         self.closeEntity = function(entity) {
-          self.selectedEntities.pop(entity);
+          self.selectedEntities.remove(entity);
         }
+        
+        self.updateEntity = function(entity) {
+          $.ajax(entity.url, {
+              data: ko.toJSON({ node: entity }),
+              type: "post", contentType: "application/json",
+              success: function(result) { alert(result) }
+          });
+        };
     };
+    
+    var poolExplorerViewModel = new PoolExplorerViewModel();
     
 %nav#menu-nav
   %ul#menu-nav-tabs.nav.nav-tabs
@@ -87,6 +99,6 @@
   = render file: "nodes/show"
 
 %script
-  ko.applyBindings(new PoolExplorerViewModel());
+  ko.applyBindings(poolExplorerViewModel);
 
 
