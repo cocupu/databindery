@@ -17,10 +17,13 @@
     }
     function Entity(data) {
         this.persistent_id = data.persistent_id;
-        this.url = data.url;        
+        this.model_id = data.model_id;
+        // URL is not returned on search results, so setting it manually instead of using data.url
+        this.url = "#{params["id"]}/nodes/"+data.persistent_id;        
         this.associations = data.associations;
         this.title = data.title;
-        this.values = data.data;
+        this.data = data.data;
+        this.lastSavedAt = ko.observable("");
     }
 
     function PoolExplorerViewModel() {
@@ -71,10 +74,14 @@
         }
         
         self.updateEntity = function(entity) {
-          $.ajax(entity.url, {
-              data: ko.toJSON({ node: entity }),
-              type: "post", contentType: "application/json",
-              success: function(result) { alert(result) }
+          $.ajax(entity.url+".json", {
+              data: ko.toJSON({ node: entity, _method: "put"}),
+              type: "put", contentType: "application/json",
+              success: function(result) { 
+                now = new Date()
+                clock = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
+                entity.lastSavedAt("last saved at "+ clock); 
+              }
           });
         };
     };

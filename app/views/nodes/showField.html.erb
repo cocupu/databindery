@@ -1,4 +1,4 @@
 <div class="controlGroup" data-bind="foreach: $root.selectedModel().fields">
   <label data-bind="text: name, attr: {for: code}"></label>
-  <input data-bind="value: $parent.values[$data.code], attr: {type: type, name: code}">
+  <input data-bind="value: $parent.data[$data.code], attr: {type: type, name: code}">
 </div>

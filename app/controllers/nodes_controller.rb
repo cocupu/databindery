@@ -149,7 +149,7 @@ class NodesController < ApplicationController
   private
 
   def serialize_node(n)
-    {persistent_id: n.persistent_id, url: identity_pool_node_path(n.pool.owner, n.pool, n), pool: n.pool.short_name, identity: n.pool.owner.short_name, associations: n.associations, data: n.data, binding: n.binding, model_id: n.model_id }
+    {persistent_id: n.persistent_id, url: identity_pool_node_path(n.pool.owner, n.pool, n), title: n.title, pool: n.pool.short_name, identity: n.pool.owner.short_name, associations: n.associations, data: n.data, binding: n.binding, model_id: n.model_id }
   end
 
 end

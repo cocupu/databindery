@@ -1,7 +1,7 @@
 <div class="association ui-droppable" data-bind="foreach: $root.selectedModel().associations">
-  <h4 data-bind="text: name"></h4>
-  <div data-bind="text: ko.toJSON($parent.associations)"></div>
-  <table class="table table-bordered table-striped">
+  <h4 data-bind="text: label"></h4>
+  <table class="table table-bordered table-striped" data-bind="with: $parent.associations[name]">
+    <tr><td class="association"><a href="#" data-bind="text: $data, click: $root.openEntity"></a></td></tr>
   </table>
 </div>
 
