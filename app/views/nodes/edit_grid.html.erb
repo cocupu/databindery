@@ -1,14 +1,21 @@
-<table data-bind="visible: $root.currentViewMode() == 'Grid Edit'">
-    <thead>
-        <tr data-bind="foreach: fields">
-            <th data-bind="text: name"></th>
-        </tr>
-    </thead>
-    <tbody data-bind='foreach: $root.results'>
-        <tr data-bind="foreach: $parent.fields">
-            <td>
-              <input data-bind='value: $parent.data[$data.code], attrs:{name: $data.code}'/>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div id="gridEdit" data-bind="with: $root.selectedModel, visible: $root.selectedModel && ($root.currentViewMode() == 'Grid Edit')">
+  <h3>Editing <span data-bind="text: name"></span>s</h3>
+  <span class="action toggle viewMode"data-bind="with: $root.viewModes()[0]">
+    <a href="#" data-bind="click: $root.setViewMode">Return to Explore Mode</a>
+  </span>
+  <%= render partial: "nodes/search_form"%>
+  <table>
+      <thead>
+          <tr data-bind="foreach: fields">
+              <th data-bind="text: name"></th>
+          </tr>
+      </thead>
+      <tbody data-bind='foreach: $root.results'>
+          <tr data-bind="foreach: $parent.fields">
+              <td>
+                <input data-bind="value: $parent.data[$data.code], attr: {type: type, name: code}">
+              </td>
+          </tr>
+      </tbody>
+  </table>
+</div>

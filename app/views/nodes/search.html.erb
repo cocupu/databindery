@@ -1,19 +1,14 @@
-<div class="palate-drawer panel" data-bind="with: selectedModel, visible: selectedModel">
+<div class="palate-drawer panel" data-bind="with: selectedModel, visible: ($root.currentViewMode() == 'Explore') && selectedModel">
   <div class="panel-header">
     <a href="#" class="close">×</a>
     <h3>Search for <span data-bind="text: name"></span>s</h3>
+    <span class="action toggle viewMode"data-bind="with: $root.viewModes()[1]">
+      <a href="#" data-bind="click: $root.setViewMode">Edit like Spreadsheet</a>
+    </span>
   </div>
   <div class="panel-body">
-    <form class="form-search">
-      <div class="input-append">
-        <input id="query" type="text" class="input-medium search-query" data-bind="value: $root.entityQuery, click: $root.runEntitySearch">
-        <button type="submit" class="btn" data-bind="click: $root.runEntitySearch">Search</button>
-      </div>
-    </form>
-    <ul data-bind="foreach: $root.viewModes">
-      <li><a href="#" data-bind="text: $data, click: $root.setViewMode"></a></li> 
-    </ul>
-    <table class="results table table-bordered table-striped" data-bind="foreach: $root.results, visible: $root.currentViewMode() == 'Explore'">
+    <%= render partial: "nodes/search_form"%>
+    <table class="results table table-bordered table-striped" data-bind="foreach: $root.results">
       <tr><td><a href="#" data-bind="text: title, click: $root.openEntity"></td></tr>
     </table>
     <%= render file: "nodes/edit_grid" %>

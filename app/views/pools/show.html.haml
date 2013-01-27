@@ -137,7 +137,7 @@
     
     var poolExplorerViewModel = new PoolExplorerViewModel();
     
-%nav#menu-nav
+%nav#menu-nav{"data-bind" => "visible: $root.currentViewMode() == 'Explore'"}
   %ul#menu-nav-tabs.nav.nav-tabs
     %li.active 
       %a{href:"#models"} Entities
@@ -150,8 +150,10 @@
 
 = render file: "nodes/search"
 
-#panels{style: "width: 1301px;"}  
+#panels{style: "width: 1301px;", "data-bind" => "visible: $root.currentViewMode() == 'Explore'"}  
   = render file: "nodes/show"
+  
+= render file: "nodes/edit_grid" 
 
 %script
   ko.applyBindings(poolExplorerViewModel);
