@@ -79,6 +79,7 @@
         
         // Behaviours    
         self.openModelSearchPane = function(model) {
+          // Can't DRY this b/c need to set selectedModel after entities are loaded
           $.getJSON("#{params["id"]}/models/"+model.id+"/nodes/search", function(allData) {
               var mappedResults = $.map(allData, function(item) { return new Entity(item) });
               self.results(mappedResults);
@@ -86,7 +87,7 @@
           });
         };
         
-        self.entitySearch = function(currentModelValue) {
+        self.runEntitySearch = function(currentModelValue) {
           var query = "q=" + self.entityQuery();
           $.getJSON("#{params["id"]}/models/"+self.selectedModel().id+"/nodes/search?"+query, function(allData) {
               var mappedResults = $.map(allData, function(item) { return new Entity(item) });
@@ -104,6 +105,21 @@
         
         self.closeEntity = function(entity) {
           self.selectedEntities.remove(entity);
+        }
+        
+        // Mainly for loading entities whose partial info was listed in search results or associations Arrays
+        // expects a string that is the desired Entity's persistent_id
+        self.loadAndOpenEntity = function(entity_id) {
+          // Try to load from memoCache 
+          cached = memoLookup(Entity, entity_id);
+          if (cached)  return self.selectedEntities.push(cached);
+          // Otherwise load from server & cache the resulting object for future use
+          $.getJSON("#{params["id"]}/nodes/"+entity_id, function(data) {
+              entity = new Entity(data)
+              // Memoize the object
+              memo(Entity, entity.persistent_id, entity);
+              self.selectedEntities.push(entity);
+          });
         }
         
         self.updateEntity = function(entity) {
@@ -128,7 +144,6 @@
     %li 
       %a{href:"#data-sources"} Data Sources
   #menu-tab-content.tab-content
-    =# render :file => "models/index_compact"
     %ul#models.tab-pane.active.models.nav.nav-pills.nav-stacked{"data-bind" => "foreach: models"}
       %li.model
         %a{"data-bind" => "text: name, click: $root.openModelSearchPane, attr: {href: relativeUrl}"}

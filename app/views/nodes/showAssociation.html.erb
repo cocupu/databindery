@@ -1,7 +1,7 @@
-<div class="association ui-droppable" data-bind="foreach: $root.selectedModel().associations">
+<div class="association ui-droppable" data-bind="foreach: model.associations, visible: model.associations.length > 0">
   <h4 data-bind="text: label"></h4>
   <table class="table table-bordered table-striped" data-bind="with: $parent.associations[name]">
-    <tr><td class="association"><a href="#" data-bind="text: $data, click: $root.openEntity"></a></td></tr>
+    <tr><td class="association"><a href="#" data-bind="text: $data, click: $root.loadAndOpenEntity"></a></td></tr>
   </table>
 </div>
 

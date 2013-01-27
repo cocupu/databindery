@@ -1,4 +1,4 @@
-<div class="palate-drawer panel" data-bind="with: selectedModel">
+<div class="palate-drawer panel" data-bind="with: selectedModel, visible: selectedModel">
   <div class="panel-header">
     <a href="#" class="close">×</a>
     <h3>Search for <span data-bind="text: name"></span>s</h3>
@@ -6,8 +6,8 @@
   <div class="panel-body">
     <form class="form-search">
       <div class="input-append">
-        <input id="query" type="text" class="input-medium search-query" data-bind="value: $root.entityQuery, click: $root.entitySearch">
-        <button type="submit" class="btn" data-bind="click: $root.entitySearch">Search</button>
+        <input id="query" type="text" class="input-medium search-query" data-bind="value: $root.entityQuery, click: $root.runEntitySearch">
+        <button type="submit" class="btn" data-bind="click: $root.runEntitySearch">Search</button>
       </div>
     </form>
     <ul data-bind="foreach: $root.viewModes">
