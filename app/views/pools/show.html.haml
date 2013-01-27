@@ -1,5 +1,40 @@
 -content_for :head do
   :javascript
+  
+    var memoCache = {Entity: {}, Model: {}}
+    
+    memoLookup = function (model, id) {
+      if (memoCache.hasOwnProperty(model) && memoCache[model][id])  return memoCache[model][id];
+    }
+    
+    memoizedLoad = function (model, id) {
+      // try to load from memoCache 
+      cached = memoLookup(model, id);
+      if (cached)  return cached;
+      var data = {};
+      var obj = new model(data);
+      // Memoize the object
+      memo(model, id, obj);
+      // Triggers asynchronous load
+      obj.load 
+      return obj;
+    }
+    
+    createOrUpdate = function (model, id, data) {
+      obj = memoLookup(model, id)
+      if (obj) { return obj.parseJSON(data) }
+      obj = new model(data);
+      obj.parseJSON(data)
+      obj.loaded = true;
+      return memo(model, id, data);
+    }
+    
+    memo = function (model, id, object) {
+      if (!memoCache.hasOwnProperty(model)) memoCache[model] = {};
+      memoCache[model][id] = object;
+      return object;
+    }
+    
     function Model(data) {
         this.name = ko.observable(data.name);
         this.labelField = data.label;
@@ -16,12 +51,25 @@
       this.type = data.type;
     }
     function Entity(data) {
-        this.persistent_id = data.persistent_id;
-        this.url = data.url;        
-        this.associations = data.associations;
-        this.title = data.title;
-        this.values = data.data;
+    
+        this.parseJSON = function(data) {
+          this.persistent_id = data.persistent_id;
+          this.url = data.url; 
+          this.associations = ko.observableArray(data.associations);
+          this.title = data.title;
+          this.data = data.data;
+          this.lastSavedAt = ko.observable("");
+        }
+        
+        this.loaded = false;
+        this.load = function() {
+          $.getJSON("#{params["id"]}/nodes/"+this.persistent_id, function(allData) {
+              entity = memoizedLoad(Entity, allData.persistent_id).constructor(allData);
+              entity.loaded = true;
+          });
+        }
     }
+
 
     function PoolExplorerViewModel() {
         // Data
@@ -53,7 +101,7 @@
         self.entitySearch = function(currentModelValue) {
           var query = "q=" + self.entityQuery();
           $.getJSON("#{params["id"]}/models/"+self.selectedModel().id+"/nodes/search?"+query, function(allData) {
-              var mappedResults = $.map(allData, function(item) { return new Entity(item) });
+              var mappedResults = $.map(allData, function(item) { return createOrUpdate(Entity, item.persistent_id, item) });
               self.results(mappedResults);
           });
         }
@@ -63,7 +111,8 @@
         }
         
         self.openEntity = function(entity) {
-          self.selectedEntities.push(entity);
+          e = memoizedLoad(Entity, entity.persistent_id)
+          self.selectedEntities.push( e );
         }
         
         self.closeEntity = function(entity) {
@@ -71,10 +120,14 @@
         }
         
         self.updateEntity = function(entity) {
-          $.ajax(entity.url, {
-              data: ko.toJSON({ node: entity }),
-              type: "post", contentType: "application/json",
-              success: function(result) { alert(result) }
+          $.ajax(entity.url+".json", {
+              data: ko.toJSON({ node: entity, _method: "put"}),
+              type: "put", contentType: "application/json",
+              success: function(result) { 
+                now = new Date()
+                clock = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
+                entity.lastSavedAt("last saved at "+ clock); 
+              }
           });
         };
     };
