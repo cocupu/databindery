@@ -1,5 +1,31 @@
 -content_for :head do
   :javascript
+    //
+    // Rudimentary memoization of Entities & Models
+    //
+    var memoCache = {Entity: {}, Model: {}}
+
+    memoLookup = function (model, id) {
+      if (memoCache.hasOwnProperty(model) && memoCache[model][id])  return memoCache[model][id];
+    }
+    
+    memo = function (model, id, object) {
+      if (!memoCache.hasOwnProperty(model)) memoCache[model] = {};
+      memoCache[model][id] = object;
+      return object;
+    }
+    
+    createOrUpdateMemo = function (model, id, data) {
+      obj = memoLookup(model, id)
+      if (obj) { return obj.constructor(data) }
+      obj = new model(data);
+      return memo(model, id, data);
+    }
+    // TODO: memoized AJAX load -- use jQuery deffered?
+  
+    //
+    // Models
+    //
     function Model(data) {
         this.name = ko.observable(data.name);
         this.labelField = data.label;
@@ -17,7 +43,8 @@
     }
     function Entity(data) {
         this.persistent_id = data.persistent_id;
-        this.model_id = data.model_id;
+        // Currently this assumes that all of the models have already been cached locally!
+        this.model = memoLookup(Model, data.model_id)
         // URL is not returned on search results, so setting it manually instead of using data.url
         this.url = "#{params["id"]}/nodes/"+data.persistent_id;        
         this.associations = data.associations;
@@ -26,6 +53,9 @@
         this.lastSavedAt = ko.observable("");
     }
 
+    //
+    // ViewModel
+    //
     function PoolExplorerViewModel() {
         // Data
         var self = this;
@@ -40,7 +70,10 @@
         
         // Load initial state from server, convert it to Model instances, then populate self.models
         $.getJSON("#{params["id"]}/models", function(allData) {
-            var mappedModels = $.map(allData, function(item) { return new Model(item) });
+            var mappedModels = $.map(allData, function(item) { 
+              m = new Model(item) 
+              return memo(Model, m.id, m)
+            });
             self.models(mappedModels);
         });
         

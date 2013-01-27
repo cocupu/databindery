@@ -2,6 +2,7 @@
 <div class="showView panel">
   <div class="panel-header">
     <a href="#" class="close" data-bind="click: $root.closeEntity">×</a>
+    <span class="modelName" data-bind="text: model.name, attr: {class: model.id}"></span>
     <h3 data-bind="text: title"></h3>
   </div>
   
