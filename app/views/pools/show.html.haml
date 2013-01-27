@@ -100,7 +100,10 @@
         }
         
         self.openEntity = function(entity) {
-          self.selectedEntities.push(entity);
+          // Prevents re-opening of entities
+          // Should somehow _focus_ on entity if it's already open -- possibly remove(entity) and unshift(entity)?
+          // Ideally, should have a $root.focus() method that scrolls to the entity for you...
+          if (self.selectedEntities.indexOf(entity) == -1) {self.selectedEntities.push(entity);}
         }
         
         self.closeEntity = function(entity) {
