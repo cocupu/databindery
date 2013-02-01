@@ -15,7 +15,12 @@ class S3Connection < ActiveRecord::Base
   def get(bucket, file_name)
     conn.buckets[bucket].objects[file_name]
   end
-
+  
+  def create_bucket(bucket)
+    conn.buckets.create(bucket)
+    conn.buckets[bucket]
+  end
+  
   private 
   def conn
     @conn ||= AWS::S3.new(:access_key_id => access_key_id,
