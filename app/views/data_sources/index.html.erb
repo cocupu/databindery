@@ -1,0 +1,73 @@
+<% content_for :head do %>
+<script>
+
+  function S3Connection(data) {
+    this.access_key_id = data.access_key_id;
+    this.url = data.url;
+  }
+  
+  //
+  // ViewModel
+  //
+  function DataSourcesExplorerViewModel() {
+      // Data
+      var self = this;
+      this.s3Connections = ko.observableArray([]);
+      this.selectedS3Connection = ko.observable();
+      this.s3Query = ko.observable();
+      this.s3results = ko.observableArray([]);
+      
+      // Load initial state from server, convert it to Data Source instances, then populate self.s3Connections, etc.
+      // TODO: pre-populate initial array within the rendered html  
+      $.getJSON("data_sources", function(allData) {
+          var mappedS3Connections = $.map(allData["s3Connections"], function(item) { 
+            s3 = new S3Connection(item) 
+            return s3
+          });
+          self.s3Connections(mappedS3Connections);
+      });
+      
+      // Behaviours   
+      self.selectS3Connection = function(s3connection) {
+        self.selectedS3Connection(s3connection);
+      }
+      self.openS3Object = function(s3object) {}
+      self.openUploader = function(s3connection) {}
+      self.runS3Search = function(s3connection) {}
+
+  }
+  
+  
+
+  
+  var dataSourcesExplorerViewModel = new DataSourcesExplorerViewModel();
+</script>
+<% end %>
+
+<nav id='menu-nav'>
+  <ul class='nav nav-tabs' id='menu-nav-tabs'>
+    <li>
+      <a href='<%= identity_pool_path(params["identity_id"], params["pool_id"])%>'>Entities</a>
+    </li>
+    <li class='active'>
+      <a href='#data-sources'>Data Sources</a>
+    </li>
+  </ul>
+  <div class='tab-content' id='menu-tab-content'>
+    <h4>Amazon S3</h4>
+    <ul class='tab-pane active data-sources nav nav-pills nav-stacked' data-bind='foreach: s3Connections' id='s3-connections'>
+      <li class='s3-connection'>
+        <a data-bind='text: access_key_id, click: $root.selectS3Connection, attr: {href: url}'></a>
+      </li>
+    </ul>
+    <h4>Google Drive</h4>
+  </div>
+</nav>
+
+<%= render file: "s3_connections/search" %>
+
+<div id="panels" width="1301px;">
+  <%#= render file: "s3_connections/upload" %>
+</panels>
+
+<script>ko.applyBindings(dataSourcesExplorerViewModel)</script>

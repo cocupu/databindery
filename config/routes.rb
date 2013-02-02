@@ -51,6 +51,8 @@ Bindery::Application.routes.draw do
     end
     resources :pools, :path=>'' do
       resources :exhibits, :except=>[:show]
+      resources :data_sources, :only=>[:index]
+      resources :s3_connections, :only=>[:show]      
       resources :drives, :only=>[:index] do
         collection do
           get 'spawn'

@@ -21,7 +21,7 @@
       obj = new model(data);
       return memo(model, id, data);
     }
-    // TODO: memoized AJAX load -- use jQuery deffered?
+    // TODO: memoized AJAX load -- use jQuery deferred?
   
     //
     // Models
@@ -145,7 +145,7 @@
     %li.active 
       %a{href:"#models"} Entities
     %li 
-      %a{href:"#data-sources"} Data Sources
+      %a{href: identity_pool_data_sources_path(params["identity_id"], params["id"])} Data Sources
   #menu-tab-content.tab-content
     %ul#models.tab-pane.active.models.nav.nav-pills.nav-stacked{"data-bind" => "foreach: models"}
       %li.model

@@ -21,6 +21,12 @@ class S3Connection < ActiveRecord::Base
     conn.buckets[bucket]
   end
   
+  # Exclude secret_access_key from json output.
+  def as_json(options={})
+    options[:except] ||= :secret_access_key
+    super(options)
+  end
+  
   private 
   def conn
     @conn ||= AWS::S3.new(:access_key_id => access_key_id,

@@ -1,0 +1,19 @@
+<div class="palate-drawer panel" data-bind="with: selectedS3Connection, visible: selectedS3Connection">
+  <div class="panel-header">
+    <a href="#" class="close">×</a>
+    <h3>Search <span data-bind="text: access_key_id"></h3>
+  </div>
+  <div class="panel-body">
+    <%= render partial: "s3_connections/search_form"%>
+    <table class="results table table-bordered table-striped" data-bind="foreach: $root.s3results">
+      <tr><td><a href="#" data-bind="text: title, click: $root.openS3Object"></td></tr>
+    </table>
+    <nav>
+      <ul>
+        <li><span style="color: gray">Input and Output formats</a></li>
+        <li><a href="#">Metadata and Associations</a></li>
+        <li><a class="create-new" data-bind="click: $root.openUploader">Upload files</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
