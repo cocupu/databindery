@@ -20,6 +20,9 @@ jetty/
 # Uploads are stored in public/system
 public/system
 
+# Don't store generated public/assets
+public/assets
+
 # Ignore vim swap files
 *.swp
 *.swo
@@ -27,3 +30,5 @@ public/system
 .DS_Store
 
 config/client_secrets.json
+
+
