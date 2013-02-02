@@ -19,7 +19,8 @@
     <%= render 'sort_and_per_page' %> 
 
     <h2 class="hide-text"><%= t('blacklight.search.search_results') %></h2>
-    <%= render :partial => 'document_list' %>
+    <%#= @document_list.inspect %>
+    <%= render :partial => 'document_list', locals: {documents: @document_list} %>
 
 
     <%= render 'results_pagination' %>
