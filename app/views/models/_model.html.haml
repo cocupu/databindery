@@ -12,3 +12,7 @@
       %ul.model_fields
         - model.fields.each do |field|
           %li= "#{field["name"]}: #{field["type"]}"
+      %h4 Associations
+      %ul.model_associations
+        - model.associations.each do |a|
+          %li= "#{a["type"]} #{a["label"]} (code: #{a["code"]})"
