@@ -26,7 +26,7 @@ class DrivesController < ApplicationController
     end
 
     if !params[:pool_id]
-      redirect_to identity_pool_path(session[:short_name], session[:pool_id], :anchor=>'drive')
+      redirect_to identity_pool_path(stashed_identity.short_name, session[:pool_id], :anchor=>'drive')
       return
     end
 
@@ -39,7 +39,7 @@ class DrivesController < ApplicationController
         result = @files.map {|f| file_json(f) }
         render :json=>result 
       end
-      format.html { redirect_to pool_path(@pool, :anchor=>'drive') }
+      format.html { redirect_to identity_pool_path(session[:short_name], @pool, :anchor=>'drive') }
     end
   end
 
