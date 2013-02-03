@@ -57,10 +57,7 @@ describe PoolsController do
       describe "requesting a pool I own" do
         it "should be successful" do
           get :show, :id=>@my_pool, identity_id: @identity.short_name
-          response.should  be_successful
-          assigns[:pool].should == @my_pool
-          assigns[:models].should include(@my_model)
-          assigns[:models].should_not include(@my_model_different_pool) 
+          redirect_to( identity_pool_search_path(@identity.short_name, @my_pool.id) )
         end
       end
       describe "requesting a pool I own" do

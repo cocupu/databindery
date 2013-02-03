@@ -1,6 +1,6 @@
 class PoolsController < ApplicationController
-  load_resource :identity, :find_by => :short_name, :only=>[:index, :show]
-  load_and_authorize_resource :find_by => :short_name, :through=>:identity, :only=>:show
+  load_resource :identity, :find_by => :short_name, :only=>[:index, :show, :edit]
+  load_and_authorize_resource :find_by => :short_name, :through=>:identity, :only=>[:show, :edit]
 
   def index
     ### This query finds all the pools belonging to @identity that can be seen by current_identity
@@ -14,11 +14,13 @@ class PoolsController < ApplicationController
   def show
     authorize! :show, @pool
     respond_to do |format|
-      format.html do
-        @models = @pool.models + [Model.file_entity]
-      end
+      #format.html { redirect_to identity_pool_search_path(@identity.short_name, @pool.short_name) }
       format.json { render :json=>@pool }
     end
+  end
+  
+  def edit
+    authorize! :edit, @pool
   end
 
   def create
@@ -49,7 +51,7 @@ class PoolsController < ApplicationController
     end
     @pool.update_attributes(params.require(:pool).permit(:description, :name, :short_name))
     respond_to do |format|
-      format.html { redirect_to identity_pool_path(@identity.short_name, @pool), :notice=>"#{@pool.name} updated" }
+      format.html { redirect_to edit_identity_pool_path(@identity.short_name, @pool), :notice=>"#{@pool.name} updated" }
       format.json { head :no_content }
     end
   end

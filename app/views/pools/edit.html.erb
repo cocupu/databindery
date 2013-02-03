@@ -1,0 +1,39 @@
+<h1>Edit pool</h1>
+<%= form_for @pool, url: identity_pool_path(@identity.short_name, @pool.short_name) do |f| %>
+  <div class="control-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, placeholder: "Name" %>
+  </div>
+  <div class="control-group">
+    <%= f.label :short_name, "Short Name" %>
+    <%= f.text_field :short_name, placeholder: "Short Name" %>
+    <span class="help-block">No spaces or special characters</span>
+    
+  </div>
+  <div class="control-group">
+    <%= f.label :description %>
+    <%= f.text_area :description, size: "30" %>
+  </div>
+
+  <table class="permissions">
+     <tr><th>User</th><th>Access</th></tr>
+     <% @pool.access_controls.each_with_index do |ac, index| %>
+       <tr class="template"><td><input name="permission_identity[<%= index %>]" value="<%=ac.identity %>"/></td>
+       <td><select name="permission_access[<%= index %>]" class="permission-access">
+          <option value="NONE">No access</option>
+          <option value="READ"<%= ac.access == "READ" ? " selected" : "" %>>Read-only</option>
+          <option value="EDIT"<%= ac.access == "EDIT" ? " selected" : "" %>>Read and Write</option>
+       </select></td></tr>
+     <% end %>
+     
+     <tr class="template"><td><input name="permission_identity_new"/></td>
+       <td><select name="permission_access_new" class="permission-access"><option value="READ">Read-only</option><option value="EDIT">Read and Write</option></select></td></tr>
+
+  </table>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Save</button>
+  </div>
+<% end %>
+
+

@@ -49,8 +49,12 @@ Bindery::Application.routes.draw do
     resources :exhibits, :only=>[] do
       resources :solr_document, :path => '', :controller => 'catalog', :only => [:show, :update]
     end
+
+    match ':pool_id/search' => 'pool_searches#index', :as => 'pool_search'
+    
     resources :pools, :path=>'' do
       resources :exhibits, :except=>[:show]
+      resources :solr_document, :path => '', :controller => 'pool_searches', :only => [:show, :update]
       resources :drives, :only=>[:index] do
         collection do
           get 'spawn'
