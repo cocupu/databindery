@@ -14,7 +14,7 @@ class PoolsController < ApplicationController
   def show
     authorize! :show, @pool
     respond_to do |format|
-      #format.html { redirect_to identity_pool_search_path(@identity.short_name, @pool.short_name) }
+      format.html { redirect_to identity_pool_search_path(@identity.short_name, @pool.short_name) }
       format.json { render :json=>@pool }
     end
   end

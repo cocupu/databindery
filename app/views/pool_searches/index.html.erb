@@ -1,0 +1,27 @@
+
+  <div id="sidebar" class="span3">
+   <%= render :partial=>'catalog/facets' %>
+  </div><!--/well -->
+
+  <div id="content" class="span9">   
+
+      <h1><%=@exhibit.title%></h1>
+      <div class="row"><%=render :partial=>'search_form'%></div>
+      <% @page_title = t('blacklight.search.title', :application_name => application_name) %>
+
+
+      <% extra_head_content << render_opensearch_response_metadata.html_safe %>
+
+      <%= render :partial => 'catalog/did_you_mean' %>
+
+      <%= render :partial => 'catalog/constraints' %>
+
+      <%= render 'catalog/sort_and_per_page' %> 
+
+      <h2 class="hide-text"><%= t('blacklight.search.search_results') %></h2>
+
+      <%= render :partial => 'document_list', locals: {documents: @document_list} %>
+
+
+      <%= render 'catalog/results_pagination' %>
+  </div>

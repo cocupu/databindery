@@ -1,0 +1,12 @@
+     
+      <% # header bar for doc items in index view -%>
+      <div class="documentHeader">
+        
+        <% # bookmark functions for items/docs -%>
+        <%= render_index_doc_actions document, :wrapping_class => "documentFunctions hidden-phone" %>
+        
+        <% # main title container for doc partial view -%>
+          <h5 class="index_title">
+          <%= t('blacklight.search.documents.counter', :counter => (document_counter + 1 + @response.params[:start].to_i)) %> <span class="model-indicator <%= document["model_name"] %>"><%= document["model_name"] %></span> <%= link_to render_document_index_label(document, :label=>blacklight_config.index.show_link.to_sym), identity_pool_solr_document_path(@identity, @pool, document), 'data-counter' => (document_counter + 1 + @response.params[:start].to_i) %></h5>
+      </div>
+      

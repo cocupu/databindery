@@ -54,7 +54,8 @@ Bindery::Application.routes.draw do
     
     resources :pools, :path=>'' do
       resources :exhibits, :except=>[:show]
-      resources :solr_document, :path => '', :controller => 'pool_searches', :only => [:show, :update]
+      # can't do :path => '' because that breaks models, nodes, etc. in client api
+      resources :solr_document, :path => 'results', :controller => 'pool_searches', :only => [:show, :update]
       resources :drives, :only=>[:index] do
         collection do
           get 'spawn'
