@@ -11,6 +11,8 @@ class Pool < ActiveRecord::Base
   has_many :access_controls, :dependent => :destroy
 
   validates :short_name, :format=>{:with => /\A[\w-]+\Z/}, :uniqueness => true
+  
+  attr :generated_default_perspective
 
   def self.for_identity(identity)
     # Cancan 1.6.8 was producing incorrect query, for accessible_by so,
@@ -20,16 +22,20 @@ class Pool < ActiveRecord::Base
   end
   
   def perspectives
-    exhibits
+    exhibits.unshift(generated_default_perspective)
   end
   
   def default_perspective
     if chosen_default_perspective.nil?
-      all_field_codes = all_fields.map {|f| f["code"]}
-      Exhibit.new(pool_id:self.id, index_fields: all_field_codes, facets: all_field_codes)      
+      generated_default_perspective
     else
       chosen_default_perspective  
     end
+  end
+  
+  def generated_default_perspective
+    all_field_codes = all_fields.map {|f| f["code"]}
+    @generated_default_perspective ||= Exhibit.new(pool_id:self.id, index_fields: all_field_codes, facets: all_field_codes, title: "All Content, All fields")
   end
 
   

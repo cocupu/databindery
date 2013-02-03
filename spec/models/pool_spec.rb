@@ -52,7 +52,7 @@ describe Pool do
       subject.save
     end
     it "should return the exhibits" do
-      subject.perspectives.should == [@exhibit1, @exhibit2]
+      subject.perspectives.should == [subject.generated_default_perspective, @exhibit1, @exhibit2]
     end
     
     describe "default perspective" do
