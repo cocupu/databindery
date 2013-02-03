@@ -17,8 +17,7 @@ class PoolSearchesController < ApplicationController
   
   # Sets the Exhibit to use for configuration
   def set_perspective
-    all_field_codes = @pool.all_fields.map {|f| f["code"]}
-    @exhibit = Exhibit.new(pool_id:@pool.id, index_fields: all_field_codes, facets: all_field_codes)
+    @exhibit = @pool.default_perspective
   end
   
   def load_configuration

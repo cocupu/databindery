@@ -3,6 +3,7 @@ class Pool < ActiveRecord::Base
   belongs_to :owner, class_name: "Identity"
   validates :owner, presence: true
   has_many :exhibits, :dependent => :destroy
+  belongs_to :chosen_default_perspective, class_name: "Exhibit"
   has_many :nodes, :dependent => :destroy
   has_many :models, :dependent => :destroy
   has_many :mapping_templates, :dependent => :destroy
@@ -16,6 +17,19 @@ class Pool < ActiveRecord::Base
     # lets' write something custom:
     # Must call unique or the owner will get multiple rows
     Pool.joins("LEFT OUTER JOIN access_controls ON access_controls.pool_id = pools.id").where("(owner_id = ?) OR access_controls.identity_id = ? ", identity.id, identity.id).uniq
+  end
+  
+  def perspectives
+    exhibits
+  end
+  
+  def default_perspective
+    if chosen_default_perspective.nil?
+      all_field_codes = all_fields.map {|f| f["code"]}
+      Exhibit.new(pool_id:self.id, index_fields: all_field_codes, facets: all_field_codes)      
+    else
+      chosen_default_perspective  
+    end
   end
 
   

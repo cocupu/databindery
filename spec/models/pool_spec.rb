@@ -43,7 +43,38 @@ describe Pool do
       end
     end
   end
-
+  
+  describe "perspectives" do
+    before do
+      @exhibit1 = FactoryGirl.create(:exhibit)
+      @exhibit2 = FactoryGirl.create(:exhibit)
+      subject.exhibits = [@exhibit1, @exhibit2]
+      subject.save
+    end
+    it "should return the exhibits" do
+      subject.perspectives.should == [@exhibit1, @exhibit2]
+    end
+    
+    describe "default perspective" do
+      describe "when a default has not been explicitly set" do
+        it "should return an exhibit that has all of the pool's fields set in both its facets and index_fields" do
+          e = subject.default_perspective
+          e.should be_kind_of Exhibit
+          all_field_codes = subject.all_fields.map {|f| f["code"]}
+          e.facets.should == all_field_codes
+          e.index_fields.should == all_field_codes
+        end
+      end
+      describe "when a default has been explicitly set" do
+        before do
+          subject.chosen_default_perspective = @exhibit1
+        end
+        it "should return the one that has been explicitly set" do
+          subject.default_perspective.should == @exhibit1
+        end
+      end
+    end
+  end
 
   describe "short_name" do
     before do
@@ -66,4 +97,6 @@ describe Pool do
       subject.short_name.should == 'short-name'
     end
   end
+  
+
 end
