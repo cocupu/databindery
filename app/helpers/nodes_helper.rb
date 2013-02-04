@@ -6,6 +6,10 @@ module NodesHelper
     end
   end
   
+  def link_to_association(association)
+    link_to association, identity_pool_solr_document_path(@identity, @pool, association)
+  end
+  
   private
 
   def draw_text_field(field, default)

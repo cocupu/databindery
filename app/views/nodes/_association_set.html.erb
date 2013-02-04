@@ -1,0 +1,8 @@
+<div class="association ui-droppable" data-bind="foreach: model.associations, visible: model.associations.length > 0">
+  <h4 data-bind="text: label"><%= association_set[:label] %></h4>
+  <table class="table table-bordered table-striped" data-bind="with: $parent.associations[name]">
+    <%= render partial: "nodes/association", collection: @node.associations[association_set[:name]]%>
+  </table>
+</div>
+
+

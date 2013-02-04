@@ -1,0 +1,27 @@
+<!-- ko foreach: selectedEntities -->
+<div class="showView panel">
+  <div class="panel-header">
+    <span class="modelName" data-bind="text: model.name, attr: {class: model.id}"></span>
+    <h3 data-bind="text: title"></h3>
+  </div>
+  
+  <div class="panel-body">
+    <%= form_for @node, url: identity_pool_node_path(@identity.short_name, @pool.short_name, @node),"accept-charset" => "UTF-8", html: {class: "metadata"}  do |f| %>
+      <%= render partial: "nodes/field", collection: @model.fields %>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" data-bind="click: $root.updateEntity">Save</button> <span id="lastSavedAt" data-bind="text: lastSavedAt"></span>
+      </div>
+    <% end %>
+    </form>
+    <div class="associations">
+      <%= render partial: "nodes/association_set", collection: @model.associations %>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <nav>
+      <a href="#<model_id>/edit">Change Structure</a>
+    </nav>
+  </div>
+</div>
+<!-- /ko -->
+

@@ -119,7 +119,7 @@ class NodesController < ApplicationController
     @node.attributes = params.require(:node).permit(:data, :associations)
     new_version = @node.update
     respond_to do |format|
-      format.html { redirect_to identity_pool_node_path(@identity, @pool, new_version), :notice=>"#{@node.model.name} updated" }
+      format.html { redirect_to identity_pool_solr_document_path(@identity, @pool, new_version), :notice=>"#{@node.model.name} updated" }
       format.json { head :no_content }
     end
   end
