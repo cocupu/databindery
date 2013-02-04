@@ -1,7 +1,9 @@
 class PoolSearchesController < ApplicationController
   load_and_authorize_resource :identity, :find_by => :short_name
   load_and_authorize_resource :pool, :find_by => :short_name
-
+  load_and_authorize_resource instance_name: :node, class: Node, find_by: :persistent_id, only: [:show]
+  load_resource :model, through: :node, singleton: true, only: [:show]
+  
   before_filter :set_perspective
   before_filter :load_configuration
 
