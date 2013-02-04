@@ -3,6 +3,7 @@ class NodesController < ApplicationController
   include Blacklight::SolrHelper
   load_and_authorize_resource :except=>[:index, :search, :update, :create], :find_by => :persistent_id
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
+  load_resource :model, through: :node, singleton: true, only: [:show]
 
   def index
     if params[:model_id]
@@ -91,6 +92,7 @@ class NodesController < ApplicationController
         end
       end
       format.json { render json: serialize_node(@node) }
+      format.html 
     end
   end
   
@@ -108,7 +110,7 @@ class NodesController < ApplicationController
     @node.pool = @pool
     @node.save!
     respond_to do |format|
-      format.html { redirect_to identity_pool_node_path(@identity, @pool, @node), :notice=>"#{model.name} created" }
+      format.html { redirect_to identity_pool_search_path(@identity, @pool), :notice=>"#{model.name} created" }
       format.json { render :json=>serialize_node(@node)}
     end
   end
@@ -122,6 +124,14 @@ class NodesController < ApplicationController
       format.html { redirect_to identity_pool_solr_document_path(@identity, @pool, new_version), :notice=>"#{@node.model.name} updated" }
       format.json { head :no_content }
     end
+  end
+  
+  def destroy
+    node_name = @node.title
+    @pool = @node.pool
+    @node.destroy
+    flash[:notice] = "Deleted \"#{node_name}\"."
+    redirect_to identity_pool_search_path(identity_id: current_identity, pool_id: @pool)
   end
 
   def attach_file

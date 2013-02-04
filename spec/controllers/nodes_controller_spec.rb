@@ -147,7 +147,7 @@ describe NodesController do
     end
     it "should be successful using a model I own" do 
       post :create, :node=>{:binding => '0B4oXai2d4yz6bUstRldTeXV0dHM', :model_id=>@my_model}, pool_id: @pool, identity_id: @identity.short_name
-      response.should redirect_to identity_pool_node_path(@identity, @pool, assigns[:node])
+      response.should redirect_to identity_pool_search_path(@identity, @pool)
       assigns[:node].binding.should == '0B4oXai2d4yz6bUstRldTeXV0dHM'
       assigns[:node].model.should == @my_model
       flash[:notice].should == "#{@my_model.name} created"
@@ -186,7 +186,7 @@ describe NodesController do
     it "should load the node and the models" do
       put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }}, pool_id: @pool, identity_id: @identity
       new_version = Node.latest_version(@node1.persistent_id)
-      response.should redirect_to identity_pool_node_path(@identity, @pool, new_version)
+      response.should redirect_to identity_pool_solr_document_path(@identity, @pool, new_version)
       new_version.data['f1'].should == "Updated val"
       flash[:notice].should == "#{@model.name} updated"
       
@@ -232,6 +232,45 @@ describe NodesController do
       file_node = Node.latest_version(node.files.first)
       file_node.file_name.should == 'rails.png'
 
+    end
+  end
+  
+  describe "delete" do
+    before do
+      @identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create :pool, :owner=>@identity
+      @model = FactoryGirl.create(:model, pool: @pool)
+      @node1 = FactoryGirl.create(:node, model: @model, pool: @pool)
+      @node2 = FactoryGirl.create(:node, model: @model, pool: @pool)
+      @different_pool_node = FactoryGirl.create(:node, model: @model )
+      @different_model_node = FactoryGirl.create(:node, pool: @pool )
+    end
+    describe "when not logged on" do
+      subject { delete }
+      it "should redirect to root" do
+        delete :destroy, :id=>@node1, pool_id: @pool, identity_id: @identity
+        response.should redirect_to root_path
+      end
+    end
+
+    describe "when logged on" do
+      before do
+        sign_in @identity.login_credential
+      end
+      it "should redirect on a node that's not in a pool I have access to" do
+        delete :destroy, :id=>@different_pool_node, pool_id: @pool, identity_id: @identity
+        response.should redirect_to root_path
+        flash[:alert].should == "You are not authorized to access this page."
+      end
+      
+      it "should be able to delete a node" do
+        node_id = @node1.persistent_id
+        node_label = @node1.title
+        delete :destroy, :id=>@node1, pool_id: @pool, identity_id: @identity
+        response.should redirect_to identity_pool_search_path(@identity, @pool)
+        flash[:notice].should == "Deleted \"#{node_label}\"."
+        lambda{Model.find(node_id)}.should raise_exception ActiveRecord::RecordNotFound
+      end
     end
   end
 

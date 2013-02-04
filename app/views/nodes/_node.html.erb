@@ -20,6 +20,7 @@
   <div class="panel-footer">
     <nav>
       <a href="#<model_id>/edit">Change Structure</a>
+      <%= button_to("Delete this #{@model.name}", {:action => :destroy, :controller => :nodes, :id => @node.persistent_id, pool_id: @pool, identity_id: @identity}, :confirm => "Are you sure you want to delete the \"#{@node.title}\" #{@model.name} and all of its associations?", :method => :delete ) %>
     </nav>
   </div>
 </div>

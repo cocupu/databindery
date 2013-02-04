@@ -68,7 +68,7 @@ Bindery::Application.routes.draw do
           end
         end
       end
-      resources :nodes, :only=>[:create, :update, :show, :new, :index] do
+      resources :nodes, :only=>[:create, :update, :show, :new, :index, :destroy] do
         collection do
           get 'search'
         end

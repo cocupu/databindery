@@ -1,7 +1,7 @@
 =render partial: 'models/models_list'
 %div.content
   %h1 New #{@node.model.name}
-  =form_for @node do |f|
+  =form_for @node, url: identity_pool_nodes_path(@identity.short_name, @pool.short_name) do |f|
     =f.hidden_field :model_id
     -@node.model.fields.each do |field|
       =draw_field(field)
