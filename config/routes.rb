@@ -71,6 +71,7 @@ Bindery::Application.routes.draw do
       resources :nodes, :only=>[:create, :update, :show, :new, :index, :destroy] do
         collection do
           get 'search'
+          post 'find_or_create'
         end
         match 'files' => 'nodes#attach_file', :via=>:post
       end

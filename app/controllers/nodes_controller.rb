@@ -1,7 +1,7 @@
 class NodesController < ApplicationController
   include Blacklight::Controller
   include Blacklight::SolrHelper
-  load_and_authorize_resource :except=>[:index, :search, :update, :create], :find_by => :persistent_id
+  load_and_authorize_resource :except=>[:index, :search, :update, :create, :find_or_create], :find_by => :persistent_id
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
   load_resource :model, through: :node, singleton: true, only: [:show]
 
@@ -114,6 +114,48 @@ class NodesController < ApplicationController
       format.json { render :json=>serialize_node(@node)}
     end
   end
+  
+  # Uses advanced search request handler to find Nodes matching the request.
+  # Currently only searches against attribute values.  Does not search against associations (though associations in the create request will be applied to the Node if created.)
+  def find_or_create
+    authorize! :create, Node
+    init_node_from_params
+    
+    # Find...
+    # Constrain results to this pool
+    fq = "pool:#{@pool.id}"
+    fq += " AND model:#{@model.id}" if @model
+    fq += " AND format:Node"
+    
+    query_parts = []
+    @node.solr_attributes.each_pair do |key, value|
+      query_parts << "#{key}:\"#{value}\""
+    end
+    query = query_parts.join(" && ")
+    # puts query
+
+    ## TODO do we need to add query_fields for File entities?
+    query_fields = @pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
+    (solr_response, @facet_fields) = get_search_results( {:q=>query}, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'advanced', :fq=>fq, :rows=>10, 'facet.field' => ['name_s', 'model']})
+    
+    #puts "solr_response: #{solr_response.docs}"
+    
+    # If any docs were found, load the first result as a node and return that.  
+    # Otherwise, create a new one based on the params provided.
+    first_result = solr_response.docs.first
+    if first_result.nil?
+      @node.save
+      flash[:notice] = "Created a new #{@node.model.name} based on your request."
+    else
+      @node =  Node.find_by_persistent_id(first_result['id'])
+      flash[:notice] = "Found a #{@node.model.name} matching your query."
+    end
+    
+    respond_to do |format|
+      format.html { render file: "nodes/show"}
+      format.json { render :json=>serialize_node(@node)}
+    end
+  end
 
   def update
     @node = Node.find_by_persistent_id(params[:id])
@@ -160,6 +202,19 @@ class NodesController < ApplicationController
 
   def serialize_node(n)
     {persistent_id: n.persistent_id, url: identity_pool_node_path(n.pool.owner, n.pool, n), pool: n.pool.short_name, identity: n.pool.owner.short_name, associations: n.associations, data: n.data, binding: n.binding, model_id: n.model_id }
+  end
+  
+  def init_node_from_params
+    @node = Node.new(params.require(:node).permit(:binding, :data, :associations))
+    begin
+      model = @pool.models.find(params[:node][:model_id])
+    rescue ActiveRecord::RecordNotFound 
+      #User didn't have access to the model they were trying to set.
+      redirect_to new_identity_pool_node_path(@identity, @pool, :binding=>@node.binding)
+      return
+    end
+    @node.model = model
+    @node.pool = @pool
   end
 
 end

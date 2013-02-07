@@ -74,5 +74,27 @@ describe "API" do
         n.save
       end
     end
+    describe "Node#find_or_create" do
+      before do
+        @model = FactoryGirl.create(:model, pool: @pool, label: 'first_name',
+                    fields: [{:code=>'first_name'}.with_indifferent_access, {:code=>'last_name'}.with_indifferent_access, {:code=>'title'}.with_indifferent_access])
+        @node1 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
+        @node2 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'})
+        @node3 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Ball', 'title'=>'Mr.'})
+      end
+      it "if a match exists should load the found node " do
+        n = Cocupu::Node.find_or_create({'identity'=>@ident.short_name, 'pool'=>@pool.short_name, "node"=>{'model_id' => @model.id, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}} })
+        n.should be_instance_of Cocupu::Node
+        n.persistent_id.should == @node1.persistent_id
+        n.data.should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
+      end
+      it "if no match exists should load the created Cocupu::Node" do
+        count_before = Node.count
+        n = Cocupu::Node.find_or_create({'identity'=>@ident.short_name, 'pool'=>@pool.short_name, "node"=>{'model_id' => @model.id, :data=>{'first_name'=>'Julius', 'last_name'=>'Caesar', 'title'=>'First Citizen'}} })
+        Node.count.should == count_before + 1
+        n.should be_instance_of Cocupu::Node
+        n.data.should == {'first_name'=>'Julius', 'last_name'=>'Caesar', 'title'=>'First Citizen'}
+      end
+    end
   end
 end

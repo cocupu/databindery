@@ -106,6 +106,51 @@ describe NodesController do
       flash[:alert].should == "You are not authorized to access this page."
     end
   end
+  
+  describe "find_or_create" do
+    before do
+      @identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create :pool, :owner=>@identity
+      @not_my_pool = FactoryGirl.create :pool
+      @model = FactoryGirl.create(:model, pool: @pool, label: 'first_name',
+                  fields: [{:code=>'first_name'}.with_indifferent_access, {:code=>'last_name'}.with_indifferent_access, {:code=>'title'}.with_indifferent_access])
+      @node1 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
+      @node2 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'})
+      @node3 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Ball', 'title'=>'Mr.'})
+      sign_in @identity.login_credential
+    end
+    it "should not be successful using a pool I can't edit" do       
+      post :find_or_create, :node => {:model_id=>@model, :data=>{"first_name" =>"Justin", "last_name" => "Coyne"}}, pool_id: @not_my_pool, identity_id: @identity.short_name
+      response.code.should == '404'
+      assigns[:node].should be_nil
+    end
+    
+    it "should return existing node node if one already fits the fields & values specified" do
+      previous_number_of_nodes = Node.count
+      post :find_or_create, :node => {:model_id=>@model, :data=>{"first_name" =>"Justin", "last_name" => "Coyne"}}, pool_id: @pool, identity_id: @identity.short_name
+      Node.count.should == previous_number_of_nodes
+      assigns[:node].data.should == @node1.data
+      assigns[:node].model.should == @model
+      flash[:notice].should == "Found a #{@model.name} matching your query."
+    end
+    
+    it "should create a new node if none fits the fields & values specified" do
+      previous_number_of_nodes = Node.count
+      post :find_or_create, :node => {:model_id=>@model, :data=>{"first_name" =>"Randy", "last_name" => "Reckless"}}, pool_id: @pool, identity_id: @identity.short_name
+      Node.count.should == previous_number_of_nodes + 1
+      assigns[:node].data.should == {"first_name"=>"Randy", "last_name"=>"Reckless"}
+      assigns[:node].model.should == @model
+      flash[:notice].should == "Created a new #{@model.name} based on your request."
+    end
+
+    it "should return json" do 
+      post :find_or_create, :node => {:model_id=>@model, :data=>{"first_name" =>"Justin", "last_name" => "Coyne"}}, pool_id: @pool, identity_id: @identity, :format=>:json
+      response.should be_success
+      JSON.parse(response.body).keys.should include('persistent_id', 'model_id', 'url', 'pool', 'identity', 'associations', 'binding')
+      @model.nodes.count.should == 3
+      @model.nodes.first.data.should == {"first_name"=>"Justin", "last_name"=>"Ball", "title"=>"Mr."}
+    end
+  end
 
   describe "new" do
     before do
