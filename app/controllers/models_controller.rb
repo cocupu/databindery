@@ -54,7 +54,7 @@ class ModelsController < ApplicationController
     respond_to do |format|
       if @model.update_attributes(params.require(:model).permit(:name, :label, :associations, :fields)) 
           format.html { redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been updated" }
-          format.json { head :no_content }
+          format.json { render :json=>serialize_model(@model) }
       else
           format.html { render :action=>'edit' }
           format.json { render :json=>{:status=>:error, :errors=>@model.errors.full_messages}, :status=>:unprocessable_entity}

@@ -42,6 +42,10 @@ describe "API" do
 
 
     describe "models" do
+      before do
+        @model = FactoryGirl.create(:model, pool: @pool)
+        @model2 = FactoryGirl.create(:model, pool: @pool)
+      end
       it "should create a new model" do
         m = Cocupu::Model.new({'identity' =>@ident.short_name, 'pool'=>@pool.short_name, 'name'=>"Car"})
         m.save
@@ -57,6 +61,21 @@ describe "API" do
         m.label = 'name'
         m.save 
       end
+      
+      it "should find all models" do
+        results = Cocupu::Model.find(@ident.short_name, @pool.short_name, :all)
+        results.count.should == 2
+        results.each {|m| m.should be_instance_of Cocupu::Model}
+      end
+      
+      it "should load single models" do
+        model = Cocupu::Model.load(@model.id)
+        model.should be_instance_of Cocupu::Model
+        model.id.should == @model.id
+        model.fields.should == @model.fields
+        model.pool.should == @model.pool.short_name
+        model.identity.should == @model.pool.owner.short_name
+      end
     end
 
     describe "node" do
@@ -64,8 +83,27 @@ describe "API" do
         @m = Cocupu::Model.new({'identity' =>@ident.short_name, 'pool'=>@pool.short_name, 'name'=>"Car"})
         @m.save
       end
+      it "should find nodes" do
+        model = FactoryGirl.create(:model, pool: @pool)
+        node1 = FactoryGirl.create(:node, model: model, pool: @pool)
+        node2 = FactoryGirl.create(:node, model: model, pool: @pool)
+        othernode = FactoryGirl.create(:node, model: FactoryGirl.create(:model), pool: @pool)
+        results = Cocupu::Node.find(@ident.short_name, @pool.short_name, :model_id=>model.id)
+        results.count.should == 2
+        results.each do |n| 
+          n.should be_instance_of Cocupu::Node
+          n.model_id.should == model.id
+          n.persistent_id.should_not == othernode.persistent_id
+        end
+      end
       it "should create nodes" do
         n = Cocupu::Node.new({'identity'=>@ident.short_name, 'pool'=>@pool.short_name, 'model_id' => @m.id, 'data' => {"name"=>"Ferrari", "date_completed"=>"Nov 10, 2012"}})
+        n.save
+      end
+      it "should update nodes" do
+        model = FactoryGirl.create(:model, pool: @pool)
+        node = FactoryGirl.create(:node, model: model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
+        n = Cocupu::Node.new({'identity'=>@ident.short_name, 'pool'=>@pool.short_name, 'model_id' => model.id, 'data' => {"persistent_id"=>node.persistent_id,"name"=>"Ferrari", "date_completed"=>"Nov 10, 2012"}})
         n.save
       end
       it "should have associations" do

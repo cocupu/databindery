@@ -131,6 +131,13 @@ class Node < ActiveRecord::Base
     hash
   end
 
+  def as_json(opts=nil)
+    h = super
+    h["pool"] = pool.short_name
+    h["identity"] = pool.owner.short_name
+    h
+  end
+  
   def associations_for_json
     output = {}
     model.associations.each do |a|

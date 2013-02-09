@@ -38,7 +38,19 @@ describe Node do
     new_subject = Node.latest_version(subject.persistent_id)
     new_subject.associations.should == { 'authors' =>[ 123, 3232, 888], 'undefined' =>[882]}
   end
-
+  
+  describe "as_json" do
+    before do
+      @identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create :pool, :owner=>@identity
+    end
+    it "should include identity and pool short names" do
+      subject.pool = @pool
+      json = subject.as_json
+      json["pool"].should == @pool.short_name
+      json["identity"].should == @identity.short_name
+    end
+  end
   describe "associations_for_json" do
     before do
       @identity = FactoryGirl.create :identity
