@@ -40,7 +40,9 @@ describe "API" do
       @b.identity(@ident.short_name).pool(@pool.short_name).models.inspect
     end
 
-
+    #
+    # Cocupu::Model
+    #
     describe "models" do
       before do
         @model = FactoryGirl.create(:model, pool: @pool)
@@ -78,6 +80,9 @@ describe "API" do
       end
     end
 
+    #
+    # Cocupu::Node
+    #
     describe "node" do
       before do
         @m = Cocupu::Model.new({'identity' =>@ident.short_name, 'pool'=>@pool.short_name, 'name'=>"Car"})
@@ -132,6 +137,45 @@ describe "API" do
         Node.count.should == count_before + 1
         n.should be_instance_of Cocupu::Node
         n.data.should == {'first_name'=>'Julius', 'last_name'=>'Caesar', 'title'=>'First Citizen'}
+      end
+    end
+  
+    #
+    # Cocupu::Curator
+    #
+    describe "Curator" do
+      describe "spawn_from_field" do
+        before do
+          @dest_model = FactoryGirl.create(:model, pool: @pool, label: 'full_name',
+                      fields: [{:code=>'full_name'}.with_indifferent_access])
+          @source_model = FactoryGirl.create(:model, pool: @pool, label: 'title',
+                      fields: [{:code=>'submitted_by'}.with_indifferent_access, {:code=>'location'}.with_indifferent_access, {:code=>'title'}.with_indifferent_access])
+          @node1 = FactoryGirl.create(:node, model: @source_model, pool: @pool, :data=>{'submitted_by'=>'Justin Coyne', 'location'=>'Malibu', 'title'=>'My Vacation'})
+          @node2 = FactoryGirl.create(:node, model: @source_model, pool: @pool, :data=>{'submitted_by'=>'Matt Zumwalt', 'location'=>'Berlin', 'title'=>'My Holiday'})
+          @node3 = FactoryGirl.create(:node, model: @source_model, pool: @pool, :data=>{'submitted_by'=>'Justin Coyne', 'location'=>'Bali', 'title'=>'My other Vacation'})
+        end
+        it "should Spawn new :destination_model nodes using the :source_field_name field from :source_model nodes, setting the extracted value as the :destination_field_name field on the resulting spawned nodes." do
+          @dest_model.nodes.count.should == 0
+          Cocupu::Curator.spawn_from_field(@ident, @pool, @source_model.id, "submitted_by", "creator", @dest_model.id, "full_name")
+          @dest_model.nodes.count.should == 2
+          # One "Justin" node should have been spawned from 2 sources
+          n1 = @node1.latest_version
+          justin_node_id = n1.associations["creator"].first
+          justin = Node.find_by_persistent_id(justin_node_id)
+          justin.model.should == @dest_model
+          justin.data["full_name"].should == "Justin Coyne"
+          n3 = @node3.latest_version
+          n3.associations["creator"].first.should == justin_node_id
+          n1.data["submitted_by"].should be_nil
+          n3.data["submitted_by"].should be_nil
+          # One Matt node should have been spawned from 1 source
+          n2 = @node2.latest_version
+          matt_node_id = n2.associations["creator"].first
+          matt = Node.find_by_persistent_id(matt_node_id)
+          matt.model.should == @dest_model
+          matt.data["full_name"].should == "Matt Zumwalt"
+          n2.data["submitted_by"].should be_nil
+        end
       end
     end
   end
