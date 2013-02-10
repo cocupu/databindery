@@ -242,6 +242,14 @@ describe Node do
         "title" => "How to write mysteries",
       }
     end
+    describe "find_association" do
+      it "should return all of the nodes pointed to by a particular association" do
+        nodes = subject.find_association("contributing_authors")
+        nodes.length.should == 2
+        nodes.should include(@author1)
+        nodes.should include(@author2)
+      end
+    end
   end
 
 end

@@ -6,8 +6,8 @@ module NodesHelper
     end
   end
   
-  def link_to_association(association)
-    link_to association, identity_pool_solr_document_path(@identity, @pool, association)
+  def link_to_node(node)
+    link_to node.title, identity_pool_solr_document_path(@identity, @pool, node)
   end
   
   private
