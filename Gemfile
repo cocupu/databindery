@@ -33,6 +33,8 @@ gem 'foreigner'
 gem 'uuid'
 gem 'strong_parameters'
 gem 'kaminari'
+gem 's3_direct_upload'
+
 
 group :test, :development do
   gem "rspec-rails"
@@ -41,6 +43,7 @@ group :test, :development do
   gem 'jasmine'
   gem 'jasminerice'
   gem 'cocupu', github: 'cocupu/client' # The ruby client 
+  # gem 'cocupu', path: '../cocupu-client' # The ruby client 
 end
 group :test do
   gem "database_cleaner", ">= 0.7.0"
@@ -52,4 +55,4 @@ gem "aws-sdk"
 gem "jettywrapper"
 gem "rsolr"
 gem "cancan"
-gem "blacklight", '4.0.0'
+gem "blacklight", '4.0.1'

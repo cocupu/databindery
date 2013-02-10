@@ -32,6 +32,7 @@ describe ExhibitsController do
       it "should be success" do
         get :index, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should be_successful
+        assigns[:pool].should == @pool
         assigns[:exhibits].should ==[@exhibit]
         assigns[:exhibits].should_not include @exhibit2
       end
