@@ -57,12 +57,8 @@ describe Pool do
     
     describe "default perspective" do
       describe "when a default has not been explicitly set" do
-        it "should return an exhibit that has all of the pool's fields set in both its facets and index_fields" do
-          e = subject.default_perspective
-          e.should be_kind_of Exhibit
-          all_field_codes = subject.all_fields.map {|f| f["code"]}
-          e.facets.should == all_field_codes
-          e.index_fields.should == all_field_codes
+        it "should return the generated default perspective for the pool" do
+          subject.default_perspective.should == subject.generated_default_perspective
         end
       end
       describe "when a default has been explicitly set" do
@@ -72,6 +68,32 @@ describe Pool do
         it "should return the one that has been explicitly set" do
           subject.default_perspective.should == @exhibit1
         end
+      end
+    end
+    describe "generated_default_perspective" do
+      before do
+        @model1 = FactoryGirl.create(:model, pool: subject)
+        @model1.fields << {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
+        @model1.fields << {:code=>'two', :name=>'Two', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
+        @model1.save
+        subject.models << @model1
+      end
+      it "should generate an Exhibit whose facet and index fields are all fields from all Models" do
+        e = subject.generated_default_perspective
+        e.should be_kind_of Exhibit
+        e.facets.should == ["description","one", "two"]
+        e.index_fields.should == ["description","one", "two"]
+      end
+      it "should not merge duplicate fields" do
+        @model2 = FactoryGirl.create(:model, pool: subject)
+        @model2.fields << {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
+        @model2.fields << {:code=>'three', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
+        @model2.save
+        subject.models << @model2
+        p subject.models
+        e = subject.generated_default_perspective
+        e.facets.should == ["description", "one", "three", "two"]
+        e.index_fields.should == ["description", "one", "three", "two"]
       end
     end
   end
