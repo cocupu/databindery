@@ -85,15 +85,11 @@ describe Pool do
         e.index_fields.should == ["description","one", "two"]
       end
       it "should not merge duplicate fields" do
-        @model2 = FactoryGirl.create(:model, pool: subject)
-        @model2.fields << {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
-        @model2.fields << {:code=>'three', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
-        @model2.save
-        subject.models << @model2
+        subject.stub(:all_fields).and_return([{"code"=>"collection_location", "name"=>"Collection Location"}, {"code"=>"date_from", "name"=>"Date from"}, {"name"=>"Date from", "type"=>"date", "uri"=>"", "code"=>"date_from"}, {"code"=>"date_to", "name"=>"Date to"}, {"name"=>"Date to", "type"=>"date", "uri"=>"", "code"=>"date_to"}])
         p subject.models
         e = subject.generated_default_perspective
-        e.facets.should == ["description", "one", "three", "two"]
-        e.index_fields.should == ["description", "one", "three", "two"]
+        e.facets.should == ["collection_location", "date_from", "date_to"]
+        e.index_fields.should == ["collection_location", "date_from", "date_to"]
       end
     end
   end

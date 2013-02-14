@@ -34,7 +34,7 @@ class Pool < ActiveRecord::Base
   end
   
   def generated_default_perspective
-    all_field_codes = all_fields.map {|f| f["code"]}
+    all_field_codes = all_fields.map {|f| f["code"]}.uniq
     @generated_default_perspective ||= Exhibit.new(pool_id:self.id, index_fields: all_field_codes, facets: all_field_codes, title: "All Content, All fields")
   end
 
