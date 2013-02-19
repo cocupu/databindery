@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121109152040) do
+ActiveRecord::Schema.define(:version => 20130219092945) do
 
   create_table "access_controls", :force => true do |t|
     t.integer  "pool_id"
@@ -153,11 +153,12 @@ ActiveRecord::Schema.define(:version => 20121109152040) do
   create_table "pools", :force => true do |t|
     t.string   "name"
     t.integer  "owner_id"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
     t.integer  "head_id"
     t.string   "short_name"
     t.text     "description"
+    t.integer  "chosen_default_perspective_id"
   end
 
   add_index "pools", ["short_name"], :name => "index_pools_on_short_name", :unique => true
@@ -220,6 +221,7 @@ ActiveRecord::Schema.define(:version => 20121109152040) do
   add_foreign_key "nodes", "pools", :name => "nodes_pool_id_fk"
 
   add_foreign_key "pools", "change_sets", :name => "pools_head_id_fk", :column => "head_id"
+  add_foreign_key "pools", "exhibits", :name => "pools_chosen_default_perspective_id_fk", :column => "chosen_default_perspective_id"
   add_foreign_key "pools", "identities", :name => "pools_owner_id_fk", :column => "owner_id"
 
 end
