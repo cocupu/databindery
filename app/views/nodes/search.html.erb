@@ -1,0 +1,29 @@
+<div class="panel" data-bind="with: $root.selectedSearchContext, visible: $root.selectedSearchContext">
+  <div class="panel-header">
+    <a href="#" class="close">×</a>
+    <h3 data-bind="text: title"></h3>
+    </span>
+  </div>
+  <div class="panel-body">
+    <%= render partial: "nodes/search_form"%>
+    <div class="selected results" data-bind="visible: selected().length > 0">
+      <h4>Selected:</h4>
+      <a href="#" class="submit button" data-bind="click: $root.submitSelectedFromSearch">add these</a>
+      <table class="results table table-bordered table-striped" data-bind="foreach: selected">
+        <tr><td>
+          <a href="#" data-bind="text: $data, click: $root.openEntity"></a>
+          <a href="#" data-bind="click: $root.deselectEntityFromSearch">X</a>
+        </td></tr>
+      </table>   
+    </div> 
+    <table class="results table table-bordered table-striped" data-bind="foreach: results">
+      <tr><td><input type="checkbox" data-bind="checked: $parent.selected, value: persistent_id" /><a href="#" data-bind="text: title, click: $root.openEntity"></td></tr>
+    </table>
+    <nav>
+      <ul>
+        <li><a class="create-new" data-bind="click: $root.createEntity">Create new</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+

@@ -1,0 +1,149 @@
+%script
+  // Init the viewmodel.  This should be at the bottom of the page (or at least after the HTML it's applying bindings to)
+  ko.applyBindings(nodeExplorerViewModel);
+
+  
+-content_for :head do
+  :javascript
+    
+    //
+    // Rudimentary memoization of Entities & Models
+    //
+    var memoCache = {Entity: {}, Model: {}}
+
+    memoLookup = function (model, id) {
+      if (memoCache.hasOwnProperty(model) && memoCache[model][id])  return memoCache[model][id];
+    }
+    
+    memo = function (model, id, object) {
+      if (!memoCache.hasOwnProperty(model)) memoCache[model] = {};
+      memoCache[model][id] = object;
+      return object;
+    }
+    
+    createOrUpdateMemo = function (model, id, data) {
+      obj = memoLookup(model, id)
+      if (obj) { return obj.constructor(data) }
+      obj = new model(data);
+      return memo(model, id, data);
+    }
+    // TODO: memoized AJAX load -- use jQuery deferred?
+  
+    //
+    // Models
+    //
+    function Model(data) {
+        this.name = ko.observable(data.name);
+        this.labelField = data.label;
+        this.id = data.id;
+        this.relativeUrl = "#" + data.id;
+        this.pool = data.pool;
+        this.identity = data.identity;
+        this.fields = $.map(data.fields, function(item) { return new ModelField(item) });         
+        this.associations = $.map(data.associations, function(item) {return new ModelAssociation(item)});  
+    }
+    
+    function ModelField(data) {
+      this.code = data.code;
+      this.name = data.name;
+      this.type = data.type;
+    }
+    
+    function ModelAssociation(data) {
+      this.code = data.code;
+      this.name = data.name;
+      this.type = data.type;
+      this.label = data.label;
+      this.reference = data.references;
+      this.searchContext = new SearchContext({"title":"Search for "+data.label+" to Associate", "queryParams":{}, "model_id":data.references, "association_code":data.code})
+    }
+    
+    function Entity(data) {
+        this.persistent_id = data.persistent_id;
+        // Currently this assumes that all of the models have already been cached locally!
+        this.model = memoLookup(Model, data.model_id)
+        // URL is not returned on search results, so setting it manually instead of using data.url
+        this.url = "/#{params[:identity_id]}/#{params[:pool_id]}/nodes/"+data.persistent_id;        
+        this.associations = data.associations;
+        this.title = data.title;
+        this.data = data.data;
+        this.lastSavedAt = ko.observable("");
+    }
+    
+    function SearchContext(data) {
+      this.title = data.title;
+      this.queryParams = data.queryParams;
+      this.model_id = data.model_id;
+      this.association_code = data.association_code;
+      this.results = ko.observableArray([]);
+      this.query = ko.observable("");
+      this.selected = ko.observableArray([]);
+    }
+    
+    //
+    // Preloading info
+    //
+    
+    memo(Model, "#{@model.id}", new Model(#{@model.to_json}))
+    memo(Entity, "#{@node.persistent_id}", new Entity(#{@node.to_json}))
+    
+    //
+    // ViewModel
+    //
+    function NodeExplorerViewModel() {
+        // Data
+        var self = this;
+        self.currentEntity = ko.observable(memoLookup(Entity, "#{@node.persistent_id}"));
+        self.selectedSearchContext = ko.observable();
+
+    
+      //
+      // Behaviors
+      //
+      self.runEntitySearch = function(searchContext) {
+        data = searchContext.queryParams;
+        data["q"] = searchContext.query();
+        data["model_id"] = searchContext.model_id;
+        $.getJSON("/#{params["identity_id"]}/#{params["pool_id"]}/nodes/search?", data, function(allData) {
+            var mappedResults = $.map(allData, function(item) { return new Entity(item) });
+            searchContext.results(mappedResults);
+        });
+      }
+      
+      self.openAssociationSearchPane = function(association) {
+        var searchContext = association.searchContext;
+        self.runEntitySearch(searchContext);
+        self.selectedSearchContext(searchContext);
+      }
+      
+      self.deselectEntityFromSearch = function(entity) {
+        self.selectedSearchContext().selected.remove(entity);
+      }
+      
+      self.submitSelectedFromSearch = function(searchContext) {
+        // Init the association on the entity if it's not there.
+        existing_assoc = self.currentEntity().associations[searchContext.association_code]
+        self.currentEntity().associations[searchContext.association_code] = (typeof existing_assoc === 'undefined') ? [] : existing_assoc;
+        
+        // Add selected associations to the entity
+        searchContext.selected().forEach(function(association){ 
+          self.currentEntity().associations[searchContext.association_code].push(association)
+        });
+        self.updateEntity(self.currentEntity());
+      }
+      
+      self.updateEntity = function(entity) {
+        $.ajax(entity.url+".json", {
+            data: ko.toJSON({ node: entity, _method: "put"}),
+            type: "put", contentType: "application/json",
+            success: function(result) { 
+              now = new Date()
+              clock = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
+              entity.lastSavedAt("last saved at "+ clock); 
+            }
+        });
+      };
+      
+    };  
+    // Put the viewmodel in a variable so functions can grab it.
+    var nodeExplorerViewModel = new NodeExplorerViewModel();

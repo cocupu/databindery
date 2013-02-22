@@ -135,6 +135,7 @@ class Node < ActiveRecord::Base
     h = super
     h["pool"] = pool.short_name
     h["identity"] = pool.owner.short_name
+    h["title"] = title
     h
   end
   
