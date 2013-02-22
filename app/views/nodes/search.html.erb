@@ -11,13 +11,13 @@
       <a href="#" class="submit button" data-bind="click: $root.submitSelectedFromSearch">add these</a>
       <table class="results table table-bordered table-striped" data-bind="foreach: selected">
         <tr><td>
-          <a href="#" data-bind="text: $data, click: $root.openEntity"></a>
+          <a href="#" data-bind="text: title, click: $root.openEntity"></a>
           <a href="#" data-bind="click: $root.deselectEntityFromSearch">X</a>
         </td></tr>
       </table>   
     </div> 
     <table class="results table table-bordered table-striped" data-bind="foreach: results">
-      <tr><td><input type="checkbox" data-bind="checked: $parent.selected, value: persistent_id" /><a href="#" data-bind="text: title, click: $root.openEntity"></td></tr>
+      <tr><td><input type="checkbox" data-bind="checked: $parent.selectedIds, value: persistent_id" /><a href="#" data-bind="text: title, click: $root.openEntity"></td></tr>
     </table>
     <nav>
       <ul>
