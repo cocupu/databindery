@@ -12,6 +12,7 @@
       <table class="results table table-bordered table-striped" data-bind="foreach: selected">
         <tr><td>
           <a href="#" data-bind="text: title, click: $root.openEntity"></a>
+        </td><td>
           <a href="#" class="remove" data-bind="click: $root.deselectEntityFromSearch">X</a>
         </td></tr>
       </table>   

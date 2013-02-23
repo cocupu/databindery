@@ -261,7 +261,7 @@
         }
       
         self.deselectEntityFromSearch = function(entity) {
-          self.selectedSearchContext().selected.remove(entity);
+          self.selectedSearchContext().selectedIds.remove(entity.persistent_id);
         }
       
         self.submitSelectedFromSearch = function(searchContext) {
@@ -273,6 +273,12 @@
           searchContext.selected().forEach(function(association){ 
             self.currentEntity().associations[searchContext.association_code].push(association)
           });
+          self.updateEntity(self.currentEntity());
+          searchContext.selectedIds.removeAll();
+        }
+        
+        self.removeAssociation = function(code, entityToRemove, event) {
+          self.currentEntity().associations[code].remove(entityToRemove);
           self.updateEntity(self.currentEntity());
         }
       
