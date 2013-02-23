@@ -6,7 +6,7 @@
   </div>
   <div class="panel-body">
     <%= form_for @node, url: identity_pool_node_path(@identity.short_name, @pool.short_name, @node),"accept-charset" => "UTF-8", html: {class: "metadata"}  do |f| %>
-      <%= render partial: "nodes/field" , collection: @model.fields %>
+      <%= render partial: "nodes/field" %>
       <div class="form-actions">
         <button type="submit" class="btn btn-primary" data-bind="click: $root.updateEntity">Save</button> <span id="lastSavedAt" data-bind="text: lastSavedAt"></span>
       </div>

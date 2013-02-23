@@ -9,15 +9,12 @@
     //
     // Rudimentary memoization of Entities & Models
     //
-    var memoCache = {Entity: {}, Model: {}}
+    var memoCache = {}
 
     memoLookup = function (model, id) {
       if (memoCache.hasOwnProperty(model) && memoCache[model][id])  {
         return memoCache[model][id];
         }
-      else {
-        return id;
-      }
     }
     
     memo = function (model, id, object) {
@@ -32,11 +29,12 @@
       obj = new model(data);
       return memo(model, id, data);
     }
-    // TODO: memoized AJAX load -- use jQuery deferred?
     
-    loadObject = function(model, id) {
-      return memoLookup(model, id);
+    // Alias for memoLookup
+    getObject = function(model, id) {
+      return memoLookup(model,id);
     }
+    
   
     //
     // Models
@@ -70,39 +68,60 @@
     function Entity(data) {
         this.persistent_id = data.persistent_id;
         // Currently this assumes that all of the models have already been cached locally!
-        this.model = memoLookup(Model, data.model_id)
+        this.model = memoLookup(Model, data.model_id);
         // URL is not returned on search results, so setting it manually instead of using data.url
         this.url = "/#{params[:identity_id]}/#{params[:pool_id]}/nodes/"+data.persistent_id; 
         //this.associations = data.associations;
-        this.associations = buildAssociationsHash(this.model.associations, data.associations) 
+        this.associations = buildAssociationsHash(this.model.associations) 
+        reifyAssociations(this.associations, data.associations) 
+        this.unreifiedAssociations = data.associations
         this.title = data.title;
         this.data = data.data;
         this.lastSavedAt = ko.observable("");
         this.asJSON = function() {
           var json = {"persistent_id":this.persistent_id,"data":this.data};
-          json["associations"] = unreifyAssociationsHash(this.model.associations, this.associations)
+          json["associations"] = unreifyAssociations(this.model.associations, this.associations)
           return json;
         };
     }
     
-    function buildAssociationsHash(modelAssociations,associationsAsIds) {
+    // Uses Model Association to sets up a Hash of observableArrays for associations to be inserted to.
+    function buildAssociationsHash(modelAssociations) {
       associationsHash = {}
       modelAssociations.forEach( function(modelAssociation) {
-        idsToLookup = associationsAsIds[modelAssociation.code];
-        if (idsToLookup == null) {
-          loadedEntities = []
-        } else {
-           loadedEntities = $.map(associationsAsIds[modelAssociation.code], function(itemId) {
-               return loadObject(Entity, itemId);
-             });
-        }
-        associationsHash[modelAssociation.code] = ko.observableArray(loadedEntities);
+        associationsHash[modelAssociation.code] = ko.observableArray([]);
       });
       return associationsHash;
     };
     
+    // Iterate over each association key in associationsAsIds, reifying each persistent id from the associated Array 
+    function reifyAssociations(associationsHash, associationsAsIds) {
+      deferreds = []
+      for(associationKey in associationsAsIds) {
+        idsToLookup = associationsAsIds[associationKey];
+        if (idsToLookup != null) { 
+          idsToLookup.forEach(function(itemId) {
+            deferreds.push( objectLoaded(Entity, itemId) );
+          });
+        };
+       };
+       lastDeferred = deferreds[deferreds.length-1]
+       $.when(lastDeferred).then(function(){
+        for(associationKey in associationsAsIds) {
+          idsToLookup = associationsAsIds[associationKey];
+          if (idsToLookup != null) {
+            idsToLookup.forEach(function(itemId) {
+              entity = getObject(Entity, itemId)
+              associationsHash[associationKey].push( entity );
+             });
+            };
+          };
+       });
+      return associationsHash;
+    };
+    
     // Reduce associated entities back down to an array of pids
-    function unreifyAssociationsHash(modelAssociations,associationsHash) {
+    function unreifyAssociations(modelAssociations,associationsHash) {
       unreifiedAssociations = {};
       modelAssociations.forEach(function(modelAssociation) {
         entitiesToUnreify = associationsHash[modelAssociation.code]();
@@ -137,30 +156,90 @@
     }
     
     //
+    // Methods for Loading Data
+    //
+    
+    // Returns a promise object.  When the promise is resolved, the requested object is available in memoCache
+    objectLoaded = function(model, id) {
+      // Try to load from memoCache 
+      cached = memoLookup(model, id);
+      // Return a resolved promise if the object was cached, otherwise, load JSON via Ajax Request & return the promise from that Ajax request
+      if (cached) { 
+        dfd = $.Deferred();
+        dfd.resolve;
+        return dfd; 
+      } else {
+        switch(model)
+        {
+        case Entity:
+          return loadEntity(id);
+          break;
+        case Model:
+          return loadModel(id);        
+          break;
+        default:
+          dfd.reject();
+          return dfd;
+          break;
+        } 
+      }
+    };
+    
+    // expects a string that is the desired Entity's persistent_id
+    // Returns a promise object from the getJSON request.  On success, will put the entity in memoCache for retrieval.
+    self.loadEntity = function(entity_id) {
+      // Otherwise load from server & cache the resulting object for future use
+      return $.getJSON("/#{params[:identity_id]}/#{params[:pool_id]}/nodes/"+entity_id, function(data) {
+          entity = new Entity(data);
+          // Memoize the object
+          memo(Entity, entity.persistent_id, entity);
+      });
+    }
+    
+    // expects a string that is the desired Model's id
+    // Returns a promise object from the getJSON request.  On success, will put the entity in memoCache for retrieval.
+    // Currently API doesn't support loading individual models, so this loads ALL models & shoves them in cache.
+    self.loadModel = function(model_id) {
+      // Load all models from server, convert them to Model instances, then populate self.models
+      $.getJSON("/#{params[:identity_id]}/#{params[:pool_id]}/models", function(allData) {
+          allData.forEach(function(item){
+            m = new Model(item) 
+            memo(Model, m.id, m)
+          });
+      });
+    }
+    
+    //
     // Preloading info
     //
     
-    memo(Model, "#{@model.id}", new Model(#{@model.to_json}))
+    var modelsJson = #{@pool.models.to_json}
+    var mappedModels = $.map(modelsJson, function(item) { 
+      m = new Model(item) 
+      return memo(Model, m.id, m)
+    });
     memo(Entity, "#{@node.persistent_id}", new Entity(#{@node.to_json}))
+    
+    // Load initial state from server, convert it to Model instances, then populate self.models
+    $.getJSON("/#{params[:identity_id]}/#{params[:pool_id]}/models", function(allData) {
+        var mappedModels = $.map(allData, function(item) { 
+          m = new Model(item) 
+          return memo(Model, m.id, m)
+        });
+        //self.models(mappedModels);
+    });
     
     //
     // ViewModel
     //
     function NodeExplorerViewModel() {
+
+        
         // Data
         var self = this;
         self.currentEntity = ko.observable(memoLookup(Entity, "#{@node.persistent_id}"));
         self.selectedSearchContext = ko.observable();
-        self.models = ko.observableArray([]);
-        
-        // Load initial state from server, convert it to Model instances, then populate self.models
-        $.getJSON("/#{params[:identity_id]}/#{params[:pool_id]}/models", function(allData) {
-            var mappedModels = $.map(allData, function(item) { 
-              m = new Model(item) 
-              return memo(Model, m.id, m)
-            });
-            self.models(mappedModels);
-        });
+        self.models = ko.observableArray(mappedModels);
     
         //
         // Behaviors

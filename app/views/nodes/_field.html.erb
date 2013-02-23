@@ -1,4 +1,4 @@
 <div class="controlGroup" data-bind="foreach: model.fields">
-  <label data-bind="text: name, attr: {for: code}" for="node[data][<%= field[:code] %>]"><%= field[:name] %></label>
-  <input data-bind="value: $parent.data[$data.code], attr: {type: type, name: code}" value="<%= @node.data[field[:code]]%>" name="node[data][<%= field[:code]%>]" type="<%= field[:type] %>">
+  <label data-bind="text: name, attr: {for: code}" for="node[data][-field-code]"></label>
+  <input data-bind="value: $parent.data[$data.code], attr: {type: type, name: code}" name="node[data][-field-code]">
 </div>
