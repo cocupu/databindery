@@ -7,5 +7,12 @@ form {
     }
   }
   
+  &.metadata {
+    input, textarea,.uneditable-input {
+        width: 406px;
+    }
+  }
+
+  
 
 }
