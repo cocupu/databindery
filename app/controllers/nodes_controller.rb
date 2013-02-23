@@ -202,7 +202,9 @@ class NodesController < ApplicationController
   private
 
   def serialize_node(n)
-    {persistent_id: n.persistent_id, url: identity_pool_node_path(n.pool.owner, n.pool, n), pool: n.pool.short_name, identity: n.pool.owner.short_name, associations: n.associations, data: n.data, binding: n.binding, model_id: n.model_id }
+    hash = n.as_json.merge({url: identity_pool_node_path(n.pool.owner, n.pool, n), pool: n.pool.short_name, identity: n.pool.owner.short_name, binding: n.binding, model_id: n.model_id })
+    ["id", "parent_id", "pool_id", "identity_id", "created_at", "updated_at"].each {|key| hash.delete(key)}
+    return hash
   end
   
   def init_node_from_params
