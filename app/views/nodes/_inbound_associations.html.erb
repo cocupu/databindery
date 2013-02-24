@@ -1,0 +1,14 @@
+<div class="showView panel">
+  <div class="panel-header">
+    <h4>Things that reference this <%= @node.model.name %></h4>
+  </div>
+  <div class="panel-body">
+    <table class="table table-bordered table-striped">
+      <%= render partial: "nodes/inbound_association", collection: @node.incoming %>
+    </table>
+  </div>
+  <div class="panel-footer">
+  </div>
+</div>
+
+

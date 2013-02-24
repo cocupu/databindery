@@ -1,0 +1,6 @@
+<tr class="association">
+  <td>
+    <%= inbound_association.model.name %>
+    <%= link_to(inbound_association.title, identity_pool_solr_document_path(params["identity_id"], params["pool_id"], inbound_association))%>
+  </td>
+</tr>

@@ -87,7 +87,9 @@ class Node < ActiveRecord::Base
     model.associations.each do |f|
       instances = find_association(f['code'])
       next unless instances
+      doc["bindery__associations_facet"] ||= []
       find_association(f['code']).each do |instance|
+        doc["bindery__associations_facet"] << instance.persistent_id
         instance.solr_attributes(f['code'] + '__').each do |k, v|
           doc[k] ||= []
           doc[k] << v
@@ -114,6 +116,15 @@ class Node < ActiveRecord::Base
   # TODO grab this info out of solr.
   def find_association(type) 
     associations[type] ? associations[type].map { |pid| Node.latest_version(pid) } : nil
+  end
+  
+  # Relies on a solr search to returns all Nodes that have associations pointing at this node
+  def incoming(opts={})
+    # Constrain results to this pool
+    fq = "format:Node"
+    # fq += " AND pool:#{pool.id}"
+    http_response = Bindery.solr.select(params: {q:persistent_id, qf:"bindery__associations_facet", qt:'search', fq:fq})
+    results = http_response["response"]["docs"].map{|d| Node.find_by_persistent_id(d['id'])}
   end
 
   def title

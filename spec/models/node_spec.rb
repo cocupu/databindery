@@ -232,7 +232,7 @@ describe Node do
       subject.pool = @pool
       subject.save!
     end
-    it "should index the properties of the child associations" do
+    it "should index the properties of the child associations and add their persistent ids to an associations_t field" do
       subject.to_solr.should == {'id'=>subject.persistent_id, 'version'=>subject.id, 'model_name' =>subject.model.name, 'pool' => @pool.id, 
         'format'=>'Node', 'model'=>subject.model.id, 
         'contributing_authors__full_name_t'=>['Agatha Christie', 'Raymond Chandler'],
@@ -240,6 +240,7 @@ describe Node do
         "book_title_facet" => "How to write mysteries",
         "book_title_t" => "How to write mysteries",
         "title" => "How to write mysteries",
+        "bindery__associations_facet" => [@author1.persistent_id, @author2.persistent_id]
       }
     end
     describe "find_association" do
@@ -248,6 +249,11 @@ describe Node do
         nodes.length.should == 2
         nodes.should include(@author1)
         nodes.should include(@author2)
+      end
+    end
+    describe "incoming" do
+      it "should return all of the nodes pointing to the current object" do
+        @author1.incoming.should == [subject]
       end
     end
   end
