@@ -1,9 +1,10 @@
-%h1 Exhibits
+%h1 Exhibits & Perspectives
+%p
+  Create Exhibits to present your content in various ways according to the audience.  Any Exhibits you create will also be available as Perspectives within the Curate view.  When viewed as an Exhibit, this information will be read-only.  When used as a Perspective, it simply re-configures what Curators see & how they see it.
+%p
+  Currently Exhibits only allow you to select which fields & facets to display, but soon they will also allow you to do things like filter which content is displayed in an Exhibit.
 
-%ul
-  -@exhibits.each do |exhibit|
-    %li
-      =link_to exhibit.title, identity_exhibit_path(@identity, exhibit)
-      ="(#{link_to "edit", edit_identity_pool_exhibit_path(@identity, @pool, exhibit)})".html_safe
+= render partial: "exhibit", collection: @exhibits
+
 
 =link_to "Create a new exhibit", new_identity_pool_exhibit_path(@identity, @pool), :class=>'btn btn-primary'
