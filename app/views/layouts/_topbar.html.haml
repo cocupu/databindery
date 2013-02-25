@@ -24,4 +24,19 @@
           = f.email_field :email, :placeholder=>"E-Mail", :class=>'input-medium', :id=>'top_login_email' 
           = f.password_field :password, :placeholder=>"Password", :class=>'input-medium', :id=>'top_login_password' 
           %button.btn{:type=>"submit"} Sign in
+  -if @pool
+    .navbar-inner
+      .container
+        %ul.nav
+          %li{:class => (if controller?("pool_searches") then "active" end)}
+            = link_to "Curate", identity_pool_path(@identity.short_name, @pool)
+          // TODO: Readme/Describe
+          %li{:class => (if controller?("models") then "active" end)}
+            = link_to "Models", identity_pool_models_path(@identity.short_name, @pool)
+          %li{:class => (if controller?("exhibits") then "active" end)}
+            = link_to "Perspectives", identity_pool_exhibits_path(@identity.short_name, @pool)
+          %li{:class => (if controller?("exhibits") then "active" end)}
+            = link_to "Publish", identity_pool_exhibits_path(@identity.short_name, @pool)
+          %li{:class => (if controller?("pools") then "active" end)}
+            = link_to "Admin", edit_identity_pool_path(@identity.short_name, @pool)
 

@@ -54,4 +54,18 @@ module ApplicationHelper
     current_page = response["docs"].current_page
     paginate Kaminari.paginate_array(response['docs'], :total_count => response['docs'].total).page(current_page).per(per_page), options, &block
   end
+  
+  # Check whether the current controller matches any of the controller names provided as arguments
+  # @example
+  #   controller?("pools", "pool_searches") 
+  def controller?(*controller)
+    controller.include?(params[:controller])
+  end
+  
+  # Check whether the current controller action matches any of the action names provided as arguments
+  # @example
+  #   action?("index", "show")
+  def action?(*action)
+    action.include?(params[:action])
+  end
 end
