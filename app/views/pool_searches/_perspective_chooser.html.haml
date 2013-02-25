@@ -5,4 +5,4 @@
     %ul
       - @pool.perspectives.select{|p| p != @exhibit}.each do |p|
         %li
-          =link_to p.title, identity_pool_search_path(@identity.short_name, @pool.short_name, perspective:p.id)
+          =link_to p.title, identity_pool_search_path(@identity.short_name, @pool.short_name, perspective:(p.id ? p.id : 0))

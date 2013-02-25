@@ -20,7 +20,11 @@ class PoolSearchesController < ApplicationController
   # Sets the Exhibit to use for configuration
   def set_perspective
     if params[:perspective]
-      @exhibit = Exhibit.where(pool_id:@pool.id, id:params[:perspective]).first
+      if params[:perspective] == "0"
+        @exhibit = @pool.generated_default_perspective
+      else
+        @exhibit = Exhibit.where(pool_id:@pool.id, id:params[:perspective]).first
+      end
     end
     if @exhibit.nil?
       @exhibit = @pool.default_perspective

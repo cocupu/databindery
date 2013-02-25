@@ -8,11 +8,15 @@
         = button_to("Delete", {:action => :destroy, :controller => :models, :id => model['id']}, :confirm => "Are you sure you want to delete the \"#{model.name}\" model and all of its nodes?", :method => :delete )
       %b Nodes:
       = model.nodes.count
-      %h4 Fields
-      %ul.model_fields
-        - model.fields.each do |field|
-          %li= "#{field["name"]}: #{field["type"]}"
-      %h4 Associations
-      %ul.model_associations
-        - model.associations.each do |a|
-          %li= "#{a["type"]} #{a["label"]} (code: #{a["code"]})"
+      %table
+        %tr
+          %td.fields
+            %h4 Fields
+            %ul.model_fields
+              - model.fields.each do |field|
+                %li= "#{field["name"]}: #{field["type"]}"
+          %td.associations
+            %h4 Associations
+            %ul.model_associations
+              - model.associations.each do |a|
+                %li= "#{a["type"]} #{a["label"]} (code: #{a["code"]})"
