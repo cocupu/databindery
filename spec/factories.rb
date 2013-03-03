@@ -28,6 +28,7 @@ FactoryGirl.define do
     end
 
     owner
+    persistent_id "bindery-test-pool"
 
     # user_with_posts will create post data after the user has been created
     factory :pool_with_models do

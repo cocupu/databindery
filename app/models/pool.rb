@@ -1,5 +1,8 @@
 class Pool < ActiveRecord::Base
   include ActiveModel::ForbiddenAttributesProtection
+  include Bindery::Identifiable
+  
+  before_create :generate_uuid
   belongs_to :owner, class_name: "Identity"
   validates :owner, presence: true
   has_many :exhibits, :dependent => :destroy
@@ -42,7 +45,15 @@ class Pool < ActiveRecord::Base
   def short_name=(name)
     write_attribute :short_name, name.downcase
   end
-
+  
+  def file_store
+    raise StandardError, "You can't call file_store on a Pool that hasn't been persisted.  Save the pool first." unless persisted?
+    Bindery::Storage::S3::FileStore.new(bucket_name: persistent_id)
+  end
+  
+  #
+  # Serialization
+  #
   def to_param
     short_name
   end

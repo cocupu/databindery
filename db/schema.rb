@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130219092945) do
+ActiveRecord::Schema.define(:version => 20130303093725) do
 
   create_table "access_controls", :force => true do |t|
     t.integer  "pool_id"
@@ -159,6 +159,7 @@ ActiveRecord::Schema.define(:version => 20130219092945) do
     t.string   "short_name"
     t.text     "description"
     t.integer  "chosen_default_perspective_id"
+    t.string   "persistent_id"
   end
 
   add_index "pools", ["short_name"], :name => "index_pools_on_short_name", :unique => true

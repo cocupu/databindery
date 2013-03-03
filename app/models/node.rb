@@ -1,6 +1,7 @@
 class Node < ActiveRecord::Base
   include ActiveModel::ForbiddenAttributesProtection
-
+  include Bindery::Identifiable
+  
   before_create :generate_uuid
   belongs_to :model
   belongs_to :pool
@@ -39,10 +40,6 @@ class Node < ActiveRecord::Base
     Bindery.solr.commit
   end
 
-  def generate_uuid
-    self.persistent_id= UUID.new.generate if !persistent_id
-  end
-
   # override activerecord to copy-on-write
   def update
     n = Node.new
@@ -59,7 +56,7 @@ class Node < ActiveRecord::Base
     node.file_name = file_name
     node.pool= pool
     node.model= Model.file_entity
-    node.bucket = 'cocupu' # s3 bucket name
+    node.bucket = pool.file_store.bucket.name # s3 bucket name
     node.content = file.read
     node.content_type = file.content_type
     node.save!

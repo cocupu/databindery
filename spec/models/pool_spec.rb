@@ -8,7 +8,16 @@ describe Pool do
     subject.owner = Identity.create
     subject.should be_valid
   end
-
+  
+  it "should create a persistent_id when created" do
+    subject.persistent_id.should be_nil
+    # Make the pool valid to save...
+      subject.short_name = 'short_name'
+      subject.owner = FactoryGirl.create(:identity)
+    subject.save!
+    subject.persistent_id.should_not be_nil
+  end
+  
   describe "#for_identity" do
     before do
       @pool = FactoryGirl.create(:pool)
@@ -94,6 +103,18 @@ describe Pool do
     end
   end
 
+  describe "file_store" do
+    let(:pool) {FactoryGirl.create(:pool)}
+    subject {pool.file_store}
+    it "should use the app default S3 connection" do
+      subject.should be_instance_of(Bindery::Storage::S3::FileStore)
+      subject.connection.should == Bindery::Storage::S3.default_connection
+    end
+    it "should use a bucket that is unique to the pool" do
+      subject.bucket_name.should == pool.persistent_id
+    end
+  end
+  
   describe "short_name" do
     before do
       subject.owner = Identity.create
@@ -115,6 +136,7 @@ describe Pool do
       subject.short_name.should == 'short-name'
     end
   end
+  
   
 
 end
