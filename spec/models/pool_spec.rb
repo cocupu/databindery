@@ -102,18 +102,6 @@ describe Pool do
       end
     end
   end
-
-  describe "file_store" do
-    let(:pool) {FactoryGirl.create(:pool)}
-    subject {pool.file_store}
-    it "should use the app default S3 connection" do
-      subject.should be_instance_of(Bindery::Storage::S3::FileStore)
-      subject.connection.should == Bindery::Storage::S3.default_connection
-    end
-    it "should use a bucket that is unique to the pool" do
-      subject.bucket_name.should == pool.persistent_id
-    end
-  end
   
   describe "short_name" do
     before do

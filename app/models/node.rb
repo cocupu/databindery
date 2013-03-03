@@ -50,13 +50,15 @@ class Node < ActiveRecord::Base
     n
   end
 
+  # Stores file in an S3 bucket named after its Pool's persistent_id
   def attach_file(file_name, file)
     node = Node.new
     node.extend FileEntity
     node.file_name = file_name
     node.pool= pool
     node.model= Model.file_entity
-    node.bucket = pool.file_store.bucket.name # s3 bucket name
+    raise StandardError, "You can't add files to a Pool that hasn't been persisted.  Save the pool first." unless pool.persisted?
+    node.bucket = pool.persistent_id # s3 bucket name
     node.content = file.read
     node.content_type = file.content_type
     node.save!

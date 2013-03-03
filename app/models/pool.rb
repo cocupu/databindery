@@ -46,11 +46,6 @@ class Pool < ActiveRecord::Base
     write_attribute :short_name, name.downcase
   end
   
-  def file_store
-    raise StandardError, "You can't call file_store on a Pool that hasn't been persisted.  Save the pool first." unless persisted?
-    Bindery::Storage::S3::FileStore.new(bucket_name: persistent_id)
-  end
-  
   #
   # Serialization
   #
@@ -63,7 +58,8 @@ class Pool < ActiveRecord::Base
   end
 
   def default_file_store
-    s3_connections.first
+    # s3_connections.first
+    Bindery::Storage::S3.default_connection
   end
 
   # Serialize the pool and it's access_controls to a basic datastruture.
