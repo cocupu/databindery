@@ -20,7 +20,8 @@ describe FileEntitiesController do
       end
       it "should add to file list of target_node" do
         post :create, :format=>:json, :binding=>'1231249', :pool_id=>@pool.short_name, :identity_id=>@identity.short_name, :target_node_id=>@node_to_target.persistent_id
-        assigns[:target_node].files.last.should == assigns[:file_entity].persistent_id
+        target_node = Node.latest_version(@node_to_target.persistent_id)
+        target_node.files.last.should == assigns[:file_entity]
       end
     end
     it "should work with info posted by S3 Direct Upload" do

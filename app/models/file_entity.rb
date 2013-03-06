@@ -21,6 +21,9 @@ module FileEntity
     file_entity.pool = pool
     file_entity.extend FileEntity
     file_entity.file_entity_type = "S3"
+    if file_entity.storage_location_id.include?(file_entity.bucket)
+      file_entity.storage_location_id = Bindery::Storage::S3.key_from_filepath(file_entity.storage_location_id,bucket:file_entity.bucket) 
+    end
     file_entity.model = Model.file_entity
     file_entity.save!
     return file_entity
@@ -56,6 +59,18 @@ module FileEntity
 
   def bucket
     data['bucket'] ||= pool.persistent_id
+  end
+  
+  # Returns an authorized S3 url for the corresponding S3 content
+  # Accepts all the same parameters as AWS::S3::S3Object.url_for
+  # Default Values for options Hash:
+  #   * method: :read
+  #   * The url authorization expires afte 1.5 hours.
+  #   * response_content_disposition: "inline; filename=#{file_name}"
+  def s3_url(method=:read, options={})
+    default_options = {response_content_disposition: "inline; filename=#{file_name}", expires: 60 * 60 * 1.5}
+    options = default_options.merge(options)
+    return pool.default_file_store.get(bucket, storage_location_id).url_for(method, options)
   end
   
   # The id used to find file in file store (ie. S3 object key)

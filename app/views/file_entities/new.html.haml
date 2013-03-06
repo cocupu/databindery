@@ -1,5 +1,13 @@
-= s3_uploader_form post: identity_pool_file_entities_url(@pool.owner, @pool), as: "binding", id: "myS3Uploader" do 
+- if @target_node
+  - post_url = identity_pool_file_entities_url(@pool.owner, @pool, target_node_id:@target_node.persistent_id)
+- else
+  - post_url = identity_pool_file_entities_url(@pool.owner, @pool)
+  
+= s3_uploader_form post: post_url, as: "binding", id: "myS3Uploader" do 
   = file_field_tag :file, multiple: true
+
+- unless @target_node.nil? 
+  = link_to "Return to #{@target_node.title}", identity_pool_solr_document_path(@identity, @pool, @target_node)
   
 %script{id: "template-upload", type:"text/x-tmpl"}
   %div{id:"file-#{@pool.persistent_id}", class: "upload"}

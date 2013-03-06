@@ -5,20 +5,21 @@ class FileEntitiesController < ApplicationController
   
 
   def create
-    # @file_entity.binding = params[:binding]
-    # @file_entity.model = Model.file_entity
-    # @file_entity.pool = @pool
-    # @file_entity.save!
-    #  file_entity = FileEntity.register( params.permit(:pool, :data, :associations, :binding) )
+    # Only return the target node if current user can edit it.
+    @target_node = nil unless can?(:edit, @target_node)
     process_s3_direct_upload_params
     @file_entity = FileEntity.register(@pool, params.permit(:binding, :data, :associations))
-    @target_node.files << @file_entity.persistent_id unless @target_node.nil?
+    unless @target_node.nil?
+      @target_node.files << @file_entity 
+      @target_node.save
+    end
     render :json=>@file_entity
   end
   
   def new
     # Only return the target node if current user can edit it.
     @target_node = nil unless can?(:edit, @target_node)
+    puts "Rendering FileEntitiesController.new with @target_node #{@target_node.inspect}"
     bucket = @pool.ensure_bucket_initialized
     @pool.default_file_store.ensure_cors_for_uploads(bucket.name)
     S3DirectUpload.config.bucket = bucket.name
