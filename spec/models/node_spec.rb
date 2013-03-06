@@ -68,7 +68,7 @@ describe Node do
       @file = FactoryGirl.create(:node, model: Model.file_entity, pool: pool, data: {})
       subject.associations['contributing_authors'] = [@author1.persistent_id, @author2.persistent_id]
       subject.associations['undefined'] = [@publisher.persistent_id]
-      subject.associations['files'] = [@file.persistent_id]
+      subject.files << @file
     end
 
     it "should return a hash, where the association name is the key" do
@@ -86,6 +86,25 @@ describe Node do
 
   end
 
+  describe "files setter and getter" do
+    before do
+      @file1 = FactoryGirl.create(:node, model: Model.file_entity, pool: @pool)
+      @file2 = FactoryGirl.create(:node, model: Model.file_entity, pool: @pool)
+      @file3 = FactoryGirl.create(:node, model: Model.file_entity, pool: @pool)      
+    end
+    it "should match with file_ids array and should operate on FileEntity nodes" do
+      subject.files.should be_empty
+      subject.send(:file_ids).should be_empty
+      subject.files << @file1
+      subject.files << @file2
+      subject.send(:file_ids).should == [@file1.persistent_id, @file2.persistent_id]
+      subject.files.should == [@file1, @file2]
+      subject.files.unshift(@file3)
+      subject.files.should == [@file3, @file1, @file2]
+      subject.send(:file_ids).should == [@file3.persistent_id, @file1.persistent_id, @file2.persistent_id]
+      subject.associations["files"].should == subject.send(:file_ids)
+    end
+  end
   describe "attaching a file" do
     before do
       config = YAML.load_file(Rails.root + 'config/s3.yml')[Rails.env]
@@ -98,7 +117,7 @@ describe Node do
       stub_ul.stub(:content_type => 'image/png')
       subject.attach_file('my_file.png', stub_ul)
       subject.files.size.should == 1
-      file_node = Node.latest_version(subject.files.first)
+      file_node = Node.latest_version(subject.files.first.persistent_id)
       file_node.file_name.should == 'my_file.png'
       file_node.content.should == File.open(fixture_path + '/images/rails.png', "rb").read
     end

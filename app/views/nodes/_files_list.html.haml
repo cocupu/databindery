@@ -1,0 +1,9 @@
+.association.ui-droppable
+  %h4 Files
+  %ul
+    %li
+      %a{href:"#", "data-bind"=>"click: $root.openAssociationSearchPane"} Add existing files
+    %li=link_to "Upload files", new_identity_pool_file_entity_path(@identity, @pool, target_node:@node.persistent_id)
+  
+  %table.table.table-bordered.table-striped
+    = render partial: "nodes/file", collection: @node.files

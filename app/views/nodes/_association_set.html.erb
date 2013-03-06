@@ -5,5 +5,8 @@
     <%= render partial: "nodes/association"%>
   </table>
 </div>
+<%- unless @node.files.empty? %>
+  <%= render partial: "nodes/files_list"%>
+<%- end %>
 
 

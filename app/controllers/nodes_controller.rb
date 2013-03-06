@@ -191,7 +191,7 @@ class NodesController < ApplicationController
 
 
     new_version = @node.attach_file(params[:file_name], params[:file])
-
+    debugger
     respond_to do |format|
       format.html { redirect_to identity_pool_node_path(@identity, @pool, new_version), :notice=>"Attached file" }
       format.json { head :no_content }

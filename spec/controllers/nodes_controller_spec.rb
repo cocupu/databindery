@@ -274,9 +274,8 @@ describe NodesController do
       node = Node.latest_version(@node.persistent_id)
       response.should redirect_to identity_pool_node_path(@identity, @pool, node)
         
-      file_node = Node.latest_version(node.files.first)
+      file_node = Node.latest_version(node.files.first.persistent_id)
       file_node.file_name.should == 'rails.png'
-
     end
   end
   

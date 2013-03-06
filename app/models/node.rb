@@ -11,6 +11,7 @@ class Node < ActiveRecord::Base
   serialize :data, Hash
   serialize :associations, Hash
 
+  before_save :update_file_ids
   after_save :update_index
   after_destroy :remove_from_index
   after_find :add_behaviors
@@ -42,6 +43,7 @@ class Node < ActiveRecord::Base
 
   # override activerecord to copy-on-write
   def update
+    update_file_ids
     n = Node.new
     copied_values = self.attributes.select {|k, v| !['created_at', 'updated_at', 'id'].include?(k) }
     copied_values[:parent_id] = id
@@ -64,14 +66,55 @@ class Node < ActiveRecord::Base
       node.content_type = file.content_type
     end
     node.save!
-    associations['files'] ||= []
-    associations['files'] << node.persistent_id
+    files << node
+    # associations['files'] ||= []
+    # associations['files'] << node.persistent_id
     update
   end
 
+  # This list is persisted as an array of persistent_ids in associations["files"]
+  # It's persisted as an array of ids rather than an association in database because order is relevant and multiple nodes might reference the same file.
+  # DO NOT manipulate associations["files"] directly.  Those changes will not be persisted.
   def files
-    associations['files'] ||= []
+    if associations['files'].nil? 
+      @files ||= []
+    else
+      @files ||= associations['files'].map{|pid| Node.find_by_persistent_id(pid).extend(FileEntity)}
+    end
   end
+  
+  def files=(new_files)
+    if new_files.kind_of? Array
+      @files = new_files
+    elsif new_files.kind_of? Node
+      @files = [new_files]
+    else
+      raise ArgumentError, "You can only pass an Array or a single Node into Node.files=.  You passed in a #{new_files.class} that looks like this:  #{new_files.inspect}"
+    end
+    update_file_ids
+    return @files
+  end
+  
+  # Tracks a list of associated files by id. 
+  # Note: Use .files accessor to set & get file associations.
+  # DO NOT manipulate this array or the associations["files"] array directly.  Those changes will not be persisted. 
+  def file_ids
+    ids = update_file_ids
+    # this will be nil if no file associations have been set, so return an empty Array.
+    if ids.nil?
+      return []
+    else
+      return ids
+    end
+  end
+  
+  # Updates associations['files'] based on the current contents of @files attribute
+  # If @files is empty, the associations will be left untouched.
+  def update_file_ids
+    # Don't set "files" key in associations hash unless there are files to associate.
+    associations['files'] = files.map{|file| file.persistent_id} unless files.empty?
+  end
+  private :file_ids, :update_file_ids
 
   # Create a solr document for all the attributes as well as all the associations
   def to_solr() 
@@ -85,6 +128,7 @@ class Node < ActiveRecord::Base
   # For example, if this object is a book, you will be able to search by the associated author's name
   def solr_associations
     doc = {}
+    update_file_ids
     model.associations.each do |f|
       instances = find_association(f['code'])
       next unless instances
@@ -153,6 +197,7 @@ class Node < ActiveRecord::Base
   
   def associations_for_json
     output = {}
+    update_file_ids
     model.associations.each do |a|
       assoc_name = a[:name]
       assoc_code = a[:code]
@@ -171,11 +216,10 @@ class Node < ActiveRecord::Base
         output['undefined'] << node.association_display if node
       end
     end
-    output['files'] = []
-    if associations['files']
-      associations['files'].each do |id| 
-        node = Node.latest_version(id)
-        output['files'] << node.association_display if node
+    if files
+      output['files'] = [] 
+      files.each do |file_entity| 
+        output['files'] << file_entity.association_display 
       end
     end
     output
