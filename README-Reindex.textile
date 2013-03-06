@@ -1,0 +1,14 @@
+When re-indexing, you only need to index the latest version of each Node.  If you re-index all Node instances, meaning all versions of all nodes, indexing will take a lot longer and you run the risk of indexing the wrong version!
+
+h2. Re-index everything
+
+<pre>
+all_pids = Node.select("persistent_id").map {|r| r.persistent_id}.uniq  
+all_pids.each {|pid| Node.latest_version(pid).update_index }
+</pre>
+
+h2. Alt: just get the pids for one Pool
+
+<pre>
+pool_pids = Node.where(pool_id: n.pool.id).select("persistent_id").map {|r| r.persistent_id}.uniq
+</pre>
