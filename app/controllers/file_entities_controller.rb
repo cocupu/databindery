@@ -12,6 +12,7 @@ class FileEntitiesController < ApplicationController
     #  file_entity = FileEntity.register( params.permit(:pool, :data, :associations, :binding) )
     process_s3_direct_upload_params
     @file_entity = FileEntity.register(@pool, params.permit(:binding, :data, :associations))
+    @target_node.files << @file_entity.persistent_id unless @target_node.nil?
     render :json=>@file_entity
   end
   

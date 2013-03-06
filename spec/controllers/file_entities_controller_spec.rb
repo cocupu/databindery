@@ -14,6 +14,15 @@ describe FileEntitiesController do
       json = JSON.parse(response.body)
       json.keys.should include('id')
     end
+    describe "if target_node provided" do
+      before do
+        @node_to_target = FactoryGirl.create(:node, pool: @pool)
+      end
+      it "should add to file list of target_node" do
+        post :create, :format=>:json, :binding=>'1231249', :pool_id=>@pool.short_name, :identity_id=>@identity.short_name, :target_node_id=>@node_to_target.persistent_id
+        assigns[:target_node].files.last.should == assigns[:file_entity].persistent_id
+      end
+    end
     it "should work with info posted by S3 Direct Upload" do
       params_from_s3_direct_upload = {:pool_id=>@pool.short_name, :identity_id=>@identity.short_name, "url"=>"https://s3.amazonaws.com/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg", "filepath"=>"/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg", "filename"=>"DSC_0549-3.jpg", "filesize"=>"471990", "filetype"=>"image/jpeg", "binding"=>"https://s3.amazonaws.com/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg"}
       post :create, params_from_s3_direct_upload
