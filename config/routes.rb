@@ -43,7 +43,6 @@ Bindery::Application.routes.draw do
   #jasmine is the path of our testing library so, we have restricted identities from begining with 'jasmine'
   constraints = {:id=>/(?!jasmine)[^\/\.]*/} unless Rails.env.production?
   resources :identities, :path=>'', :only=>[], :constraints=>constraints do
-    resources :file_entities
     resources :chattels
     match 'exhibits/:exhibit_id' => 'catalog#index', :as => 'exhibit'
     resources :exhibits, :only=>[] do
@@ -54,6 +53,7 @@ Bindery::Application.routes.draw do
     
     resources :pools, :path=>'' do
       resources :exhibits, :except=>[:show]
+      resources :file_entities
       # can't do :path => '' because that breaks models, nodes, etc. in client api
       resources :solr_document, :path => 'results', :controller => 'pool_searches', :only => [:show, :update]
       resources :drives, :only=>[:index] do

@@ -16,6 +16,7 @@
  *= require pools
  *= require welcome
  *= depend_on _common 
+ *= require s3_direct_upload_progress_bars
 */
 
 

@@ -31,4 +31,3 @@ Number.prototype.leftZeroPad = function(numZeros) {
 
         return zeroString+n;
 }
-

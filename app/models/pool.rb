@@ -61,6 +61,19 @@ class Pool < ActiveRecord::Base
     # s3_connections.first
     Bindery::Storage::S3.default_connection
   end
+  
+  def default_bucket_id
+    self.persistent_id
+  end
+  
+  def bucket
+    default_file_store.bucket(default_bucket_id)
+  end
+  
+  def ensure_bucket_initialized
+    generate_uuid
+    default_file_store.ensure_bucket_initialized(default_bucket_id)
+  end
 
   # Serialize the pool and it's access_controls to a basic datastruture.
   def as_json(opts = nil)

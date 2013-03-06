@@ -95,11 +95,31 @@ describe Pool do
       end
       it "should not merge duplicate fields" do
         subject.stub(:all_fields).and_return([{"code"=>"collection_location", "name"=>"Collection Location"}, {"code"=>"date_from", "name"=>"Date from"}, {"name"=>"Date from", "type"=>"date", "uri"=>"", "code"=>"date_from"}, {"code"=>"date_to", "name"=>"Date to"}, {"name"=>"Date to", "type"=>"date", "uri"=>"", "code"=>"date_to"}])
-        p subject.models
         e = subject.generated_default_perspective
         e.facets.should == ["collection_location", "date_from", "date_to"]
         e.index_fields.should == ["collection_location", "date_from", "date_to"]
       end
+    end
+  end
+  
+  describe "default_bucket_id" do
+    it "should be the pools persistent id" do
+      subject.should_receive(:persistent_id).and_return("thepid")
+      subject.default_bucket_id.should == "thepid"
+    end
+  end
+  
+  describe "bucket" do
+    it "should return the pools bucket from s3 connection" do
+      subject.default_file_store.should_receive(:bucket).and_return("the bucket")
+      subject.bucket.should == "the bucket"
+    end
+  end
+  
+  describe "ensure_bucket_initialized" do
+    it "should ensure that the pools bucket exists on s3 connection" do
+      subject.default_file_store.should_receive(:ensure_bucket_initialized).and_return("the bucket")
+      subject.ensure_bucket_initialized.should == "the bucket"
     end
   end
   
