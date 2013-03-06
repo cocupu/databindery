@@ -1,10 +1,53 @@
 module FileEntity
+  
+  # Creates a FileEntity corresponding to a remote file with the given characteristics.
+  # Required parameters:
+  #   pool <Pool>
+  #   binding <String> that is the URI uniquely identifying the remote file
+  # Currently Assumes:
+  #   * the remote file is in Amazon S3
+  #   * the S3 object is in the given Pool's default bucket
+  # @example
+  #   file_entity = FileEntity.register(my_pool, :data=>{"filepath"=>"/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg", "filename"=>"DSC_0549-3.jpg", "filesize"=>"471990", "filetype"=>"image/jpeg", "binding"=>"https://s3.amazonaws.com/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg"})
+  def self.register(pool, opts={})
+    opts = opts.with_indifferent_access
+    opts[:data] = {} unless opts[:data]
+    opts[:data]["content-type"] = opts[:data][:content_type] unless opts[:data][:content_type].nil?      
+    if opts.class == ActionController::Parameters
+      file_entity = Node.new( opts.permit(:data, :associations, :binding) ) 
+    else
+      file_entity = Node.new( opts.slice(:data, :associations, :binding) ) 
+    end
+    file_entity.pool = pool
+    file_entity.extend FileEntity
+    file_entity.file_entity_type = "S3"
+    file_entity.model = Model.file_entity
+    file_entity.save!
+    return file_entity
+  end
+  
+  def file_entity_type=(name)
+    data['file_entity_type'] = name
+  end
+
+  def file_entity_type
+    data['file_entity_type']
+  end
+  
   def file_name=(name)
     data['file_name'] = name
   end
 
   def file_name
     data['file_name']
+  end
+  
+  def file_size=(name)
+    data['file_size'] = name
+  end
+
+  def file_size
+    data['file_size']
   end
 
   def bucket=(name)

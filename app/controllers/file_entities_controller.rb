@@ -5,10 +5,13 @@ class FileEntitiesController < ApplicationController
   
 
   def create
-    @file_entity.binding = params[:binding]
-    @file_entity.model = Model.file_entity
-    @file_entity.pool = @pool
-    @file_entity.save!
+    # @file_entity.binding = params[:binding]
+    # @file_entity.model = Model.file_entity
+    # @file_entity.pool = @pool
+    # @file_entity.save!
+    #  file_entity = FileEntity.register( params.permit(:pool, :data, :associations, :binding) )
+    process_s3_direct_upload_params
+    @file_entity = FileEntity.register(@pool, params.permit(:binding, :data, :associations))
     render :json=>@file_entity
   end
   
@@ -18,5 +21,15 @@ class FileEntitiesController < ApplicationController
     bucket = @pool.ensure_bucket_initialized
     @pool.default_file_store.ensure_cors_for_uploads(bucket.name)
     S3DirectUpload.config.bucket = bucket.name
+  end
+  
+  def process_s3_direct_upload_params
+    if params[:data].nil? && !params[:url].nil?
+      params[:data] = params.slice(:storage_location_id, :file_name, :file_size, :content_type)
+      params[:data]["storage_location_id"] = params["filepath"] unless params["filepath"].nil? 
+      params[:data]["file_name"] = params["filename"] unless params["filename"].nil? 
+      params[:data]["file_size"] = params["filesize"] unless params["filesize"].nil?      
+      params[:data]["content-type"] = params["filetype"] unless params["filetype"].nil?      
+    end
   end
 end
