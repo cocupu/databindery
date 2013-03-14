@@ -49,8 +49,10 @@ describe "API" do
         @model2 = FactoryGirl.create(:model, pool: @pool)
       end
       it "should create a new model" do
-        m = Cocupu::Model.new({'identity' =>@ident.short_name, 'pool'=>@pool.short_name, 'name'=>"Car"})
+        m = Cocupu::Model.new({'identity' =>@ident.short_name, 'pool'=>@pool.short_name, 'name'=>"Car", "allow_file_bindings"=>"false"})
         m.save
+        retrieved = Cocupu::Model.load(m.id)
+        retrieved.allows_file_bindings?.should be_false
       end
 
       it "should update models" do
@@ -61,7 +63,10 @@ describe "API" do
         m.fields = [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}, {"name"=>"Date Completed", "type"=>"text", "uri"=>"", "code"=>"date_completed"}]
         m.associations = [ {"type"=>"Has One","name"=>"recording","references"=>ref.id}] #service throws a 404 if the references isn't a valid model.id
         m.label = 'name'
+        m.allow_file_bindings = false
         m.save 
+        retrieved = Cocupu::Model.load(m.id)
+        retrieved.allows_file_bindings?.should be_false
       end
       
       it "should find all models" do

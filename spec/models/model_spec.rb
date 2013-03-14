@@ -129,4 +129,13 @@ describe Model do
     subject.pool = FactoryGirl.create :pool
     subject.should be_valid
   end
+  
+  describe "allows_file_bindings?" do
+    it "should rely on allow_file_bindings attribute" do
+      subject.allow_file_bindings = true
+      subject.allows_file_bindings?.should == true
+      subject.allow_file_bindings = false
+      subject.allows_file_bindings?.should == false
+    end
+  end
 end

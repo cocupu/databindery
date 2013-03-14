@@ -41,6 +41,7 @@ describe ModelsController do
              "code"=>"description"}],
           "name"=>@my_model.name,
           "label"=>nil,
+          "allow_file_bindings"=>true,
           "pool" =>@pool.short_name,
           "identity" =>@identity.short_name },
           {"id"=>@file_model.id,
@@ -48,7 +49,7 @@ describe ModelsController do
           "associations"=>[],
           "fields"=> [{"code"=>"file_name", "type"=>"textfield"}],
           "name"=>@file_model.name,
-          "label"=>"file_name"}]
+          "label"=>"file_name","allow_file_bindings"=>true}]
       end
     end
   end

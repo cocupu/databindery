@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130303093725) do
+ActiveRecord::Schema.define(:version => 20130314035416) do
 
   create_table "access_controls", :force => true do |t|
     t.integer  "pool_id"
@@ -122,13 +122,14 @@ ActiveRecord::Schema.define(:version => 20130303093725) do
   create_table "models", :force => true do |t|
     t.string   "name"
     t.text     "fields"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",                            :null => false
+    t.datetime "updated_at",                            :null => false
     t.string   "label"
     t.integer  "identity_id"
     t.text     "associations"
     t.integer  "pool_id"
     t.string   "code"
+    t.boolean  "allow_file_bindings", :default => true
   end
 
   add_index "models", ["code"], :name => "index_models_on_code", :unique => true

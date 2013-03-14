@@ -114,6 +114,11 @@ class Model < ActiveRecord::Base
   def self.file_entity
     Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity", label:'file_name', fields: [{'code' => 'file_name', 'type' => 'textfield' }.with_indifferent_access] )
   end
+  
+  # @return [Boolean] current value of allow_file_bindings attribute
+  def allows_file_bindings?
+    return allow_file_bindings
+  end
 
   def association_cannot_be_named_undefined
     if associations.any?{|a| a[:name] == 'undefined'}
