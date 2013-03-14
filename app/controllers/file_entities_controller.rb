@@ -27,7 +27,7 @@ class FileEntitiesController < ApplicationController
   
   def process_s3_direct_upload_params
     if params[:data].nil? && !params[:url].nil?
-      params[:data] = params.slice(:storage_location_id, :file_name, :file_size, :content_type)
+      params[:data] = params.slice(:storage_location_id, :file_name, :file_size, :mime_type)
       params[:data]["storage_location_id"] = params["filepath"] unless params["filepath"].nil? 
       params[:data]["file_name"] = params["filename"] unless params["filename"].nil? 
       params[:data]["file_size"] = params["filesize"] unless params["filesize"].nil?      

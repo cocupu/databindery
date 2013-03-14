@@ -62,8 +62,8 @@ class Node < ActiveRecord::Base
     raise StandardError, "You can't add files to a Pool that hasn't been persisted.  Save the pool first." unless pool.persisted?
     node.bucket = pool.persistent_id # s3 bucket name
     node.content = file.read
-    if file.respond_to?(:content_type)
-      node.content_type = file.content_type
+    if file.respond_to?(:mime_type)
+      node.mime_type = file.mime_type
     end
     node.save!
     files << node

@@ -1,5 +1,17 @@
 %tr.association
   %td
-    %i.icon-file
-    = link_to file.file_name, file.s3_url.to_s
+    - if file.video?
+      %i.icon-film
+      = link_to file.file_name, file.s3_url.to_s
+    - elsif file.audio?
+      %i.icon-music
+      = link_to file.file_name, file.s3_url.to_s
+      %audio{src: file.s3_url.to_s, type: file.mime_type,  controls: "controls", preload: "metadata" }
+        Your browser does not support the audio tag.
+    - elsif file.image?
+      %i.icon-picture
+      = link_to file.file_name, file.s3_url.to_s
+    - else 
+      %i.icon-file
+      = link_to file.file_name, file.s3_url.to_s
 

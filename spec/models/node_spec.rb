@@ -114,7 +114,7 @@ describe Node do
       subject.files.size.should == 0
       subject.pool = @pool
       stub_ul = File.open(fixture_path + '/images/rails.png')
-      stub_ul.stub(:content_type => 'image/png')
+      stub_ul.stub(:mime_type => 'image/png')
       subject.attach_file('my_file.png', stub_ul)
       subject.files.size.should == 1
       file_node = Node.latest_version(subject.files.first.persistent_id)

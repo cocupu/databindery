@@ -33,7 +33,7 @@ describe FileEntitiesController do
       file_entity.storage_location_id.should == "/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg"
       file_entity.file_name.should == "DSC_0549-3.jpg"
       file_entity.file_size.should == "471990"
-      file_entity.content_type.should == "image/jpeg"
+      file_entity.mime_type.should == "image/jpeg"
       file_entity.pool.should == @pool
     end
   end

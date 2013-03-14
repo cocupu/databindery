@@ -68,7 +68,7 @@ class NodesController < ApplicationController
     respond_to do |format|
       format.mp3 do
         if @node.model == Model.file_entity
-          send_data @node.content, :type=>@node.content_type, :disposition => 'inline'
+          send_data @node.content, :type=>@node.mime_type, :disposition => 'inline'
         else
           render :file => "public/404", :status => :not_found, :layout=>nil
         end

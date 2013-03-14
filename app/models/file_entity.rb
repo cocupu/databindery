@@ -12,7 +12,7 @@ module FileEntity
   def self.register(pool, opts={})
     opts = opts.with_indifferent_access
     opts[:data] = {} unless opts[:data]
-    opts[:data]["content-type"] = opts[:data][:content_type] unless opts[:data][:content_type].nil?      
+    opts[:data]["content-type"] = opts[:data][:mime_type] unless opts[:data][:mime_type].nil?      
     if opts.class == ActionController::Parameters
       file_entity = Node.new( opts.permit(:data, :associations, :binding) ) 
     else
@@ -82,13 +82,13 @@ module FileEntity
     data["storage_location_id"] = new_id
   end
 
-  def content_type
+  def mime_type
     # we can get this from s3, but keep it cached locally so we know what kind of presentation to use
     data['content-type']
   end
 
-  def content_type=(content_type)
-    data['content-type'] = content_type
+  def mime_type=(mime_type)
+    data['content-type'] = mime_type
   end
 
   # fetch from s3
@@ -111,6 +111,22 @@ module FileEntity
   def save!
     store_content
     super
+  end
+  
+  def audio?
+    ["audio/mp3", "audio/mpeg"].include? self.mime_type
+  end
+  
+  def video?
+    ["video/mpeg", "video/mp4", "video/x-msvideo", "video/avi", "video/quicktime"].include? self.mime_type
+  end
+  
+  def image?
+    ["image/png","image/jpeg", 'image/jpg', 'image/bmp', "image/gif"].include? self.mime_type
+  end
+  
+  def pdf?
+    ["application/pdf"].include? self.mime_type
   end
 
   private
