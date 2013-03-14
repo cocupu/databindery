@@ -112,6 +112,7 @@
           if (idsToLookup != null) {
             idsToLookup.forEach(function(itemId) {
               entity = getObject(Entity, itemId)
+              if (associationsHash[associationKey] == null) {associationsHash[associationKey] = ko.observableArray([]);}
               associationsHash[associationKey].push( entity );
              });
             };
@@ -145,6 +146,7 @@
       this.title = data.title;
       this.queryParams = data.queryParams;
       this.model_id = data.model_id;
+      this.create_url = "/#{params[:identity_id]}/#{params[:pool_id]}/nodes/new?model_id="+data.model_id
       this.association_code = data.association_code;
       this.results = ko.observableArray([]);
       this.query = ko.observable("");
@@ -271,6 +273,8 @@
         
           // Add selected associations to the entity
           searchContext.selected().forEach(function(association){ 
+            console.log(searchContext.association_code)
+            if (self.currentEntity().associations[searchContext.association_code] == null) {self.currentEntity().associations[searchContext.association_code] = ko.observableArray([]);}
             self.currentEntity().associations[searchContext.association_code].push(association)
           });
           self.updateEntity(self.currentEntity());
