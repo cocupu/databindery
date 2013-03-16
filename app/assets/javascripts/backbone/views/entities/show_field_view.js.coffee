@@ -6,6 +6,7 @@ class Cocupu.Views.Entities.ShowFieldView extends Backbone.View
 
   render: ->
     dict = @model
+    dict.type ||= "text"
     $(@el).html(@template(dict))
     return this
 

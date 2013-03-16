@@ -5,3 +5,5 @@ class Cocupu.Collections.FieldsCollection extends Backbone.Collection
   url: () ->
     '/models/' + this.model_id + "/fields"
 
+  defaults:
+    type: "text"
