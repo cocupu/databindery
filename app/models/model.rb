@@ -157,12 +157,14 @@ class Model < ActiveRecord::Base
   def associations=(attributes)
     write_attribute :associations, []
     attributes.each do |attr|
-      add_association(attr)
+      add_association(attr.with_indifferent_access)
     end
   end
 
   def add_association(attributes)
-    attributes[:label] = Model.find(attributes[:references]).name.capitalize
+    if attributes[:label].nil? || attributes[:label].empty?
+      attributes[:label] = Model.find(attributes[:references]).name.capitalize
+    end
     ## TODO association code should be unique
     attributes[:code] = Model.field_name(attributes[:name])
     self.associations << attributes
