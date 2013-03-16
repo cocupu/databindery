@@ -1,7 +1,7 @@
 -content_for :head do
   :javascript
     $(function() {
-      window.router = new Cocupu.Routers.ModelsRouter({models: #{@models.to_json.html_safe}});
+      window.router = new Cocupu.Routers.ModelsRouter({identity: "#{@identity.short_name}", pool: #{@pool.to_json.html_safe}, models: #{@models.to_json.html_safe}});
       Backbone.history.start();
     });
 
