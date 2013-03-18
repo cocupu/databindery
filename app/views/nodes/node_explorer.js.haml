@@ -152,7 +152,7 @@
       this.title = data.title;
       this.queryParams = data.queryParams;
       this.model_id = data.model_id;
-      this.model = getObject(Model, data.model_id)
+      this.model = function() { return getObject(Model, data.model_id) };
       this.create_url = pool_url+"/nodes/new?model_id="+data.model_id
       this.association_code = data.association_code;
       this.results = ko.observableArray([]);

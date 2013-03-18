@@ -29,7 +29,7 @@
   </div>
   <div class="panel-body" data-bind="visible: $root.selectedSearchContext().state() == 'create'">
     <%= form_for @node, url: identity_pool_node_path(@identity.short_name, @pool.short_name, @node),"accept-charset" => "UTF-8", html: {class: "metadata"}  do |f| %>
-      <!-- ko with: model.templateEntity() -->
+      <!-- ko with: model().templateEntity() -->
         <%= render partial: "nodes/field" %>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" data-bind="click: $root.submitNewEntityFromSearch">Save</button>
