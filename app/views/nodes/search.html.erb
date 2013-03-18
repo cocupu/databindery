@@ -3,6 +3,12 @@
     <a href="#" class="close">×</a>
     <h3 data-bind="text: title"></h3>
     </span>
+    <nav>
+      <ul>
+        <li data-bind="visible: $root.selectedSearchContext().state() == 'search'"><a class="create-new" data-bind="click: $root.selectedSearchContext().showCreateForm, visible: $root.selectedSearchContext().state() == 'search'">Create new</a></li>
+        <li data-bind="visible: $root.selectedSearchContext().state() == 'create'"><a class="create-new" data-bind="click: $root.selectedSearchContext().showSearch">Cancel and Return to Association Search</a></li>
+      </ul>
+    </nav>
   </div>
   <div class="panel-body" data-bind="visible: $root.selectedSearchContext().state() == 'search'">
     <%= render partial: "nodes/search_form"%>
@@ -20,11 +26,6 @@
     <table class="results table table-bordered table-striped" data-bind="foreach: results">
       <tr><td><input type="checkbox" data-bind="checked: $parent.selectedIds, value: persistent_id" /><a href="#" data-bind="text: title, click: $root.openEntity"></td></tr>
     </table>
-    <nav>
-      <ul>
-        <li><a class="create-new" data-bind="click: $root.selectedSearchContext().showCreateForm">Create new</a></li>
-      </ul>
-    </nav>
   </div>
   <div class="panel-body" data-bind="visible: $root.selectedSearchContext().state() == 'create'">
     <%= form_for @node, url: identity_pool_node_path(@identity.short_name, @pool.short_name, @node),"accept-charset" => "UTF-8", html: {class: "metadata"}  do |f| %>
