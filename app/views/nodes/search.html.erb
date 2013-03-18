@@ -4,7 +4,7 @@
     <h3 data-bind="text: title"></h3>
     </span>
   </div>
-  <div class="panel-body">
+  <div class="panel-body" data-bind="visible: $root.selectedSearchContext().state() == 'search'">
     <%= render partial: "nodes/search_form"%>
     <div class="selected results" data-bind="visible: selected().length > 0">
       <h4>Selected:</h4>
@@ -22,9 +22,20 @@
     </table>
     <nav>
       <ul>
-        <li><a class="create-new" data-bind="click: $root.createEntity, attr: { href: create_url}">Create new</a></li>
+        <li><a class="create-new" data-bind="click: $root.selectedSearchContext().showCreateForm">Create new</a></li>
       </ul>
     </nav>
+  </div>
+  <div class="panel-body" data-bind="visible: $root.selectedSearchContext().state() == 'create'">
+    <%= form_for @node, url: identity_pool_node_path(@identity.short_name, @pool.short_name, @node),"accept-charset" => "UTF-8", html: {class: "metadata"}  do |f| %>
+      <!-- ko with: model.templateEntity() -->
+        <%= render partial: "nodes/field" %>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" data-bind="click: $root.submitNewEntityFromSearch">Save</button>
+        </div>
+      <!-- /ko  -->
+    <% end %>
+    </form>
   </div>
 </div>
 

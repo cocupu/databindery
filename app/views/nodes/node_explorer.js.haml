@@ -35,7 +35,10 @@
       return memoLookup(model,id);
     }
     
-  
+    // Global Variable with Pool URL
+    var pool_url = "/#{params["identity_id"]}/#{params["pool_id"]}"
+    
+    
     //
     // Models
     //
@@ -47,7 +50,10 @@
         this.pool = data.pool;
         this.identity = data.identity;
         this.fields = $.map(data.fields, function(item) { return new ModelField(item) });         
-        this.associations = $.map(data.associations, function(item) {return new ModelAssociation(item)});  
+        this.associations = $.map(data.associations, function(item) {return new ModelAssociation(item)}); 
+        this.templateEntity = function(){
+          return new Entity({model_id: this.id, persistent_id:"", associations:{}, title:null, data:{}})
+        }
     }
     
     function ModelField(data) {
@@ -70,7 +76,7 @@
         // Currently this assumes that all of the models have already been cached locally!
         this.model = memoLookup(Model, data.model_id);
         // URL is not returned on search results, so setting it manually instead of using data.url
-        this.url = "/#{params[:identity_id]}/#{params[:pool_id]}/nodes/"+data.persistent_id; 
+        this.url = pool_url+"/nodes/"+data.persistent_id; 
         //this.associations = data.associations;
         this.associations = buildAssociationsHash(this.model.associations) 
         reifyAssociations(this.associations, data.associations) 
@@ -79,7 +85,7 @@
         this.data = data.data;
         this.lastSavedAt = ko.observable("");
         this.asJSON = function() {
-          var json = {"persistent_id":this.persistent_id,"data":this.data};
+          var json = {"persistent_id":this.persistent_id,"data":this.data, "model_id":this.model.id};
           json["associations"] = unreifyAssociations(this.model.associations, this.associations)
           return json;
         };
@@ -146,7 +152,8 @@
       this.title = data.title;
       this.queryParams = data.queryParams;
       this.model_id = data.model_id;
-      this.create_url = "/#{params[:identity_id]}/#{params[:pool_id]}/nodes/new?model_id="+data.model_id
+      this.model = getObject(Model, data.model_id)
+      this.create_url = pool_url+"/nodes/new?model_id="+data.model_id
       this.association_code = data.association_code;
       this.results = ko.observableArray([]);
       this.query = ko.observable("");
@@ -155,6 +162,8 @@
       this.selected = ko.computed(function(){ 
         return this.selectedIds().map(function(itemId) {return memoLookup(Entity, itemId)});
        }, this);
+      this.state = ko.observable("search");
+      this.showCreateForm = function() { this.state("create") };
     }
     
     //
@@ -191,7 +200,7 @@
     // Returns a promise object from the getJSON request.  On success, will put the entity in memoCache for retrieval.
     self.loadEntity = function(entity_id) {
       // Otherwise load from server & cache the resulting object for future use
-      return $.getJSON("/#{params[:identity_id]}/#{params[:pool_id]}/nodes/"+entity_id, function(data) {
+      return $.getJSON(pool_url+"/nodes/"+entity_id, function(data) {
           entity = new Entity(data);
           // Memoize the object
           memo(Entity, entity.persistent_id, entity);
@@ -203,7 +212,7 @@
     // Currently API doesn't support loading individual models, so this loads ALL models & shoves them in cache.
     self.loadModel = function(model_id) {
       // Load all models from server, convert them to Model instances, then populate self.models
-      $.getJSON("/#{params[:identity_id]}/#{params[:pool_id]}/models", function(allData) {
+      $.getJSON(pool_url+"/models", function(allData) {
           allData.forEach(function(item){
             m = new Model(item) 
             memo(Model, m.id, m)
@@ -223,7 +232,7 @@
     memo(Entity, "#{@node.persistent_id}", new Entity(#{@node.to_json}))
     
     // Load initial state from server, convert it to Model instances, then populate self.models
-    $.getJSON("/#{params[:identity_id]}/#{params[:pool_id]}/models", function(allData) {
+    $.getJSON(pool_url+"/models", function(allData) {
         var mappedModels = $.map(allData, function(item) { 
           m = new Model(item) 
           return memo(Model, m.id, m)
@@ -250,7 +259,7 @@
           data = searchContext.queryParams;
           data["q"] = searchContext.query();
           data["model_id"] = searchContext.model_id;
-          $.getJSON("/#{params["identity_id"]}/#{params["pool_id"]}/nodes/search?", data, function(allData) {
+          $.getJSON(pool_url+"/nodes/search?", data, function(allData) {
               var mappedResults = $.map(allData, function(item) { return memo(Entity, item.persistent_id, new Entity(item)) });
               searchContext.results(mappedResults);
           });
@@ -273,7 +282,6 @@
         
           // Add selected associations to the entity
           searchContext.selected().forEach(function(association){ 
-            console.log(searchContext.association_code)
             if (self.currentEntity().associations[searchContext.association_code] == null) {self.currentEntity().associations[searchContext.association_code] = ko.observableArray([]);}
             self.currentEntity().associations[searchContext.association_code].push(association)
           });
@@ -281,9 +289,32 @@
           searchContext.selectedIds.removeAll();
         }
         
+        this.submitNewEntityFromSearch = function(entity) { 
+          $.when(self.createEntity(entity)).then(function(){
+            entity = getObject(Entity, "lastCreated")
+            self.selectedSearchContext().selectedIds.push(entity.persistent_id)
+            self.selectedSearchContext().state("search");
+          });
+        };
+        
         self.removeAssociation = function(code, entityToRemove, event) {
           self.currentEntity().associations[code].remove(entityToRemove);
           self.updateEntity(self.currentEntity());
+        }
+        
+        self.createEntity = function(entity) {
+          return $.ajax(pool_url+"/nodes.json", {
+              data: ko.toJSON({ node: entity.asJSON(), _method: "post"}),
+              type: "post", contentType: "application/json",
+              success: function(result) { 
+                now = new Date()
+                clock = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
+                entity.lastSavedAt("last saved at "+ clock); 
+                e= new Entity(result)
+                memo(Entity, e.persistent_id, e)
+                memo(Entity, "lastCreated", e)
+              }
+          });
         }
       
         self.updateEntity = function(entity) {
