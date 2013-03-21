@@ -7,7 +7,12 @@ class Pool < ActiveRecord::Base
   validates :owner, presence: true
   has_many :exhibits, :dependent => :destroy
   belongs_to :chosen_default_perspective, class_name: "Exhibit"
-  has_many :nodes, :dependent => :destroy
+  has_many :nodes, :dependent => :destroy do
+    def head
+      pool_pids = map {|n| n.persistent_id}.uniq
+      return pool_pids.map {|pid| Node.latest_version(pid)}
+    end
+  end
   has_many :models, :dependent => :destroy
   has_many :mapping_templates, :dependent => :destroy
   has_many :s3_connections, :dependent => :destroy
