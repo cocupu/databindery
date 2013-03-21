@@ -1,6 +1,6 @@
 <tr class="association">
   <td>
-    <a href="#" data-bind="text: title, click: $root.loadAndOpenEntity"></a>
+    <a href="#" data-bind="text: title, attr:{href: '<%= identity_pool_path(@identity, @pool)%>/nodes/'+persistent_id}"></a>
   </td>
   <td>
     <a href="#" class="remove" data-bind="click: function(data, event) { $root.removeAssociation($parent.code, data, event) }">x</a>
