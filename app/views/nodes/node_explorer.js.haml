@@ -225,7 +225,7 @@
     // Preloading info
     //
     
-    var modelsJson = #{@pool.models.to_json}
+    var modelsJson = #{(@pool.models << Model.file_entity).to_json}
     var mappedModels = $.map(modelsJson, function(item) { 
       m = new Model(item) 
       return memo(Model, m.id, m)
