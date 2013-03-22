@@ -161,8 +161,11 @@ describe "API" do
         end
         it "should Spawn new :destination_model nodes using the :source_field_name field from :source_model nodes, setting the extracted value as the :destination_field_name field on the resulting spawned nodes." do
           @dest_model.nodes.count.should == 0
-          Cocupu::Curator.spawn_from_field(@ident, @pool, @source_model.id, "submitted_by", "creator", @dest_model.id, "full_name")
-          @dest_model.nodes.count.should == 2
+          Cocupu::Curator.spawn_from_field(@ident, @pool, @source_model.id, "submitted_by", "creator", @dest_model.id, "full_name", :delete_source_value=>true)
+          # Can't just use @dest_model.nodes to count the nodes because that returns all versions of each node (so it returns 4 nodes instead of 2 in this case)
+          # Instead counting the number of unique persistent_ids in use by @dest_model.nodes
+          # @dest_model.nodes.count.should == 2
+          @dest_model.nodes.map {|node| node.persistent_id }.uniq.count.should == 2
           # One "Justin" node should have been spawned from 2 sources
           n1 = @node1.latest_version
           justin_node_id = n1.associations["creator"].first

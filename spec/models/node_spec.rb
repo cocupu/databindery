@@ -26,17 +26,18 @@ describe Node do
     subject.reload.data.should == {:foo =>'bar', 'boop' =>'bop'}
   end
   it "should store a hash of associations" do
-    subject.associations = { 'authors' =>[ 123, 3232], 'undefined' =>[882]}
-    subject.associations.should == { 'authors' =>[ 123, 3232], 'undefined' =>[882]}
+    Node.any_instance.stub(:solr_associations).and_return({}) # prevent solr_associations from trying to retrieve metadata from Nodes that don't actually exist! Must stub on any_instance because .update creates a new node.
+    subject.associations = { 'authors' =>[ "123", "3232"], 'undefined' =>["882"]}
+    subject.associations.should == { 'authors' =>[ "123", "3232"], 'undefined' =>["882"]}
     subject.pool = @pool
     subject.save!
-    subject.associations.should == { 'authors' =>[ 123, 3232], 'undefined' =>[882]}
-    subject.associations['authors'] << 888
+    subject.associations.should == { 'authors' =>[ "123", "3232"], 'undefined' =>["882"]}
 
     ### Test copy-on-write
+    subject.associations['authors'] << "888"
     subject.save!
     new_subject = Node.latest_version(subject.persistent_id)
-    new_subject.associations.should == { 'authors' =>[ 123, 3232, 888], 'undefined' =>[882]}
+    new_subject.associations.should == { 'authors' =>[ "123", "3232", "888"], 'undefined' =>["882"]}
   end
   
   describe "as_json" do

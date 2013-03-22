@@ -83,14 +83,15 @@ describe AssociationsController do
 
             @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
             @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
+            @author3 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Mark Twain'})
             @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {'name' => 'Simon & Schuster Ltd.'})
             @book = FactoryGirl.create(:node, model: @book_model, pool: pool, 
-                    :associations=>{'authors'=>[@author1.persistent_id, @author2.persistent_id], 'undefined'=>[@publisher.id]})
+                    :associations=>{'authors'=>[@author1.persistent_id, @author2.persistent_id], 'undefined'=>[@publisher.persistent_id]})
           end
           it "should be very successful" do
-            post :create, :node_id=>@book.persistent_id, :association=> {:code=>'authors', :target_id=>'5678'}
+            post :create, :node_id=>@book.persistent_id, :association=> {:code=>'authors', :target_id=>@author3.persistent_id}
             response.should be_success
-            @book.latest_version.associations['authors'].should == [@author1.persistent_id, @author2.persistent_id, '5678']
+            @book.latest_version.associations['authors'].should == [@author1.persistent_id, @author2.persistent_id, @author3.persistent_id]
           end
         end
       end
