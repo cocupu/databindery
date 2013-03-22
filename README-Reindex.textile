@@ -7,8 +7,9 @@ all_pids = Node.select("persistent_id").map {|r| r.persistent_id}.uniq
 all_pids.each {|pid| Node.latest_version(pid).update_index }
 </pre>
 
-h2. Alt: just get the pids for one Pool
+h2. Alt: just reindex the nodes for one Pool
 
 <pre>
-pool_pids = Node.where(pool_id: n.pool.id).select("persistent_id").map {|r| r.persistent_id}.uniq
+  pool.nodes.head.each {|node| node.update_index }
 </pre>
+
