@@ -1,0 +1,15 @@
+.viewer
+  - if file.video?
+    %video{src: file.s3_url.to_s, type: file.mime_type,  controls: "controls", preload: "metadata" , width:"600px"}
+      Your browser does not support the audio tag.
+  - elsif file.audio?
+    %audio{src: file.s3_url.to_s, type: file.mime_type,  controls: "controls", preload: "metadata" }
+      Your browser does not support the audio tag.
+  - elsif file.image?
+    %img{src:file.s3_url.to_s, width:"600px"}
+  - else 
+    %i.icon-file
+    
+  .actions
+    = link_to "download", file.s3_url.to_s
+

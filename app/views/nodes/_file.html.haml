@@ -2,16 +2,18 @@
   %td
     - if file.video?
       %i.icon-film
-      = link_to file.file_name, file.s3_url.to_s
+      = link_to file.file_name, identity_pool_node_path(@identity, @pool, file.persistent_id)
     - elsif file.audio?
       %i.icon-music
-      = link_to file.file_name, file.s3_url.to_s
+      = link_to file.file_name, identity_pool_node_path(@identity, @pool, file.persistent_id)
       %audio{src: file.s3_url.to_s, type: file.mime_type,  controls: "controls", preload: "metadata" }
         Your browser does not support the audio tag.
     - elsif file.image?
       %i.icon-picture
-      = link_to file.file_name, file.s3_url.to_s
+      = link_to file.file_name, identity_pool_node_path(@identity, @pool, file.persistent_id)
     - else 
       %i.icon-file
-      = link_to file.file_name, file.s3_url.to_s
+      = link_to file.file_name, identity_pool_node_path(@identity, @pool, file.persistent_id)
+    .actions
+      = link_to "download", file.s3_url.to_s, {class: "download"}
 
