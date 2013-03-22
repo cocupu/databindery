@@ -11,7 +11,11 @@ describe FileEntity do
                 data: {
                   storage_location_id: "/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg", file_name: "DSC_0549-3.jpg", file_size: "471990", mime_type: "image/jpeg"
                   }}
+      s3_obj_metadata_hash = {}
+      stub_s3_obj = stub("S3 Object", :metadata=>s3_obj_metadata_hash)
+      S3Connection.any_instance.stub(:get).and_return(stub_s3_obj)
       file_entity = FileEntity.register(@pool, params)
+      s3_obj_metadata_hash.should == {"filename"=>"DSC_0549-3.jpg", "bindery-pid" => file_entity.persistent_id}
       file_entity.file_entity_type.should == "S3"
       file_entity.binding.should == "https://s3.amazonaws.com/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg"
       file_entity.storage_location_id.should == "/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg"

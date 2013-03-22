@@ -19,7 +19,6 @@ class FileEntitiesController < ApplicationController
   def new
     # Only return the target node if current user can edit it.
     @target_node = nil unless can?(:edit, @target_node)
-    puts "Rendering FileEntitiesController.new with @target_node #{@target_node.inspect}"
     bucket = @pool.ensure_bucket_initialized
     @pool.default_file_store.ensure_cors_for_uploads(bucket.name)
     S3DirectUpload.config.bucket = bucket.name

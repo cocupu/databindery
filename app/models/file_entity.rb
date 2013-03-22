@@ -26,6 +26,7 @@ module FileEntity
     end
     file_entity.model = Model.file_entity
     file_entity.save!
+    file_entity.send(:set_metadata)
     return file_entity
   end
   
@@ -129,6 +130,12 @@ module FileEntity
     ["application/pdf"].include? self.mime_type
   end
 
+  # Set metadata (ie. filename for insertion into Content-Disposition) on object in remote file store
+  def set_metadata
+    s3_obj.metadata["filename"] = file_name
+    s3_obj.metadata["bindery-pid"] = persistent_id
+  end
+  
   private
 
   def s3_obj
@@ -143,11 +150,6 @@ module FileEntity
       set_metadata
     end
     @content_changed=false
-  end
-  
-  # Set metadata (ie. filename for insertion into Content-Disposition) on object in remote file store
-  def set_metadata
-    @s3_object.metadata["filename"] = file_name
   end
 
 end

@@ -9,6 +9,7 @@ describe FileEntitiesController do
       sign_in @identity.login_credential
     end
     it "should create and return json" do
+      FileEntity.should_receive(:register).with(@pool, {"binding"=>'1231249'}) {Node.new(pool:@pool, model:Model.file_entity)}
       post :create, :format=>:json, :binding=>'1231249', :pool_id=>@pool.short_name, :identity_id=>@identity.short_name
       response.should be_successful
       json = JSON.parse(response.body)
@@ -19,6 +20,8 @@ describe FileEntitiesController do
         @node_to_target = FactoryGirl.create(:node, pool: @pool)
       end
       it "should add to file list of target_node" do
+        # Need to return a persisted Node from stubbed FileEntity.register so it can be added to the target node
+        FileEntity.should_receive(:register).with(@pool, {"binding"=>'1231249'}) {FactoryGirl.create(:node, pool:@pool, model:Model.file_entity)}
         post :create, :format=>:json, :binding=>'1231249', :pool_id=>@pool.short_name, :identity_id=>@identity.short_name, :target_node_id=>@node_to_target.persistent_id
         target_node = Node.latest_version(@node_to_target.persistent_id)
         target_node.files.last.should == assigns[:file_entity]
@@ -26,6 +29,8 @@ describe FileEntitiesController do
     end
     it "should work with info posted by S3 Direct Upload" do
       params_from_s3_direct_upload = {:pool_id=>@pool.short_name, :identity_id=>@identity.short_name, "url"=>"https://s3.amazonaws.com/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg", "filepath"=>"/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg", "filename"=>"DSC_0549-3.jpg", "filesize"=>"471990", "filetype"=>"image/jpeg", "binding"=>"https://s3.amazonaws.com/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg"}
+      # There's not actually an object in s3 for this test, so capture the attempt to update its metadata
+      S3Connection.any_instance.stub(:get).and_return(stub(:metadata=>{}))
       post :create, params_from_s3_direct_upload
       response.should be_successful
       file_entity = assigns[:file_entity]
