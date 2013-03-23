@@ -5,7 +5,7 @@ describe DecomposeSpreadsheetJob do
   it "should have perform" do
     
     @job = DecomposeSpreadsheetJob.new(1234, nil)
-    @job.spreadsheet_id.should == 1234
+    @job.chattel_id.should == 1234
     @job.should respond_to :perform
   end
 

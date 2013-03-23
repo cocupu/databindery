@@ -1,14 +1,15 @@
-class DecomposeSpreadsheetJob < Struct.new(:spreadsheet_id, :log)
+
+class DecomposeSpreadsheetJob < Struct.new(:chattel_id, :log)
 
   def perform
     log.update_attributes(:status => 'PROCESSING')
-    ss = Bindery::Spreadsheet.find(spreadsheet_id)
-    type = Bindery::Spreadsheet.detect_type(ss)
-    spreadsheet = type.new(ss.file_name)
+    chattel_as_ss = Bindery::Spreadsheet.find(chattel_id)
+    type = Bindery::Spreadsheet.detect_type(chattel_as_ss)
+    spreadsheet = type.new(chattel_as_ss.file_name)
     spreadsheet.sheets.each_with_index do |worksheet, index|
-      ingest_worksheet(spreadsheet, worksheet, ss, index)
+      ingest_worksheet(spreadsheet, worksheet, chattel_as_ss, index)
     end
-    ss.save #Saves associated worksheets
+    chattel_as_ss.save #Saves associated worksheets
   end
 
   def ingest_worksheet(spreadsheet, worksheet, file, index)
