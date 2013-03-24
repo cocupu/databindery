@@ -9,6 +9,20 @@ describe Node do
                       label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: @ref.id}])
   end
 
+  describe "#find_by_identifier" do
+    before do
+      @node = Bindery::Spreadsheet.create(pool: @pool, model: Model.file_entity)
+    end
+    it "should accept Node persistent_ids" do
+      Node.should_receive(:find_by_persistent_id).with(@node.persistent_id).and_return(@node)
+      Node.find_by_identifier(@node.persistent_id).should == @node
+    end
+    it "should accept Node ids" do
+      Node.should_receive(:find).with(@node.id).and_return(@node)
+      Node.find_by_identifier(@node.id).should == @node
+    end
+  end
+  
   it "should use persistent_id as to_param" do
     subject.pool = @pool
     subject.save!

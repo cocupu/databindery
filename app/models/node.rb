@@ -247,5 +247,18 @@ class Node < ActiveRecord::Base
   def latest_version
     Node.latest_version(persistent_id)
   end
+  
+  # Retrieves node by node_id.
+  # Inspects the value to decide whether to use .find(node_id) or .find_by_persistent_id(node_id)
+  def self.find_by_identifier(node_id)
+    # really nasty way of testing whether node_id is an integer
+    node_id_is_integer =  node_id.kind_of?(Integer) || node_id.to_i.to_s.length == node_id.length
+    if node_id_is_integer
+      node = self.find(node_id)
+    else
+      node = self.find_by_persistent_id(node_id)
+    end
+    return node
+  end
 
 end

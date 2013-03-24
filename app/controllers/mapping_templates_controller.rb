@@ -5,19 +5,17 @@ class MappingTemplatesController < ApplicationController
 
 
   # If you do not provide params[:mapping_template][:worksheet_id] but instead provide params[:node_id]
-  # A spreadsheet will be decomposed for you based on the given Node id.  Note: the node_id should be the 
-  # database key for a specific Node version, not the persistent_id for that Node
+  # A spreadsheet will be decomposed for you based on the given Node id.  Note: The node_id can be the 
+  # persistent_id for that Node, or the database key of a specific version of the Node.  
   def new
     authorize! :create, MappingTemplate
     if params[:mapping_template] && params[:mapping_template][:worksheet_id]
       @worksheet = Worksheet.find(params[:mapping_template][:worksheet_id])
     elsif params[:node_id]
-      # Note: the node_id should be the 
-      # database key for a specific Node version, not the persistent_id for that Node
       @job = DecomposeSpreadsheetJob.new(params[:node_id], JobLogItem.new)
       @job.enqueue #start the logger
       @job.perform
-      @worksheet = Bindery::Spreadsheet.find(@node.id).worksheets.last
+      @worksheet = Bindery::Spreadsheet.find_by_identifier(params[:node_id]).worksheets.last
     else 
       raise ArgumentError, "You must provide either mapping_template[worksheet_id] or node_id parameter in order to create a new MappingTemplate."
     end

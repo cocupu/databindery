@@ -2,16 +2,31 @@ require 'spec_helper'
 
 
 describe DecomposeSpreadsheetJob do
+  before do
+    @pool = FactoryGirl.create :pool
+    @node = Bindery::Spreadsheet.create(pool: @pool, model: Model.file_entity)
+  end
+  
   it "should have perform" do
-    
-    @job = DecomposeSpreadsheetJob.new(1234, nil)
-    @job.node_id.should == 1234
+    @job = DecomposeSpreadsheetJob.new(@node.id, nil)
+    @job.node_id.should == @node.id
+    @job.node.should == @node
     @job.should respond_to :perform
+  end
+  
+  it "should accept Node persistent_ids" do
+    @job = DecomposeSpreadsheetJob.new(@node.persistent_id, JobLogItem.new)
+    Bindery::Spreadsheet.should_receive(:find_by_persistent_id).with(@node.persistent_id).and_return(@node)
+    @job.node.should == @node
+  end
+  it "should accept Node ids" do
+    @job = DecomposeSpreadsheetJob.new(@node.id, JobLogItem.new)
+    Bindery::Spreadsheet.should_receive(:find).with(@node.id).and_return(@node)
+    @job.node.should == @node
   end
 
   it "should break up the Excel spreadsheet" do
     @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
-    @node = Bindery::Spreadsheet.create(pool: FactoryGirl.create(:pool), model: Model.file_entity)
     # This requires S3 connection, so skipping.
     # @node.attach_file('dechen_rangdrol_archives_database.xls', @file.read)
     # @node.save!
@@ -20,19 +35,18 @@ describe DecomposeSpreadsheetJob do
     @node.stub(:s3_obj).and_return(@file)
     @node.file_name = 'dechen_rangdrol_archives_database.xls'
     @node.mime_type = 'application/vnd.ms-excel'
-    Bindery::Spreadsheet.stub(:find).with(@node.id).and_return(@node)
-    
     @job = DecomposeSpreadsheetJob.new(@node.id, JobLogItem.new)
+    # Bindery::Spreadsheet.stub(:find).with(@node.id).and_return(@node)
+    @job.node = @node
     @job.enqueue #start the logger
     @job.perform
-    Bindery::Spreadsheet.unstub(:find)
+    # Bindery::Spreadsheet.unstub(:find)
     sheets = Bindery::Spreadsheet.find(@node.id).worksheets
     sheets.count.should == 1
     sheets.first.rows.count.should == 434
   end
   it "should break up the ODS spreadsheet" do
     @file = File.new(Rails.root + 'spec/fixtures/Stock Check 2.ods')
-    @node = Bindery::Spreadsheet.create(pool: FactoryGirl.create(:pool), model: Model.file_entity)
 
     # This requires S3 connection, so skipping.
     # @node.attach_file('Stock Check 2.ods', @file.read)

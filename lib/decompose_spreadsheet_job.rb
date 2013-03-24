@@ -1,10 +1,10 @@
 class DecomposeSpreadsheetJob < Struct.new(:node_id, :log)
-
+  
   # Note that these jobs are scheduled with Node id, _not_ Node persistent_id
   # This means that decomposed spreadsheets are attached to individual versions of a Node, not the generalized "current" Node identified by the persistent_id
   def perform
     log.update_attributes(:status => 'PROCESSING')
-    node = Bindery::Spreadsheet.find(node_id)
+    # node = Node.find_by_identifier(node_id)
     # write the tmp file to local file store for processing
     node.generate_tmp_file 
     type = Bindery::Spreadsheet.detect_type(node)
@@ -55,6 +55,14 @@ class DecomposeSpreadsheetJob < Struct.new(:node_id, :log)
 
   def failure
     log.update_attributes(:status => 'FAILURE')
+  end
+  
+  def node
+    @node ||= Bindery::Spreadsheet.find_by_identifier(node_id)
+  end
+  
+  def node=(new_node)
+    @node = new_node
   end
 
 
