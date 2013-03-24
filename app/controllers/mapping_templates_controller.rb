@@ -1,6 +1,6 @@
 class MappingTemplatesController < ApplicationController
   before_filter :authenticate_user!
-  load_and_authorize_resource :pool, :only=>[:create, :new], :find_by => :short_name, :through=>:identity
+  load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
   load_and_authorize_resource :except=>[:create, :new]
 
 
@@ -12,10 +12,12 @@ class MappingTemplatesController < ApplicationController
     if params[:mapping_template] && params[:mapping_template][:worksheet_id]
       @worksheet = Worksheet.find(params[:mapping_template][:worksheet_id])
     elsif params[:node_id]
-      @job = DecomposeSpreadsheetJob.new(params[:node_id], JobLogItem.new)
-      @job.enqueue #start the logger
-      @job.perform
-      @worksheet = Bindery::Spreadsheet.find_by_identifier(params[:node_id]).worksheets.last
+      unless params[:skip_decompose]
+        @job = DecomposeSpreadsheetJob.new(params[:node_id], JobLogItem.new)
+        @job.enqueue #start the logger
+        @job.perform
+      end
+      @worksheet = Bindery::Spreadsheet.find_by_identifier(params[:node_id]).worksheets.first
     else 
       raise ArgumentError, "You must provide either mapping_template[worksheet_id] or node_id parameter in order to create a new MappingTemplate."
     end
@@ -44,7 +46,8 @@ class MappingTemplatesController < ApplicationController
       return
     end
     @mapping_template.save!
-    @worksheet.reify(@mapping_template, current_pool)
+    @worksheet.reify(@mapping_template, @pool)
+    flash[:notice] = "Spawning #{@worksheet.rows.count} entities from #{@worksheet.spreadsheet.title}."
     redirect_to identity_pool_mapping_template_path(identity.short_name, @pool, @mapping_template)
   end
 

@@ -41,3 +41,19 @@ sheets.first.rows.each do |ss_row|
   job.perform
 end
 </pre>
+
+# If you spawn using the actual UI or using Worksheet.reify, you need to have the workers running.  
+# If you've set up jobs when the workers and/or queue aren't running you can manually retrieve and run them with something like this: 
+<pre>
+enqueued_jobs = JobLogItem.where(status: "ENQUEUE", name: "ReifyEachSpreadsheetRowJob")
+todays_jobs = jobs.select {|job| job.created_at.to_s.include?("2013-03-24")}
+todays_jobs.each do |log|
+  job = ReifyEachSpreadsheetRowJob.new(log)
+  begin
+    job.perform
+    job.success
+  rescue Exception => e
+    job.error(e)
+  end
+end
+</pre>

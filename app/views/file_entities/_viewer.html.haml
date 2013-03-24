@@ -10,6 +10,9 @@
   - else 
     %i.icon-file
     
-  .actions
-    = link_to "download", file.s3_url.to_s
+  %ul.actions
+    %li= link_to "download", file.s3_url.to_s
+    - if file.spreadsheet?
+      %li
+        = link_to "spawn entities from each row of this file", new_identity_pool_mapping_template_path(@identity, @pool, node_id:file.id)
 
