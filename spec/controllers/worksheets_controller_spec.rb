@@ -15,7 +15,6 @@ describe WorksheetsController do
       end
       it "should be success" do
         get :index, pool_id: @pool, spreadsheet_id: @spreadsheet.id, identity_id: @identity.short_name
-        debugger
         response.should be_success
         assigns[:worksheets].should include(@worksheet1, @worksheet2)
       end
