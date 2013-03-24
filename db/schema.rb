@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130314035416) do
+ActiveRecord::Schema.define(:version => 20130324083730) do
 
   create_table "access_controls", :force => true do |t|
     t.integer  "pool_id"
@@ -141,11 +141,13 @@ ActiveRecord::Schema.define(:version => 20130314035416) do
     t.string   "parent_id"
     t.integer  "pool_id"
     t.integer  "identity_id"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
     t.integer  "model_id"
     t.string   "binding"
     t.text     "associations"
+    t.integer  "spawned_from_node_id"
+    t.integer  "spawned_from_datum_id"
   end
 
   add_index "nodes", ["binding"], :name => "index_nodes_on_binding"
