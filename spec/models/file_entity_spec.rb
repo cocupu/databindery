@@ -25,6 +25,30 @@ describe FileEntity do
       file_entity.pool.should == @pool
     end
   end
+  describe "local file handling" do
+    subject {Node.new.extend(FileEntity)}
+    describe "local_file_pathname" do
+      it "should return a tmp file path that includes the file extension" do
+        subject.generate_uuid
+        subject.file_name = "My Sample Spreadsheet.xls"
+        subject.local_file_pathname.should == File.join('', 'tmp', 'cocupu', Rails.env, subject.persistent_id+".xls")
+        subject.file_name = "My Sample Test.doc"
+        subject.local_file_pathname.should == File.join('', 'tmp', 'cocupu', Rails.env, subject.persistent_id+".doc")
+      end
+    end
+    describe "generate_tmp_file" do
+      it "should download the file from the storage source and write it to the local_file_path" do
+        subject.persistent_id = "test-generate_local_file"
+        subject.file_name = "dechen_rangdrol_archives_database.xls"
+        @file=File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
+        # S3Object.read behaves like File.read, so returning a File as stub for the S3 Object
+        subject.stub(:s3_obj).and_return(@file)
+        subject.generate_tmp_file
+        File.new(subject.local_file_pathname).read.should == File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls').read
+      end
+    end
+  end
+  
   describe "content type inspectors" do
     subject {Node.new.extend(FileEntity)}
     describe "audio?" do
@@ -75,5 +99,18 @@ describe FileEntity do
         subject.pdf?.should be_false
       end
     end
+    describe "spreadsheet?" do
+      it "should test for pdf mimetype" do
+        subject.stub(:mime_type).and_return("audio/mpeg")
+        subject.spreadsheet?.should be_false
+        ["application/vnd.ms-excel", "application/vnd.oasis.opendocument.spreadsheet"].each do |mimetype|
+          subject.stub(:mime_type).and_return(mimetype)
+          subject.spreadsheet?.should be_true
+        end
+        subject.stub(:mime_type).and_return("video/avi")
+        subject.spreadsheet?.should be_false
+      end
+    end
+    
   end
 end

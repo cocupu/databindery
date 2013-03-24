@@ -57,10 +57,14 @@ FactoryGirl.define do
     fields [{"name"=>"Description", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"description"}.with_indifferent_access]
     owner
   end
+  
+  factory :chattel, :class=>Chattel do
+    owner
+  end
 
   factory :spreadsheet, :class=>Bindery::Spreadsheet do
-    owner
-
+    pool
+    model
   end
 
   factory :mapping_template do

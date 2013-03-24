@@ -1,7 +1,7 @@
 class WorksheetsController < ApplicationController
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
 
-
+  # Note: spreadsheet_id should be the Node id, *not the Node persistent_id*, because worksheets are attached to specific versions of nodes.
   def index
     spreadsheet = Bindery::Spreadsheet.find(params[:spreadsheet_id])
     @worksheets = spreadsheet.worksheets

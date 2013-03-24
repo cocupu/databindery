@@ -1,15 +1,18 @@
+class DecomposeSpreadsheetJob < Struct.new(:node_id, :log)
 
-class DecomposeSpreadsheetJob < Struct.new(:chattel_id, :log)
-
+  # Note that these jobs are scheduled with Node id, _not_ Node persistent_id
+  # This means that decomposed spreadsheets are attached to individual versions of a Node, not the generalized "current" Node identified by the persistent_id
   def perform
     log.update_attributes(:status => 'PROCESSING')
-    chattel_as_ss = Bindery::Spreadsheet.find(chattel_id)
-    type = Bindery::Spreadsheet.detect_type(chattel_as_ss)
-    spreadsheet = type.new(chattel_as_ss.file_name)
+    node = Bindery::Spreadsheet.find(node_id)
+    # write the tmp file to local file store for processing
+    node.generate_tmp_file 
+    type = Bindery::Spreadsheet.detect_type(node)
+    spreadsheet = type.new(node.local_file_pathname)
     spreadsheet.sheets.each_with_index do |worksheet, index|
-      ingest_worksheet(spreadsheet, worksheet, chattel_as_ss, index)
+      ingest_worksheet(spreadsheet, worksheet, node, index)
     end
-    chattel_as_ss.save #Saves associated worksheets
+    node.save #Saves associated worksheets
   end
 
   def ingest_worksheet(spreadsheet, worksheet, file, index)

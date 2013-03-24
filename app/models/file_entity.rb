@@ -114,6 +114,45 @@ module FileEntity
     super
   end
   
+  #
+  # Handling local tmp file
+  #
+  
+  # Pulls the file from file store and stores in local tmp file for processing
+  def generate_tmp_file
+    FileUtils.mkdir_p(local_tmp_dir) unless File.exists?(local_tmp_dir)
+    #TODO avoid name collision
+    stored = File.new(local_file_pathname, 'wb')
+    stored.write s3_obj.read
+    stored.close
+    # Download and write the file in blocks off the HTTP Response (see S3Object.read in aws-sdk docs)
+    # File.open(local_file_pathname, 'w') do |file|
+    #   s3_obj.read do |chunk|
+    #     file.write(chunk)
+    #   end
+    #   file
+    # end
+  end
+  
+  def local_file_pathname
+    File.join(local_tmp_dir, file_key)
+  end
+  
+  def local_tmp_dir
+    #Platform independant way of showing a File path. Empty String ('') means the root
+    File.join('', 'tmp', 'cocupu', Rails.env)
+  end
+  
+  def file_key
+    raise "Can't make a key until the record is saved" unless persistent_id
+    "#{persistent_id}.#{filename_extension}"
+  end
+  
+  def filename_extension
+    puts file_name
+    /\.([^.]+)$/.match(file_name)[1]
+  end
+  
   def audio?
     ["audio/mp3", "audio/mpeg"].include? self.mime_type
   end
@@ -128,6 +167,10 @@ module FileEntity
   
   def pdf?
     ["application/pdf"].include? self.mime_type
+  end
+  
+  def spreadsheet?
+    ["application/vnd.ms-excel", "application/vnd.oasis.opendocument.spreadsheet"].include? self.mime_type
   end
 
   # Set metadata (ie. filename for insertion into Content-Disposition) on object in remote file store

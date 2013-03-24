@@ -1,6 +1,6 @@
 =content_for :page_name do
   Select the worksheet to import
-=form_for :mapping_template, :url=> new_mapping_template_path, :method=>:get do |f|
+=form_for :mapping_template, :url=> new_identity_pool_mapping_template_path(@identity, @pool), :method=>:get do |f|
   =f.label :worksheet_id, 'Worksheet:'
   .input
     =f.collection_select 'worksheet_id', @worksheets, :id, :name

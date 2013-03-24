@@ -101,6 +101,36 @@ describe MappingTemplatesController do
           {:source =>"D", :label=>vals[3]},
           {:source=>"E", :label=>vals[4]}]
     end
+    describe "when worksheet_id is not provided but node_id is provided" do
+      it "should generate the worksheet from node then use that" do
+        pending
+        # setup for decomposing spreadsheet (stubs s3 connection).  See decompose_spreadsheet_job_spec.rb for more of this
+          @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
+          @node = Bindery::Spreadsheet.create(pool: FactoryGirl.create(:pool), model: Model.file_entity)
+          # S3Object.read behaves like File.read, so returning a File as stub for the S3 Object
+          @node.stub(:s3_obj).and_return(@file)
+          @node.file_name = 'dechen_rangdrol_archives_database.xls'
+          @node.mime_type = 'application/vnd.ms-excel'
+          Bindery::Spreadsheet.stub(:find).with(@node.id).and_return(@node)
+        # /setup for decomposing spreadsheet
+        
+        get :new, :node_id=>@node.id, :pool_id=>@pool, identity_id: @identity.short_name
+        response.should be_success
+        assigns[:pool].should == @pool
+        assigns[:job].node_id.should == @node.id        
+        assigns[:worksheet].should == @node.worksheets.last
+        assigns[:worksheet].rows.count.should == 434
+        assigns[:mapping_template].should_not be_nil
+        assigns[:mapping_template].model_mappings.length.should == 1
+        vals = assigns[:worksheet].rows[0].values
+        assigns[:mapping_template].model_mappings.first[:field_mappings].should == 
+          [{:source =>"A", :label=>vals[0]}, 
+            {:source => "B", :label=>vals[1]},
+            {:source=>"C", :label=>vals[2]},
+            {:source =>"D", :label=>vals[3]},
+            {:source=>"E", :label=>vals[4]}]
+      end
+    end
   end
 
 end

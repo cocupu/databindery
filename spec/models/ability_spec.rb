@@ -68,23 +68,23 @@ describe Ability do
 
   describe "chattels" do
     before do
-      @ss = FactoryGirl.create :spreadsheet
+      @chattel = FactoryGirl.create :chattel
     end
     it "are readable by their owner" do
-      ability = Ability.new(@ss.owner)
-      ability.can?(:read, @ss).should be_true
+      ability = Ability.new(@chattel.owner)
+      ability.can?(:read, @chattel).should be_true
     end
     it "are not readable by a non-owner" do
       ability = Ability.new(FactoryGirl.create :identity)
-      ability.can?(:read, @ss).should_not be_true
+      ability.can?(:read, @chattel).should_not be_true
     end
     it "can be updated by an owner" do
-      ability = Ability.new(@ss.owner)
-      ability.can?(:update, @ss).should be_true
+      ability = Ability.new(@chattel.owner)
+      ability.can?(:update, @chattel).should be_true
     end
     it "can't be updated by a non-owner" do
       ability = Ability.new(FactoryGirl.create :identity)
-      ability.can?(:update, @ss).should_not be_true
+      ability.can?(:update, @chattel).should_not be_true
     end
     it "can be created by a logged in user" do
       ability = Ability.new(FactoryGirl.create :identity)

@@ -14,7 +14,8 @@ describe WorksheetsController do
         @spreadsheet = FactoryGirl.create(:spreadsheet, :worksheets=>[@worksheet1, @worksheet2])
       end
       it "should be success" do
-        get :index, pool_id: @pool, spreadsheet_id: @spreadsheet, identity_id: @identity.short_name
+        get :index, pool_id: @pool, spreadsheet_id: @spreadsheet.id, identity_id: @identity.short_name
+        debugger
         response.should be_success
         assigns[:worksheets].should include(@worksheet1, @worksheet2)
       end
@@ -25,7 +26,7 @@ describe WorksheetsController do
         @spreadsheet = FactoryGirl.create(:spreadsheet, :worksheets=>[@worksheet])
       end
       it "should be success" do
-        get :index, pool_id: @pool, spreadsheet_id: @spreadsheet, identity_id: @identity.short_name
+        get :index, pool_id: @pool, spreadsheet_id: @spreadsheet.id, identity_id: @identity.short_name
         response.should redirect_to new_identity_pool_mapping_template_path(@identity.short_name, @pool, :mapping_template=>{:worksheet_id=>@worksheet.id}) 
       end
     end
