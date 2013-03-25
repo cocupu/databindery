@@ -26,7 +26,6 @@ describe ReifyEachSpreadsheetRowJob do
     created.data.should == {'wheels' => 'two'}
     debugger
     created.spawned_from_datum.should == @ss_row
-    created.spawned_from_node.should == @source_node
   end
 
 end

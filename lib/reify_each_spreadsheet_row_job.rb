@@ -19,7 +19,6 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:log)
         vals[map[:field]] = row.values[map[:source].ord - 65]
       end
       n = Node.new(:data=>vals)
-      n.spawned_from_node = row.worksheet.spreadsheet
       n.spawned_from_datum = row
       n.model = model
       n.pool = pool 
