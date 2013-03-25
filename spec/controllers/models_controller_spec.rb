@@ -47,7 +47,7 @@ describe ModelsController do
           {"id"=>@file_model.id,
           "url"=>"/models/#{@file_model.id}", 
           "associations"=>[],
-          "fields"=> [{"code"=>"file_name", "type"=>"textfield"}],
+          "fields"=> [{"code"=>"file_name", "type"=>"textfield", "name"=>"Filename"}],
           "name"=>@file_model.name,
           "label"=>"file_name","allow_file_bindings"=>true}]
       end
