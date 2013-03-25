@@ -9,8 +9,8 @@
             -if @pool
               %li= link_to @pool.name, identity_pool_path(@identity.short_name, @pool)
 
-        %ul.nav.pull-right
-          %li.dropdown
+        %ul.nav.pull-right.css-dropdown
+          %li.account
             =link_to "Account <b class=\"caret\"></b>".html_safe, "#", 'data-toggle'=> 'dropdown', class: 'dropdown-toggle'
             %ul.dropdown-menu
               %li= link_to "Edit",  edit_user_registration_path

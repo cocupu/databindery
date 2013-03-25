@@ -1,0 +1,28 @@
+- if @mapping_template
+  - content_for :page_name do
+    Review settings and kick off the Spawn Job
+  = render partial:"form"
+  Source file: 
+  = link_to @worksheet.spreadsheet.title, identity_pool_node_path(@identity, @pool, @worksheet.spreadsheet)
+  %div
+    This job will spawn 
+    =@worksheet.rows.count
+    %b= @model.name
+    Entities
+  
+  %h3 Spreadsheet Preview
+  =render :partial=>'mapping_templates/spreadsheet_preview'
+  =render file:"mapping_templates/show"
+- else
+  - content_for :page_name do
+    Specify a Mapping Template for the Spawn Job
+  In order to set up a Spawn job, you have to specify a Template for mapping Spreadsheet Rows to fields on the spawned Entities.
+  %h4 Existing Mapping Templates:
+  %ul
+    - @pool.mapping_templates.each do |mapping_template|
+      %li
+        =link_to "Created: #{mapping_template.created_at.to_s} Model: #{mapping_template.model_mappings.first[:model_id]}",  new_identity_pool_spawn_job_path(@identity, @pool, worksheet_id:@worksheet.id, mapping_template_id:mapping_template.id, skip_decompose:true)
+  = link_to "Create a new Mapping Template", new_identity_pool_mapping_template_path(@identity, @pool, mapping_template:{worksheet_id: @worksheet.id})
+        
+
+

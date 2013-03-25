@@ -5,7 +5,6 @@ class Node < ActiveRecord::Base
   before_create :generate_uuid
   belongs_to :model
   belongs_to :pool
-  belongs_to :spawned_from_node, class_name: "Bindery::Spreadsheet"
   belongs_to :spawned_from_datum, class_name: "SpreadsheetRow"
   validates :model, presence: true
   validates :pool, presence: true

@@ -76,6 +76,7 @@ Bindery::Application.routes.draw do
         match 'files' => 'nodes#attach_file', :via=>:post
       end
       resources :mapping_templates
+      resources :spawn_jobs
       resources :spreadsheets do
         resources :worksheets do
         end

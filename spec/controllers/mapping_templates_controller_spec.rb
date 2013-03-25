@@ -5,13 +5,13 @@ describe MappingTemplatesController do
     before do
       Model.delete_all
       Model.count.should == 0  #Make sure the db is clean
-      @ss = Worksheet.create!
+      @worksheet = FactoryGirl.create(:worksheet)
     end
     describe "when not logged in" do
       it "should not create" do
         pool = FactoryGirl.create(:pool)
         Worksheet.any_instance.should_receive(:reify).never
-        post :create, :worksheet_id=>@ss.id, :identity_id=>'bob', :mapping_template=>{"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}, :pool_id=>pool
+        post :create, :worksheet_id=>@worksheet.id, :identity_id=>'bob', :mapping_template=>{"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}, :pool_id=>pool
         response.should redirect_to new_user_session_path
         flash[:alert].should == "You need to sign in or sign up before continuing."
       end
@@ -23,12 +23,12 @@ describe MappingTemplatesController do
         sign_in @identity.login_credential
       end
       it "should create" do
-        Worksheet.any_instance.should_receive(:reify)
-
-        post :create, :worksheet_id=>@ss.id, :identity_id=>@identity.short_name, :mapping_template=>{"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"Talk", :label=>'C', :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>"D"}}}}}, :pool_id=>@pool
+        Worksheet.any_instance.should_receive(:reify).never
+        original_model_count = Model.count 
+        post :create, :worksheet_id=>@worksheet.id, :identity_id=>@identity.short_name, :mapping_template=>{"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"Talk", :label=>'C', :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>"D"}}}}}, :pool_id=>@pool
         assigns[:mapping_template].row_start.should == 2
         model = Model.find(assigns[:mapping_template].model_mappings.first[:model_id])
-        Model.count.should == 1
+        Model.count.should == original_model_count+1
         model.fields.should == [{"code"=>"file_name", "name"=>"File Name"},
              {"code"=>"title", "name"=>"Title"}]
         model.name.should == 'Talk'
@@ -42,10 +42,10 @@ describe MappingTemplatesController do
       end
       it "should raise errors if no model name was supplied" do
         Worksheet.any_instance.should_receive(:reify).never
-
-        post :create, :worksheet_id=>@ss.id, :identity_id=>@identity.short_name, :mapping_template=>{"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"", :label=>'C', :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>"D"}}}}}, :pool_id=>@pool
+        original_model_count = Model.count
+        post :create, :worksheet_id=>@worksheet.id, :identity_id=>@identity.short_name, :mapping_template=>{"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"", :label=>'C', :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>"D"}}}}}, :pool_id=>@pool
         assigns[:mapping_template].row_start.should == 2
-        Model.count.should == 0
+        Model.count.should == original_model_count
         response.should be_success
         flash[:alert].should == "Name can't be blank"
         assigns[:mapping_template].model_mappings[0][:field_mappings].should == 
@@ -57,7 +57,7 @@ describe MappingTemplatesController do
       it "should raise not_found errors when identity does not belong to the logged in user" do
         Worksheet.any_instance.should_receive(:reify).never
 
-        post :create, :worksheet_id=>@ss.id, :identity_id=>FactoryGirl.create(:identity).short_name, :mapping_template=>{"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"", :label=>'C', :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>"D"}}}}}, :pool_id=>@pool
+        post :create, :worksheet_id=>@worksheet.id, :identity_id=>FactoryGirl.create(:identity).short_name, :mapping_template=>{"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"", :label=>'C', :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>"D"}}}}}, :pool_id=>@pool
         response.should be_not_found
       end
     end
@@ -102,23 +102,16 @@ describe MappingTemplatesController do
           {:source=>"E", :label=>vals[4]}]
     end
     describe "when worksheet_id is not provided but node_id is provided" do
-      it "should generate the worksheet from node then use that" do
-        # setup for decomposing spreadsheet (stubs s3 connection).  See decompose_spreadsheet_job_spec.rb for more of this
-          @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
-          @node = Bindery::Spreadsheet.create(pool: FactoryGirl.create(:pool), model: Model.file_entity)
-          # S3Object.read behaves like File.read, so returning a File as stub for the S3 Object
-          @node.stub(:s3_obj).and_return(@file)
-          @node.file_name = 'dechen_rangdrol_archives_database.xls'
-          @node.mime_type = 'application/vnd.ms-excel'
-          Bindery::Spreadsheet.stub(:find_by_persistent_id).with(@node.persistent_id).and_return(@node)
-        # /setup for decomposing spreadsheet
+      it "should find the node and use its worksheet" do
+        
+        @node = Bindery::Spreadsheet.create(pool: FactoryGirl.create(:pool), model: Model.file_entity)
+        @one.spreadsheet = @node
+        @one.save
         
         get :new, :node_id=>@node.persistent_id, :pool_id=>@pool, identity_id: @identity.short_name
         response.should be_success
         assigns[:pool].should == @pool
-        assigns[:job].node_id.should == @node.persistent_id.to_s        
-        assigns[:worksheet].should == @node.worksheets.last
-        assigns[:worksheet].rows.count.should == 434
+        assigns[:worksheet].should == @one
         assigns[:mapping_template].should_not be_nil
         assigns[:mapping_template].model_mappings.length.should == 1
         vals = assigns[:worksheet].rows[0].values
@@ -127,15 +120,7 @@ describe MappingTemplatesController do
             {:source => "B", :label=>vals[1]},
             {:source=>"C", :label=>vals[2]},
             {:source =>"D", :label=>vals[3]},
-            {:source=>"E", :label=>vals[4]},
-            {:source => "F", :label=>vals[5]},
-            {:source=>"G", :label=>vals[6]},
-            {:source =>"H", :label=>vals[7]},
-            {:source=>"I", :label=>vals[8]},
-            {:source => "J", :label=>vals[9]},
-            {:source=>"K", :label=>vals[10]},
-            {:source =>"L", :label=>vals[11]},
-            {:source=>"M", :label=>vals[12]}]
+            {:source=>"E", :label=>vals[4]}]
       end
     end
   end

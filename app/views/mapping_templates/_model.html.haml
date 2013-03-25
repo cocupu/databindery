@@ -23,9 +23,9 @@
       %th Field Name:
     - if model
       -model[:field_mappings].each_with_index do |row, n| 
-        = render :partial=>'field_mapping', :locals=>{:row=>row, :parent=>root, :root=>"#{root}[field_mappings_attributes][#{n}]"}
+        = render :partial=>'mapping_templates/field_mapping', :locals=>{:row=>row, :parent=>root, :root=>"#{root}[field_mappings_attributes][#{n}]"}
   =add_child_link 'New field', :field_mappings, '1234' 
   /* field template */
   %table{:id=>"field_mappings_#{1234}_fields_template", :style=>'display:none'}
-    =render :partial => 'field_mapping', :locals=>{:row=>{:source=>'', :value=>''}, :parent=>root, :root=>"#{root}[field_mappings_attributes][new_field_mappings]"}            
+    =render :partial => 'mapping_templates/field_mapping', :locals=>{:row=>{:source=>'', :value=>''}, :parent=>root, :root=>"#{root}[field_mappings_attributes][new_field_mappings]"}            
 

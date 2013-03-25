@@ -10,10 +10,10 @@
     =f.label :row_start, 'Data Begins on row:', class: "control-label"
     .controls
       =f.select :row_start, [0, 1, 2, 3, 4, 5, 6], {:selected=>2}, {:class=>'xsmall'}
-  =render :partial=>'spreadsheet_preview'
+  =render :partial=>'mapping_templates/spreadsheet_preview'
   %br
   -f.object.model_mappings.each_with_index do |model, n|
-    = render :partial=>'model', :locals=>{:model => model, :root=>"mapping_template[model_mappings_attributes][#{n}]" }
+    = render :partial=>'mapping_templates/model', :locals=>{:model => model, :root=>"mapping_template[model_mappings_attributes][#{n}]" }
   /*  = add_child_link 'New model', :models, f.object_id*/
   =f.submit "Continue", :class=>"btn btn-primary" 
   /* model template */
