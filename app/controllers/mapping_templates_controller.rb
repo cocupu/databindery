@@ -41,7 +41,7 @@ class MappingTemplatesController < ApplicationController
       return
     end
     @mapping_template.save!
-    redirect_to identity_pool_mapping_template_path(identity.short_name, @pool, @mapping_template)
+    redirect_to new_identity_pool_spawn_job_path(@identity, @pool, worksheet_id:@worksheet.id, mapping_template_id:@mapping_template.id, skip_decompose:true)
   end
 
   def show

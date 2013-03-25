@@ -46,7 +46,7 @@ end
 # If you've set up jobs when the workers and/or queue aren't running you can manually retrieve and run them with something like this: 
 <pre>
 enqueued_jobs = JobLogItem.where(status: "ENQUEUE", name: "ReifyEachSpreadsheetRowJob")
-todays_jobs = enqueued_jobs.select {|job| job.created_at.to_s.include?("2013-03-24")}
+todays_jobs = enqueued_jobs.select {|job| job.created_at.to_s.include?(Date.today.to_s)}
 todays_jobs.each do |log|
   job = ReifyEachSpreadsheetRowJob.new(log)
   begin

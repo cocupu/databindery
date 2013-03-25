@@ -38,7 +38,7 @@ describe MappingTemplatesController do
            {"label"=>"Title", "source"=>"C", 'field' => 'title'},
            {"label"=>"", "source"=>"D"}]
 
-        response.should redirect_to(:action=>'show', :id=>assigns[:mapping_template].id)
+        response.should redirect_to( new_identity_pool_spawn_job_path(@identity, @pool, worksheet_id:@worksheet.id, mapping_template_id:assigns[:mapping_template].id, skip_decompose:true) )        
       end
       it "should raise errors if no model name was supplied" do
         Worksheet.any_instance.should_receive(:reify).never
