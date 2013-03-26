@@ -56,11 +56,11 @@ describe DecomposeSpreadsheetJob do
     @node.stub(:s3_obj).and_return(@file)
     @node.file_name = 'Stock Check 2.ods'
     @node.mime_type = 'application/vnd.oasis.opendocument.spreadsheet'
-    Bindery::Spreadsheet.stub(:find).with(@node.id).and_return(@node)    
+    Bindery::Spreadsheet.should_receive(:find_by_identifier).with(@node.id).and_return(@node) 
     @job = DecomposeSpreadsheetJob.new(@node.id, JobLogItem.new)
     @job.enqueue #start the logger
     @job.perform
-    Bindery::Spreadsheet.unstub(:find)
+    # Bindery::Spreadsheet.unstub(:find)
     sheets = Bindery::Spreadsheet.find(@node.id).worksheets
     sheets.count.should == 4
     datasheet = sheets.select{|s| s.name == 'datasheet'}.first
@@ -112,5 +112,17 @@ describe DecomposeSpreadsheetJob do
        "http://minerals.usgs.gov/minerals/pubs/commodity/aluminum/",
        nil,
        nil]
+  end
+  describe "ingest_worksheet" do
+    it "should skip empty sheets within a spreadsheet" do
+      @node.mime_type = 'application/vnd.oasis.opendocument.spreadsheet'
+      type = Bindery::Spreadsheet.detect_type(@node)
+      spreadsheet = type.new(File.expand_path(Rails.root + 'spec/fixtures/Texts.ods'))
+      spreadsheet.sheets.each_with_index do |worksheet, index|
+        subject.ingest_worksheet(spreadsheet, worksheet, @node, index)
+      end
+      node = Bindery::Spreadsheet.find(@node.id)
+      node.worksheets.count.should == 1
+    end
   end
 end

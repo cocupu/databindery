@@ -4,7 +4,6 @@ class DecomposeSpreadsheetJob < Struct.new(:node_id, :log)
   # This means that decomposed spreadsheets are attached to individual versions of a Node, not the generalized "current" Node identified by the persistent_id
   def perform
     log.update_attributes(:status => 'PROCESSING')
-    # node = Node.find_by_identifier(node_id)
     # write the tmp file to local file store for processing
     node.generate_tmp_file 
     type = Bindery::Spreadsheet.detect_type(node)
@@ -16,12 +15,15 @@ class DecomposeSpreadsheetJob < Struct.new(:node_id, :log)
   end
 
   def ingest_worksheet(spreadsheet, worksheet, file, index)
-    sheet = Worksheet.create(:name=>worksheet, :order=>index)
-    spreadsheet.first_row(worksheet).upto(spreadsheet.last_row(worksheet)) do |row_idx|
-      ingest_row(spreadsheet, worksheet, sheet, row_idx)
+    # Skip processing if the worksheet is empty (no rows)
+    unless spreadsheet.first_row(worksheet).nil? || spreadsheet.last_row(worksheet).nil?
+      sheet = Worksheet.create(:name=>worksheet, :order=>index)
+      spreadsheet.first_row(worksheet).upto(spreadsheet.last_row(worksheet)) do |row_idx|
+        ingest_row(spreadsheet, worksheet, sheet, row_idx)
+      end
+      sheet.save #Saves associated rows
+      file.worksheets << sheet
     end
-    sheet.save #Saves associated rows
-    file.worksheets << sheet
   end
 
   def ingest_row(spreadsheet, worksheet, sheet, row_idx)
