@@ -161,7 +161,7 @@ class Node < ActiveRecord::Base
 
   # TODO grab this info out of solr.
   def find_association(type) 
-    associations[type] ? associations[type].map { |pid| Node.latest_version(pid) } : nil
+    associations[type] && (associations[type] != "") ? associations[type].map { |pid| Node.latest_version(pid) } : nil
   end
   
   # Relies on a solr search to returns all Nodes that have associations pointing at this node

@@ -284,6 +284,11 @@ describe Node do
         nodes.should include(@author1)
         nodes.should include(@author2)
       end
+      it "should return an nil if association is nil or a string" do
+        subject.find_association("foo").should be_nil
+        subject.associations["foo"] = ""
+        subject.find_association("foo").should be_nil
+      end
     end
     describe "incoming" do
       it "should return all of the nodes pointing to the current object" do
