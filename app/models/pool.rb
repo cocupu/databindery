@@ -61,6 +61,25 @@ class Pool < ActiveRecord::Base
   def all_fields
     self.models.map {|m| m.fields}.flatten.uniq.sort{|x, y| x[:name] <=> y[:name]}
   end
+  
+  # Returns all the associations from all Models in this Pool
+  # Note: Use this sparingly, since it triggers a pretty heavy database hit.
+  def all_associations(opts={})
+    associations = self.models.map {|m| m.associations}.flatten
+    if opts[:unique]
+      unique_codes = associations.map {|a| a[:code] }.uniq
+      unique_associations = []
+      associations.each do |a|
+        if unique_codes.include?(a[:code])
+          unique_associations << a
+          unique_codes.delete(a[:code])
+        end
+      end
+      return unique_associations
+    else
+      return associations
+    end
+  end
 
   def default_file_store
     # s3_connections.first

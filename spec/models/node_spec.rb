@@ -266,9 +266,11 @@ describe Node do
       subject.pool = @pool
       subject.save!
     end
-    it "should index the properties of the child associations and add their persistent ids to an associations_t field" do
+    it "should index the properties of the child associations and add their persistent ids to an bindery__associations_facet field" do
       subject.to_solr.should == {'id'=>subject.persistent_id, 'version'=>subject.id, 'model_name' =>subject.model.name, 'pool' => @pool.id, 
         'format'=>'Node', 'model'=>subject.model.id, 
+        'contributing_authors_facet'=>['Agatha Christie', 'Raymond Chandler'],
+        'contributing_authors_t'=>['Agatha Christie', 'Raymond Chandler'],
         'contributing_authors__full_name_t'=>['Agatha Christie', 'Raymond Chandler'],
         'contributing_authors__full_name_facet'=>['Agatha Christie', 'Raymond Chandler'],
         "book_title_facet" => "How to write mysteries",

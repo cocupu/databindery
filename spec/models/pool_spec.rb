@@ -102,6 +102,28 @@ describe Pool do
     end
   end
   
+  describe "all_associations" do
+    before do
+      @model1 = FactoryGirl.create(:model)
+      @model2 = FactoryGirl.create(:model)
+      @model1.associations << {type: 'Has One', code: "talk", name: "Talk", references: 38}
+      @model1.associations << {type: 'Has Many', code: "authors", name: "Authors", references: 39}
+      @model2.associations << {type: 'Ordered List', code: "tracks", name: "Tracks", references: 40}
+      @model2.associations << {type: 'Unordered List', code: "members", name: "Members", references: 41}
+      @model2.associations << {type: 'Has Many', code: "authors", name: "Authors", references: 39}
+      subject.models << @model1
+      subject.models << @model2
+    end
+    it "should return all Model associations in the pool" do
+      subject.all_associations.should == [{type: 'Has One', code: "talk", name: "Talk", references: 38},{type: 'Has Many', code: 'authors', name: "Authors", references: 39}, {type: 'Ordered List', code: 'tracks', name: "Tracks", references: 40}, {type: 'Unordered List', code: 'members', name: "Members", references: 41}, {type: 'Has Many', code: 'authors', name: "Authors", references: 39}]
+    end
+    it "should support filtering for uniqueness based on association code" do
+      subject.all_associations().length.should == 5
+      subject.all_associations(unique: true).length.should == 4
+      subject.all_associations(unique: true).should == [{type: 'Has One', code: "talk", name: "Talk", references: 38},{type: 'Has Many', code: 'authors', name: "Authors", references: 39}, {type: 'Ordered List', code: 'tracks', name: "Tracks", references: 40}, {type: 'Unordered List', code: 'members', name: "Members", references: 41}]
+    end
+  end
+  
   describe "default_bucket_id" do
     it "should be the pools persistent id" do
       subject.should_receive(:persistent_id).and_return("thepid")

@@ -57,3 +57,6 @@ todays_jobs.each do |log|
   end
 end
 </pre>
+
+failed_jobs = JobLogItem.where(status: "ERROR", name: "ReifyEachSpreadsheetRowJob")
+failed_today = failed_jobs.select {|job| job.created_at.to_s.include?(Date.today.to_s)}

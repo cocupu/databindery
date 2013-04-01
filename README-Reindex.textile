@@ -10,6 +10,14 @@ all_pids.each {|pid| Node.latest_version(pid).update_index }
 h2. Alt: just reindex the nodes for one Pool
 
 <pre>
-  pool.nodes.head.each {|node| node.update_index }
+  pool = Pool.find_by_short_name("ktgr_gentle")
+  failed_nodes = []
+  pool.nodes.head.each do |n| 
+    begin
+      n.update_index
+    rescue  
+      failed_nodes << n
+    end
+  end
 </pre>
 

@@ -4,7 +4,7 @@
     .input
       = f.text_field :title
   .control-group
-    = f.label :facets, "Facets:"
+    %h3 Fields:
     %table.table-bordered.table-striped.select-facets
       %thead
         %tr
@@ -21,6 +21,26 @@
               =label_tag "exhibit[facets][#{field['code']}]", field['name'], :style=>'display:none'
               =check_box_tag "exhibit[facets][]", field['code'], @exhibit.facets.include?(field['code']), id: "exhibit_facets_#{field['code']}"
             %td=field['name']
+  
+  .control-group
+    %h3 Associations:
+    %table.table-bordered.table-striped.select-facets
+      %thead
+        %tr
+          %th Display?
+          %th Facet?
+          %th Association
+      %tbody
+        -@pool.all_associations(unique:true).each do |association|
+          %tr
+            %td
+              =label_tag "exhibit[index_fields][#{association['code']}]", association['name'], :style=>'display:none'
+              =check_box_tag "exhibit[index_fields][]", association['code'], @exhibit.index_fields.include?(association['code']), id: "exhibit_index_fields_#{association['code']}"
+            %td
+              =label_tag "exhibit[facets][#{association['code']}]", association['name'], :style=>'display:none'
+              =check_box_tag "exhibit[facets][]", association['code'], @exhibit.facets.include?(association['code']), id: "exhibit_facets_#{association['code']}"
+            %td=association['name']
+                 
   .control-group
     .input
       = f.submit :class=>'btn btn-primary'

@@ -136,6 +136,12 @@ class Node < ActiveRecord::Base
       doc["bindery__associations_facet"] ||= []
       find_association(f['code']).each do |instance|
         doc["bindery__associations_facet"] << instance.persistent_id
+        facet_name_for_association = Node.solr_name(f['code'], type: 'facet')  
+        doc[facet_name_for_association] ||= []
+        doc[facet_name_for_association] << instance.title
+        field_name_for_association = Node.solr_name(f['code'])
+        doc[field_name_for_association] ||= []
+        doc[field_name_for_association] << instance.title
         instance.solr_attributes(f['code'] + '__').each do |k, v|
           doc[k] ||= []
           doc[k] << v
