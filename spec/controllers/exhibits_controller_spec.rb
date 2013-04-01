@@ -50,7 +50,7 @@ describe ExhibitsController do
     describe "create" do
       it "should be success" do
         post :create, :pool_id=>@pool, :identity_id=>@identity.short_name, :exhibit=> {:title => 'Foresooth', :facets=>['looketh', 'overmany', 'thither'] }
-        response.should redirect_to identity_exhibit_path(@identity.short_name, assigns[:exhibit])
+        response.should redirect_to identity_pool_search_path(@identity, @pool, perspective: assigns[:exhibit])
         assigns[:exhibit].facets.should == ['looketh', 'overmany', 'thither']
       end
       it "should not allow create for a pool you don't own" do
@@ -71,7 +71,7 @@ describe ExhibitsController do
     describe "update" do
       it "should be success" do
         put :update, :id=>@exhibit.id, :exhibit=> {:title => 'Foresooth', :facets=>['looketh', 'overmany', 'thither'], :index_fields=>['title', 'author', 'call_number'] }, :pool_id=>@pool, :identity_id=>@identity.short_name
-        response.should redirect_to identity_exhibit_path(@identity.short_name, assigns[:exhibit])
+        response.should redirect_to identity_pool_search_path(@identity, @pool, perspective: assigns[:exhibit])
         assigns[:exhibit].facets.should == ['looketh', 'overmany', 'thither']
         assigns[:exhibit].index_fields.should == ['title', 'author', 'call_number']
       end
