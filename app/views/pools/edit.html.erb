@@ -22,8 +22,8 @@
       <table class="permissions">
          <tr><th>User</th><th>Access</th></tr>
          <% @pool.access_controls.each_with_index do |ac, index| %>
-           <tr class="template"><td><input name="access_controls[<%= index %>]" value="<%=ac.identity.short_name %>"/></td>
-           <td><select name="access_controls[<%= index %>]" class="permission-access">
+           <tr class="template"><td><input name="access_controls[identity]" value="<%=ac.identity.short_name %>"/></td>
+           <td><select name="access_controls[access]" class="permission-access">
               <option value="NONE">No access</option>
               <option value="READ"<%= ac.access == "READ" ? " selected" : "" %>>Read-only</option>
               <option value="EDIT"<%= ac.access == "EDIT" ? " selected" : "" %>>Read and Write</option>

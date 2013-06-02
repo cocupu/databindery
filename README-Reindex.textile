@@ -10,7 +10,7 @@ all_pids.each {|pid| Node.latest_version(pid).update_index }
 h2. Alt: just reindex the nodes for one Pool
 
 <pre>
-  pool = Pool.find_by_short_name("ktgr_gentle")
+  pool = Pool.find_by_short_name("finaldraft")
   failed_nodes = []
   pool.nodes.head.each do |n| 
     begin
@@ -19,5 +19,6 @@ h2. Alt: just reindex the nodes for one Pool
       failed_nodes << n
     end
   end
+  puts failed_nodes.inspect
 </pre>
 
