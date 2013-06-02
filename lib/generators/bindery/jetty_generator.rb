@@ -63,13 +63,15 @@ Requires system('unzip... ') to work, probably won't work on Windows.
     end
 
     def solr_multi_core
+      solr_dir = File.join(Rails.root, save_location, "solr")
+      run("cd #{solr_dir}")
       ['development-core', 'test-core'].each do |core|
         inside File.join(save_location, 'solr') do
           run("mkdir  #{core}")
-          run("cp -r conf #{core}/")
-          run('cp contrib/analysis-extras/lib/icu4j-4_8_1_1.jar lib/')
-          run('cp contrib/analysis-extras/lucene-libs/*.jar lib/')
-          run('cp contrib/velocity/lib/*.jar lib/')
+          run("cp -r blacklight-core/conf #{core}/")
+          # run('cp lib/contrib/analysis-extras/lib/icu4j-4_8_1_1.jar lib/')
+          # run('cp lib/contrib/analysis-extras/lucene-libs/*.jar lib/')
+          # run('cp lib/contrib/velocity/lib/*.jar lib/')
         end
       end
       remove_dir File.join(save_location, 'solr', 'conf')
@@ -85,7 +87,7 @@ Requires system('unzip... ') to work, probably won't work on Windows.
     # If we later install Solr from somewhere other than BL jetty repo, we'd
     # still want to write these on top, just like this. 
     def install_conf_files
-      generate("cocupu:solr_conf", "#{File.join(save_location, 'solr')} --force")
+      generate("bindery:solr_conf", "#{File.join(save_location, 'solr')} --force")
     end
     
   end
