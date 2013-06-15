@@ -42,7 +42,7 @@ group :test, :development do
   gem "factory_girl_rails"
   gem 'jasmine'
   gem 'jasminerice'
-  gem 'cocupu', github: 'cocupu/client' # The ruby client 
+  gem 'cocupu', github: 'cocupu/client', ref:"691fd8586f7638c4976785588dcd9798b3465083" # The ruby client 
   # gem 'cocupu', path: '../cocupu-client' # The ruby client 
 end
 group :test do

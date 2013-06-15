@@ -9,7 +9,8 @@ GIT
 
 GIT
   remote: git://github.com/cocupu/client.git
-  revision: 4e95a1bc893b3baf44fa0293b14b224d1304b2d4
+  revision: 691fd8586f7638c4976785588dcd9798b3465083
+  ref: 691fd8586f7638c4976785588dcd9798b3465083
   specs:
     cocupu (0.0.2)
       httmultiparty (= 0.3.8)
