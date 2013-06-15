@@ -151,10 +151,42 @@ describe Node do
   it "should create a new version when it's changed" do
     subject.pool = @pool
     subject.save!
-    identity = FactoryGirl.create(:identity)
-    subject.update_attributes(:identity_id=>identity.id, :data=>{'boo'=>'bap'})
-    new = Node.find_all_by_persistent_id(subject.persistent_id)
-    new.length.should == 2
+    subject.update_attributes(:data=>{'boo'=>'bap'})
+    all_versions = Node.find_all_by_persistent_id(subject.persistent_id)
+    all_versions.length.should == 2
+  end
+  it "should track who made changes" do
+    identity1 = find_or_create_identity("bob")
+    identity2 = find_or_create_identity("chinua")
+    subject.pool = @pool
+    subject.save!
+    subject.modified_by.should be_nil
+    original = subject
+    subject.update_attributes(:modified_by=>identity1, :data=>{'boo'=>'bap'})
+    subject.modified_by.should == identity1
+    v1 = subject.latest_version
+    subject.update_attributes(:modified_by=>identity2, :data=>{'boo'=>'bappy'})
+    subject.modified_by.should == identity2   
+    v2 = subject.latest_version
+    Node.find(original.id).modified_by.should be_nil
+    Node.find(v1.id).modified_by.should == identity1
+    Node.find(v2.id).modified_by.should == identity2
+    identity1.changes.should == [v1]
+    identity2.changes.should == [v2]
+    subject.update_attributes(:data=>{'boo'=>'lollipop'})
+    subject.latest_version.modified_by.should be_nil
+  end
+  it "should reset modified_by whenever attributes change" do
+    identity = find_or_create_identity("bob")
+    identity2 = find_or_create_identity("chinua")
+    subject.modified_by = identity
+    subject.modified_by.should == identity
+    subject.attributes = {:data=>{'boo'=>'bap'}}
+    subject.modified_by.should be_nil
+    subject.attributes = {modified_by: identity2, :data=>{'boo'=>'bapper'}}
+    subject.modified_by.should == identity2
+    subject.update_attributes(:data=>{'boo'=>'bapperest'})
+    subject.modified_by.should be_nil
   end
   it "should copy on write (except id, parent_id and timestamps)" do
     subject.pool = @pool

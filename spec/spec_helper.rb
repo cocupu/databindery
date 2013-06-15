@@ -41,3 +41,10 @@ def log_in(user)
     page.should have_link('Log Out', :href=>'/signout')
 end
 
+def find_or_create_identity(short_name)
+  identity = Identity.find_by_short_name(short_name)
+  if identity.nil?
+    identity = Identity.create(short_name:short_name)
+  end
+  identity
+end

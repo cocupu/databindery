@@ -6,6 +6,7 @@ class Node < ActiveRecord::Base
   belongs_to :model
   belongs_to :pool
   belongs_to :spawned_from_datum, class_name: "SpreadsheetRow"
+  belongs_to :modified_by, class_name: "Identity"
   validates :model, presence: true
   validates :pool, presence: true
 
@@ -41,7 +42,18 @@ class Node < ActiveRecord::Base
     Bindery.index(self.to_solr)
     Bindery.solr.commit
   end
-
+  
+  # Overrides default assign_attributes behavior.
+  # Resets modified_by every time the attributes change via this method 
+  #  -- if you don't provide modified_by or modified_by_id, it will be set to nil
+  def assign_attributes(new_attributes, options = {})
+    return unless new_attributes
+    unless (new_attributes.has_key?(:modified_by) && !new_attributes[:modified_by].nil?) || (new_attributes.has_key?(:modified_by_id) && !new_attributes[:modified_by_id].nil?)
+      self.modified_by = nil
+    end
+    super
+  end
+  
   # override activerecord to copy-on-write
   def update
     update_file_ids

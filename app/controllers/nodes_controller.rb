@@ -100,6 +100,7 @@ class NodesController < ApplicationController
   def create
     authorize! :create, Node
     @node = Node.new(params.require(:node).permit(:binding, :data, :associations))
+    @node.modified_by = @identity
     begin
       model = @pool.models.find(params[:node][:model_id])
     rescue ActiveRecord::RecordNotFound 
@@ -162,6 +163,7 @@ class NodesController < ApplicationController
     @node = Node.find_by_persistent_id(params[:id])
     authorize! :update, @node
     @node.attributes = params.require(:node).permit(:data, :associations)
+    @node.modified_by = @identity
     new_version = @node.update
     respond_to do |format|
       format.html { redirect_to identity_pool_solr_document_path(@identity, @pool, new_version), :notice=>"#{@node.model.name} updated" }
