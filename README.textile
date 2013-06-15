@@ -13,6 +13,10 @@ h2. TL;DR.
   unicorn_rails
 </pre>
 
+<pre>
+  rabbitmq-server start
+</pre>
+
 h2. Running Server
 
 <pre>

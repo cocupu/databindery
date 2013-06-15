@@ -20,7 +20,7 @@ class ConcurrentJob < JobLogItem
       ###Typically ReifyEachSpreadsheetRow job
       job_class.new(log).enqueue
       q = Carrot.queue(job_class.to_s.underscore)
-      q.publish(log.id);
+      q.publish(log.id)
     end
   end
 

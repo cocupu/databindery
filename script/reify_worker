@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 require File.join(File.dirname(__FILE__), '../config/environment.rb')
+puts "Reify worker running"
 
 def work(payload)
     log = JobLogItem.find(payload)
