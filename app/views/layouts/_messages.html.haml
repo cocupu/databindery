@@ -1,4 +1,12 @@
 - if notice
-  .alert.alert-success=notice
+  -if notice.kind_of?(Array)
+    - notice.each do 
+      .alert.alert-success=notice
+  - else
+    .alert.alert-success=notice
 - if alert
-  .alert.alert-error=alert
+  -if notice.kind_of?(Array)
+    - notice.each do 
+      .alert.alert-error=alert
+  - else
+    .alert.alert-error=alert
