@@ -3,7 +3,7 @@
     <h1>Edit pool</h1>
   </div>
   <%= form_for @pool, url: identity_pool_path(@identity.short_name, @pool.short_name) do |f| %>
-  <div class="panel-body">
+  <div class="panel-body">      
       <div class="control-group">
         <%= f.label :name %>
         <%= f.text_field :name, placeholder: "Name" %>
@@ -33,13 +33,17 @@
          <tr class="template"><td><input name="access_controls_new"/></td>
            <td><select name="access_controls_new" class="permission-access"><option value="READ">Read-only</option><option value="EDIT">Read and Write</option></select></td></tr>
 
-      </table>
+      </table>            
     </div>
     <div class="panel-footer">
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Save</button>
+      <div class="form-actions">        
+        <button type="submit" class="btn btn-primary">Apply Changes</button>
       </div>
-    </div>
+      <div class="form-actions">  
+        <button type="submit" class="btn btn-primary" name="update_index">Rebuild Solr Index</button> Warning: Rebuilding the index can take a long time.
+      </div>
+      
+    </div>    
   <% end %>
 </div>
 <%= render partial: "pools/sources"%>

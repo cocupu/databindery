@@ -43,16 +43,38 @@ class PoolsController < ApplicationController
     identity = current_user.identities.where(:short_name=>params[:identity_id]).first!
     @pool = identity.pools.find_by_short_name(params[:id])
     authorize! :update, @pool
-    @pool.access_controls = []
-    params[:pool][:access_controls].each do |ac|
-      ident = Identity.where(short_name: ac[:identity]).first
-      next if !ident or !['EDIT', 'READ'].include?(ac[:access]) ## TODO add error?
-      @pool.access_controls.build identity: ident, access: ac[:access]
+    if params[:update_index]
+      update_index
     end
+    @pool.access_controls = []
+    # params[:pool][:access_controls].each do |ac|
+    #       ident = Identity.where(short_name: ac[:identity]).first
+    #       next if !ident or !['EDIT', 'READ'].include?(ac[:access]) ## TODO add error?
+    #       @pool.access_controls.build identity: ident, access: ac[:access]
+    #     end
     @pool.update_attributes(params.require(:pool).permit(:description, :name, :short_name))
+    flash[:notice] ||= []
+    flash[:notice] << "#{@pool.name} updated"
     respond_to do |format|
-      format.html { redirect_to edit_identity_pool_path(@identity.short_name, @pool), :notice=>"#{@pool.name} updated" }
+      format.html { redirect_to edit_identity_pool_path(@identity.short_name, @pool) }
       format.json { head :no_content }
     end
+  end
+  
+  private
+  
+  # Update the solr index with the pool's head (current version of all nodes)
+  def update_index
+    failed_nodes = []
+    pool_head = @pool.nodes.head
+    pool_head.each do |n| 
+      begin
+        n.update_index
+      rescue  
+        failed_nodes << n
+      end
+    end
+    flash[:notice] ||= []
+    flash[:notice] << "Reindexed #{pool_head.count} nodes with #{failed_nodes.count} failures."
   end
 end
