@@ -15,10 +15,15 @@ class SpawnJobsController < ApplicationController
     if params[:worksheet_id] 
       @worksheet = Worksheet.find(params[:worksheet_id])
     elsif params[:source_node_id]
-      unless params[:skip_decompose]
-        @job = DecomposeSpreadsheetJob.new(params[:source_node_id], JobLogItem.new)
-        @job.enqueue #start the logger
-        @job.perform
+      if params[:job_log_id]
+        @job = DecomposeSpreadsheetJob.new(params[:source_node_id], JobLogItem.find(params[:job_log_id]))
+      else
+        # if params[:skip_decompose], no @job is created.
+        unless params[:skip_decompose]
+          @job = DecomposeSpreadsheetJob.new(params[:source_node_id], JobLogItem.new)
+          @job.enqueue #start the logger
+          # @job.perform
+        end
       end
       @worksheet = Bindery::Spreadsheet.find_by_identifier(params[:source_node_id]).worksheets.first
     else 
@@ -33,7 +38,7 @@ class SpawnJobsController < ApplicationController
     raise CanCan::AccessDenied.new "You can't create for that identity" if identity.nil?
    
     @worksheet.reify(@mapping_template, @pool)
-    flash[:notice] = "Spawning #{@worksheet.rows.count} entities from #{@worksheet.spreadsheet.title}."
+    flash[:notice] = "Spawning #{@worksheet.rows.count} entities from #{@worksheet.spreadsheet.title}. Refresh this page to see them appear in your search results as they spawn."
     redirect_to identity_pool_search_path(identity.short_name, @pool)
   end
 

@@ -16,13 +16,26 @@
 - else
   - content_for :page_name do
     Specify a Mapping Template for the Spawn Job
-  In order to set up a Spawn job, you have to specify a Template for mapping Spreadsheet Rows to fields on the spawned Entities.
-  %h4 Existing Mapping Templates:
-  %ul
-    - @pool.mapping_templates.each do |mapping_template|
-      %li
-        =link_to "Created: #{mapping_template.created_at.to_s} Model: #{mapping_template.model_mappings.first[:model_id]}",  new_identity_pool_spawn_job_path(@identity, @pool, worksheet_id:@worksheet.id, mapping_template_id:mapping_template.id, skip_decompose:true)
-  = link_to "Create a new Mapping Template", new_identity_pool_mapping_template_path(@identity, @pool, mapping_template:{worksheet_id: @worksheet.id})
         
+  - if params[:job_log_id] || (@job && @job.log.status != "SUCCESS")
+    - if @job.log.status == "SUCCESS"
+      %h3.alert.alert-success Bindery successfully decomposed your spreadsheet.
+    - elsif @job.log.status == "FAILURE"
+      %h3.alert.alert-error Bindery could not decompose your spreadsheet.  
+      It failed with 
+      = @job.log.message
+    - else 
+      %h3.alert.alert-error Bindery is still decomposing your spreadsheet.  
+      = link_to "Click this link to see if it's done.", params.merge(job_log_id: @job.log.id)
+      %br
+        
+  - if (@job && @job.log.status == "SUCCESS") || params[:skip_decompose]
+    In order to set up a Spawn job, you have to specify a Template for mapping Spreadsheet Rows to fields on the spawned Entities.
+    %h4 Existing Mapping Templates:
+    %ul
+      - @pool.mapping_templates.each do |mapping_template|
+        %li
+          =link_to "Created: #{mapping_template.created_at.to_s} Model: #{mapping_template.model_mappings.first[:model_id]}",  new_identity_pool_spawn_job_path(@identity, @pool, worksheet_id:@worksheet.id, mapping_template_id:mapping_template.id, skip_decompose:true)
+    = link_to "Create a new Mapping Template", new_identity_pool_mapping_template_path(@identity, @pool, mapping_template:{worksheet_id: @worksheet.id})
 
 
