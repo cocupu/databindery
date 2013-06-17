@@ -8,10 +8,26 @@ class DecomposeSpreadsheetJob < Struct.new(:node_id, :log)
     node.generate_tmp_file 
     type = Bindery::Spreadsheet.detect_type(node)
     spreadsheet = type.new(node.local_file_pathname)
+    if spreadsheet.sheets.count == node.worksheets.count
+      # TODO: allow workers to force bindery to decompose worksheets again.
+      # if log.attributes(:force) == true
+      #   node.worksheets.each {|ws| ws.delete }
+      #   ingest_all_worksheets(node, spreadsheet)
+      # else
+        #logger.warn("Spreadsheet in Node #{node.id} has already been decomposed.  To force re-run, set log.attributes(:force) to true" )
+        logger.warn("Spreadsheet in Node #{node.id} has already been decomposed. Refusing to decompose again." )
+      # end
+    else
+      ingest_all_worksheets(node, spreadsheet)
+    end
+
+    node.save #Saves associated worksheets
+  end
+  
+  def ingest_all_worksheets(node, spreadsheet)
     spreadsheet.sheets.each_with_index do |worksheet, index|
       ingest_worksheet(spreadsheet, worksheet, node, index)
     end
-    node.save #Saves associated worksheets
   end
 
   def ingest_worksheet(spreadsheet, worksheet, file, index)
@@ -41,7 +57,8 @@ class DecomposeSpreadsheetJob < Struct.new(:node_id, :log)
   end
 
   def enqueue
-    log.update_attributes(:status => 'ENQUEUE')
+    log.update_attributes(:status => 'ENQUEUE', data: node.id)
+    Carrot.queue("decompose_spreadsheet").publish(log.id)
   end
 
 

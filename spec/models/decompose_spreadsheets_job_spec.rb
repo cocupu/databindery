@@ -45,6 +45,24 @@ describe DecomposeSpreadsheetJob do
     sheets.count.should == 1
     sheets.first.rows.count.should == 434
   end
+  it "should not decompose spreadsheets that have already been decomposed" do
+    @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
+    @node.stub(:s3_obj).and_return(@file)
+    @node.file_name = 'dechen_rangdrol_archives_database.xls'
+    @node.mime_type = 'application/vnd.ms-excel'
+    @job = DecomposeSpreadsheetJob.new(@node.id, JobLogItem.new)
+    @job.node = @node
+    @job.enqueue #start the logger
+    @job.perform
+    original_result = Bindery::Spreadsheet.find(@node.id).worksheets
+    original_result.count.should == 1
+    original_sheet = original_result.first
+    @file.rewind
+    @job.perform
+    new_result = Bindery::Spreadsheet.find(@node.id).worksheets
+    new_result.count.should == 1
+    new_result.first.should == original_sheet
+  end
   it "should break up the ODS spreadsheet" do
     @file = File.new(Rails.root + 'spec/fixtures/Stock Check 2.ods')
 
