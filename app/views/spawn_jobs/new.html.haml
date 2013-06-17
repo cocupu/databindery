@@ -20,13 +20,15 @@
   - if params[:job_log_id] || (@job && @job.log.status != "SUCCESS")
     - if @job.log.status == "SUCCESS"
       %h3.alert.alert-success Bindery successfully decomposed your spreadsheet.
-    - elsif @job.log.status == "FAILURE"
+    - elsif @job.log.status == "FAILURE" || @job.log.status == "ERROR"
       %h3.alert.alert-error Bindery could not decompose your spreadsheet.  
       It failed with 
       = @job.log.message
     - else 
       %h3.alert.alert-error Bindery is still decomposing your spreadsheet.  
       = link_to "Click this link to see if it's done.", params.merge(job_log_id: @job.log.id)
+      Last refreshed at 
+      %span#lastSavedAt= Time.now
       %br
         
   - if (@job && @job.log.status == "SUCCESS") || params[:skip_decompose]
