@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 require File.join(File.dirname(__FILE__), '../config/environment.rb')
-puts "Decompose worker running"
+puts "Decompose worker running using #{Rails.env} environment"
 
 def work(payload)
     log = JobLogItem.find(payload)
