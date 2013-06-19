@@ -1,12 +1,12 @@
 - if notice
   -if notice.kind_of?(Array)
-    - notice.each do 
-      .alert.alert-success=notice
+    - notice.each do |n|
+      .alert.alert-success=n
   - else
     .alert.alert-success=notice
 - if alert
-  -if notice.kind_of?(Array)
-    - notice.each do 
-      .alert.alert-error=alert
+  -if alert.kind_of?(Array)
+    - alert.each do |a|
+      .alert.alert-error=a
   - else
     .alert.alert-error=alert
