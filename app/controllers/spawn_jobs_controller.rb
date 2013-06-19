@@ -15,17 +15,23 @@ class SpawnJobsController < ApplicationController
     if params[:worksheet_id] 
       @worksheet = Worksheet.find(params[:worksheet_id])
     elsif params[:source_node_id]
+      @source_node = Bindery::Spreadsheet.find_by_identifier(params[:source_node_id])
+      @worksheet = @source_node.worksheets.first
       if params[:job_log_id]
         @job = DecomposeSpreadsheetJob.new(params[:source_node_id], JobLogItem.find(params[:job_log_id]))
       else
-        # if params[:skip_decompose], no @job is created.
-        unless params[:skip_decompose]
+        # If there is already a decomposed worksheet, no @job is queued.
+        # You can force decomposition with params[:force_decompose] == "true"
+        if @worksheet.nil? || params[:force_decompose]
           @job = DecomposeSpreadsheetJob.new(params[:source_node_id], JobLogItem.new)
           @job.enqueue #start the logger
           # @job.perform
+        else
+          # Create a stub successful job for rendering in the view
+          @job = DecomposeSpreadsheetJob.new(params[:source_node_id], JobLogItem.new)
+          @job.success
         end
       end
-      @worksheet = Bindery::Spreadsheet.find_by_identifier(params[:source_node_id]).worksheets.first
     else 
       raise ArgumentError, "You must provide either worksheet_id or node_id parameter in order to create a new MappingTemplate."
     end
