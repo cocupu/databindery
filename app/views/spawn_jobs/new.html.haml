@@ -25,7 +25,11 @@
       It failed with 
       = @job.log.message
     - else 
-      %h3.alert.alert-error Bindery is still decomposing your spreadsheet.  
+      %h3.alert.alert-error 
+        - if params[:job_log_id] 
+          Bindery is still decomposing your spreadsheet.  
+        - else
+          Bindery is decomposing your spreadsheet.  
       = link_to "Click this link to see if it's done.", params.merge(job_log_id: @job.log.id)
       Last refreshed at 
       %span#lastSavedAt= Time.now
