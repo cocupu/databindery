@@ -45,6 +45,11 @@ $ cp contrib/velocity/lib/*.jar lib/
 
 h2. Workers
 
+h3. In production:
+
+<pre>export RAILS_ENV=production; ./script/reify_worker</pre>
+<pre>export RAILS_ENV=production; ./script/decompose_worker</pre>
+
 h3. In development:
 
 <pre>$ script/reify_worker</pre>
