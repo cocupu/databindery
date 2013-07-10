@@ -29,7 +29,7 @@ describe SpawnJobsController do
         Worksheet.any_instance.should_receive(:reify).with(@mapping_template, @pool)
         post :create, :worksheet_id=>@worksheet.id, :identity_id=>@identity.short_name, :mapping_template_id=>@mapping_template.id, :pool_id=>@pool        
         assigns[:mapping_template].should == @mapping_template
-        flash[:notice].should == "Spawning #{@worksheet.rows.count} entities from #{@node.title}."        
+        flash[:notice].should == "Spawning #{@worksheet.rows.count} entities from #{@node.title}. Refresh this page to see them appear in your search results as they spawn."        
         response.should redirect_to(identity_pool_search_path(@identity, @pool))
       end
       it "should raise not_found errors when identity does not belong to the logged in user" do
@@ -87,12 +87,15 @@ describe SpawnJobsController do
       it "if skip_decompose is set, should just grab worksheet from node" do
         @one.spreadsheet = @node
         @one.save
-        DecomposeSpreadsheetJob.should_receive(:new).never
+        @job = DecomposeSpreadsheetJob.new(@node.id, JobLogItem.new)
+        DecomposeSpreadsheetJob.stub(:new).and_return(@job)
+        @job.should_receive(:enqueue).never
         get :new, :skip_decompose=>"true", :source_node_id=>@node.id, :pool_id=>@pool, identity_id: @identity.short_name
         response.should be_success
         assigns[:worksheet].should == @one
+        assigns[:job].should == @job
       end
-      it "should trigger decomposition of the nodes current worksheet then use that" do
+      it "should trigger decomposition of the nodes current worksheet" do
         # setup for decomposing spreadsheet (stubs s3 connection).  See decompose_spreadsheet_job_spec.rb for more of this
           @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
           @node = Bindery::Spreadsheet.create(pool: FactoryGirl.create(:pool), model: Model.file_entity)
@@ -107,7 +110,11 @@ describe SpawnJobsController do
         response.should be_success
         assigns[:pool].should == @pool
         assigns[:worksheet].should == @node.worksheets.first
-        assigns[:worksheet].rows.count.should == 434
+        
+        # force the job to run & check its output
+        assigns[:job].perform
+        processed_sheet = assigns[:source_node].worksheets.first
+        processed_sheet.rows.count.should == 434
       end
     end
   end
