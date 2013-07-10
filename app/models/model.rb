@@ -156,8 +156,10 @@ class Model < ActiveRecord::Base
 
   def associations=(attributes)
     write_attribute :associations, []
-    attributes.each do |attr|
-      add_association(attr.with_indifferent_access)
+    unless attributes.nil?
+      attributes.each do |attr|
+        add_association(attr.with_indifferent_access)
+      end
     end
   end
 

@@ -220,6 +220,11 @@ describe ModelsController do
         @my_model.fields.should == [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}]
         @my_model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>reference.name, 'code'=>'workers', 'references'=>reference.id}]
       end
+      it "should be able to update the model" do
+        params = {:model => {name:"Collection", label:"collection_name_<set_by_franklin>", fields:[{"code"=>"submitted_by", "name"=>"Submitted By"}, {"code"=>"collection_name_<set_by_franklin>", "name"=>"Collection Name        <set by Franklin>"}, {"code"=>"media_<select>", "name"=>"Media        <select>"}, {"code"=>"#_of_media", "name"=>"# of Media"}, {"code"=>"collection_owner", "name"=>"Collection Owner"}, {"code"=>"collection_location", "name"=>"Collection Location"}, {"code"=>"program_title_english", "name"=>"Program Title English"}, {"code"=>"main_text_title_tibetan_<select>", "name"=>"Main Text Title Tibetan        <select>"}, {"code"=>"main_text_title_english_<select>", "name"=>"Main Text Title English        <select>"}, {"code"=>"program_location_<select>", "name"=>"Program Location        <select>"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"teacher", "name"=>"Teacher"}, {"code"=>"restricted?_<select>", "name"=>"Restricted?        <select>"}, {"code"=>"original_recorded_by_<select>", "name"=>"Original Recorded By        <select>"}, {"code"=>"copy_or_original_<select>", "name"=>"Copy or Original        <select>"}, {"code"=>"translation_languages", "name"=>"Translation Languages"}, {"code"=>"notes", "name"=>"Notes"}, {"code"=>"post-digi_notes", "name"=>"Post-Digi Notes"}, {"code"=>"post-production_notes", "name"=>"Post-Production Notes"}], allow_file_bindings: true, associations: nil, code:nil, created_at:"2013-06-17T01:43:35Z",  id: 4, identity_id: 1, pool_id: @my_model.pool.id}}
+        put :update, :id=>@my_model, model: params[:model]
+        assigns[:model].label.should == "collection_name_<set_by_franklin>"
+      end
 
       it "should send errors over json" do
         reference = FactoryGirl.create(:model)
