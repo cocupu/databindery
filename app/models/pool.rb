@@ -59,7 +59,7 @@ class Pool < ActiveRecord::Base
   end
 
   def all_fields
-    self.models.map {|m| m.fields}.flatten.uniq.sort{|x, y| x[:name] <=> y[:name]}
+    [{"code"=>"model_name", "name"=>"Model"}] + self.models.map {|m| m.fields}.flatten.uniq.sort{|x, y| x[:name] <=> y[:name]}
   end
   
   # Returns all the associations from all Models in this Pool

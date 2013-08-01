@@ -90,8 +90,8 @@ describe Pool do
       it "should generate an Exhibit whose facet and index fields are all fields from all Models" do
         e = subject.generated_default_perspective
         e.should be_kind_of Exhibit
-        e.facets.should == ["description","one", "two"]
-        e.index_fields.should == ["description","one", "two"]
+        e.facets.should == ["model_name","description","one", "two"]
+        e.index_fields.should == ["model_name","description","one", "two"]
       end
       it "should not merge duplicate fields" do
         subject.stub(:all_fields).and_return([{"code"=>"collection_location", "name"=>"Collection Location"}, {"code"=>"date_from", "name"=>"Date from"}, {"name"=>"Date from", "type"=>"date", "uri"=>"", "code"=>"date_from"}, {"code"=>"date_to", "name"=>"Date to"}, {"name"=>"Date to", "type"=>"date", "uri"=>"", "code"=>"date_to"}])

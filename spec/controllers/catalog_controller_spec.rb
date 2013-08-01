@@ -56,7 +56,7 @@ describe CatalogController do
         get :index, :exhibit_id=>@exhibit.id, :q=>'bazaar', :identity_id=>@identity.short_name
         assigns[:document_list].size.should == 1
         assigns[:exhibit].should == @exhibit
-        assigns[:response]['facet_counts']['facet_fields'].should == {"f2_facet"=>["Bizarre", 1], "model_name"=>["Mods and Rockers", 1]}
+        assigns[:response]['facet_counts']['facet_fields'].should == {"f2_facet"=>["Bizarre", 1]}
         response.should be_successful
       end
     end
@@ -67,7 +67,7 @@ describe CatalogController do
         get :index, :exhibit_id=>@exhibit.id, :q=>'bazaar', :identity_id=>@identity.short_name
         assigns[:document_list].size.should == 1
         assigns[:exhibit].should == @exhibit
-        assigns[:response]['facet_counts']['facet_fields'].should == {"f2_facet"=>["Bizarre", 1], "model_name"=>["Mods and Rockers", 1]}
+        assigns[:response]['facet_counts']['facet_fields'].should == {"f2_facet"=>["Bizarre", 1]}
         response.should be_successful
       end
     end

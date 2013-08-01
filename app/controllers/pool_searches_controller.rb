@@ -80,9 +80,12 @@ class PoolSearchesController < ApplicationController
       #
       # :show may be set to false if you don't want the facet to be drawn in the 
       # facet bar
-      config.add_facet_field 'model_name', :label => 'Model'
       @exhibit.facets.uniq.each do |key|
-        config.add_facet_field Node.solr_name(key, type: 'facet'), :label => key.humanize
+        if key == "model_name"
+          config.add_facet_field Node.solr_name(key, type: 'facet'), :label => "Model"
+        else
+          config.add_facet_field Node.solr_name(key, type: 'facet'), :label => key.humanize
+        end
       end
 
 
@@ -94,7 +97,11 @@ class PoolSearchesController < ApplicationController
       # solr fields to be displayed in the index (search results) view
       #   The ordering of the field names is the order of the display 
       @exhibit.index_fields.uniq.each do |f|
-        config.add_index_field Node.solr_name(f), :label => f.humanize+':' 
+        if f == "model_name"
+          config.add_index_field Node.solr_name(f, type: 'facet'), :label => "Model"
+        else
+          config.add_index_field Node.solr_name(f), :label => f.humanize+':' 
+        end
       end
       # query_fields = @exhibit.pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
       #solr_parameters[:qf] = query_fields + ["pool"]
@@ -102,7 +109,11 @@ class PoolSearchesController < ApplicationController
       # solr fields to be displayed in the show (single result) view
       #   The ordering of the field names is the order of the display 
       @exhibit.index_fields.uniq.each do |f|
-        config.add_show_field Node.solr_name(f), :label => f.humanize+':' 
+        if f == "model_name"
+          config.add_show_field Node.solr_name(f, type: 'facet'), :label => "Model"
+        else
+          config.add_show_field Node.solr_name(f), :label => f.humanize+':' 
+        end
       end
 
       # "fielded" search configuration. Used by pulldown among other places.

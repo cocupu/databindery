@@ -245,6 +245,9 @@ class Node < ActiveRecord::Base
   end
 
   def self.solr_name(field_name, args = {})
+    if field_name == "model_name"
+      return field_name
+    end
     type = args[:type] || "text"
     prefix= args[:prefix] || ''
     suffix = case type
