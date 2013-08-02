@@ -47,11 +47,11 @@ class PoolsController < ApplicationController
       update_index
     end
     @pool.access_controls = []
-    # params[:pool][:access_controls].each do |ac|
-    #       ident = Identity.where(short_name: ac[:identity]).first
-    #       next if !ident or !['EDIT', 'READ'].include?(ac[:access]) ## TODO add error?
-    #       @pool.access_controls.build identity: ident, access: ac[:access]
-    #     end
+    params[:pool][:access_controls].each do |ac|
+      ident = Identity.where(short_name: ac[:identity]).first
+      next if !ident or !['EDIT', 'READ'].include?(ac[:access]) ## TODO add error?
+      @pool.access_controls.build identity: ident, access: ac[:access]
+    end
     @pool.update_attributes(params.require(:pool).permit(:description, :name, :short_name))
     flash[:notice] ||= []
     flash[:notice] << "#{@pool.name} updated"
