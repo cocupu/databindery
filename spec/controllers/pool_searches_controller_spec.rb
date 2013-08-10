@@ -34,8 +34,15 @@ describe PoolSearchesController do
           get :index, :pool_id=>@my_pool, identity_id: @identity.short_name
           response.should be_success
         end
+        it "should apply filters and facets from exhibit" do
+          exhibit_with_filters = FactoryGirl.build(:exhibit, pool: @my_pool, filters_attributes: [field_name:"subject", operator:"-", values:["test", "barf"]])
+          exhibit_with_filters.save!
+          get :index, :pool_id=>@my_pool, :perspective=>exhibit_with_filters.id, identity_id: @identity.short_name
+          subject.exhibit.should == exhibit_with_filters
+          subject.solr_search_params[:fq].should include('-subject_t:"test"', '-subject_t:"barf"')
+        end
       end
-      describe "requesting a pool I own" do
+      describe "requesting a pool I don't own but have edit access to" do
         before do
           @other_identity = FactoryGirl.create(:identity)
           AccessControl.create!(:pool=>@my_pool, :identity=>@other_identity, :access=>'EDIT')

@@ -12,24 +12,11 @@ class PoolSearchesController < ApplicationController
     'application'
   end
   include Blacklight::Catalog
+  include Bindery::AppliesPerspectives
 
   solr_search_params_logic << :add_pool_to_fq << :add_index_fields_to_qf
 
   protected
-  
-  # Sets the Exhibit to use for configuration
-  def set_perspective
-    if params[:perspective]
-      if params[:perspective] == "0"
-        @exhibit = @pool.generated_default_perspective
-      else
-        @exhibit = Exhibit.where(pool_id:@pool.id, id:params[:perspective]).first
-      end
-    end
-    if @exhibit.nil?
-      @exhibit = @pool.default_perspective
-    end
-  end
   
   def load_configuration
     @blacklight_config = Blacklight::Configuration.new
@@ -80,7 +67,7 @@ class PoolSearchesController < ApplicationController
       #
       # :show may be set to false if you don't want the facet to be drawn in the 
       # facet bar
-      @exhibit.facets.uniq.each do |key|
+      exhibit.facets.uniq.each do |key|
         if key == "model_name"
           config.add_facet_field Node.solr_name(key, type: 'facet'), :label => "Model"
         else
@@ -96,19 +83,19 @@ class PoolSearchesController < ApplicationController
 
       # solr fields to be displayed in the index (search results) view
       #   The ordering of the field names is the order of the display 
-      @exhibit.index_fields.uniq.each do |f|
+      exhibit.index_fields.uniq.each do |f|
         if f == "model_name"
           config.add_index_field Node.solr_name(f, type: 'facet'), :label => "Model"
         else
           config.add_index_field Node.solr_name(f), :label => f.humanize+':' 
         end
       end
-      # query_fields = @exhibit.pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
+      # query_fields = exhibit.pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
       #solr_parameters[:qf] = query_fields + ["pool"]
 
       # solr fields to be displayed in the show (single result) view
       #   The ordering of the field names is the order of the display 
-      @exhibit.index_fields.uniq.each do |f|
+      exhibit.index_fields.uniq.each do |f|
         if f == "model_name"
           config.add_show_field Node.solr_name(f, type: 'facet'), :label => "Model"
         else
@@ -153,7 +140,7 @@ class PoolSearchesController < ApplicationController
 
   def add_pool_to_fq(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << "pool:#{@exhibit.pool_id}"
+    solr_parameters[:fq] << "pool:#{exhibit.pool_id}"
 
   end
 

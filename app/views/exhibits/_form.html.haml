@@ -40,8 +40,12 @@
               =label_tag "exhibit[facets][#{association['code']}]", association['name'], :style=>'display:none'
               =check_box_tag "exhibit[facets][]", association['code'], @exhibit.facets.include?(association['code']), id: "exhibit_facets_#{association['code']}"
             %td=association['name']
-                 
+               
+  = render partial: "form_for_filters", locals: {f: f}
+    
   .control-group
     .input
       = f.submit :class=>'btn btn-primary'
+
+
 

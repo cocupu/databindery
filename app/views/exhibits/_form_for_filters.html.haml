@@ -1,0 +1,29 @@
+.control-group
+  - models_filter = @exhibit.filters.select{|filter| filter.field_name == "model"}.first
+  - models_filter.nil? ? models_filter = SearchFilter.new(field_name: "model", operator: "+", values:[]) : models_filter
+  %h3 Filters:
+  = check_box_tag "exhibit[restrict_models]", "1", models_filter.persisted?
+
+  %label Include only these models
+  = hidden_field_tag "exhibit[filters_attributes][][id]", models_filter.id unless !models_filter.persisted?
+  = hidden_field_tag "exhibit[filters_attributes][][field_name]", "model"
+  = hidden_field_tag "exhibit[filters_attributes][][operator]", "+"
+  = select_tag "exhibit[filters_attributes][][values][]", options_from_collection_for_select(@pool.models, "id", "name", models_filter.values), {:multiple => true}
+  
+  
+  
+  %label Return items where
+
+  - @exhibit.filters.select{|filter| filter.field_name != "model"}.each_with_index do |filter|
+    .controls
+      = hidden_field_tag "exhibit[filters_attributes][][id]", filter.id
+      = select_tag "exhibit[filters_attributes][][field_name]", options_for_select(@fields.map {|field| [field["name"], field["code"]]}, filter.field_name)
+      = select_tag "exhibit[filters_attributes][][operator]", options_for_select({"is"=>"+", "is not"=>"-"}, filter.operator)
+      = text_field_tag "exhibit[filters_attributes][][values]", filter.values.first
+      - if filter.persisted?
+        Check to Remove Filter:
+        = check_box_tag "exhibit[filters_attributes][][_destroy]"
+
+  = select_tag "exhibit[filters_attributes][][field_name]", options_for_select(@fields.map {|field| [field["name"], field["code"]]})
+  = select_tag "exhibit[filters_attributes][][operator]", options_for_select({"is"=>"+", "is not"=>"-"})
+  = text_field_tag "exhibit[filters_attributes][][values]"

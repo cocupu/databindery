@@ -261,6 +261,11 @@ describe Node do
     it "should use the prefix" do
       Node.solr_name("first name", :prefix=>'related_object__', :type=>'facet').should == "related_object__first_name_facet"
     end
+    it "should handle special terms" do
+      Node.solr_name("model_name").should == "model_name"
+      Node.solr_name("model").should == "model"
+
+    end
   end
 
 

@@ -14,6 +14,7 @@ describe CatalogController do
     @exhibit.facets = ['f2']
     @exhibit.index_fields = ['f1', 'f2']
     @exhibit.save!
+
     @model1 = FactoryGirl.create(:model, :name=>"Mods and Rockers", :pool=>@exhibit.pool)
 
     @model1.fields = [{code: 'f1', name: 'Field good'}.with_indifferent_access, {code: 'f2', name: "Another one"}.with_indifferent_access]
@@ -51,6 +52,15 @@ describe CatalogController do
       sign_in @identity.login_credential
     end
 
+    describe "index" do
+      it "should apply filters and facets from exhibit" do
+        exhibit_with_filters = FactoryGirl.build(:exhibit, pool: @pool, filters_attributes: [field_name:"subject", operator:"-", values:["test", "barf"]])
+        exhibit_with_filters.save!
+        get :index, :exhibit_id=>exhibit_with_filters.id, :q=>'bazaar', :identity_id=>@identity.short_name
+        #user_params = {:exhibit_id=>exhibit_with_filters.id, :q=>'bazaar', :identity_id=>@identity.short_name}
+        subject.solr_search_params[:fq].should include('-subject_t:"test"', '-subject_t:"barf"')
+      end
+    end
     describe "show" do
       it "should be success" do
         get :index, :exhibit_id=>@exhibit.id, :q=>'bazaar', :identity_id=>@identity.short_name

@@ -245,7 +245,7 @@ class Node < ActiveRecord::Base
   end
 
   def self.solr_name(field_name, args = {})
-    if field_name == "model_name"
+    if ["model_name", "model"].include?(field_name)
       return field_name
     end
     type = args[:type] || "text"

@@ -9,6 +9,7 @@ class CatalogController < ApplicationController
     'application'
   end
   include Blacklight::Catalog
+  include Bindery::AppliesPerspectives
 
   solr_search_params_logic << :add_pool_to_fq << :add_index_fields_to_qf
 
@@ -146,7 +147,6 @@ class CatalogController < ApplicationController
     blacklight_config.index_fields.each do |field_name, obj|
       solr_parameters[:qf] << field_name
     end
-
   end
 
 end

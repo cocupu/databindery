@@ -71,9 +71,36 @@ describe ExhibitsController do
     describe "update" do
       it "should be success" do
         put :update, :id=>@exhibit.id, :exhibit=> {:title => 'Foresooth', :facets=>['looketh', 'overmany', 'thither'], :index_fields=>['title', 'author', 'call_number'] }, :pool_id=>@pool, :identity_id=>@identity.short_name
-        response.should redirect_to identity_pool_search_path(@identity, @pool, perspective: assigns[:exhibit])
+        response.should redirect_to edit_identity_pool_exhibit_path(@identity, @pool, assigns[:exhibit])
         assigns[:exhibit].facets.should == ['looketh', 'overmany', 'thither']
         assigns[:exhibit].index_fields.should == ['title', 'author', 'call_number']
+      end
+      it "should update filters" do
+        exhibit_attributes = {title: "Test Perspective with Model", filters_attributes:[{"field_name"=>"subject", "operator"=>"+", "values"=>["4", "1"]}, {"field_name"=>"collection_owner", "operator"=>"-", "values"=>["Hannah Severin"]}], :pool_id=>@pool, :identity_id=>@identity.short_name}
+        put :update, :id=>@exhibit.id, :exhibit=> exhibit_attributes, :pool_id=>@pool, :identity_id=>@identity.short_name
+        assigns[:exhibit].filters.count.should == 2
+        subject_filter = assigns[:exhibit].filters.where(field_name:"subject").first
+        subject_filter.operator.should == "+"
+        subject_filter.values.should == ["4", "1"]
+        collection_owner_filter = assigns[:exhibit].filters.where(field_name:"collection_owner").first
+        collection_owner_filter.operator.should == "-"
+        collection_owner_filter.values.should == ["Hannah Severin"]
+      end
+      it "should not add filters when filters are not fully specified" do
+        exhibit_attributes = {title: "Test Perspective with Model", filters_attributes:[{"field_name"=>"model"}, {"field_name"=>"collection_location", "operator"=>"+", "values"=>[""]}], :pool_id=>@pool, :identity_id=>@identity.short_name}
+        put :update, :id=>@exhibit.id, :exhibit=> exhibit_attributes, :pool_id=>@pool, :identity_id=>@identity.short_name
+        assigns[:exhibit].filters.should == []
+      end
+      it "should add filters for restricting models when restrict_models is checked" do
+        exhibit_attributes = {title: "Test Perspective with Model", restrict_models: "1", filters_attributes:[{"field_name"=>"model", "operator"=>"+", "values"=>["4", "1"]}], :pool_id=>@pool, :identity_id=>@identity.short_name}
+        put :update, :id=>@exhibit.id, :exhibit=> exhibit_attributes, :pool_id=>@pool, :identity_id=>@identity.short_name
+        assigns[:exhibit].filters.count.should == 1
+        assigns[:exhibit].filters.first.field_name.should == "model"
+      end
+      it "should not restrict models if restrict_models is not checked" do
+        exhibit_attributes = {title: "Test Perspective with Model", filters_attributes:[{"field_name"=>"model", "operator"=>"+", "values"=>["foo", "bar"]}], :pool_id=>@pool, :identity_id=>@identity.short_name}
+        put :update, :id=>@exhibit.id, :exhibit=> exhibit_attributes, :pool_id=>@pool, :identity_id=>@identity.short_name
+        assigns[:exhibit].filters.should == []
       end
     end
 
