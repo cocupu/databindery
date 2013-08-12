@@ -5,7 +5,10 @@ class ModelsController < ApplicationController
   load_and_authorize_resource :only=>[:show, :new, :edit, :destroy]
 
   def index
-    @models = Model.for_identity_and_pool(current_identity, @pool)
+    #@models = Model.for_identity_and_pool(current_identity, @pool)
+    if can?(:edit, @pool)
+      @models = @pool.models + Model.where(pool_id: nil)
+    end
     respond_to do |format|
       format.html {}
       format.json do

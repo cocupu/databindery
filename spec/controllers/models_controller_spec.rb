@@ -6,6 +6,10 @@ describe ModelsController do
     @pool = FactoryGirl.create :pool, :owner=>@identity
     @my_model = FactoryGirl.create(:model, pool: @pool)
     @not_my_model = FactoryGirl.create(:model)
+    @identity2 = FactoryGirl.create(:identity)
+    @pool_i_can_edit = FactoryGirl.create :pool, :owner=> @identity2
+    AccessControl.create!(:pool=>@pool_i_can_edit, :identity=>@identity, :access=>'EDIT')
+    @model_i_can_edit = FactoryGirl.create(:model, pool: @pool_i_can_edit)
   end
   describe "index" do
     describe "when not logged on" do
@@ -26,6 +30,13 @@ describe ModelsController do
         response.should  be_successful
         assigns[:models].size.should == 2
         assigns[:models].should include @my_model, @file_model
+      end
+      describe "when visiting a pool I can edit but dont own" do
+        it "should show all the models" do
+          get :index, :identity_id=>@identity2.short_name, :pool_id=>@pool_i_can_edit.short_name
+          assigns[:models].size.should == 2
+          assigns[:models].should include(@model_i_can_edit)
+        end
       end
       it "should return json" do
         get :index, :identity_id=>@identity.short_name, :pool_id=>@pool.short_name, :format=>:json
@@ -73,6 +84,16 @@ describe ModelsController do
           response.should redirect_to root_path
         end
       end
+      describe "requesting a model in a pool I can edit" do
+        it "should be successful when rendering json" do
+          @model_i_can_edit.owner.should_not == @identity
+          get :show, :id=>@model_i_can_edit, :format=>:json
+          response.should  be_successful
+          json = JSON.parse(response.body)
+          json['associations'].should == []
+          json['fields'].should == [{"name"=>"Description", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"description"}]
+        end
+      end
       describe "requesting a model I own" do
         it "should be successful when rendering json" do
           get :show, :id=>@my_model, :format=>:json
@@ -101,15 +122,29 @@ describe ModelsController do
         get :edit, :id=>@not_my_model.id 
         response.should redirect_to root_path
       end
-      it "should be successful" do
-        get :edit, :id=>@my_model.id 
-        response.should be_successful
-        assigns[:model].should == @my_model
-        assigns[:models].should == [@my_model]
-        assigns[:field].should == {name: '', type: '', uri: '', multivalued: false}.stringify_keys
-        assigns[:association].should == {name: '', type: '', references: ''}.stringify_keys
-        assigns[:association_types].should == ['Has Many', 'Has One', 'Ordered List', 'Unordered List']
-        assigns[:field_types].should == [["Text Field", "text"], ["Text Area", "textarea"], ["Date", "date"]]
+      describe "when requesting a model in a pool I can edit" do
+        it "should be successful" do
+          get :edit, :id=>@model_i_can_edit.id
+          response.should be_successful
+          assigns[:model].should == @model_i_can_edit
+          assigns[:models].should == [@model_i_can_edit, @my_model]
+          assigns[:field].should == {name: '', type: '', uri: '', multivalued: false}.stringify_keys
+          assigns[:association].should == {name: '', type: '', references: ''}.stringify_keys
+          assigns[:association_types].should == ['Has Many', 'Has One', 'Ordered List', 'Unordered List']
+          assigns[:field_types].should == [["Text Field", "text"], ["Text Area", "textarea"], ["Date", "date"]]
+        end
+      end
+      describe "when requesting a model I own" do
+        it "should be successful" do
+          get :edit, :id=>@my_model.id
+          response.should be_successful
+          assigns[:model].should == @my_model
+          assigns[:models].should == [@model_i_can_edit, @my_model]
+          assigns[:field].should == {name: '', type: '', uri: '', multivalued: false}.stringify_keys
+          assigns[:association].should == {name: '', type: '', references: ''}.stringify_keys
+          assigns[:association_types].should == ['Has Many', 'Has One', 'Ordered List', 'Unordered List']
+          assigns[:field_types].should == [["Text Field", "text"], ["Text Area", "textarea"], ["Date", "date"]]
+        end
       end
     end
   end
@@ -203,7 +238,10 @@ describe ModelsController do
         response.should redirect_to root_path
         flash[:alert].should == "You are not authorized to access this page."
       end
-
+      it "should be successful on a model in a pool I can edit" do
+        put :update, :id=>@model_i_can_edit, :model=>{:label=>'title'}
+        response.should be_success
+      end
       it "should be able to set the identifier" do
         put :update, :id=>@my_model, :model=>{:label=>'description'}
 
