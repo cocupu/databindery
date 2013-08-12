@@ -24,7 +24,7 @@
       </table>   
     </div> 
     <table class="results table table-bordered table-striped" data-bind="foreach: results">
-      <tr><td><input type="checkbox" data-bind="checked: $parent.selectedIds, value: persistent_id" /><a href="#" data-bind="text: title, click: $root.openEntity"></td></tr>
+      <tr class="association"><td><input type="checkbox" data-bind="checked: $parent.selectedIds, value: persistent_id" /><a href="#" data-bind="text: title, click: $root.openEntity, attr:{href: '<%= identity_pool_path(@identity, @pool)%>/nodes/'+persistent_id}"></td></tr>
     </table>
   </div>
   <div class="panel-body" data-bind="visible: $root.selectedSearchContext().state() == 'create'">

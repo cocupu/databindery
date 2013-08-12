@@ -310,7 +310,7 @@
               success: function(result) { 
                 now = new Date()
                 clock = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
-                entity.lastSavedAt("last saved at "+ clock); 
+                entity.lastSavedAt("auto-saved at "+ clock);
                 e= new Entity(result)
                 memo(Entity, e.persistent_id, e)
                 memo(Entity, "lastCreated", e)
@@ -325,7 +325,7 @@
               success: function(result) { 
                 now = new Date()
                 clock = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
-                entity.lastSavedAt("last saved at "+ clock); 
+                entity.lastSavedAt("auto-saved at "+ clock);
               }
           });
         };
