@@ -1,9 +1,10 @@
 .association.ui-droppable
-  %h4 Files
-  %ul
-    // %li
-    //  %a{href:"#", "data-bind"=>"click: $root.openAssociationSearchPane"} Add existing files
-    %li=link_to "Upload files", new_identity_pool_file_entity_path(@identity, @pool, target_node_id:@node.persistent_id)
-  
-  %table.table.table-bordered.table-striped
-    = render partial: "nodes/file", collection: @node.files
+  %div{class:"association ui-droppable", "data-bind"=>"with: model.filesAssociation"}
+    %h4 Files
+    %ul
+      %li
+        %a{href:"#", "data-bind"=>"click: $root.openAssociationSearchPane"} Associate existing files
+      %li=link_to "Upload new files", new_identity_pool_file_entity_path(@identity, @pool, target_node_id:@node.persistent_id)
+
+    %table.table.table-bordered.table-striped
+      = render partial: "nodes/file", collection: @node.files
