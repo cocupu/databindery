@@ -181,6 +181,10 @@ class Node < ActiveRecord::Base
   def find_association(type) 
     associations[type] && (associations[type] != "") ? associations[type].map { |pid| Node.latest_version(pid) } : nil
   end
+
+  def reify_association(type)
+    find_association(type)
+  end
   
   # Relies on a solr search to returns all Nodes that have associations pointing at this node
   def incoming(opts={})

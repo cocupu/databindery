@@ -1,0 +1,5 @@
+%dl.dl-horizontal.dl-invert
+  - node.data.each_pair do |field_code, values|
+    - field_spec = node.model.fields.select {|f| f["code"] == field_code}.first
+    %dt= field_spec["name"]
+    %dd= values

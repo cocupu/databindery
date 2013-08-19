@@ -3,8 +3,10 @@ require 'spec_helper'
 describe Node do
   before do
     @pool = FactoryGirl.create :pool
-    @ref = FactoryGirl.create(:model)
-    subject.model = FactoryGirl.create(:model, 
+    @ref = FactoryGirl.create(:model,
+                              fields: [{'code' => 'first_name'}, {'code' => 'last_name'}, {'code' => 'title'}],
+                              label: 'last_name')
+    subject.model = FactoryGirl.create(:model,
                       fields: [{'code' => 'first_name'}, {'code' => 'last_name'}, {'code' => 'title'}],
                       label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: @ref.id}])
   end
@@ -53,7 +55,15 @@ describe Node do
     new_subject = Node.latest_version(subject.persistent_id)
     new_subject.associations.should == { 'authors' =>[ "123", "3232", "888"], 'undefined' =>["882"]}
   end
-  
+
+  describe "reify_association" do
+    it "should reify_associations" do
+      author1 = Node.create!(pool:@pool, model:@ref)
+      author2 = Node.create!(pool:@pool, model:@ref)
+      subject.associations["authors"] = [author1.persistent_id, author2.persistent_id]
+      subject.reify_association("authors").should == [author1, author2]
+    end
+  end
   describe "as_json" do
     before do
       @identity = FactoryGirl.create :identity

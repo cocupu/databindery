@@ -1,6 +1,7 @@
 class CatalogController < ApplicationController
   load_and_authorize_resource :identity, :find_by => :short_name
   load_and_authorize_resource :exhibit
+  load_and_authorize_resource instance_name: :node, class: Node, find_by: :persistent_id, only: [:show]
 
   before_filter :load_configuration
 

@@ -1,0 +1,27 @@
+- file = file_read_only
+%tr.association
+  - if file.video?
+    %td
+      %i.icon-film
+      = link_to file.file_name, identity_exhibit_solr_document_path(@identity, @exhibit, file.persistent_id)
+    %td
+  - elsif file.audio?
+    %td
+      %i.icon-music
+      = link_to file.file_name, identity_exhibit_solr_document_path(@identity, @exhibit, file.persistent_id)
+    %td
+      %audio{src: file.s3_url.to_s, type: file.mime_type,  controls: "controls", preload: "metadata" }
+        Your browser does not support the audio tag.
+  - elsif file.image?
+    %td
+      %i.icon-picture
+      = link_to file.file_name, identity_exhibit_solr_document_path(@identity, @exhibit, file.persistent_id)
+    %td
+  - else
+    %td
+      %i.icon-file
+      = link_to file.file_name, identity_exhibit_solr_document_path(@identity, @exhibit, file.persistent_id)
+    %td
+  %td
+    .actions
+      = link_to "download", file.s3_url.to_s, {class: "download"}
