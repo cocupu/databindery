@@ -66,6 +66,14 @@ describe PoolSearchesController do
         pids = json.map {|doc| doc["id"]}
         [@node1, @node2, @node3, @node4].each {|n| pids.should include(n.persistent_id)}
       end
+      it "should allow faceted queries" do
+        get :index, :pool_id=>@other_pool, :format=>:json, identity_id: @identity.short_name, "f" => {Node.solr_name("make", type: "facet") => "barf"}
+        response.should  be_successful
+        json = JSON.parse(response.body)
+        pids = json.map {|doc| doc["id"]}
+        [@node3, @node4].each {|n| pids.should include(n.persistent_id)}
+        [@node1, @node2].each {|n| pids.should_not include(n.persistent_id)}
+      end
       it "should support queries using Google Refine Reconciliation API multi-query mode" do
         q1_params = {
             "query" => "Ford Taurus",
