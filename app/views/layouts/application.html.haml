@@ -7,6 +7,7 @@
     .full-width-container
       =render :partial=>'layouts/page_header'
       =render :partial=>'layouts/messages'
+      #ajax-modal.modal.hide.fade{tabindex: "-1"}
       = yield 
     %footer
       %p &copy; CoCuPu LLC 2013

@@ -67,9 +67,9 @@ class CatalogController < ApplicationController
       # facet bar
       @exhibit.facets.uniq.each do |key|
         if key == "model_name"
-          config.add_facet_field Node.solr_name(key, type: 'facet'), :label => "Model"
+          config.add_facet_field Node.solr_name(key, type: 'facet'), :label => "Model", limit: 10
         else
-          config.add_facet_field Node.solr_name(key, type: 'facet'), :label => key.humanize
+          config.add_facet_field Node.solr_name(key, type: 'facet'), :label => key.humanize, limit: 10
         end
       end
 

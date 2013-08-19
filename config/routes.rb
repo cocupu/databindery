@@ -45,15 +45,19 @@ Bindery::Application.routes.draw do
   resources :identities, :path=>'', :only=>[], :constraints=>constraints do
     resources :chattels
     match 'exhibits/:exhibit_id' => 'catalog#index', :as => 'exhibit'
+    match 'exhibits/:exhibit_id/facet/:id' => 'catalog#facet', :as => :exhibit_facet
+
     resources :exhibits, :only=>[] do
       resources :solr_document, :path => '', :controller => 'catalog', :only => [:show, :update]
     end
 
     match ':pool_id/search' => 'pool_searches#index', :as => 'pool_search'
-    
+
     resources :pools, :path=>'' do
       resources :exhibits, :except=>[:show]
       resources :file_entities
+      match '/facet/:id' => 'pool_searches#facet', :as => :pool_search_facet
+
       # can't do :path => '' because that breaks models, nodes, etc. in client api
       resources :solr_document, :path => 'results', :controller => 'pool_searches', :only => [:show, :update]
       resources :drives, :only=>[:index] do
