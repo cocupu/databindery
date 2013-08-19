@@ -42,22 +42,53 @@ describe PoolSearchesController do
           subject.solr_search_params[:fq].should include('-subject_t:"test"', '-subject_t:"barf"')
         end
       end
-      describe "requesting a pool I don't own but have edit access to" do
-        before do
-          @other_identity = FactoryGirl.create(:identity)
-          AccessControl.create!(:pool=>@my_pool, :identity=>@other_identity, :access=>'EDIT')
-        end
-        it "should be successful when rendering json" do
-          pending "TODO: enable JSON API on Blacklight-based searches"
-          get :index, :pool_id=>@my_pool, :format=>:json, identity_id: @identity.short_name
-          response.should  be_successful
-          json = JSON.parse(response.body)
-          json['id'].should == @my_pool.id
-          json['access_controls'].should == [{'identity' => @other_identity.short_name, 'access'=>'EDIT'} ]
-        end
+    end
+    describe "json query API" do
+      before do
+        sign_in @identity.login_credential
+        @other_pool = FactoryGirl.create(:pool, owner: @identity)
+        @auto_model = FactoryGirl.create(:model, pool: @other_pool, name:"/automotive/model")
+        @auto_model.fields << {"code"=>"name", "name"=>"Name"}.with_indifferent_access
+        @auto_model.fields << {"code"=>"year", "name"=>"Year"}.with_indifferent_access
+        @auto_model.fields << {"code"=>"make", "name"=>"Make", "uri"=>"/automotive/model/make"}.with_indifferent_access
+        @auto_model.label = "name"
+        @auto_model.save
+        AccessControl.create!(:pool=>@other_pool, :identity=>@identity, :access=>'READ')
+        @node1 = Node.create!(model:@auto_model, pool: @other_pool, data:{"year"=>"2009", "make"=>"/en/ford", "name"=>"Ford Taurus"})
+        @node2 = Node.create!(model:@auto_model, pool: @other_pool, data:{"year"=>"2011", "make"=>"/en/ford", "name"=>"Ford Taurus"})
+        @node3 = Node.create!(model:@auto_model, pool: @other_pool, data:{"year"=>"2013", "make"=>"barf", "name"=>"Puke"})
+        @node4 = Node.create!(model:@auto_model, pool: @other_pool, data:{"year"=>"2012", "make"=>"barf", "name"=>"Upchuck"})
+      end
+      it "should be successful when rendering json" do
+        get :index, :pool_id=>@other_pool, :format=>:json, identity_id: @identity.short_name
+        response.should  be_successful
+        json = JSON.parse(response.body)
+        pids = json.map {|doc| doc["id"]}
+        [@node1, @node2, @node3, @node4].each {|n| pids.should include(n.persistent_id)}
+      end
+      it "should support queries using Google Refine Reconciliation API multi-query mode" do
+        q1_params = {
+            "query" => "Ford Taurus",
+            "limit" => 3,
+            "type" => "/automotive/model",
+            "type_strict" => "any",
+            "properties" => [
+                { "p" => "year", "v" => 2009 },
+                { "pid" => "/automotive/model/make" , "v" => "/en/ford" }
+            ]
+        }
+        get :index, :pool_id=>@other_pool, :format=>:json, identity_id: @identity.short_name, queries: {"q1" => q1_params, "blargq"=>{"query"=>"barf"}}
+        json = JSON.parse(response.body)
+        # Scores change depending on what's in solr, so pulling them out of the JSON and just validating that they are floats.
+        json["q1"]["result"].each {|r| r.delete("score").should be_instance_of(Float) }
+        json["blargq"]["result"].each {|r| r.delete("score").should be_instance_of(Float) }
+        # Validate the rest of the json results with scores removed
+        json["q1"].should == {"result" => [{"id"=>@node1.persistent_id, "name"=>@node1.title, "type"=>["/automotive/model"], "match"=>true }]}
+        json["blargq"].should == {"result" => [{"id"=>@node3.persistent_id, "name"=>@node3.title, "type"=>["/automotive/model"], "match"=>true },{"id"=>@node4.persistent_id, "name"=>@node4.title, "type"=>["/automotive/model"], "match"=>true }]}
       end
     end
   end
+
   
   describe "show" do
     before do
