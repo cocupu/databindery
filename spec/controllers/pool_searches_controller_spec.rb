@@ -74,25 +74,47 @@ describe PoolSearchesController do
         [@node3, @node4].each {|n| pids.should include(n.persistent_id)}
         [@node1, @node2].each {|n| pids.should_not include(n.persistent_id)}
       end
-      it "should support queries using Google Refine Reconciliation API multi-query mode" do
-        q1_params = {
-            "query" => "Ford Taurus",
-            "limit" => 3,
-            "type" => "/automotive/model",
-            "type_strict" => "any",
-            "properties" => [
-                { "p" => "year", "v" => 2009 },
-                { "pid" => "/automotive/model/make" , "v" => "/en/ford" }
-            ]
-        }
-        get :index, :pool_id=>@other_pool, :format=>:json, identity_id: @identity.short_name, queries: {"q1" => q1_params, "blargq"=>{"query"=>"barf"}}
-        json = JSON.parse(response.body)
-        # Scores change depending on what's in solr, so pulling them out of the JSON and just validating that they are floats.
-        json["q1"]["result"].each {|r| r.delete("score").should be_instance_of(Float) }
-        json["blargq"]["result"].each {|r| r.delete("score").should be_instance_of(Float) }
-        # Validate the rest of the json results with scores removed
-        json["q1"].should == {"result" => [{"id"=>@node1.persistent_id, "name"=>@node1.title, "type"=>["/automotive/model"], "match"=>true }]}
-        json["blargq"].should == {"result" => [{"id"=>@node3.persistent_id, "name"=>@node3.title, "type"=>["/automotive/model"], "match"=>true },{"id"=>@node4.persistent_id, "name"=>@node4.title, "type"=>["/automotive/model"], "match"=>true }]}
+      describe "Google Refine Reconciliation API multi-query mode" do
+        before do
+          @q1_params = {
+              "query" => "Ford Taurus",
+              "limit" => 3,
+              "type" => "/automotive/model",
+              "type_strict" => "any",
+              "properties" => [
+                  { "p" => "year", "v" => 2009 },
+                  { "pid" => "/automotive/model/make" , "v" => "/en/ford" }
+              ]
+          }
+        end
+        it "should support queries using Google Refine Reconciliation API multi-query mode" do
+          get :index, :pool_id=>@other_pool, :format=>:json, identity_id: @identity.short_name, queries: {"q1" => @q1_params, "blargq"=>{"query"=>"barf"}}
+          json = JSON.parse(response.body)
+          # Scores change depending on what's in solr, so pulling them out of the JSON and just validating that they are floats.
+          json["q1"]["result"].each {|r| r.delete("score").should be_instance_of(Float) }
+          json["blargq"]["result"].each {|r| r.delete("score").should be_instance_of(Float) }
+          # Validate the rest of the json results with scores removed
+          json["q1"].should == {"result" => [{"id"=>@node1.persistent_id, "name"=>@node1.title, "type"=>["/automotive/model"], "match"=>true }]}
+          json["blargq"].should == {"result" => [{"id"=>@node3.persistent_id, "name"=>@node3.title, "type"=>["/automotive/model"], "match"=>true },{"id"=>@node4.persistent_id, "name"=>@node4.title, "type"=>["/automotive/model"], "match"=>true }]}
+        end
+        it "should support query by model_id" do
+          other_model = FactoryGirl.create(:model, pool: @other_pool)
+          non_car = Node.create!(model:other_model, pool: @other_pool, data:{"year"=>"2012", "make"=>"barf", "name"=>"Upchuck"})
+          get :index, :pool_id=>@other_pool, :format=>:json, identity_id: @identity.short_name, queries: {"modelq"=>{"properties"=>["p"=>"model_id", "v"=>other_model.id]}}
+          json = JSON.parse(response.body)
+          json["modelq"]["result"].count.should == 1
+          json["modelq"]["result"].first["id"].should == non_car.persistent_id
+        end
+        it "should return full json representations of nodes when requested" do
+          get :index, :pool_id=>@other_pool, :format=>:json, identity_id: @identity.short_name, marshall_nodes:true, queries: {"q1" => @q1_params, "blargq"=>{"query"=>"barf"}}
+          json = JSON.parse(response.body)
+          all_results = json["q1"]["result"].concat(json["blargq"]["result"])
+          all_results.each do |r|
+            r["data"].should be_kind_of Hash
+            r["associations"].should be_kind_of Hash
+            r["title"].should be_kind_of String
+          end
+        end
       end
     end
   end

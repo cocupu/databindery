@@ -106,6 +106,26 @@ describe "API" do
           n.persistent_id.should_not == othernode.persistent_id
         end
       end
+      it "should find nodes with fielded search" do
+        @auto_model = FactoryGirl.create(:model, pool: @pool, name:"/automotive/model", fields: [{"code"=>"name", "name"=>"Name"},{"code"=>"year", "name"=>"Year"}, {"code"=>"make", "name"=>"Make", "uri"=>"/automotive/model/make"}])
+
+        @node1 = Node.create!(model:@auto_model, pool: @pool, data:{"year"=>"2009", "make"=>"/en/ford", "name"=>"Ford Taurus"})
+        @node2 = Node.create!(model:@auto_model, pool: @pool, data:{"year"=>"2011", "make"=>"/en/ford", "name"=>"Ford Taurus"})
+        @node3 = Node.create!(model:@auto_model, pool: @pool, data:{"year"=>"2013", "make"=>"Prius", "name"=>"Zippy"})
+        @node4 = Node.create!(model:@auto_model, pool: @pool, data:{"year"=>"2012", "make"=>"Prius", "name"=>"Recharge"})
+
+        results = Cocupu::Node.find(@ident.short_name, @pool.short_name, "make" => "Prius")
+        puts results.map{|r| r.data.inspect}
+        results.count.should == 2
+        results.each do |n|
+          n.should be_instance_of Cocupu::Node
+          n.model_id.should == @auto_model.id
+          [@node3.persistent_id, @node4.persistent_id].should include(n.persistent_id)
+        end
+        results = Cocupu::Node.find(@ident.short_name, @pool.short_name, "make" => "Prius", "year"=>"2012")
+        results.count.should == 1
+        results.first.persistent_id.should == @node4.persistent_id
+      end
       it "should create nodes" do
         n = Cocupu::Node.new({'identity'=>@ident.short_name, 'pool'=>@pool.short_name, 'model_id' => @m.id, 'data' => {"name"=>"Ferrari", "date_completed"=>"Nov 10, 2012"}})
         n.save

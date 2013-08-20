@@ -28,9 +28,13 @@ class PoolSearchesController < ApplicationController
       params["queries"].each_pair do |query_name, multi_query_params|
         @google_refine_query_params = multi_query_params
         (@response, @document_list) = get_search_results
-        #@marshalled_results[query_name] = @document_list.map{|d| Node.find_by_persistent_id(d['id'])}
-        #@marshalled_results[query_name] = {"results" => @document_list}
-        @marshalled_results[query_name] = {result: @document_list.map {|doc| {id:doc["id"], name:doc["title"], type:[doc["model_name"]], score:doc["score"], match:true }}}
+
+        # Marshall nodes if requested.  Default to returning json based on Google Refine Resolver API spec
+        if params["marshall_nodes"]
+          @marshalled_results[query_name] = {result: @document_list.map {|doc| Node.find_by_persistent_id(doc['id'])}}
+        else
+          @marshalled_results[query_name] = {result: @document_list.map {|doc| {id:doc["id"], name:doc["title"], type:[doc["model_name"]], score:doc["score"], match:true }}}
+        end
       end
     else
       (@response, @document_list) = get_search_results
@@ -216,10 +220,15 @@ class PoolSearchesController < ApplicationController
       #{ "pid" => "/automotive/model/make" , "v" => "/en/ford" }
       query_params["properties"] ||= []
       query_params["properties"].each do |property_query|
+
         if property_query["p"]
           property_name =  property_query["p"]
         elsif property_query["pid"]
           property_name = @pool.all_fields.select {|f| f["uri"] == property_query["pid"]}.first["name"]
+        end
+        # model_id is stored in the "model" solr field.  Map the query accordingly.
+        if property_name == "model_id"
+          property_name = "model"
         end
         solr_parameters[:fq] << "+#{Node.solr_name(property_name)}:\"#{property_query["v"]}\"" unless (property_name.nil? || property_query["v"].nil?)
       end
