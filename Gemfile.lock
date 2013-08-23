@@ -9,10 +9,11 @@ GIT
 
 GIT
   remote: git://github.com/cocupu/client.git
-  revision: 691fd8586f7638c4976785588dcd9798b3465083
-  ref: 691fd8586f7638c4976785588dcd9798b3465083
+  revision: a988936bb0b7743687ab63868440df20ef19b1e3
+  ref: a988936bb0b7743687ab63868440df20ef19b1e3
   specs:
     cocupu (0.0.2)
+      activesupport (>= 3.0)
       httmultiparty (= 0.3.8)
 
 GEM
@@ -97,7 +98,14 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.4.0)
+    columnize (0.3.6)
     database_cleaner (0.9.1)
+    debugger (1.6.0)
+      columnize (>= 0.3.1)
+      debugger-linecache (~> 1.2.0)
+      debugger-ruby_core_source (~> 1.2.1)
+    debugger-linecache (1.2.0)
+    debugger-ruby_core_source (1.2.2)
     devise (2.1.2)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
@@ -315,6 +323,7 @@ DEPENDENCIES
   cocupu!
   coffee-rails (~> 3.2.2)
   database_cleaner (>= 0.7.0)
+  debugger
   devise
   factory_girl_rails
   foreigner

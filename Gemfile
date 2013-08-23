@@ -42,8 +42,9 @@ group :test, :development do
   gem "factory_girl_rails"
   gem 'jasmine'
   gem 'jasminerice'
-  gem 'cocupu', github: 'cocupu/client', ref:"691fd8586f7638c4976785588dcd9798b3465083" # The ruby client 
-  # gem 'cocupu', path: '../cocupu-client' # The ruby client 
+  gem 'cocupu', github: 'cocupu/client', ref:"a988936bb0b7743687ab63868440df20ef19b1e3" # The ruby client
+  #gem 'cocupu', path: '../databindery-client' # The ruby client
+  gem "debugger"
 end
 group :test do
   gem "database_cleaner", ">= 0.7.0"
