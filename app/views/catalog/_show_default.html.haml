@@ -13,5 +13,5 @@
     - if association_pids && association_spec
       %h2= association_spec["name"]
       - associated_nodes = @node.reify_association(association_type).nil? ? [] : @node.reify_association(association_type)
-      - associated_nodesassociated_nodes.each do |associated_node|
+      - associated_nodes.each do |associated_node|
         %div= render partial: "nodes/node_read_only", locals: {node: associated_node}
