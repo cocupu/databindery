@@ -18,6 +18,16 @@ class Identity < ActiveRecord::Base
   def to_param
     short_name
   end
-  
+
+  ANONYMOUS_VISITOR_CODE = "anonymous"
+  REGISTERED__VISITOR_CODE = "registered"
+
+  def self.anonymous_visitor
+    Identity.where(short_name: ANONYMOUS_VISITOR_CODE).first_or_create!(short_name: ANONYMOUS_VISITOR_CODE)
+  end
+
+  def self.registered
+    Identity.where(short_name: REGISTERED__VISITOR_CODE).first_or_create!(short_name: REGISTERED__VISITOR_CODE)
+  end
 
 end
