@@ -4,7 +4,7 @@ describe PoolSearchesController do
   before do
     @identity = FactoryGirl.create :identity
     @my_pool = FactoryGirl.create :pool, :owner=>@identity
-    @not_my_pool = FactoryGirl.create(:pool)
+    @not_my_pool = FactoryGirl.create(:pool, owner: FactoryGirl.create(:identity))
   end
   
   describe "index" do
@@ -23,10 +23,17 @@ describe PoolSearchesController do
         @my_model_different_pool = FactoryGirl.create(:model, pool: @other_pool)
         @not_my_model = FactoryGirl.create(:model)
       end
-      describe "requesting a pool I don't own" do
+      describe "requesting a pool I don't have access to" do
         it "should redirect to root" do
-          get :index, :pool_id=>@not_my_pool, identity_id: @identity.short_name
+          get :index, :pool_id=>@not_my_pool.short_name, identity_id: @not_my_pool.owner.short_name
           response.should redirect_to( root_path )
+        end
+      end
+      describe "requesting a pool I have read access for" do
+        it "should redirect to root" do
+          AccessControl.create!(:pool=>@other_pool, :identity=>@identity, :access=>'READ')
+          get :index, :pool_id=>@other_pool, identity_id: @identity.short_name
+          response.should be_success
         end
       end
       describe "requesting a pool I own" do
@@ -94,8 +101,14 @@ describe PoolSearchesController do
           json["q1"]["result"].each {|r| r.delete("score").should be_instance_of(Float) }
           json["blargq"]["result"].each {|r| r.delete("score").should be_instance_of(Float) }
           # Validate the rest of the json results with scores removed
-          json["q1"].should == {"result" => [{"id"=>@node1.persistent_id, "name"=>@node1.title, "type"=>["/automotive/model"], "match"=>true }]}
-          json["blargq"].should == {"result" => [{"id"=>@node3.persistent_id, "name"=>@node3.title, "type"=>["/automotive/model"], "match"=>true },{"id"=>@node4.persistent_id, "name"=>@node4.title, "type"=>["/automotive/model"], "match"=>true }]}
+          json["q1"]["result"].should == [{"id"=>@node1.persistent_id, "name"=>@node1.title, "type"=>["/automotive/model"], "match"=>true }]
+          json["q1"]["maxScore"].should_not be_nil
+          json["q1"]["start"].should == 0
+          json["q1"]["numFound"].should == 1
+          json["blargq"]["result"].should == [{"id"=>@node3.persistent_id, "name"=>@node3.title, "type"=>["/automotive/model"], "match"=>true },{"id"=>@node4.persistent_id, "name"=>@node4.title, "type"=>["/automotive/model"], "match"=>true }]
+          json["blargq"]["maxScore"].should_not be_nil
+          json["blargq"]["start"].should == 0
+          json["blargq"]["numFound"].should == 2
         end
         it "should support query by model_id" do
           other_model = FactoryGirl.create(:model, pool: @other_pool)

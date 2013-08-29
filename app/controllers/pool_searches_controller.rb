@@ -1,6 +1,6 @@
 class PoolSearchesController < ApplicationController
   load_and_authorize_resource :identity, :find_by => :short_name
-  load_and_authorize_resource :pool, :find_by => :short_name
+  load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
   load_and_authorize_resource instance_name: :node, class: Node, find_by: :persistent_id, only: [:show]
   load_resource :model, through: :node, singleton: true, only: [:show]
   
@@ -28,13 +28,13 @@ class PoolSearchesController < ApplicationController
       params["queries"].each_pair do |query_name, multi_query_params|
         @google_refine_query_params = multi_query_params
         (@response, @document_list) = get_search_results
-
         # Marshall nodes if requested.  Default to returning json based on Google Refine Resolver API spec
         if params["marshall_nodes"]
           @marshalled_results[query_name] = {result: @document_list.map {|doc| Node.find_by_persistent_id(doc['id'])}}
         else
           @marshalled_results[query_name] = {result: @document_list.map {|doc| {id:doc["id"], name:doc["title"], type:[doc["model_name"]], score:doc["score"], match:true }}}
         end
+        @marshalled_results[query_name].merge!(@response["response"].except("docs"))
       end
     else
       (@response, @document_list) = get_search_results

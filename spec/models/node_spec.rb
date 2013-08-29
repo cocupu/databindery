@@ -109,6 +109,18 @@ describe Node do
           :title=>@file.persistent_id}]
     end
 
+    it "should not return strings where there should be an array of ids" do
+      subject.pool = @pool
+      subject.associations["contributing_authors"] = ""
+      subject.associations_for_json["contributing_authors"].should be_nil
+      subject.as_json["contributing_authors"].should be_nil
+      # Other variations
+      subject.associations["contributing_authors"] = [""]
+      subject.associations_for_json["contributing_authors"].should be_nil
+      subject.associations["contributing_authors"] = nil
+      subject.associations_for_json["contributing_authors"].should be_nil
+    end
+
   end
 
   describe "files setter and getter" do

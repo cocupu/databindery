@@ -225,7 +225,7 @@ class Node < ActiveRecord::Base
       assoc_name = a[:name]
       assoc_code = a[:code]
       output[assoc_name] = []
-      if associations[assoc_code]
+      if associations[assoc_code] && associations[assoc_code].kind_of?(Array)
         associations[assoc_code].each do |id|
           node = Node.latest_version(id)
           output[assoc_name] <<  node.association_display if node
