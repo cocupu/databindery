@@ -37,7 +37,7 @@ class PoolSearchesController < ApplicationController
       format.rss  { render :layout => false }
       format.atom { render :layout => false }
       format.json do
-        @marshalled_results ||= @document_list.map{|d| Node.find_by_persistent_id(d['id'])}
+        @marshalled_results ||= marshall_nodes(@document_list.map{|d| d["id"]})
         if params["iDisplayStart"].nil?
           render  json: @marshalled_results
         else
@@ -48,6 +48,12 @@ class PoolSearchesController < ApplicationController
   end
 
   protected
+
+  # Given an Array of persistent_ids, loads the corresponding Nodes
+  # @document_list [Array] Array of persistent_ids of Nodes that should be loaded
+  def marshall_nodes(node_id_list)
+    node_id_list.map{|nid| Node.find_by_persistent_id(nid)}
+  end
 
   def load_configuration
     @blacklight_config = Blacklight::Configuration.new
