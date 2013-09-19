@@ -171,5 +171,10 @@ class Model < ActiveRecord::Base
     attributes[:code] = Model.field_name(attributes[:name])
     self.associations << attributes
   end
+
+  # Return the Model's array of fields and associations as they are ordered in the edit view
+  def ordered_fields_and_associations
+    self.fields.concat(self.associations)
+  end
   
 end
