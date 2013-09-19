@@ -1,0 +1,4 @@
+#view-type-chooser.pull-right
+  = link_to(t(:'blacklight.search.view_type.grid').html_safe, url_for(params_for_search.merge(:view => "grid")))
+  |
+  = link_to(t(:'blacklight.search.view_type.list').html_safe, url_for(params_for_search.merge(:view => "list")))

@@ -1,0 +1,10 @@
+- # container for all documents in index grid view
+%table#documents.grid.responsive.display{"data-source"=> url_for(params_for_search.merge(format: "json")) }
+  %thead
+    %tr.documentHeader
+      %th Actions
+      - @model_for_grid.ordered_fields_and_associations.each do |model_field|
+        %th= model_field["name"]
+
+  %tbody
+    =# render partial: "pool_searches/grid/node", collection: @marshalled_results, as: :node, locals: {model: model}

@@ -1,0 +1,32 @@
+#documents.grid {
+
+  background: {
+    image: url('theme/background.jpg');
+    color:ghostwhite;
+  }
+  td {
+    padding: 5px;
+  }
+  .documentHeader {
+    th {
+      white-space: nowrap;
+      font: {
+        weight: bold;
+      }
+    }
+  }
+
+  tr {
+    border-bottom: 2px dotted white;
+  }
+  .document {
+    td {
+      vertical-align: top;
+      border:2px solid ghostwhite;
+      background-color: white;
+      .value {
+        background-color: white;
+      }
+    }
+  }
+}

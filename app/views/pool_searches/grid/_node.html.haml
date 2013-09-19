@@ -1,0 +1,3 @@
+%tr.document
+  - model.fields.each do |model_field|
+    %td= node.data[model_field["code"]]

@@ -1,28 +1,35 @@
 
+<%- unless params["view"] == "foo" %>
   <div id="sidebar" class="span3">
     <%= render :partial=>'perspective_chooser' %>    
    <%= render :partial=>'catalog/facets' %>
   </div><!--/well -->
+<%- end %>
 
   <div id="content" class="span9">   
 
       <h1><%=@pool.name%></h1>
-
-      <div class="row"><%=render :partial=>'search_form'%></div>
-      <% @page_title = t('blacklight.search.title', :application_name => application_name) %>
-
-
       <% extra_head_content << render_opensearch_response_metadata.html_safe %>
 
-      <%= render :partial => 'catalog/did_you_mean' %>
+      <%- unless params["view"] == "grid" %>
 
-      <%= render :partial => 'catalog/constraints' %>
+        <div class="row"><%=render :partial=>'search_form'%></div>
+        <% @page_title = t('blacklight.search.title', :application_name => application_name) %>
 
-      <%= render 'catalog/sort_and_per_page' %> 
+        <%= render :partial => 'catalog/did_you_mean' %>
+
+        <%= render :partial => 'catalog/constraints' %>
+
+        <%= render 'pool_searches/sort_and_per_page' %>
+      <%- end %>
 
       <h2 class="hide-text"><%= t('blacklight.search.search_results') %></h2>
 
-      <%= render :partial => 'document_list', locals: {documents: @document_list} %>
+      <%- if params[:view] == "grid" %>
+        <%= render :partial => 'pool_searches/grid/document_grid', locals: {documents: @document_list} %>
+      <%- else %>
+        <%= render :partial => 'document_list', locals: {documents: @document_list} %>
+      <%- end %>
 
 
       <%= render 'catalog/results_pagination' %>

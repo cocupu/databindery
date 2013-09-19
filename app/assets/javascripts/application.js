@@ -19,6 +19,7 @@
 // (see http://stackoverflow.com/questions/8016296/backbone-model-save)
 //= require backbone_rails_sync 
 //= require backbone/cocupu
+//= require dataTables/jquery.dataTables
 //= require_tree .
 
 Number.prototype.leftZeroPad = function(numZeros) {
