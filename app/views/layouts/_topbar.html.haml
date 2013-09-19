@@ -39,13 +39,13 @@
             = link_to "Publish", identity_pool_exhibits_path(@identity.short_name, @pool)
           %li{:class => (if controller?("pools") then "active" end)}
             = link_to "Admin", edit_identity_pool_path(@identity.short_name, @pool)
-        %ul.nav.pull-right.css-dropdown
-          %li.create_options.btn
+        .btn-group
+          .create_options.btn.dropdown-toggle{"data-toggle"=>"dropdown"}
             Create or Upload
-            %ul
+          %ul.dropdown-menu
+            %li
+              = link_to "Files", new_identity_pool_file_entity_path(@identity.short_name, @pool)
+            - @pool.models.each do |model|
               %li
-                = link_to "Files", new_identity_pool_file_entity_path(@identity.short_name, @pool)
-              - @pool.models.each do |model|
-                %li
-                  = link_to model.name, new_identity_pool_node_path(@identity.short_name, @pool, model_id:model.id)
-              
+                = link_to model.name, new_identity_pool_node_path(@identity.short_name, @pool, model_id:model.id)
+

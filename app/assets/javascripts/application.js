@@ -14,7 +14,7 @@
 //= require jquery.scrollTo-min.js
 //= require underscore
 //= require backbone
-//= require bootstrap-tab
+//= require bootstrap
 // AJAX adapter for rails, that uses paramRoot to set up requests as rails expects 
 // (see http://stackoverflow.com/questions/8016296/backbone-model-save)
 //= require backbone_rails_sync 
