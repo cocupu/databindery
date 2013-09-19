@@ -16,7 +16,8 @@
  *= require pools
  *= require welcome
  *= require grid_edit
- *= depend_on _common 
+ *= require headsup
+ *= depend_on _common
  *= require s3_direct_upload_progress_bars
  *= require jquery.ui.core
  *= require datatables

@@ -1,0 +1,21 @@
+.headsup {
+  margin-top: -10px;
+  .panel {
+    height: 23em;
+    float:left;
+    border: 1px solid #777777;
+    margin-left:0.25%;
+  }
+  .panel.empty {
+    text-align: center;
+    height: 15em;
+    padding-top: 8em;
+
+  }
+  .panel.search, .panel.supplemental {
+    width: 29%;
+  }
+  .panel.detail {
+    width: 40.5%;
+  }
+}
