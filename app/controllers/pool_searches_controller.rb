@@ -6,6 +6,7 @@ class PoolSearchesController < ApplicationController
   
   before_filter :set_perspective
   before_filter :load_configuration
+  before_filter :load_model_for_grid
 
   include Blacklight::Controller
   def layout_name
@@ -14,7 +15,7 @@ class PoolSearchesController < ApplicationController
   include Blacklight::Catalog
   include Bindery::AppliesPerspectives
 
-  solr_search_params_logic << :add_pool_to_fq << :add_index_fields_to_qf << :apply_google_refine_query_params
+  solr_search_params_logic << :add_pool_to_fq << :add_index_fields_to_qf << :apply_google_refine_query_params << :apply_datatables_params_to_solr_params
 
   # get search results from the solr index
   # Had to override the whole method (rather than using super) in order to add json support
@@ -23,19 +24,9 @@ class PoolSearchesController < ApplicationController
     extra_head_content << view_context.auto_discovery_link_tag(:rss, url_for(params.merge(:format => 'rss')), :title => t('blacklight.search.rss_feed') )
     extra_head_content << view_context.auto_discovery_link_tag(:atom, url_for(params.merge(:format => 'atom')), :title => t('blacklight.search.atom_feed') )
 
+
     if params["queries"]
-      @marshalled_results ||= {}
-      params["queries"].each_pair do |query_name, multi_query_params|
-        @google_refine_query_params = multi_query_params
-        (@response, @document_list) = get_search_results
-        # Marshall nodes if requested.  Default to returning json based on Google Refine Resolver API spec
-        if params["marshall_nodes"]
-          @marshalled_results[query_name] = {result: @document_list.map {|doc| Node.find_by_persistent_id(doc['id'])}}
-        else
-          @marshalled_results[query_name] = {result: @document_list.map {|doc| {id:doc["id"], name:doc["title"], type:[doc["model_name"]], score:doc["score"], match:true }}}
-        end
-        @marshalled_results[query_name].merge!(@response["response"].except("docs"))
-      end
+      do_refine_style_query
     else
       (@response, @document_list) = get_search_results
     end
@@ -46,13 +37,19 @@ class PoolSearchesController < ApplicationController
       format.rss  { render :layout => false }
       format.atom { render :layout => false }
       format.json do
-        @marshalled_results ||= @document_list.map{|d| Node.find_by_persistent_id(d['id'])}
+        @marshalled_results ||= marshall_nodes(@document_list.map{|d| d["id"]})
         render  json: @marshalled_results
       end
     end
   end
 
   protected
+
+  # Given an Array of persistent_ids, loads the corresponding Nodes
+  # @document_list [Array] Array of persistent_ids of Nodes that should be loaded
+  def marshall_nodes(node_id_list)
+    node_id_list.map{|nid| Node.find_by_persistent_id(nid)}
+  end
 
   def load_configuration
     @blacklight_config = Blacklight::Configuration.new
@@ -233,6 +230,89 @@ class PoolSearchesController < ApplicationController
         solr_parameters[:fq] << "+#{Node.solr_name(property_name)}:\"#{property_query["v"]}\"" unless (property_name.nil? || property_query["v"].nil?)
       end
       solr_parameters[:fl] = "*,score"
+    end
+  end
+
+
+  #
+  # DataTables Support
+  #
+
+  def apply_datatables_params_to_solr_params(solr_parameters, user_parameters)
+    unless user_parameters["iDisplayStart"].nil?
+      solr_parameters[:page] = user_parameters["iDisplayStart"].to_i/user_parameters["iDisplayLength"].to_i
+      solr_parameters[:rows] = user_parameters["iDisplayLength"].to_i
+      solr_parameters[:q] = user_parameters["sSearch"]
+      # bRegex, individual column filters []bSearchable_(int),sSearch_(int),bRegex_(int), bSortable_(int)	]
+      #iSortCol_(int)
+      #sSortDir_(int)
+      if user_parameters["iSortingCols"]
+        number_of_sort_columns = user_parameters["iSortingCols"].to_i
+        column_fields = @model_for_grid.ordered_fields_and_associations
+        column_sorts = []
+        (1..number_of_sort_columns).each do |index|
+          sort_column_number = user_parameters["iSortCol_#{index}"].to_i
+          sort_column_direction = user_parameters["sSortDir_#{index}"] == "desc" ? "desc" : "asc"
+          field_name = Node.solr_name(column_fields[sort_column_number][:code])
+          column_sorts << "#{field_name} #{sort_column_direction}"
+        end
+        # Disabled until Node & Model handle multivalue vs. single-value fields more carefully & index single-value fields accordingly in solr.
+        # solr_parameters[:sort] = column_sorts.join(", ")
+      end
+      # mDataProp
+      # sEcho  -- use this to pass faceting info...
+    end
+  end
+
+  def datatables_response
+    {
+        sEcho: params[:sEcho].to_i,
+        iTotalRecords: @response.total,
+        iTotalDisplayRecords: @response.total,
+        aaData: @marshalled_results.map {|n| [view_context.link_to("Edit", identity_pool_solr_document_path(@identity, @pool, n.persistent_id))].concat(serialize_node_as_json_row(n)) }
+    }
+  end
+
+  def serialize_node_as_json_row(node)
+    json_row = []
+    node.model.fields.each do |model_field|
+      json_row << node.data[ model_field[:code] ]
+    end
+    assoc = node.associations_for_json
+    node.model.associations.each do |model_assoc|
+      assoc_array = node.associations_for_json[ model_assoc[:name] ]
+      link_array = []
+      assoc_array.each do |assoc|
+        link_array << view_context.link_to(assoc[:title], identity_pool_solr_document_path(@identity, @pool, assoc["persistent_id"]))
+      end
+      #json_row << node.associations_for_json[ model_assoc[:name] ]
+      json_row << link_array
+    end
+    json_row
+  end
+
+  # Load the selected model for use in generating grid column sorting, etc.
+  def load_model_for_grid
+    if params["view"] == "grid"
+      @model_for_grid = @pool.models.where(name: params[:f]["model_name"]).first
+    end
+  end
+
+  #
+  # Google Refine Support
+  #
+  def do_refine_style_query
+    @marshalled_results ||= {}
+    params["queries"].each_pair do |query_name, multi_query_params|
+      @google_refine_query_params = multi_query_params
+      (@response, @document_list) = get_search_results
+      # Marshall nodes if requested.  Default to returning json based on Google Refine Resolver API spec
+      if params["marshall_nodes"]
+        @marshalled_results[query_name] = {result: @document_list.map {|doc| Node.find_by_persistent_id(doc['id'])}}
+      else
+        @marshalled_results[query_name] = {result: @document_list.map {|doc| {id:doc["id"], name:doc["title"], type:[doc["model_name"]], score:doc["score"], match:true }}}
+      end
+      @marshalled_results[query_name].merge!(@response["response"].except("docs"))
     end
   end
 
