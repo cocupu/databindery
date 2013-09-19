@@ -25,11 +25,7 @@
 
       <h2 class="hide-text"><%= t('blacklight.search.search_results') %></h2>
 
-      <%- if params[:view] == "grid" %>
-        <%= render :partial => 'pool_searches/grid/document_grid', locals: {documents: @document_list} %>
-      <%- else %>
-        <%= render :partial => 'document_list', locals: {documents: @document_list} %>
-      <%- end %>
+      <%= render :partial => 'document_list', locals: {documents: @document_list} %>
 
 
       <%= render 'catalog/results_pagination' %>

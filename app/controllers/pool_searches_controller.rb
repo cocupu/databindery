@@ -297,7 +297,7 @@ class PoolSearchesController < ApplicationController
 
   # Load the selected model for use in generating grid column sorting, etc.
   def load_model_for_grid
-    if params["view"] == "grid"
+    unless params["view"] == "browse"
       @model_for_grid = @pool.models.where(name: params[:f]["model_name"]).first
     end
   end

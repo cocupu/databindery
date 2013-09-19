@@ -6,6 +6,8 @@
   .panel.info.supplemental.empty
     Select a cell to see details here.
 
+= render :partial => 'pool_searches/grid/document_grid', locals: {documents: @document_list}
+
 #model-chooser.navbar.navbar-fixed-bottom
   .navbar-inner
     %ul.nav
