@@ -21,7 +21,7 @@ class ChattelsController < ApplicationController
     when "application/vnd.ms-excel"
       Excel
     when "application/vnd.oasis.opendocument.spreadsheet"
-      Openoffice
+      OpenOffice
     else
       raise "UnknownType: #{chattel.attachment_content_type}"
     end

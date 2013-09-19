@@ -7,9 +7,9 @@ gem 'json'
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
-  gem 'sass-rails',   '~> 3.2.5'
+  gem 'sass-rails'
   gem "bootstrap-sass"
-  gem 'coffee-rails', '~> 3.2.2'
+  gem 'coffee-rails'
   gem 'uglifier', '>= 1.2.3'
   gem 'therubyracer', '~> 0.10.0'# required on linux (ver 0.11.0 wasn't building native extensions)
   gem 'jquery-rails'
@@ -58,4 +58,4 @@ gem "aws-sdk"
 gem "jettywrapper"
 gem "rsolr"
 gem "cancan"
-gem "blacklight", '4.0.1'
+gem "blacklight"

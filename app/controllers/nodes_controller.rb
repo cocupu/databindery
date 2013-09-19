@@ -207,6 +207,14 @@ class NodesController < ApplicationController
     ["id", "parent_id", "pool_id", "identity_id", "created_at", "updated_at"].each {|key| hash.delete(key)}
     return hash
   end
+
+  def blacklight_solr
+    @solr ||=  RSolr.connect(blacklight_solr_config)
+  end
+
+  def blacklight_solr_config
+    Blacklight.solr_config
+  end
   
   def init_node_from_params
     @node = Node.new(params.require(:node).permit(:binding, :data, :associations))
