@@ -17,6 +17,7 @@ group :assets do
   gem 'jquery-ui-rails'
   gem 'handlebars_assets'
   gem 'rails-backbone'
+  gem 'angularjs-rails'
   gem 'bootstrap-kaminari-views'
 end
 

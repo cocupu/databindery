@@ -12,14 +12,16 @@
 // we're just using core and droppable from jquery-ui
 //= require jquery-ui-1.8.23.min 
 //= require jquery.scrollTo-min.js
-//= require underscore
-//= require backbone
+//=# require underscore
+//=# require backbone
 //= require bootstrap
 // AJAX adapter for rails, that uses paramRoot to set up requests as rails expects 
 // (see http://stackoverflow.com/questions/8016296/backbone-model-save)
-//= require backbone_rails_sync 
-//= require backbone/cocupu
+//=# require backbone_rails_sync
+//=# require backbone/cocupu
 //= require dataTables/jquery.dataTables
+//= require angular
+//= require angular-bootstrap
 //= require_tree .
 
 Number.prototype.leftZeroPad = function(numZeros) {
