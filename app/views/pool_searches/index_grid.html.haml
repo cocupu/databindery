@@ -1,11 +1,4 @@
-.headsup.row-fluid
-  .panel.search
-    Search
-  .panel.info.detail.empty
-    Select a cell to see details here.
-  .panel.info.supplemental.empty
-    Select a cell to see details here.
-
+= render file:"pool_searches/headsup"
 = render :partial => 'pool_searches/grid/document_grid', locals: {documents: @document_list}
 
 #model-chooser.navbar.navbar-fixed-bottom
