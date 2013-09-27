@@ -21,6 +21,7 @@
  *= require s3_direct_upload_progress_bars
  *= require jquery.ui.core
  *= require datatables
+ *= require ng-grid
 */
 
 

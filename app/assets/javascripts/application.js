@@ -22,6 +22,7 @@
 //= require dataTables/jquery.dataTables
 //= require angular
 //= require angular-bootstrap
+//= require ng-grid
 //= require_tree .
 
 Number.prototype.leftZeroPad = function(numZeros) {

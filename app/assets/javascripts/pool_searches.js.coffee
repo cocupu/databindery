@@ -1,58 +1,63 @@
-jQuery ->
-  $('#documents.grid').dataTable
-    sPaginationType: "full_numbers"
-    bJQueryUI: true
-    bProcessing: true
-    bServerSide: true
-    sAjaxSource: $('#documents.grid').data('source')
-    sScrollY: 400
-    sScrollX: "850px"
-    sScrollXInner: "900px"
-    bScrollInfinite: true
-    bScrollCollapse: true
-    aoColumnDefs: [
-      { bSortable: false, aTargets: [ "_all" ] }
-#      { aTargets: ["_all"], fnCreatedCell: (nTd, sData, oData, iRow, iCol) ->
-#        columnTitle = $('#documents thead th:eq('+iCol+')').text()
-#        $(nTd).attr("data-title", columnTitle )
-#      }
-    ]
+app = angular.module('binderyCurate', ['ngGrid']);
+app.controller('EditableGrid', ($scope, $http, $location) ->
+    $scope.selectedNode = []
 
-#  From http://zurb.com/playground/playground/responsive-tables/responsive-tables.js
-#  $(document).ready () ->
-#    switched = false;
-#    updateTables = () ->
-#      if ($(window).width() < 767) && !switched
-#        switched = true;
-#        $("table.responsive").each (i, element) ->
-#          splitTable($(element))
-#        return true
-#      else if switched && ($(window).width() > 767)
-#        switched = false;
-#        $("table.responsive").each (i, element)  ->
-#          unsplitTable($(element));
-#
-#    $(window).load(updateTables);
-#    $(window).bind("resize", updateTables);
-#
-#
-#    splitTable = (original) ->
-#      original.wrap("<div class='table-wrapper' />")
-#      copy = original.clone()
-##      copy.find("td, th").not("td:first-child, th:first-child, td:nth-child(2), th:nth-child(2)").css("display","none")
-#      copy.find("td, th").not("td:first-child, th:first-child").css("display","none")
-#      copy.removeClass("responsive")
-#
-#      original.closest(".table-wrapper").append(copy)
-#      copy.wrap("<div class='pinned' />")
-#      original.wrap("<div class='scrollable' />")
-#
-#    unsplitTable = (original) ->
-#      original.closest(".table-wrapper").find(".pinned").remove();
-#      original.unwrap();
-#      original.unwrap();
+    $scope.filterOptions =
+      filterText: "",
+      useExternalFilter: true
+
+    $scope.totalServerItems = 0
+    $scope.pagingOptions =
+      pageSizes: [250, 500, 1000],
+      pageSize: 250,
+      currentPage: 1
+
+    $scope.setPagingData = (data, page, pageSize) ->
+      pagedData = data.slice((page - 1) * pageSize, page * pageSize)
+      $scope.myData = pagedData;
+      $scope.totalServerItems = data.length;
+      if (!$scope.$$phase)
+        $scope.$apply()
+
+    $scope.getPagedDataAsync = (pageSize, page, searchText) ->
+      setTimeout( (() ->
+        if (searchText)
+          ft = searchText.toLowerCase();
+          $http.get($location.path(), {
+            rows: pageSize
+            page: page
+            q: searchText
+          }).success( (largeLoad) ->
+            $scope.setPagingData(data,page,pageSize);
+          )
+        else
+          $http.get($location.path()).success( (largeLoad) ->
+            $scope.setPagingData(largeLoad,page,pageSize)
+          )
+      ), 100)
+
+    $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage)
+
+    $scope.$watch('pagingOptions', ((newVal, oldVal) ->
+      if (newVal != oldVal && newVal.currentPage != oldVal.currentPage)
+        $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.filterOptions.filterText)
+    ), true)
+
+    $scope.$watch('filterOptions', ((newVal, oldVal) ->
+      if (newVal != oldVal)
+        $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.filterOptions.filterText);
+    ), true);
 
 
 
-
-
+    $scope.gridOptions =
+      data: 'myData'
+      selectedItems: $scope.selectedNode
+      multiSelect: false
+#      columnDefs: [{field:'name', displayName:'Name'}, {field:'age', displayName:'Age'}]
+      enablePaging: true,
+      showFooter: true,
+      totalServerItems: 'totalServerItems',
+      pagingOptions: $scope.pagingOptions,
+      filterOptions: $scope.filterOptions
+)

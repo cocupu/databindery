@@ -1,6 +1,13 @@
-= render file:"pool_searches/headsup"
-= render :partial => 'pool_searches/grid/document_grid', locals: {documents: @document_list}
-
+- @page_title = t('blacklight.search.title', :application_name => application_name)
+#content.grid-w-headsup{"ng-app"=>"binderyCurate","ng-controller"=>"EditableGrid"}
+  = render file:"pool_searches/headsup"
+  .row
+    =render :partial=>'search_form'
+    =# render :partial => 'catalog/did_you_mean'
+    =# render :partial => 'catalog/constraints'
+  - # container for all documents in index grid view
+  #documents.grid.responsive.display{"data-source"=> url_for(params_for_search.merge(format: "json")) }
+    .gridStyle{"ng-grid"=>"gridOptions"}
 #model-chooser.navbar.navbar-fixed-bottom
   .navbar-inner
     %ul.nav

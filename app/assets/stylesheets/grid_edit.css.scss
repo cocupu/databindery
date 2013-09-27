@@ -1,3 +1,24 @@
+/*style.css*/
+.gridStyle {
+  border: 1px solid rgb(212,212,212);
+  //width: 400px;
+  height: 285px
+}
+
+.grid-w-headsup {
+  form.search-query-form {
+    margin: 0;
+    select, .input-append {
+      margin-bottom: 0;
+    }
+  }
+  .pull-left {
+    padding-left:35px;
+  }
+  #documents {
+    margin-top: 0.25em;
+  }
+}
 #documents.grid {
 
   background: {

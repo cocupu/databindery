@@ -1,6 +1,7 @@
 
 <%- unless params["view"] == "foo" %>
   <div id="sidebar" class="span3">
+    <h4><%= t('bindery.perspectives.switch')%></h4>
     <%= render :partial=>'perspective_chooser' %>    
    <%= render :partial=>'catalog/facets' %>
   </div><!--/well -->
