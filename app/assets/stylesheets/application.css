@@ -15,6 +15,7 @@
  *= require forms
  *= require pools
  *= require welcome
+ *= require pool_searches
  *= require grid_edit
  *= require headsup
  *= depend_on _common

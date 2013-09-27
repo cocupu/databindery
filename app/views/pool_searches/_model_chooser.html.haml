@@ -1,0 +1,17 @@
+#model-chooser.navbar.navbar-fixed-bottom
+  .navbar-inner
+    %ul.nav#select-view
+      %li.nav-header View:
+      %li{class: ("active" if params["view"] == "browse")}
+        =link_to "browse", url_for(params_for_search.merge(view: "browse"))
+      %li{class: ("active" if params["view"] == "grid")}
+        =link_to "grid", url_for(params_for_search.merge(view: "grid"))
+    %ul.nav
+      %li.nav-header Model:
+      - selected_model_id = @model_for_grid.nil? ? "all" : @model_for_grid.id
+      - if params["view"] == "browse"
+        %li{class: ("active" if selected_model_id == "all")}
+          =link_to "All Models", url_for(params_for_search.except(:model_id))
+      - @pool.models.each do |m|
+        %li{class: ("active" if selected_model_id == m.id)}
+          =link_to m.name, url_for(params_for_search.merge(model_id: m.id))

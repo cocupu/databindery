@@ -30,10 +30,21 @@ describe PoolSearchesController do
         end
       end
       describe "requesting a pool I have read access for" do
-        it "should redirect to root" do
+        it "should be successful" do
           AccessControl.create!(:pool=>@other_pool, :identity=>@identity, :access=>'READ')
           get :index, :pool_id=>@other_pool, identity_id: @identity.short_name
           response.should be_success
+        end
+        describe "grid view" do
+          it "should filter to one model" do
+            get :index, :pool_id=>@other_pool, identity_id: @identity.short_name
+            puts subject.solr_search_params
+            subject.solr_search_params[:fq].should include("model:#{@other_pool.models.first.id}")
+          end
+          it "should support choosing model" do
+            get :index, :pool_id=>@other_pool, identity_id: @identity.short_name, model_id: @my_model_different_pool.id
+            subject.solr_search_params[:fq].should include("model:#{@my_model_different_pool.id}")
+          end
         end
       end
       describe "requesting a pool I own" do

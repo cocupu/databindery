@@ -15,7 +15,7 @@ class PoolSearchesController < ApplicationController
   include Blacklight::Catalog
   include Bindery::AppliesPerspectives
 
-  solr_search_params_logic << :add_pool_to_fq << :add_index_fields_to_qf << :apply_google_refine_query_params << :apply_datatables_params_to_solr_params
+  solr_search_params_logic << :add_pool_to_fq << :add_index_fields_to_qf << :apply_google_refine_query_params << :apply_datatables_params_to_solr_params << :ensure_model_filtered_for_grid
 
   # get search results from the solr index
   # Had to override the whole method (rather than using super) in order to add json support
@@ -297,8 +297,19 @@ class PoolSearchesController < ApplicationController
 
   # Load the selected model for use in generating grid column sorting, etc.
   def load_model_for_grid
-    unless params["view"] == "browse"
-      @model_for_grid = @pool.models.where(name: params[:f]["model_name"]).first
+    if params["model_id"]
+      @model_for_grid = @pool.models.find(params["model_id"])
+    else
+      if (params[:format].nil? || params[:format] == "html") && params["view"] != "browse"
+        @model_for_grid = @pool.models.first
+      end
+    end
+  end
+
+  def ensure_model_filtered_for_grid(solr_parameters, user_parameters)
+    unless @model_for_grid.nil?
+      solr_parameters[:fq] ||= []
+      solr_parameters[:fq] << "model:#{@model_for_grid.id}"
     end
   end
 
