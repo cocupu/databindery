@@ -77,15 +77,25 @@ describe PoolSearchesController do
         @node3 = Node.create!(model:@auto_model, pool: @other_pool, data:{"year"=>"2013", "make"=>"barf", "name"=>"Puke"})
         @node4 = Node.create!(model:@auto_model, pool: @other_pool, data:{"year"=>"2012", "make"=>"barf", "name"=>"Upchuck"})
       end
-      it "should be successful when rendering json" do
+      it "should provide blacklight-ish json response by default" do
         get :index, :pool_id=>@other_pool, :format=>:json, identity_id: @identity.short_name
+        response.should  be_successful
+        json = JSON.parse(response.body)
+        json["responseHeader"]["params"].keys.should include{"facet"}
+        json["responseHeader"]["params"].keys.should include{"rows"}
+        json["response"]["numFound"].should == 4
+        pids = json["docs"].map {|doc| doc["id"]}
+        [@node1, @node2, @node3, @node4].each {|n| pids.should include(n.persistent_id)}
+      end
+      it "should support nodesOnly json responses" do
+        get :index, :pool_id=>@other_pool, :format=>:json, identity_id: @identity.short_name, "nodesOnly"=>"true"
         response.should  be_successful
         json = JSON.parse(response.body)
         pids = json.map {|doc| doc["id"]}
         [@node1, @node2, @node3, @node4].each {|n| pids.should include(n.persistent_id)}
       end
       it "should allow faceted queries" do
-        get :index, :pool_id=>@other_pool, :format=>:json, identity_id: @identity.short_name, "f" => {Node.solr_name("make", type: "facet") => "barf"}
+        get :index, :pool_id=>@other_pool, :format=>:json, identity_id: @identity.short_name, "nodesOnly"=>"true", "f" => {Node.solr_name("make", type: "facet") => "barf"}
         response.should  be_successful
         json = JSON.parse(response.body)
         pids = json.map {|doc| doc["id"]}

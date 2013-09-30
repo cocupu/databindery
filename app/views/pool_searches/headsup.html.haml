@@ -1,8 +1,24 @@
 .headsup.row-fluid
   .panel.search
     Search
-  .panel.info.detail.empty.selectedItems
-    Select a cell to see details here.
-    {{selectedNode}}
+  .panel.info.detail.selectedItems
+    %div.emptyMessage{"ng-hide"=>"selectedNodes.length > 0"}
+      Select a cell to see details here.
+    %div{"ng-repeat"=>"node in selectedNodes"}
+      %h3 {{node.title}}
+      {{selectedCellIndex}}
+      %div.clearfix{"ng-repeat"=>"fieldConfig in currentModel.fields"}
+        %label.pull-left {{fieldConfig.name}}
+        %div {{node.data[fieldConfig.code]}}
+      %div.clearfix{"ng-repeat"=>"fieldConfig in currentModel.associations"}
+        %label.pull-left {{fieldConfig.name}}
+        %div {{node.associations[fieldConfig.code]}}
   .panel.info.supplemental.empty
-    Select a cell to see details here.
+    %div.emptyMessage{"ng-hide"=>"selectedNodes.length > 0"}
+      Select a cell to see details here.
+    %div{"ng-repeat"=>"node in selectedNodes"}
+      %h3 {{currentModel.name}}
+      %div.clearfix{"ng-repeat"=>"fieldConfig in currentModel.fields"}
+        %label.pull-left {{fieldConfig.name}}
+        %div {{fieldConfig.code}}
+      {{currentModel.fields.concat(currentModel.associations)}}

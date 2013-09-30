@@ -38,10 +38,12 @@ class PoolSearchesController < ApplicationController
       format.atom { render :layout => false }
       format.json do
         @marshalled_results ||= marshall_nodes(@document_list.map{|d| d["id"]})
-        if params["iDisplayStart"].nil?
+        if params["iDisplayStart"]
+          render  json: datatables_response
+        elsif params["nodesOnly"] || params["queries"]
           render  json: @marshalled_results
         else
-          render  json: datatables_response
+          render json: json_response
         end
       end
     end
@@ -53,6 +55,13 @@ class PoolSearchesController < ApplicationController
   # @document_list [Array] Array of persistent_ids of Nodes that should be loaded
   def marshall_nodes(node_id_list)
     node_id_list.map{|nid| Node.find_by_persistent_id(nid)}
+  end
+
+  def json_response
+    json_response = @response
+    #json_response["docs"] = @response["response"]["docs"].map {|solr_doc| serialize_work_from_solr(solr_doc) }
+    json_response["docs"] = @marshalled_results
+    json_response
   end
 
   def load_configuration

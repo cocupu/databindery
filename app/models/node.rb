@@ -215,6 +215,8 @@ class Node < ActiveRecord::Base
     h["pool"] = pool.short_name
     h["identity"] = pool.owner.short_name
     h["title"] = title
+    #h.merge!(h.delete("associations"))
+    #h.merge!(h.delete("data"))
     h
   end
   

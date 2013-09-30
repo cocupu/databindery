@@ -22,6 +22,8 @@
 //= require dataTables/jquery.dataTables
 //= require angular
 //= require angular-bootstrap
+//= require angular-resource
+//= require angular-sanitize
 //= require ng-grid
 //= require_tree .
 

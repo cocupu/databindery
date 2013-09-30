@@ -1,6 +1,29 @@
-app = angular.module('binderyCurate', ['ngGrid']);
-app.controller('EditableGrid', ($scope, $http, $location) ->
-    $scope.selectedNode = []
+app = angular.module('binderyCurate', ['ngGrid', "ngResource", "ngSanitize"]);
+app.controller('EditableGrid', ($scope, $http, $location, $resource, $sanitize, $log) ->
+    $scope.selectedNodes = []
+    $scope.selectedCellIndex =  0
+    Model = $resource('/models/:modelId', {modelId:'@model-id'});
+    $scope.currentModel = Model.get({modelId:$("#model-chooser .active").data("model-id")}, () -> $scope.columnDefs = $scope.columnDefsFromModel() )
+    $scope.columnDefs = []
+    $scope.columnDefsFromModel = () ->
+      fieldsDefs = $.map($scope.currentModel.fields, (f, i) ->
+        return {
+                field:'data["'+$sanitize(f.code)+'"]'
+                displayName:f.name
+                width:"120"
+                enableCellEdit: true
+#                editableCellTemplate: '/assets/editField-textfield.html'
+#                editableCellTemplate: '<input type="text" ng-model="row.entity.data[\''+$sanitize(f.code)+'\']"></input>'
+        }
+      )
+      associationsDefs = $.map($scope.currentModel.associations, (f, i) ->
+        return {field:'associations["'+$sanitize(f.code)+'"]', displayName:f.name, width:"120", enableCellEdit: true}
+      )
+      return fieldsDefs.concat(associationsDefs)
+#      modelAssociationsAndFields = $scope.currentModel.fields.concat($scope.currentModel.associations)
+#      return $.map(modelAssociationsAndFields, (f, i) ->
+#          return {field:$sanitize(f.code), displayName:f.name, minWidth:"120", enableCellEdit: true}
+#      )
 
     $scope.filterOptions =
       filterText: "",
@@ -13,27 +36,27 @@ app.controller('EditableGrid', ($scope, $http, $location) ->
       currentPage: 1
 
     $scope.setPagingData = (data, page, pageSize) ->
-      pagedData = data.slice((page - 1) * pageSize, page * pageSize)
-      $scope.myData = pagedData;
-      $scope.totalServerItems = data.length;
+#      pagedData = data.aaData.slice((page - 1) * pageSize, page * pageSize)
+      $scope.myData = data.docs;
+      $scope.totalServerItems = data.response.numFound;
       if (!$scope.$$phase)
         $scope.$apply()
 
     $scope.getPagedDataAsync = (pageSize, page, searchText) ->
       setTimeout( (() ->
         if (searchText)
-          ft = searchText.toLowerCase();
-          $http.get($location.path(), {
+          ft = searchText.toLowerCase()
+        else
+          ft = ""
+        $http.get($location.absUrl(), {
+          params: {
             rows: pageSize
             page: page
             q: searchText
-          }).success( (largeLoad) ->
-            $scope.setPagingData(data,page,pageSize);
-          )
-        else
-          $http.get($location.path()).success( (largeLoad) ->
-            $scope.setPagingData(largeLoad,page,pageSize)
-          )
+          }
+        }).success( (data) ->
+          $scope.setPagingData(data,page,pageSize);
+        )
       ), 100)
 
     $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage)
@@ -49,12 +72,17 @@ app.controller('EditableGrid', ($scope, $http, $location) ->
     ), true);
 
 
+    setGridOptions = () ->
 
     $scope.gridOptions =
       data: 'myData'
-      selectedItems: $scope.selectedNode
+      selectedItems: $scope.selectedNodes
+      selectedIndex: $scope.selectedCellIndex
       multiSelect: false
-#      columnDefs: [{field:'name', displayName:'Name'}, {field:'age', displayName:'Age'}]
+      enableCellSelection: true
+      enableCellEdit: true
+      enableRowSelection: true
+      columnDefs: 'columnDefs'
       enablePaging: true,
       showFooter: true,
       totalServerItems: 'totalServerItems',

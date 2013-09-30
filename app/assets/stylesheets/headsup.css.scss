@@ -7,17 +7,23 @@
     margin-left:0.25%;
     overflow-y: scroll;
     overflow-x: hidden;
-  }
-  .panel.empty {
-    text-align: center;
-    height: 10em;
-    padding-top: 8em;
 
+    .emptyMessage {
+      //text-align: center;
+      //height: 10em;
+      margin-top: 8em;
+
+    }
   }
+
   .panel.search, .panel.supplemental {
     width: 29%;
   }
+  .panel.supplemental {
+    text-align: center;
+  }
   .panel.detail {
+    text-align: center;
     width: 40.5%;
   }
 }

@@ -1,4 +1,4 @@
-#model-chooser.navbar.navbar-fixed-bottom
+.navbar.navbar-fixed-bottom
   .navbar-inner
     %ul.nav#select-view
       %li.nav-header View:
@@ -6,12 +6,16 @@
         =link_to "browse", url_for(params_for_search.merge(view: "browse"))
       %li{class: ("active" if params["view"] == "grid")}
         =link_to "grid", url_for(params_for_search.merge(view: "grid"))
-    %ul.nav
+    %ul.nav#model-chooser
       %li.nav-header Model:
       - selected_model_id = @model_for_grid.nil? ? "all" : @model_for_grid.id
       - if params["view"] == "browse"
         %li{class: ("active" if selected_model_id == "all")}
           =link_to "All Models", url_for(params_for_search.except(:model_id))
       - @pool.models.each do |m|
-        %li{class: ("active" if selected_model_id == m.id)}
-          =link_to m.name, url_for(params_for_search.merge(model_id: m.id))
+        - if selected_model_id == m.id
+          %li{class:"active", "data-model-id"=>m.id, "data-model-json"=>m.as_json}
+            =link_to m.name, url_for(params_for_search.merge(model_id: m.id))
+        - else
+          %li{"data-model-id"=>m.id}
+            =link_to m.name, url_for(params_for_search.merge(model_id: m.id))
