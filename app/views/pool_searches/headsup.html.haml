@@ -6,19 +6,37 @@
       Select a cell to see details here.
     %div{"ng-repeat"=>"node in selectedNodes"}
       %h3 {{node.title}}
-      {{selectedCellIndex}}
-      %div.clearfix{"ng-repeat"=>"fieldConfig in currentModel.fields"}
-        %label.pull-left {{fieldConfig.name}}
-        %div {{node.data[fieldConfig.code]}}
-      %div.clearfix{"ng-repeat"=>"fieldConfig in currentModel.associations"}
-        %label.pull-left {{fieldConfig.name}}
-        %div {{node.associations[fieldConfig.code]}}
+      %form.node-editor
+        %div.field.clearfix{"ng-repeat"=>"fieldConfig in currentModel.fields"}
+          %label {{fieldConfig.name}}
+          %input{"ng-model"=>"node.data[fieldConfig.code]"}
+        %div.clearfix{"ng-repeat"=>"fieldConfig in currentModel.associations"}
+          %label {{fieldConfig.name}}
+          %input{"ng-model"=>"node.associations[fieldConfig.code]"}
+
   .panel.info.supplemental.empty
     %div.emptyMessage{"ng-hide"=>"selectedNodes.length > 0"}
       Select a cell to see details here.
     %div{"ng-repeat"=>"node in selectedNodes"}
       %h3 {{currentModel.name}}
-      %div.clearfix{"ng-repeat"=>"fieldConfig in currentModel.fields"}
-        %label.pull-left {{fieldConfig.name}}
-        %div {{fieldConfig.code}}
-      {{currentModel.fields.concat(currentModel.associations)}}
+      %form.model-editor
+        %div.clearfix{"ng-repeat"=>"fieldConfig in currentModel.fields.concat(currentModel.associations)"}
+          %h4 {{fieldConfig.name}}
+          %div.field.clearfix
+            %label.pull-left Label
+            %input{"ng-model"=>"fieldConfig.name"}
+          %div.field.clearfix
+            %label.pull-left Code
+            %div {{fieldConfig.code}}
+          %div.field.clearfix
+            %label.pull-left Type
+            %input{"ng-model"=>"fieldConfig.type"}
+          %div.field.clearfix
+            %label.pull-left URI
+            %div {{fieldConfig.uri}}
+          %div.field.clearfix
+            %label.pull-left Multivalue
+            %input{type:"checkbox", "ng-model"=>"fieldConfig.multivalue"}
+          %div.field.clearfix
+            %label.pull-left Description
+            %textarea{"ng-model"=>"fieldConfig.description"}

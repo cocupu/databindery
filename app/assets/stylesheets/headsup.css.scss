@@ -8,6 +8,25 @@
     overflow-y: scroll;
     overflow-x: hidden;
 
+    form {
+      text-align: left;
+      h4 { padding-left: 1em; }
+    }
+
+    .model-editor {
+      label { width: 6em;}
+    }
+    .node-editor {
+      label {
+        margin-left: 1.5%;
+        margin-top: 1em;
+      }
+      input {
+        width: 96%;
+        margin-left: 1.5%;
+      }
+    }
+
     .emptyMessage {
       //text-align: center;
       //height: 10em;
@@ -26,4 +45,5 @@
     text-align: center;
     width: 40.5%;
   }
+
 }

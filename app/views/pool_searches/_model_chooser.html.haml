@@ -4,7 +4,7 @@
       %li.nav-header View:
       %li{class: ("active" if params["view"] == "browse")}
         =link_to "browse", url_for(params_for_search.merge(view: "browse"))
-      %li{class: ("active" if params["view"] == "grid")}
+      %li{class: ("active" if params["view"] != "browse")}
         =link_to "grid", url_for(params_for_search.merge(view: "grid"))
     %ul.nav#model-chooser
       %li.nav-header Model:
