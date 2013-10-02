@@ -85,7 +85,7 @@ angular.module("binderyEditableGrid",['ngGrid', "ngResource", "ngSanitize"]).con
     enableCellEdit: true
     enableRowSelection: true
     columnDefs: 'columnDefs'
-    rowHeight: "100"
+    rowHeight: "30"
     enablePaging: true,
     showFooter: true,
     totalServerItems: 'totalServerItems',

@@ -8,9 +8,20 @@
     overflow-y: scroll;
     overflow-x: hidden;
 
+    padding-top:3.5em;
+
+    .panelHeader{
+      position: fixed;
+      margin-top: -4em;
+      background-color: white;
+      width: 40%;
+    }
+
     form {
       text-align: left;
       h4 { padding-left: 1em; }
+      label {color: dimgrey;}
+      .value { color: grey}
     }
 
     .model-editor {
