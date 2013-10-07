@@ -17,9 +17,8 @@
           %input{"ng-model"=>"node.data[fieldConfig.code]"}
         %div.clearfix{"ng-repeat"=>"fieldConfig in currentModel.associations", "ng-init"=>"init(fieldConfig.references)", "ng-controller"=>"NodeAssociationCtrl"}
           %label {{fieldConfig.name}}
-          %input{"ui-select2"=>"select2options","ng-model"=>"associationJson", "style"=>"width:200px", value: "{{node.associations[fieldConfig.code].join(',')}}", multiple:true, style:"width:96%"}
+          %input{"ui-select2"=>"select2options","ng-model"=>"node.associations[fieldConfig.code]", "style"=>"width:200px", value: "{{node.associations[fieldConfig.code].join(',')}}", multiple:true, style:"width:96%"}
           {{node.associations[fieldConfig.code]}}
-          {{associationJson}}
   .panel.info.supplemental.empty
     %div.emptyMessage{"ng-hide"=>"selectedNodes.length > 0"}
       Select a cell to see details here.

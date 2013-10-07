@@ -1,4 +1,4 @@
-angular.module("binderyNodeAssociation",['ui']).controller('NodeAssociationCtrl', function($scope, $http) {
+angular.module("binderyNodeAssociation",['ui.select2']).controller('NodeAssociationCtrl', function($scope, $http) {
 
     $scope.init = function(model_id)
     {
@@ -30,25 +30,19 @@ angular.module("binderyNodeAssociation",['ui']).controller('NodeAssociationCtrl'
             }
         },
         initSelection: function(element, callback) {
-            var intialValues;
-            if (typeof($(element).val()) == "string") {
-                var pids = $(element).val().split(",")
-                intialValues = $.map(pids, function(pid) {return {id: pid}})
-            } else {
-                intialValues = $(element).val()
-            }
+            var ids = $(element).val().split(",");
             var collectedJson = [];
-            for (var i = 0; i < intialValues.length; i++) {
-                itemPid = intialValues[i]["id"];
-                $.ajax("/matt/footest/nodes/"+itemPid+".json", {
+            for (var i = 0; i < ids.length; i++) {
+                $.ajax("/matt/footest/nodes/"+ids[i]+".json", {
                     data: {
                     },
                 }).done(function(data) {
                     data["id"] = data["persistent_id"];
                     callback(data);
+//                    collectedJson.push(data);
                 });
             }
-
+//            callback(collectedJson);
         }
 
     }
