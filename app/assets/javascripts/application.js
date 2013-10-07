@@ -20,10 +20,12 @@
 //=# require backbone_rails_sync
 //=# require backbone/cocupu
 //= require dataTables/jquery.dataTables
+//= require select2/select2
 //= require angular
 //= require angular-bootstrap
 //= require angular-resource
 //= require angular-sanitize
+//= require angular-ui-select2
 //= require ng-grid
 //= require_tree .
 

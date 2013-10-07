@@ -1,0 +1,69 @@
+{
+    "topic":"The Protector Nagarjuna",
+    "བརྗོད":"མགོན་པོ་གླུ་གྲུབ།",
+    "http://purl.org/dc/elements/1.1/title":"My Field Value"
+}
+
+
+{"data":{"topic":"Shamata and Vipassana","བརྗོད་བྱ།":"ཞི་གནས་དང་ལྷག་མཐོང་།","http://purl.org/dc/elements/1.1/title":"Different Field Value"}},
+
+columnDefs: [{field:"data['topic']", displayName:"Topic"}, {field:"data['http://purl.org/dc/elements/1.1/title']", displayName:"Title"}, {field:"data['བརྗོད']", displayName:"Topic"}]
+
+{
+    "_topic":"The Protector Nagarjuna",
+    "http%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2Fnbde6rtac3euj7hwi":"མགོན་པོ་གླུ་གྲུབ།",
+    "_http-__purl.org_dc_elements_1.1_title":"My Field Value"
+}
+
+
+{
+    // This is the id of the node version
+    "id" : "4ab91810-b91d-0130-2eb5-7cd1c3f26451",
+    // This is the persistent_id of the persistent Node that this is a version of
+    "persistent_id" : "4ab91810-b91d-0130-2eb5-7cd1c3f26451",
+    "identity_id" : null,
+    "model_id" : 4,
+    "modified_by_id" : 1,
+    "parent_id" : "611",
+    "pool_id" : 1,
+    "spawned_from_datum_id" : 10221,
+    "spawned_from_node_id" : null,
+    "updated_at" : "2013-08-19T17:23:50Z",
+    "pool" : "footest",
+    "identity" : "matt",
+    "title" : "nges.don.rgya.mtsho-athens-1992-msi-te-1c",
+    // WRT the persistent node, this is actually the modified_at value (this is the time that the node version was created)
+    "created_at" : "2013-08-19T17:23:50Z",
+    "associations" : {
+        "pukes" : null,
+        "bars" : null,
+        "tibetan_material" : ["9c948ad0-eb1e-0130-427c-7cd1c3f26451"],
+        "topic" : ["8351c590-eb1e-0130-427b-7cd1c3f26451"],
+        "files" : ["8351c590-eb1e-0130-427b-7cd1c3f26451","66e5a130-eb1f-0130-427f-7cd1c3f26451","4e874d60-eb20-0130-4281-7cd1c3f26451"]
+    },
+    // Can this be removed?  Is it ever used?
+    "binding" : null,
+    "data" : {
+        "submitted_by" : "Hanna Severin",
+        "collection_name_<set_by_franklin>" : "nges.don.rgya.mtsho-athens-1992-msi-te-1c",
+        "media_<select>" : "Cassette Tape",
+        "#_of_media" : 1,
+        "collection_owner" : "Mille Siebelts",
+        "collection_location" : "Kiel,Germany",
+        "program_title_english" : "Mahamudra Prayer",
+        "main_text_title_tibetan_<select>" : "34. phyag chen smon lam : karma pa rang byung rdo rje",
+        "main_text_title_english_<select>" : "34. Mahamudra Prayer",
+        "program_location_<select>" : "Athens, Greece",
+        "date_from_" : "07.1992",
+        "date_to" : null,
+        "teacher" : "KTGR",
+        "restricted?_<select>" : "No",
+        "original_recorded_by_<select>" : "Mille",
+        "copy_or_original_<select>" : "original",
+        "translation_languages" : "English",
+        "notes" : null,
+        "post-digi_notes" : "the Topic is \"The Ocean of Definitive Meaning\"! finished at 25.03.2012",
+        "post-production_notes" : null
+    },
+
+}

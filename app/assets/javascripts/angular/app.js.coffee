@@ -1,1 +1,1 @@
-app = angular.module('binderyCurate', ["binderyEditableGrid"])
+app = angular.module('binderyCurate', ["binderyEditableGrid", "binderyNodeAssociation"])

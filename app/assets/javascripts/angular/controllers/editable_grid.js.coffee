@@ -11,15 +11,13 @@ angular.module("binderyEditableGrid",['ngGrid', "ngResource", "ngSanitize"]).con
       field:"data['"+$sanitize(f.code)+"']"
       displayName:f.name
       width:"120"
-      enableCellEdit: true
+      enableCellEdit: false
 #                editableCellTemplate: '/assets/editField-textarea.html'
       editableCellTemplate: '/assets/editField-textfield.html'
-
-#                editableCellTemplate: '<input type="text" ng-model="row.entity.data[\''+$sanitize(f.code)+'\']"></input>'
       }
     )
     associationsDefs = $.map($scope.currentModel.associations, (f, i) ->
-      return {field:"associations['"+$sanitize(f.code)+"']", displayName:f.name, width:"120", enableCellEdit: true}
+      return {field:"associations['"+$sanitize(f.code)+"']", displayName:f.name, width:"120"}
     )
     return fieldsDefs.concat(associationsDefs)
   #      modelAssociationsAndFields = $scope.currentModel.fields.concat($scope.currentModel.associations)
@@ -81,9 +79,9 @@ angular.module("binderyEditableGrid",['ngGrid', "ngResource", "ngSanitize"]).con
     selectedItems: $scope.selectedNodes
     selectedIndex: $scope.selectedCellIndex
     multiSelect: false
-    enableCellSelection: true
-    enableCellEdit: true
     enableRowSelection: true
+    enableCellSelection: true
+    enableCellEdit: false
     columnDefs: 'columnDefs'
     rowHeight: "30"
     enablePaging: true,

@@ -23,6 +23,7 @@
  *= require jquery.ui.core
  *= require datatables
  *= require ng-grid
+ *= require select2
 */
 
 
