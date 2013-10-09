@@ -5,6 +5,7 @@ angular.module("binderyEditableGrid",['ngGrid', "ngResource", "ngSanitize"]).con
     propertyToSearch: "title"
     jsonContainer: "docs"
     minChars: -1
+    preventDuplicates: true
     theme: "facebook"
     # initialize selections within the tokeninput element
     # @param scope of the directive

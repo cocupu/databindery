@@ -192,7 +192,8 @@ $.TokenList = function (input, url_or_data, settings) {
         .attr("id", settings.idPrefix + input.id)
         .focus(function () {
             if (settings.tokenLimit === null || settings.tokenLimit !== token_count) {
-                show_dropdown_hint();
+//                show_dropdown_hint();
+                setTimeout(function() { run_search(''); }, 5);
             }
         })
         .blur(function () {

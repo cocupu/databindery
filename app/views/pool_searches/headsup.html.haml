@@ -13,7 +13,7 @@
           %input{"ng-model"=>"node.data[fieldConfig.code]"}
         %div.clearfix{"ng-repeat"=>"fieldConfig in currentModel.associations"}
           %label {{fieldConfig.name}}
-          %input{"id"=>"{{fieldConfig.code}}","bindery-token-input"=>"tokeninputOptions","data-url"=>"/matt/footest/search?model_id=4","ng-model"=>"node.associations[fieldConfig.code]", "style"=>"width:200px", multiple:true, style:"width:96%"}
+          %input{"id"=>"{{fieldConfig.code}}","bindery-token-input"=>"tokeninputOptions","data-url"=>"'/matt/footest/search?model_id='+fieldConfig.references","ng-model"=>"node.associations[fieldConfig.code]", multiple:true}
   .panel.info.supplemental.empty
     %div.emptyMessage{"ng-hide"=>"selectedNodes.length > 0"}
       Select a cell to see details here.
