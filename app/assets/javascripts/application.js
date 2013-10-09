@@ -25,6 +25,7 @@
 //= require angular-resource
 //= require angular-sanitize
 //= require ng-grid
+//= require jquery.tokeninput
 //= require_tree .
 
 Number.prototype.leftZeroPad = function(numZeros) {

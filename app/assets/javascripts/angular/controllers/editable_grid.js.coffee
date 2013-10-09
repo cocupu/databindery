@@ -1,5 +1,37 @@
 # Editable Grid
 angular.module("binderyEditableGrid",['ngGrid', "ngResource", "ngSanitize"]).controller('EditableGridCtrl', ($scope, $http, $location, $resource, $sanitize, $log) ->
+  # tokeninput config options
+  $scope.tokeninputOptions = {
+    propertyToSearch: "title"
+    jsonContainer: "docs"
+    minChars: -1
+    theme: "facebook"
+    # initialize selections within the tokeninput element
+    # @param scope of the directive
+    # @param element the directive is attached to
+    # @param callback to trigger for each JSON object that should be added to the array of selections
+    initSelection: (scope, element, callback) ->
+      ids = scope.$eval(element.attr("ng-model"))
+      collectedJson = []
+#      console.log("Host: "+$location.host())
+#      console.log("Path: "+$location.path())
+#      console.log("Params: ")
+#      console.log($location.search())
+#      console.log("URL: "+$location.url())
+#      console.log("Absurl: "+$location.absUrl())
+      angular.forEach(ids, (pid) ->
+        nodeUrl = $location.path().replace("search","nodes")+"/"+pid
+        $.ajax(nodeUrl+".json", {
+          data: {}
+        })
+        .done( (data) ->
+            data.id = data.persistent_id
+            callback(data)
+          )
+      )
+  }
+
+  # ng-grid Configs
   $scope.selectedNodes = []
   $scope.selectedCellIndex =  0
   Model = $resource('/models/:modelId', {modelId:'@model-id'});
@@ -90,5 +122,8 @@ angular.module("binderyEditableGrid",['ngGrid', "ngResource", "ngSanitize"]).con
     showFooter: true,
     totalServerItems: 'totalServerItems',
     pagingOptions: $scope.pagingOptions,
-    filterOptions: $scope.filterOptions
+    filterOptions: $scope.filterOptions,
+#    afterSelectionChange: (rowItem, event) ->
+#      console.log( $('.ngCellElement:focus').attr('class') )
+
 )
