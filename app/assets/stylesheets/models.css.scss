@@ -43,7 +43,7 @@
   }
 }
 
-.palate-drawer.panel {
+.document .panel, .palate-drawer .panel {
   float: left;
   border: 1px solid gray;
   margin-left: 10px;
@@ -55,6 +55,7 @@
   overflow: auto;
 
   .panel-header {
+    width: 650px;
     border-bottom: 1px solid #EEEEEE;
     padding: 9px 15px;
   }

@@ -309,7 +309,8 @@ class PoolSearchesController < ApplicationController
     if params["model_id"]
       @model_for_grid = @pool.models.find(params["model_id"])
     else
-      if (params[:format].nil? || params[:format] == "html") && params["view"] != "browse"
+      #if (params[:format].nil? || params[:format] == "html") && params["view"] != "browse"
+      if params["view"] == "grid"
         @model_for_grid = @pool.models.first
       end
     end
