@@ -1,5 +1,5 @@
 # Editable Grid
-angular.module("binderyEditableGrid",['ng','ngGrid', "ngResource", "ngSanitize"]).controller('EditableGridCtrl', ($scope, $http, $location, $resource, $sanitize, $log) ->
+EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
   Model = $resource('/models/:modelId', {modelId:'@id'}, {
     update: { method: 'PUT' }
   })
@@ -158,4 +158,6 @@ angular.module("binderyEditableGrid",['ng','ngGrid', "ngResource", "ngSanitize"]
           $(".fieldControl."+selectedCol).focus()
       else
         $scope.currentNode = rowItem
-)
+
+EditableGridCtrl.$inject = ['$scope', '$http', '$location', '$resource', '$sanitize', '$log']
+angular.module("binderyEditableGrid", ['ng','ngGrid', "ngResource", "ngSanitize"]).controller('EditableGridCtrl', EditableGridCtrl)
