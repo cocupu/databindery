@@ -1,6 +1,6 @@
 .headsup.row-fluid
   .panel.panel-default.search
-    Search
+
   .panel.panel-default.info.detail.selectedItems
     .panel-body{"ng-hide"=>"selectedNodes.length > 0"}
       %div.emptyMessage
@@ -22,7 +22,7 @@
           %span{"ng-switch"=>true, "on"=>"fieldConfig.type"}
             %textarea{"ng-switch-when"=>"textarea", "ng-model"=>"node.data[fieldConfig.code]", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
             %input{"ng-switch-when"=>"date", type:"date", "ng-model"=>"node.data[fieldConfig.code]", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
-            %input{"ng-switch-when"=>"Has Many", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}","bindery-token-input"=>"nodeTokeninputOptions","data-url"=>"searchUrl+'?model_id='+fieldConfig.references","ng-model"=>"node.associations[fieldConfig.code]", multiple:true, class:"fieldControl colt{{$index}} col{{$index}}"}
+            %input{"ng-switch-when"=>"Has Many", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}","bindery-token-input"=>"nodeTokeninputOptions","data-url"=>"searchUrl+'?rows=100&model_id='+fieldConfig.references","ng-model"=>"node.associations[fieldConfig.code]", multiple:true, class:"fieldControl colt{{$index}} col{{$index}}"}
             %input{"ng-switch-default"=>"true", "ng-model"=>"node.data[fieldConfig.code]", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
           %a.pull-right.config-field{"onClick"=>"$('#modelField_{{fieldConfig.code}}_name').focus()"} config field
 
