@@ -178,7 +178,13 @@ module FileEntity
     s3_obj.metadata["filename"] = file_name
     s3_obj.metadata["bindery-pid"] = persistent_id
   end
-  
+
+  def as_json(opts=nil)
+    h = super
+    h["spawnable"] = spreadsheet?
+    h
+  end
+
   private
 
   def s3_obj
