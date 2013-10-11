@@ -46,11 +46,12 @@
           .value {{fieldConfig.code}}
         %div.field.clearfix
           %label.pull-left Type
-          %select{"ng-model"=>"fieldConfig.type"}
-            %option{value:"text"} Text Field
-            %option{value:"textarea"} Text Area
-            %option{value:"date"} Date
-            %option{value:"Has Many"} Relationship
+          %select{"ng-model"=>"fieldConfig.type", "ng-options"=>"item.id as item.label for item in typeOptionsFor(fieldConfig.type)"}
+            -#%option{value:"text"} Text Field
+            -#%option{value:"textarea"} Text Area
+            -#%option{value:"date"} Date
+            -#%option{value:"Has Many"} Relationship (Has Many)
+            -#%option{value:"Has One"} Relationship
         %div.field.clearfix{"ng-show"=>"fieldConfig.type == 'Has Many'", class:"animate-hide"}
           %label.pull-left References
           %input{"ng-model"=>"fieldConfig.references"}

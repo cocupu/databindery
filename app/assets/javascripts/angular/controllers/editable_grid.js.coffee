@@ -3,6 +3,13 @@ angular.module("binderyEditableGrid",['ng','ngGrid', "ngResource", "ngSanitize"]
   Model = $resource('/models/:modelId', {modelId:'@id'}, {
     update: { method: 'PUT' }
   })
+  $scope.typeOptionsFor = (fieldType) ->
+    associationTypes = [{label:"Associaton (Has Many)", id:"Has Many"}, {label:"Associaton (Has One)", id:"Has One"}]
+    fieldTypes = [{label:"Text Field", id:"text"},{label:"Text Area", id:"textarea"}, {label:"Date", id:"date"}]
+    if (["Has One", "Has Many"].indexOf(fieldType) > -1)
+      return associationTypes
+    else
+      return fieldTypes
 
   $scope.updateModel = (model) ->
     model.$update( (savedModel, putResponseHeaders) ->
