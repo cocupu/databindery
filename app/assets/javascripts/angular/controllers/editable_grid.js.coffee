@@ -1,5 +1,10 @@
 # Editable Grid
 EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
+
+  $scope.searchUrl = $location.path()
+  #
+  # Resources
+  #
   Model = $resource('/models/:modelId', {modelId:'@id'}, {
     update: { method: 'PUT' }
   })
@@ -29,6 +34,7 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
       node.lastUpdated = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
       node.dirty = false
     )
+
 
   #
   # tokeninput config options
@@ -77,7 +83,7 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
       return columnDef
     )
     associationsDefs = $.map($scope.currentModel.associations, (f, i) ->
-      columnDef = {field:"associations['"+$sanitize(f.code)+"']", displayName:f.name, width:"120", enableCellEdit: true}
+      columnDef = {field:"associations['"+$sanitize(f.code)+"']", displayName:f.name, width:"120"}
       if fixedColumnWidth
         columnDef["width"] = "120"
       return columnDef
@@ -154,7 +160,6 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
         selectedCell = $('.ngCellElement:focus')
         if (selectedCell.length > 0)
           selectedCol = selectedCell.attr('class').split(" ").filter( (x) -> return x.indexOf("colt") > -1 )[0]
-          console.log(selectedCol)
           $(".fieldControl."+selectedCol).focus()
       else
         $scope.currentNode = rowItem
