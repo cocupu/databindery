@@ -3,6 +3,10 @@
 
 en:
   bindery:
+    nodes:
+      save_changes: "Save Changes"
+    models:
+      save_changes: "Save Model"
     perspectives:
       switch: "Switch Perspective"
       title_of_default: "All Content, All fields"

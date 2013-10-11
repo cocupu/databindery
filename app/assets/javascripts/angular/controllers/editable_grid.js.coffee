@@ -1,10 +1,34 @@
 # Editable Grid
-angular.module("binderyEditableGrid",['ngGrid', "ngResource", "ngSanitize"]).controller('EditableGridCtrl', ($scope, $http, $location, $resource, $sanitize, $log) ->
+angular.module("binderyEditableGrid",['ng','ngGrid', "ngResource", "ngSanitize"]).controller('EditableGridCtrl', ($scope, $http, $location, $resource, $sanitize, $log) ->
+  Model = $resource('/models/:modelId', {modelId:'@id'}, {
+    update: { method: 'PUT' }
+  })
+
+  $scope.updateModel = (model) ->
+    model.$update( (savedModel, putResponseHeaders) ->
+      now = new Date()
+      model.lastUpdated = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
+      model.dirty = false
+    )
+
+  Node = $resource($location.path().replace("search","nodes")+"/:nodeId", {nodeId:'@persistent_id'}, {
+    update: { method: 'PUT' }
+  })
+
+  $scope.updateNode = (node) ->
+    nodeResource = new Node(node)
+    nodeResource.$update( (savedNode, putResponseHeaders) ->
+      now = new Date()
+      node.lastUpdated = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
+      node.dirty = false
+    )
+
+  #
   # tokeninput config options
-  $scope.tokeninputOptions = {
+  #
+  $scope.nodeTokeninputOptions = {
     propertyToSearch: "title"
     jsonContainer: "docs"
-    minChars: -1
     preventDuplicates: true
     theme: "facebook"
     # initialize selections within the tokeninput element
@@ -13,30 +37,22 @@ angular.module("binderyEditableGrid",['ngGrid', "ngResource", "ngSanitize"]).con
     # @param callback to trigger for each JSON object that should be added to the array of selections
     initSelection: (scope, element, callback) ->
       ids = scope.$eval(element.attr("ng-model"))
-      collectedJson = []
-#      console.log("Host: "+$location.host())
-#      console.log("Path: "+$location.path())
-#      console.log("Params: ")
-#      console.log($location.search())
-#      console.log("URL: "+$location.url())
-#      console.log("Absurl: "+$location.absUrl())
       angular.forEach(ids, (pid) ->
-        nodeUrl = $location.path().replace("search","nodes")+"/"+pid
-        $.ajax(nodeUrl+".json", {
-          data: {}
-        })
-        .done( (data) ->
-            data.id = data.persistent_id
-            callback(data)
-          )
+        node = Node.get({nodeId:pid}, () ->
+          node.id = node.persistent_id
+          callback(node)
+        )
       )
   }
 
+  #
   # ng-grid Configs
+  #
   $scope.selectedNodes = []
-  $scope.selectedCellIndex =  0
-  Model = $resource('/models/:modelId', {modelId:'@model-id'});
+  $scope.currentNode = {}
+
   $scope.currentModel = Model.get({modelId:$("#model-chooser .active").data("model-id")}, () -> $scope.columnDefs = $scope.columnDefsFromModel() )
+
   $scope.columnDefs = []
   $scope.columnDefsFromModel = () ->
     fieldsDefs = $.map($scope.currentModel.fields, (f, i) ->
@@ -44,8 +60,7 @@ angular.module("binderyEditableGrid",['ngGrid', "ngResource", "ngSanitize"]).con
       field:"data['"+$sanitize(f.code)+"']"
       displayName:f.name
       width:"120"
-      enableCellEdit: true
-#                editableCellTemplate: '/assets/editField-textarea.html'
+#      editableCellTemplate: '/assets/editField-textarea.html'
       editableCellTemplate: '/assets/editField-textfield.html'
 
 #                editableCellTemplate: '<input type="text" ng-model="row.entity.data[\''+$sanitize(f.code)+'\']"></input>'
@@ -55,10 +70,6 @@ angular.module("binderyEditableGrid",['ngGrid', "ngResource", "ngSanitize"]).con
       return {field:"associations['"+$sanitize(f.code)+"']", displayName:f.name, width:"120", enableCellEdit: true}
     )
     return fieldsDefs.concat(associationsDefs)
-  #      modelAssociationsAndFields = $scope.currentModel.fields.concat($scope.currentModel.associations)
-  #      return $.map(modelAssociationsAndFields, (f, i) ->
-  #          return {field:$sanitize(f.code), displayName:f.name, minWidth:"120", enableCellEdit: true}
-  #      )
 
   $scope.filterOptions =
     filterText: "",
@@ -115,16 +126,23 @@ angular.module("binderyEditableGrid",['ngGrid', "ngResource", "ngSanitize"]).con
     selectedIndex: $scope.selectedCellIndex
     multiSelect: false
     enableCellSelection: true
-    enableCellEdit: true
+    enableCellEdit: false
     enableRowSelection: true
     columnDefs: 'columnDefs'
     rowHeight: "30"
     enablePaging: true,
-    showFooter: true,
+    showFooter: false,
     totalServerItems: 'totalServerItems',
     pagingOptions: $scope.pagingOptions,
     filterOptions: $scope.filterOptions,
-#    afterSelectionChange: (rowItem, event) ->
-#      console.log( $('.ngCellElement:focus').attr('class') )
-
+    afterSelectionChange: (rowItem, event) ->
+      if ($scope.currentNode == rowItem)
+#        This is where we could focus on field control corresponding to selected cell
+        selectedCell = $('.ngCellElement:focus')
+        if (selectedCell.length > 0)
+          selectedCol = selectedCell.attr('class').split(" ").filter( (x) -> return x.indexOf("colt") > -1 )[0]
+          console.log(selectedCol)
+          $(".fieldControl."+selectedCol).focus()
+      else
+        $scope.currentNode = rowItem
 )
