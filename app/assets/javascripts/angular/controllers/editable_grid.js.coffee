@@ -62,19 +62,25 @@ angular.module("binderyEditableGrid",['ng','ngGrid', "ngResource", "ngSanitize"]
 
   $scope.columnDefs = []
   $scope.columnDefsFromModel = () ->
+    if $scope.currentModel.fields.length + $scope.currentModel.associations.length > 5
+      fixedColumnWidth = true
     fieldsDefs = $.map($scope.currentModel.fields, (f, i) ->
-      return {
-      field:"data['"+$sanitize(f.code)+"']"
-      displayName:f.name
-      width:"120"
-#      editableCellTemplate: '/assets/editField-textarea.html'
-      editableCellTemplate: '/assets/editField-textfield.html'
-
-#                editableCellTemplate: '<input type="text" ng-model="row.entity.data[\''+$sanitize(f.code)+'\']"></input>'
+      columnDef = {
+        field:"data['"+$sanitize(f.code)+"']"
+        displayName:f.name
+#        editableCellTemplate: '/assets/editField-textarea.html'
+        editableCellTemplate: '/assets/editField-textfield.html'
+#        editableCellTemplate: '<input type="text" ng-model="row.entity.data[\''+$sanitize(f.code)+'\']"></input>'
       }
+      if fixedColumnWidth
+        columnDef["width"] = "120"
+      return columnDef
     )
     associationsDefs = $.map($scope.currentModel.associations, (f, i) ->
-      return {field:"associations['"+$sanitize(f.code)+"']", displayName:f.name, width:"120", enableCellEdit: true}
+      columnDef = {field:"associations['"+$sanitize(f.code)+"']", displayName:f.name, width:"120", enableCellEdit: true}
+      if fixedColumnWidth
+        columnDef["width"] = "120"
+      return columnDef
     )
     return fieldsDefs.concat(associationsDefs)
 
