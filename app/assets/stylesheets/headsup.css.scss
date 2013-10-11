@@ -16,6 +16,10 @@
       padding-right:5px;
       padding-bottom: 8px;
       background-color: white;
+      h3 {
+        white-space: nowrap;
+        overflow: scroll;
+      }
     }
 
     form {

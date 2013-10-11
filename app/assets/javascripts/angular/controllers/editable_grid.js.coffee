@@ -1,7 +1,10 @@
 # Editable Grid
 EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
 
+  # General Scope properties
   $scope.searchUrl = $location.path()
+
+
   #
   # Resources
   #
@@ -163,6 +166,19 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
           $(".fieldControl."+selectedCol).focus()
       else
         $scope.currentNode = rowItem
+
+  #
+  $scope.resizeGrid = () ->
+    staticElementsHeight = $(".row").height() + $(".headsup").not(":hidden").height() + $(".navbar-fixed-top").height() + $(".navbar-fixed-bottom").height()
+    newHeight = Math.max(100, $(window).height() - staticElementsHeight)
+    console.log("Raw "+($(window).height() - staticElementsHeight)+", Calc: "+newHeight)
+    $(".ngGrid").height(newHeight)
+
+  # Trigger on load and  when page resizes
+  $( document ).ready( () -> $scope.resizeGrid() )
+  $( window ).resize( () ->
+    $scope.resizeGrid()
+  )
 
 EditableGridCtrl.$inject = ['$scope', '$http', '$location', '$resource', '$sanitize', '$log']
 angular.module("binderyEditableGrid", ['ng','ngGrid', "ngResource", "ngSanitize"]).controller('EditableGridCtrl', EditableGridCtrl)
