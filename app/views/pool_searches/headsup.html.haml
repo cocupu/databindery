@@ -1,7 +1,8 @@
 .headsup.row-fluid
-  .panel.panel-default.search
-
-  .panel.panel-default.info.detail.selectedItems
+  .panel.panel-default.info
+    .panel-body
+      {{searchResponse.facet_counts}}
+  .panel.panel-default.detail.selectedItems
     .panel-body{"ng-hide"=>"selectedNodes.length > 0"}
       %div.emptyMessage
         Select a cell to see details here.
@@ -20,13 +21,46 @@
             {{fieldConfig.name}}
             %span.field-helper{"ng-show"=>"fieldConfig.type == 'date'"} {{node.data[fieldConfig.code]}}
           %span{"ng-switch"=>true, "on"=>"fieldConfig.type"}
-            %textarea{"ng-switch-when"=>"textarea", "ng-model"=>"node.data[fieldConfig.code]", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
-            %input{"ng-switch-when"=>"date", type:"date", "ng-model"=>"node.data[fieldConfig.code]", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
-            %input{"ng-switch-when"=>"Has Many", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}","bindery-token-input"=>"nodeTokeninputOptions","data-url"=>"searchUrl+'?rows=100&model_id='+fieldConfig.references","ng-model"=>"node.associations[fieldConfig.code]", multiple:true, class:"fieldControl colt{{$index}} col{{$index}}"}
-            %input{"ng-switch-default"=>"true", "ng-model"=>"node.data[fieldConfig.code]", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
-          %a.pull-right.config-field{"onClick"=>"$('#modelField_{{fieldConfig.code}}_name').focus()"} config field
+            %textarea{"ng-switch-when"=>"textarea", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
+            %input{"ng-switch-when"=>"date", type:"date", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
+            %input{"ng-switch-when"=>"Has Many", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", "ng-focus"=>"focusOnField(fieldConfig)", "bindery-token-input"=>"nodeTokeninputOptions","data-url"=>"searchUrl+'?rows=100&model_id='+fieldConfig.references","ng-model"=>"node.associations[fieldConfig.code]", "data-field-config"=>"{{fieldConfig}}", multiple:true, class:"fieldControl colt{{$index}} col{{$index}}"}
+            %input{"ng-switch-default"=>"true", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
 
-  .panel.panel-default.info.supplemental.empty
+  -# Supplemental Panel
+
+  -# -- Supplemental node info
+  .panel.panel-default.info.supplemental.node{"ng-show"=>"supplementalPanelState == 'node'"}
+    .panelHeader.panel-header
+      %h3 {{supplementalNode.title}}
+    .panel-body
+      {{supplementalNode}}
+
+  -# -- Supplemental field info
+  .panel.panel-default.info.supplemental.field{"ng-show"=>"supplementalPanelState == 'field'"}
+    .panelHeader.panel-header
+      %h3 {{focusedField.name}}
+      %a.pull-right.config-field{"ng-click"=>"configField(focusedField)"} configure field
+    .panel-body
+      %dl.list-group
+        %dt.short Current value:
+        %dd.short {{selectedNodes[0].data[focusedField.code] || "not set"}}
+        %dt.short Type
+        %dd.short {{focusedField.type || "not set"}}
+        %dt
+          Limit Search by
+          %span.knock-back {{focusedField.name}}
+        %dd
+          %ul.list-group.facets
+
+            %li.list-group-item{"ng-repeat"=>"facetField in facetFieldsFor(focusedField)"}
+              %a
+                {{facetField.value}}
+                %span.badge.pull-right {{facetField.count}}
+        %dt Description
+        %dd {{focusedField.description}}
+
+  -# -- Supplemental model info
+  .panel.panel-default.info.supplemental.model{"ng-show"=>"supplementalPanelState == 'model'"}
     .panel-body{"ng-hide"=>"selectedNodes.length > 0"}
       .emptyMessage
         Select a cell to see details here.

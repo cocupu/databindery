@@ -1,16 +1,19 @@
 # Editable Grid
-EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
+EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeout) ->
 
   # General Scope properties
+  $scope.selectedNodes = []
+  $scope.currentNode = {}
+  $scope.currentModel = {}
+
   $scope.searchUrl = $location.path()
+  $scope.detailPanelState = "node"
+  $scope.infoPanelState = "default"
+  $scope.supplementalPanelState = "none"
+  $scope.supplementalNode = {}
+  $scope.focusedField = {}
 
 
-  #
-  # Resources
-  #
-  Model = $resource('/models/:modelId', {modelId:'@id'}, {
-    update: { method: 'PUT' }
-  })
   $scope.typeOptionsFor = (fieldType) ->
     associationTypes = [{label:"Associaton (Has Many)", id:"Has Many"}, {label:"Associaton (Has One)", id:"Has One"}]
     fieldTypes = [{label:"Text Field", id:"text"},{label:"Text Area", id:"textarea"}, {label:"Date", id:"date"}]
@@ -18,6 +21,15 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
       return associationTypes
     else
       return fieldTypes
+
+  #
+  # Resources
+  #
+  Model = $resource('/models/:modelId', {modelId:'@id'}, {
+    update: { method: 'PUT' }
+  })
+  $scope.currentModel = Model.get({modelId:$("#model-chooser .active").data("model-id")}, () -> $scope.columnDefs = $scope.columnDefsFromModel() )
+
 
   $scope.updateModel = (model) ->
     model.$update( (savedModel, putResponseHeaders) ->
@@ -47,6 +59,14 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
     jsonContainer: "docs"
     preventDuplicates: true
     theme: "facebook"
+    resultsFormatter: (item) ->
+      return "<li>"+item.title+"</li>"
+    tokenFormatter: (item) ->
+      fieldHtml = "<li class=\"selected-token "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\">"+item.title+"</li>"
+#      fieldHtml = "<li class=\"selected-token "+item.persistent_id+"\">"+item.title+"</li>"
+
+      return fieldHtml
+
     # initialize selections within the tokeninput element
     # @param scope of the directive
     # @param element the directive is attached to
@@ -64,11 +84,6 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
   #
   # ng-grid Configs
   #
-  $scope.selectedNodes = []
-  $scope.currentNode = {}
-
-  $scope.currentModel = Model.get({modelId:$("#model-chooser .active").data("model-id")}, () -> $scope.columnDefs = $scope.columnDefsFromModel() )
-
   $scope.columnDefs = []
   $scope.columnDefsFromModel = () ->
     if $scope.currentModel.fields.length + $scope.currentModel.associations.length > 5
@@ -105,7 +120,8 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
 
   $scope.setPagingData = (data, page, pageSize) ->
 #      pagedData = data.aaData.slice((page - 1) * pageSize, page * pageSize)
-    $scope.myData = data.docs;
+    $scope.searchResponse = data
+    $scope.docs = data.docs;
     $scope.totalServerItems = data.response.numFound;
     if (!$scope.$$phase)
       $scope.$apply()
@@ -143,7 +159,7 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
   setGridOptions = () ->
 
   $scope.gridOptions =
-    data: 'myData'
+    data: 'docs'
     selectedItems: $scope.selectedNodes
     selectedIndex: $scope.selectedCellIndex
     multiSelect: false
@@ -167,11 +183,37 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
       else
         $scope.currentNode = rowItem
 
+
+  $scope.focusOnField = (fieldConfig) ->
+    $scope.focusedField  = fieldConfig
+    $scope.supplementalPanelState = "field"
+
+
+  $scope.configField = (fieldConfig) ->
+    $scope.focusedField  = fieldConfig
+    $scope.supplementalPanelState = "model"
+    window.setTimeout(() ->
+      $("#modelField_"+fieldConfig.code+"_name").focus()
+    ,100)
+
+  $scope.facetFieldsFor = (fieldConfig) ->
+    console.log(fieldConfig)
+    blacklightFacetFieldArray = $scope.searchResponse.facet_counts.facet_fields[fieldConfig.code+'_facet']
+    console.log(blacklightFacetFieldArray)
+    $.map(blacklightFacetFieldArray, (ff, i) ->
+      if (i%2 == 0)
+        return {value: ff, count: blacklightFacetFieldArray[i+1]}
+    )
+
+  $scope.openNodeSupplemental = (pid) ->
+    $scope.supplementalNode = Node.get({nodeId:pid}, (node) ->
+      $scope.supplementalPanelState = "node"
+    )
+
   #
   $scope.resizeGrid = () ->
     staticElementsHeight = $(".row").height() + $(".headsup").not(":hidden").height() + $(".navbar-fixed-top").height() + $(".navbar-fixed-bottom").height()
     newHeight = Math.max(100, $(window).height() - staticElementsHeight)
-    console.log("Raw "+($(window).height() - staticElementsHeight)+", Calc: "+newHeight)
     $(".ngGrid").height(newHeight)
 
   # Trigger on load and  when page resizes
@@ -180,5 +222,5 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log) ->
     $scope.resizeGrid()
   )
 
-EditableGridCtrl.$inject = ['$scope', '$http', '$location', '$resource', '$sanitize', '$log']
+EditableGridCtrl.$inject = ['$scope', '$http', '$location', '$resource','$sanitize', '$log']
 angular.module("binderyEditableGrid", ['ng','ngGrid', "ngResource", "ngSanitize"]).controller('EditableGridCtrl', EditableGridCtrl)
