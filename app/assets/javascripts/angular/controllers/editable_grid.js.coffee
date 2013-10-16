@@ -196,15 +196,6 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
       $("#modelField_"+fieldConfig.code+"_name").focus()
     ,100)
 
-  $scope.facetFieldsFor = (fieldConfig) ->
-    console.log(fieldConfig)
-    blacklightFacetFieldArray = $scope.searchResponse.facet_counts.facet_fields[fieldConfig.code+'_facet']
-    console.log(blacklightFacetFieldArray)
-    $.map(blacklightFacetFieldArray, (ff, i) ->
-      if (i%2 == 0)
-        return {value: ff, count: blacklightFacetFieldArray[i+1]}
-    )
-
   $scope.openNodeSupplemental = (pid) ->
     $scope.supplementalNode = Node.get({nodeId:pid}, (node) ->
       $scope.supplementalPanelState = "node"

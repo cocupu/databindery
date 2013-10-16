@@ -7,17 +7,17 @@
     overflow-y: scroll;
     overflow-x: hidden;
 
-    padding-top:6em;
+    padding-top:3.5em;
 
     .panelHeader{
       position: fixed;
-      margin-top: -6em;
+      margin-top: -4.25em;
       padding-right:5px;
       padding-bottom: 8px;
-      background-color: white;
       h3 {
         white-space: nowrap;
         overflow: scroll;
+        background-color: white;
       }
     }
 
