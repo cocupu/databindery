@@ -25,7 +25,7 @@
             %input{"ng-switch-when"=>"date", type:"date", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
             %input{"ng-switch-when"=>"Has Many", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", "ng-focus"=>"focusOnField(fieldConfig)", "bindery-token-input"=>"nodeTokeninputOptions","data-url"=>"searchUrl+'?rows=100&model_id='+fieldConfig.references","ng-model"=>"node.associations[fieldConfig.code]", "data-field-config"=>"{{fieldConfig}}", multiple:true, class:"fieldControl colt{{$index}} col{{$index}}"}
             %input{"ng-switch-default"=>"true", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
-          -#%bindery-facet-values.list-group.facets{"value"=>"searchResponse.facet_counts.facet_fields[fieldConfig.code+'_facet']"}
+
   -# Supplemental Panel
 
   %ng-switch{"on"=>"supplementalPanelState"}
@@ -52,7 +52,7 @@
             Limit Search by
             %span.knock-back {{focusedField.name}}
           %dd
-            %bindery-facet-values.list-group.facets{"values"=>"searchResponse.facet_counts.facet_fields[focusedField.code+'_facet']"}
+            %bindery-facet-values.list-group.facets{"values"=>"searchResponse.facet_counts.facet_fields[focusedField.code+'_facet']", "data-field"=>"focusedField"}
           %dt Description
           %dd {{focusedField.description}}
 
