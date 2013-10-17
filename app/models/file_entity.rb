@@ -173,17 +173,36 @@ module FileEntity
     ["application/vnd.ms-excel", "application/vnd.oasis.opendocument.spreadsheet"].include? self.mime_type
   end
 
+  def file_type
+    if audio?
+      return "audio"
+    elsif video?
+      return "video"
+    elsif image?
+      return "image"
+    elsif pdf?
+      return "pdf"
+    elsif spreadsheet?
+      return "spreadsheet"
+    else
+      return "generic"
+    end
+  end
+
+  def as_json(opts=nil)
+    h = super
+    h["spawnable"] = spreadsheet?
+    h["file_entity"] = true
+    h["file_type"] = file_type
+    h
+  end
+
   # Set metadata (ie. filename for insertion into Content-Disposition) on object in remote file store
   def set_metadata
     s3_obj.metadata["filename"] = file_name
     s3_obj.metadata["bindery-pid"] = persistent_id
   end
 
-  def as_json(opts=nil)
-    h = super
-    h["spawnable"] = spreadsheet?
-    h
-  end
 
   private
 

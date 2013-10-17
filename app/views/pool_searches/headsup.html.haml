@@ -10,7 +10,6 @@
       .panelHeader.panel-header
         %h3 {{node.title}}
         %span.savedIndicator{"ng-switch"=>true, "on"=>"node.dirty"}
-          {{node.dirty}}
           %span.message{"ng-switch-when"=>"true"} You have unsaved changes
           %span.message{"ng-switch-when"=>"false"} Saved at: {{node.lastUpdated}}
         %button.btn.btn-default.pull-right{type:"button", "ng-click"=>"updateNode(node)"}=t('bindery.nodes.save_changes')

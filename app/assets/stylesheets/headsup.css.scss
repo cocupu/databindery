@@ -95,3 +95,30 @@ dt.short {
 .list-group.facets {
   margin-right: 15px;
 }
+
+.selected-token.file {
+  width: 98%;
+  .token-info {
+    display: inline-block;
+    float: left;
+  }
+  .token-input-delete-token-facebook {
+    float: right;
+  }
+}
+.selected-token.audio, .selected-token.video {
+  audio, video {
+    float: left;
+    width: 50%;
+  }
+  audio { padding-top: 1%; }
+  .token-info {
+    width: 45%;
+    overflow: scroll;
+    padding-left: 2%;
+  }
+  .token-input-delete-token-facebook {
+    margin-top: -5%;
+  }
+}
+

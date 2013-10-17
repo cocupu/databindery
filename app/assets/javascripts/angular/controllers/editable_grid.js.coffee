@@ -62,8 +62,17 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
     resultsFormatter: (item) ->
       return "<li>"+item.title+"</li>"
     tokenFormatter: (item) ->
-      fieldHtml = "<li class=\"selected-token "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\">"+item.title+"</li>"
-#      fieldHtml = "<li class=\"selected-token "+item.persistent_id+"\">"+item.title+"</li>"
+      switch item.file_type
+        when "audio"
+          fieldHtml = "<li class=\"selected-token file audio "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\"><audio controls><source src=\"http://www.w3schools.com/html/mov_bbb.mp4\" type=\"audio/mpeg\"></source></audio><div class=\"token-info\">"+item.title+"<br/>"+item.data['content-type']+"</div></li>"
+        when "video"
+          fieldHtml = "<li class=\"selected-token file video "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\"><video controls><source src=\"http://www.w3schools.com/html/mov_bbb.mp4\" type=\"video/mp4\"></source></video><div class=\"token-info\">"+item.title+"</div></li>"
+        when "spreadsheet"
+          fieldHtml = "<li class=\"selected-token file spreadsheet "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\"><div class=\"token-info\">"+item.title+"</div></li>"
+        when "generic"
+          fieldHtml = "<li class=\"selected-token file generic "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\"><div class=\"token-info\">"+item.title+"</div></li>"
+        else
+          fieldHtml = "<li class=\"selected-token "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\">"+item.title+"</li>"
 
       return fieldHtml
 
