@@ -42,6 +42,8 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
     update: { method: 'PUT' }
   })
 
+  Node.prototype.download_url = () ->  $location.path().replace("search","file_entities")+"/"+this.persistent_id
+
   $scope.updateNode = (node) ->
     nodeResource = new Node(node)
     nodeResource.$update( (savedNode, putResponseHeaders) ->
@@ -49,6 +51,8 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
       node.lastUpdated = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
       node.dirty = false
     )
+
+
 
 
 
@@ -73,9 +77,9 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
     tokenFormatter: (item) ->
       switch item.file_type
         when "audio"
-          fieldHtml = "<li class=\"selected-token file audio "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\"><audio controls><source src=\"http://www.w3schools.com/html/mov_bbb.mp4\" type=\"audio/mpeg\"></source></audio><div class=\"token-info\">"+item.title+"<br/>"+item.data['content-type']+"</div></li>"
+          fieldHtml = "<li class=\"selected-token file audio "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\"><audio controls><source src=\""+item.download_url()+"\" type=\"audio/mpeg\"></source></audio><div class=\"token-info\">"+item.title+"<br/>"+item.data['content-type']+"</div></li>"
         when "video"
-          fieldHtml = "<li class=\"selected-token file video "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\"><video controls><source src=\"http://www.w3schools.com/html/mov_bbb.mp4\" type=\"video/mp4\"></source></video><div class=\"token-info\">"+item.title+"</div></li>"
+          fieldHtml = "<li class=\"selected-token file video "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\"><video controls><source src=\""+item.download_url()+"\" type=\"video/mp4\"></source></video><div class=\"token-info\">"+item.title+"</div></li>"
         when "spreadsheet"
           fieldHtml = "<li class=\"selected-token file spreadsheet "+item.persistent_id+"\" ng-click=\"openNodeSupplemental('"+item.persistent_id+"')\" ng-focus=\"focusOnField(fieldConfig)\"><div class=\"token-info\">"+item.title+"</div></li>"
         when "generic"

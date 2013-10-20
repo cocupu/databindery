@@ -2,7 +2,7 @@ class FileEntitiesController < ApplicationController
   load_and_authorize_resource :class=>'Node', :find_by => :persistent_id
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
   load_resource :target_node, :class => Node, :find_by => :persistent_id, :only=>[:new, :create]
-  
+
 
   def create
     # Only return the target node if current user can edit it.
@@ -23,6 +23,12 @@ class FileEntitiesController < ApplicationController
     @pool.default_file_store.ensure_cors_for_uploads(bucket.name)
     S3DirectUpload.config.bucket = bucket.name
   end
+
+  def show
+    redirect_to @file_entity.s3_url.to_s
+  end
+
+  private
   
   def process_s3_direct_upload_params
     if params[:data].nil? && !params[:url].nil?

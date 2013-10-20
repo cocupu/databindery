@@ -1,11 +1,12 @@
 require 'spec_helper'
 
 describe FileEntitiesController do
-
+  before do
+    @identity = FactoryGirl.create :identity
+    @pool = FactoryGirl.create :pool, :owner=>@identity
+  end
   describe 'create' do
     before do
-      @identity = FactoryGirl.create :identity
-      @pool = FactoryGirl.create :pool, :owner=>@identity
       sign_in @identity.login_credential
     end
     it "should create and return json" do
@@ -45,8 +46,6 @@ describe FileEntitiesController do
   
   describe "new" do
     before do
-      @identity = FactoryGirl.create :identity
-      @pool = FactoryGirl.create :pool, :owner=>@identity
       @node_to_target = FactoryGirl.create(:node, pool: @pool)
       # "Not my stuff":
       @not_me = FactoryGirl.create :identity
@@ -78,6 +77,35 @@ describe FileEntitiesController do
       get :new, pool_id: @not_my_pool.short_name, identity_id: @not_me.short_name
       response.should redirect_to root_path
       flash[:alert].should == "You are not authorized to access this page."
+    end
+  end
+
+  describe "show" do
+
+    subject do
+      file_entity = FactoryGirl.create(:node, model: Model.file_entity, pool: @pool)
+      file_entity.extend FileEntity
+      file_entity.file_entity_type = "S3"
+      file_entity.save!
+      file_entity
+    end
+    describe "when logged in as sometone who does not have read access to the file entity" do
+      it "should not allow access" do
+        get :show, :pool_id=>@pool.short_name, :identity_id=>@identity.short_name, id: subject.persistent_id
+        response.should redirect_to root_path
+        flash[:alert].should == "You are not authorized to access this page."
+      end
+    end
+    describe "when logged in with read access to the file entity" do
+      before do
+        sign_in @identity.login_credential
+      end
+      it "should redirect to s3 authenticated URL" do
+        # TODO: Rewrite this so that it doesn't hit s3 every time you run the test.  Tried stubbing s3_url but it wasn't working. - MZ Oct 2013
+        Node.any_instance.stub(:s3_url).and_return("foo")
+        get :show, :pool_id=>@pool.short_name, :identity_id=>@identity.short_name, id: subject.persistent_id
+        response.should redirect_to(subject.s3_url.to_s)
+      end
     end
   end
 
