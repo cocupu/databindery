@@ -85,6 +85,14 @@
       margin-left: .5%;
     }
   }
+
+  .panel.model {
+    padding-top: 6em;
+    .panel-header {
+      background-color: white;
+      margin-top: -7em;
+    }
+  }
 }
 
 dt.short {
@@ -97,7 +105,7 @@ dt.short {
 }
 
 .selected-token.file {
-  width: 98%;
+  width: 97.5%;
   .token-info {
     display: inline-block;
     float: left;
@@ -116,9 +124,6 @@ dt.short {
     width: 45%;
     overflow: scroll;
     padding-left: 2%;
-  }
-  .token-input-delete-token-facebook {
-    margin-top: -5%;
   }
 }
 

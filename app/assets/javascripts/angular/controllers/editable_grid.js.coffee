@@ -51,6 +51,15 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
     )
 
 
+
+  $scope.addFieldToModel = (model) ->
+    model.fields.push({name: "New Field", code:"", type:"text"})
+    $scope.apply()
+
+  $scope.addAssociationToModel = (model) ->
+    model.associations.push({name: "New Association", code:"", type:"Has Many"})
+    $scope.apply()
+
   #
   # tokeninput config options
   #
@@ -123,8 +132,8 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
 
   $scope.totalServerItems = 0
   $scope.pagingOptions =
-    pageSizes: [250, 500, 1000],
-    pageSize: 250,
+    pageSizes: [25, 50, 100, 250, 500, 1000],
+    pageSize: 25,
     currentPage: 1
 
   $scope.setPagingData = (data, page, pageSize) ->
@@ -176,9 +185,10 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
     enableCellEdit: false
     enableRowSelection: true
     columnDefs: 'columnDefs'
-    rowHeight: "30"
+    rowHeight: "50"
     enablePaging: true,
-    showFooter: false,
+    showFooter: true,
+    footerRowHeight: "30",
     totalServerItems: 'totalServerItems',
     pagingOptions: $scope.pagingOptions,
     filterOptions: $scope.filterOptions,
