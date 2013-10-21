@@ -1,6 +1,5 @@
 # Editable Grid
-EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeout) ->
-
+angular.module('binderyEditableGrid').controller('EditableGridCtrl', ['$scope', '$http', '$location', '$resource','$sanitize', '$log', 'binderySearchService', ($scope, $http, $location, $resource, $sanitize, $log, $timeout, binderySearchService) ->
   # General Scope properties
   $scope.selectedNodes = []
   $scope.currentNode = {}
@@ -12,7 +11,6 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
   $scope.supplementalPanelState = "none"
   $scope.supplementalNode = {}
   $scope.focusedField = {}
-
 
   $scope.typeOptionsFor = (fieldType) ->
     associationTypes = [{label:"Associaton (Has Many)", id:"Has Many"}, {label:"Associaton (Has One)", id:"Has One"}]
@@ -235,6 +233,4 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
   $( window ).resize( () ->
     $scope.resizeGrid()
   )
-
-EditableGridCtrl.$inject = ['$scope', '$http', '$location', '$resource','$sanitize', '$log']
-angular.module("binderyEditableGrid", ['ng','ngGrid', "ngResource", "ngSanitize"]).controller('EditableGridCtrl', EditableGridCtrl)
+])

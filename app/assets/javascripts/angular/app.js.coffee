@@ -1,4 +1,6 @@
 app = angular.module('binderyCurate', ["binderyEditableGrid"])
+editableGrid = angular.module('binderyEditableGrid', ['ng','ngGrid', "ngResource", "ngSanitize"])
+
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', ($routeProvider, $locationProvider, $httpProvider) ->
   # enable html5Mode for pushstate ('#'-less URLs)
   $locationProvider.html5Mode(true);
@@ -7,3 +9,4 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', ($routeProv
   # Use Rails csrf token with http requests
   $httpProvider.defaults.headers.common['X-CSRF-Token'] = $('meta[name=csrf-token]').attr('content')
 ])
+
