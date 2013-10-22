@@ -1,5 +1,5 @@
-app = angular.module('binderyCurate', ["binderyEditableGrid"])
-editableGrid = angular.module('binderyEditableGrid', ['ng','ngGrid', "ngResource", "ngSanitize"])
+app = angular.module('binderyCurate', ['curateDeps'])
+dep = angular.module('curateDeps', ['ng', "ngResource", "ngSanitize"])
 
 app.config( ['$routeProvider', '$locationProvider', '$httpProvider', ($routeProvider, $locationProvider, $httpProvider) ->
   # enable html5Mode for pushstate ('#'-less URLs)

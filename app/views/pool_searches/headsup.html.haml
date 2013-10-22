@@ -1,7 +1,7 @@
 .headsup.row-fluid
   .panel.panel-default.info
     .panel-body
-      {{selectedNodes[0].download_url()}}
+
   .panel.panel-default.detail.selectedItems
     .panel-body{"ng-hide"=>"selectedNodes.length > 0"}
       %div.emptyMessage
@@ -65,8 +65,8 @@
         %span.savedIndicator{"ng-switch"=>true, "on"=>"currentModel.dirty"}
           %span.message{"ng-switch-when"=>"true"} You have unsaved changes
           %span.message{"ng-switch-when"=>"false"} Saved at: {{currentModel.lastUpdated}}
-        %a{"ng-click"=>"addFieldToModel(currentModel)"} Add Field
-        %a{"ng-click"=>"addAssociationToModel(currentModel)"} Add Association
+        %a{"ng-click"=>"currentModel.addField()"} Add Field
+        %a{"ng-click"=>"currentModel.addAssociation()"} Add Association
         %button.btn.btn-default.pull-right{type:"button", "ng-click"=>"updateModel(currentModel)"}=t('bindery.models.save_changes')
       %form.model-editor.panel-body{"ng-show"=>"currentModel && (selectedNodes.length > 0)"}
         -# fields and associations

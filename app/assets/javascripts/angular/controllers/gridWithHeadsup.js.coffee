@@ -1,5 +1,5 @@
 # Editable Grid
-EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeout) ->
+GridWithHeadsupCtrl = ($scope, $http, $location, BinderyNode, BinderyModel) ->
 
   # General Scope properties
   $scope.selectedNodes = []
@@ -22,13 +22,7 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
     else
       return fieldTypes
 
-  #
-  # Resources
-  #
-  Model = $resource('/models/:modelId', {modelId:'@id'}, {
-    update: { method: 'PUT' }
-  })
-  $scope.currentModel = Model.get({modelId:$("#model-chooser .active").data("model-id")}, () -> $scope.columnDefs = $scope.columnDefsFromModel() )
+  $scope.currentModel = BinderyModel.get({modelId:$("#model-chooser .active").data("model-id")}, (m, getResponseHeaders) -> $scope.columnDefs = m.columnDefsFromModel() )
 
 
   $scope.updateModel = (model) ->
@@ -38,31 +32,13 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
       model.dirty = false
     )
 
-  Node = $resource($location.path().replace("search","nodes")+"/:nodeId", {nodeId:'@persistent_id'}, {
-    update: { method: 'PUT' }
-  })
-
-  Node.prototype.download_url = () ->  $location.path().replace("search","file_entities")+"/"+this.persistent_id
-
   $scope.updateNode = (node) ->
-    nodeResource = new Node(node)
+    nodeResource = new BinderyNode(node)
     nodeResource.$update( (savedNode, putResponseHeaders) ->
       now = new Date()
       node.lastUpdated = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
       node.dirty = false
     )
-
-
-
-
-
-  $scope.addFieldToModel = (model) ->
-    model.fields.push({name: "New Field", code:"", type:"text"})
-    $scope.apply()
-
-  $scope.addAssociationToModel = (model) ->
-    model.associations.push({name: "New Association", code:"", type:"Has Many"})
-    $scope.apply()
 
   #
   # tokeninput config options
@@ -107,28 +83,7 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
   # ng-grid Configs
   #
   $scope.columnDefs = []
-  $scope.columnDefsFromModel = () ->
-    if $scope.currentModel.fields.length + $scope.currentModel.associations.length > 5
-      fixedColumnWidth = true
-    fieldsDefs = $.map($scope.currentModel.fields, (f, i) ->
-      columnDef = {
-        field:"data['"+$sanitize(f.code)+"']"
-        displayName:f.name
-#        editableCellTemplate: '/assets/editField-textarea.html'
-        editableCellTemplate: '/assets/editField-textfield.html'
-#        editableCellTemplate: '<input type="text" ng-model="row.entity.data[\''+$sanitize(f.code)+'\']"></input>'
-      }
-      if fixedColumnWidth
-        columnDef["width"] = "120"
-      return columnDef
-    )
-    associationsDefs = $.map($scope.currentModel.associations, (f, i) ->
-      columnDef = {field:"associations['"+$sanitize(f.code)+"']", displayName:f.name, width:"120"}
-      if fixedColumnWidth
-        columnDef["width"] = "120"
-      return columnDef
-    )
-    return fieldsDefs.concat(associationsDefs)
+  $scope.columnDefsFromModel = () -> $scope.currentModel.columnDefs()
 
   $scope.filterOptions =
     filterText: "",
@@ -236,5 +191,5 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
     $scope.resizeGrid()
   )
 
-EditableGridCtrl.$inject = ['$scope', '$http', '$location', '$resource','$sanitize', '$log']
-angular.module("binderyEditableGrid", ['ng','ngGrid', "ngResource", "ngSanitize"]).controller('EditableGridCtrl', EditableGridCtrl)
+GridWithHeadsupCtrl.$inject = ['$scope', '$http', '$location', 'BinderyModel', "BinderyNode"]
+angular.module("curateDeps").controller('GridWithHeadsupCtrl', GridWithHeadsupCtrl)
