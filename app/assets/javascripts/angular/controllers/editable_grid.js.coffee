@@ -237,4 +237,4 @@ EditableGridCtrl = ($scope, $http, $location, $resource, $sanitize, $log, $timeo
   )
 
 EditableGridCtrl.$inject = ['$scope', '$http', '$location', '$resource','$sanitize', '$log']
-angular.module("binderyEditableGrid", ['ng','ngGrid', "ngResource", "ngSanitize"]).controller('EditableGridCtrl', EditableGridCtrl)
+angular.module("curateDeps", ['ng','ngGrid', "ngResource", "ngSanitize"]).controller('EditableGridCtrl', EditableGridCtrl)

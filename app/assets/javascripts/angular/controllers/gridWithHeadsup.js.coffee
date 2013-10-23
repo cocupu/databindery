@@ -1,10 +1,13 @@
-# Editable Grid
-GridWithHeadsupCtrl = ($scope, $http, $location, BinderyNode, BinderyModel) ->
+# Editable Grid with Headsup
+GridWithHeadsupCtrl = ($scope, $http, $location, BinderyModel, BinderyNode) ->
 
   # General Scope properties
   $scope.selectedNodes = []
   $scope.currentNode = {}
   $scope.currentModel = {}
+  $scope.currentModel = BinderyModel.get({modelId:$("#model-chooser .active").data("model-id")}, (m, getResponseHeaders) ->
+    $scope.columnDefs = m.columnDefsFromModel()
+  )
 
   $scope.searchUrl = $location.path()
   $scope.detailPanelState = "node"
@@ -13,17 +16,10 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyNode, BinderyModel) ->
   $scope.supplementalNode = {}
   $scope.focusedField = {}
 
-
-  $scope.typeOptionsFor = (fieldType) ->
-    associationTypes = [{label:"Associaton (Has Many)", id:"Has Many"}, {label:"Associaton (Has One)", id:"Has One"}]
-    fieldTypes = [{label:"Text Field", id:"text"},{label:"Text Area", id:"textarea"}, {label:"Date", id:"date"}]
-    if (["Has One", "Has Many"].indexOf(fieldType) > -1)
-      return associationTypes
-    else
-      return fieldTypes
-
-  $scope.currentModel = BinderyModel.get({modelId:$("#model-chooser .active").data("model-id")}, (m, getResponseHeaders) -> $scope.columnDefs = m.columnDefsFromModel() )
-
+  #
+  # Logic for Manipulating Models and Nodes
+  #
+  $scope.typeOptionsFor = (fieldType) ->  return BinderyModel.typeOptionsFor(fieldType)
 
   $scope.updateModel = (model) ->
     model.$update( (savedModel, putResponseHeaders) ->
@@ -33,11 +29,31 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyNode, BinderyModel) ->
     )
 
   $scope.updateNode = (node) ->
-    nodeResource = new BinderyNode(node)
-    nodeResource.$update( (savedNode, putResponseHeaders) ->
+    node.$update( (savedNode, putResponseHeaders) ->
       now = new Date()
       node.lastUpdated = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
       node.dirty = false
+    )
+
+  #
+  # STATE Manipulations
+  # TODO: This is basically DOM manipulation right now. It should be implemented as state changes that then drive directives.
+  #
+  $scope.focusOnField = (fieldConfig) ->
+    $scope.focusedField  = fieldConfig
+    $scope.supplementalPanelState = "field"
+
+
+  $scope.configField = (fieldConfig) ->
+    $scope.focusedField  = fieldConfig
+    $scope.supplementalPanelState = "model"
+    window.setTimeout(() ->
+      $("#modelField_"+fieldConfig.code+"_name").focus()
+    ,100)
+
+  $scope.openNodeSupplemental = (pid) ->
+    $scope.supplementalNode = BinderyNode.get({nodeId:pid}, (node) ->
+      $scope.supplementalPanelState = "node"
     )
 
   #
@@ -72,12 +88,13 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyNode, BinderyModel) ->
     initSelection: (scope, element, callback) ->
       ids = scope.$eval(element.attr("ng-model"))
       angular.forEach(ids, (pid) ->
-        node = Node.get({nodeId:pid}, () ->
+        node = BinderyNode.get({nodeId:pid}, () ->
           node.id = node.persistent_id
           callback(node)
         )
       )
   }
+
 
   #
   # ng-grid Configs
@@ -97,6 +114,9 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyNode, BinderyModel) ->
 
   $scope.setPagingData = (data, page, pageSize) ->
 #      pagedData = data.aaData.slice((page - 1) * pageSize, page * pageSize)
+    angular.forEach(data.docs, (item, idx) ->
+      data.docs[idx] = new BinderyNode(item)  #<-- replace each item with an instance of the resource object
+    )
     $scope.searchResponse = data
     $scope.docs = data.docs;
     $scope.totalServerItems = data.response.numFound;
@@ -162,23 +182,8 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyNode, BinderyModel) ->
         $scope.currentNode = rowItem
 
 
-  $scope.focusOnField = (fieldConfig) ->
-    $scope.focusedField  = fieldConfig
-    $scope.supplementalPanelState = "field"
-
-
-  $scope.configField = (fieldConfig) ->
-    $scope.focusedField  = fieldConfig
-    $scope.supplementalPanelState = "model"
-    window.setTimeout(() ->
-      $("#modelField_"+fieldConfig.code+"_name").focus()
-    ,100)
-
-  $scope.openNodeSupplemental = (pid) ->
-    $scope.supplementalNode = Node.get({nodeId:pid}, (node) ->
-      $scope.supplementalPanelState = "node"
-    )
-
+  # Ensuring the grid height is set correctly based on window size.
+  # TODO: This is DOM Manipulation.  It should be implemented in a directive.
   #
   $scope.resizeGrid = () ->
     staticElementsHeight = $(".row").height() + $(".headsup").not(":hidden").height() + $(".navbar-fixed-top").height() + $(".navbar-fixed-bottom").height()
@@ -191,5 +196,5 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyNode, BinderyModel) ->
     $scope.resizeGrid()
   )
 
-GridWithHeadsupCtrl.$inject = ['$scope', '$http', '$location', 'BinderyModel', "BinderyNode"]
+GridWithHeadsupCtrl.$inject = ['$scope', '$http', '$location', 'BinderyModel', 'BinderyNode']
 angular.module("curateDeps").controller('GridWithHeadsupCtrl', GridWithHeadsupCtrl)
