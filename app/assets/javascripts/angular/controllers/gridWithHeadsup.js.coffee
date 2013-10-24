@@ -1,11 +1,12 @@
 # Editable Grid with Headsup
-GridWithHeadsupCtrl = ($scope, $http, $location, BinderyModel, BinderyNode) ->
+GridWithHeadsupCtrl = ($scope, $http, $location, BinderyModel, BinderyNode, memoService) ->
 
   # General Scope properties
   $scope.selectedNodes = []
   $scope.currentNode = {}
   $scope.currentModel = {}
   $scope.currentModel = BinderyModel.get({modelId:$("#model-chooser .active").data("model-id")}, (m, getResponseHeaders) ->
+    memoService.createOrUpdate(m)
     $scope.columnDefs = m.columnDefsFromModel()
   )
 
@@ -20,6 +21,9 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyModel, BinderyNode) ->
   # Logic for Manipulating Models and Nodes
   #
   $scope.typeOptionsFor = (fieldType) ->  return BinderyModel.typeOptionsFor(fieldType)
+
+  $scope.modelFor = (node) ->
+    BinderyModel.get({modelId: node.model_id})
 
   $scope.updateModel = (model) ->
     model.$update( (savedModel, putResponseHeaders) ->
@@ -196,5 +200,5 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyModel, BinderyNode) ->
     $scope.resizeGrid()
   )
 
-GridWithHeadsupCtrl.$inject = ['$scope', '$http', '$location', 'BinderyModel', 'BinderyNode']
+GridWithHeadsupCtrl.$inject = ['$scope', '$http', '$location', 'BinderyModel', 'BinderyNode', 'memoService']
 angular.module("curateDeps").controller('GridWithHeadsupCtrl', GridWithHeadsupCtrl)

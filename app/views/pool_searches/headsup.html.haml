@@ -2,7 +2,7 @@
   .panel.panel-default.info
     .panel-body
 
-  .panel.panel-default.detail.selectedItems
+  .panel.panel-default.detail.selectedItems.node
     .panel-body{"ng-hide"=>"selectedNodes.length > 0"}
       %div.emptyMessage
         Select a cell to see details here.
@@ -15,7 +15,7 @@
         %button.btn.btn-default.pull-right{type:"button", "ng-click"=>"updateNode(node)"}=t('bindery.nodes.save_changes')
       %form.node-editor.panel-body
         -# fields & associations
-        %div.field.clearfix{"ng-repeat"=>"fieldConfig in currentModel.fields.concat(currentModel.associations)"}
+        %div.field.clearfix{"ng-repeat"=>"fieldConfig in node.model().fields.concat(node.model().associations)"}
           %label
             {{fieldConfig.name}}
             %span.field-helper{"ng-show"=>"fieldConfig.type == 'date'"} {{node.data[fieldConfig.code]}}
@@ -33,8 +33,24 @@
     .panel.panel-default.info.supplemental.node{"ng-switch-when"=>"node"}
       .panelHeader.panel-header
         %h3 {{supplementalNode.title}}
-      .panel-body
-        {{supplementalNode}}
+        -#%span.savedIndicator{"ng-switch"=>true, "on"=>"supplementalNode.dirty"}
+        -#  %span.message{"ng-switch-when"=>"true"} You have unsaved changes
+        -#  %span.message{"ng-switch-when"=>"false"} Saved at: {{node.lastUpdated}}
+        -#%button.btn.btn-default.pull-right{type:"button", "ng-click"=>"updateNode(supplementalNode)"}=t('bindery.nodes.save_changes')
+      %form.node-editor.panel-body
+        -# fields & associations
+        %div.field.clearfix{"ng-repeat"=>"fieldConfig in supplementalNode.model().fields.concat(supplementalNode.model().associations)"}
+          %label
+            {{fieldConfig.name}}
+            %span.field-helper{"ng-show"=>"fieldConfig.type == 'date'"} {{supplementalNode.data[fieldConfig.code]}}
+          %span{"ng-switch"=>true, "on"=>"fieldConfig.type"}
+            %p{"ng-switch-when"=>"textarea", "ng-model"=>"supplementalNode.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{supplementalNode.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
+              {{supplementalNode.data[fieldConfig.code]}}
+            %div{"ng-switch-when"=>"date", type:"date", "ng-model"=>"supplementalNode.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{supplementalNode.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
+              {{supplementalNode.data[fieldConfig.code]}}
+            %input{"ng-switch-when"=>"Has Many", "id"=>"{{supplementalNode.persistent_id+'_'+fieldConfig.code}}", "ng-focus"=>"focusOnField(fieldConfig)", "bindery-token-input"=>"nodeTokeninputOptions","data-url"=>"searchUrl+'?rows=100&model_id='+fieldConfig.references","ng-model"=>"supplementalNode.associations[fieldConfig.code]", "data-field-config"=>"{{fieldConfig}}", multiple:true, class:"fieldControl colt{{$index}} col{{$index}}"}
+            %div{"ng-switch-default"=>"true", "ng-model"=>"supplementalNode.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{supplementalNode.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
+              {{supplementalNode.data[fieldConfig.code]}}
 
     -# -- Supplemental field info
     .panel.panel-default.info.supplemental.field{"ng-switch-when"=>"field"}
