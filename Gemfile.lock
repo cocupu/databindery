@@ -146,6 +146,9 @@ GEM
       signet (>= 0.4.1)
       uuidtools (>= 2.1.0)
     haml (3.1.7)
+    haml_assets (0.2.2)
+      haml
+      tilt
     handlebars_assets (0.7.1)
       execjs (>= 1.2.9)
       sprockets (>= 2.0.3)
@@ -343,6 +346,7 @@ DEPENDENCIES
   foreigner
   google-api-client (= 0.4.5)
   haml
+  haml_assets
   handlebars_assets
   jasmine
   jasminerice

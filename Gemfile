@@ -19,6 +19,7 @@ group :assets do
   gem 'rails-backbone'
   gem 'angularjs-rails', '~>1.0.8'
   gem 'bootstrap-kaminari-views'
+  gem 'haml_assets'
 end
 
 gem 'haml'
