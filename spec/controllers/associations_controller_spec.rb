@@ -57,6 +57,16 @@ describe AssociationsController do
             json['files'].should == [{'id'=>@file.persistent_id, "persistent_id"=>@file.persistent_id,
                 "title"=>@file.persistent_id}]
           end
+          it "should support requests for incoming associations" do
+            get :index, :node_id=>@author1.persistent_id, :format=>:json, filter: "incoming"
+            response.should be_success
+            json = JSON.parse(response.body)
+            json["incoming"].first["persistent_id"].should == @book.persistent_id
+            @book.as_json.keys.select {|k| (k != "created_at") && (k != "updated_at")}.each do |key|
+              json["incoming"].first[key].should ==  @book.as_json[key]
+            end
+
+          end
         end
       end
     end

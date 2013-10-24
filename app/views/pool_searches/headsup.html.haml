@@ -1,7 +1,11 @@
 .headsup.row-fluid
   .panel.panel-default.info
+    .panel-header{"ng-show"=>"selectedNodes.length > 0"}
+      %h3 Items that Reference this
     .panel-body
-
+      %div{"ng-repeat"=>"node in selectedNodes[0].inbound_associations()"}
+        %b {{node.model().name}}
+        %span {{selectedNodes[0].title}}
   .panel.panel-default.detail.selectedItems.node
     .panel-body{"ng-hide"=>"selectedNodes.length > 0"}
       %div.emptyMessage

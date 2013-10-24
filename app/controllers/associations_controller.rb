@@ -22,7 +22,11 @@ class AssociationsController < ApplicationController
   def index
     respond_to do |format|
       format.json do
-        render json: @node.associations_for_json.to_json()
+        if params[:filter] == "incoming"
+          render json: {incoming: @node.incoming }
+        else
+          render json: @node.associations_for_json.to_json()
+        end
       end
     end
   end
