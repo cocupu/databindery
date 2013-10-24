@@ -7,7 +7,7 @@ angular.module("binderyCurate").directive('binderyFacetValues', ['$compile','$lo
       values: '='
       field: '='
     }
-    controller: ($scope, $element) ->
+    controller: ['$scope', '$element', ($scope, $element) ->
       $scope.applyFacetLimit = (value) ->
         searchParams = $location.search()
         searchParams["f["+$scope.field.code+"_facet][]"] = encode(value)
@@ -17,6 +17,7 @@ angular.module("binderyCurate").directive('binderyFacetValues', ['$compile','$lo
         newPath = $location.path() + "?" + $.param(searchParams, true)
         console.log(decodeURIComponent(newPath))
         window.location.href = decodeURIComponent(newPath)
+    ]
     link: (scope, element, attrs) ->
       scope.$watch('values', (newValue, oldValue) ->
         if (newValue)
@@ -46,5 +47,6 @@ angular.module("binderyCurate").directive('binderyFacetValues', ['$compile','$lo
           element[0].appendChild(li)
         )
       , false)
+
   }
 ])
