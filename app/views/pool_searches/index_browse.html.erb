@@ -9,13 +9,13 @@
 
   <div id="content" class="span9">   
 
-      <h1><%=@pool.name%></h1>
-      <% extra_head_content << render_opensearch_response_metadata.html_safe %>
 
+      <% extra_head_content << render_opensearch_response_metadata.html_safe %>
+      <% @page_title = t('blacklight.search.title', :application_name => application_name) %>
+      <h1><%=@pool.name%></h1>
       <%- unless params["view"] == "grid" %>
 
         <div class="row"><%=render :partial=>'search_form'%></div>
-        <% @page_title = t('blacklight.search.title', :application_name => application_name) %>
 
         <%= render :partial => 'catalog/did_you_mean' %>
 
