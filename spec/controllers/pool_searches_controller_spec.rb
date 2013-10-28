@@ -37,12 +37,12 @@ describe PoolSearchesController do
         end
         describe "grid view" do
           it "should filter to one model" do
-            get :index, :pool_id=>@other_pool, identity_id: @identity.short_name
+            get :index, :pool_id=>@other_pool, identity_id: @identity.short_name, view:"grid"
             puts subject.solr_search_params
             subject.solr_search_params[:fq].should include("model:#{@other_pool.models.first.id}")
           end
           it "should support choosing model" do
-            get :index, :pool_id=>@other_pool, identity_id: @identity.short_name, model_id: @my_model_different_pool.id
+            get :index, :pool_id=>@other_pool, identity_id: @identity.short_name, model_id: @my_model_different_pool.id, view:"grid"
             subject.solr_search_params[:fq].should include("model:#{@my_model_different_pool.id}")
           end
         end
