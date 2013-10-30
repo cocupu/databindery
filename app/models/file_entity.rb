@@ -149,7 +149,6 @@ module FileEntity
   end
   
   def filename_extension
-    puts file_name
     /\.([^.]+)$/.match(file_name)[1]
   end
   

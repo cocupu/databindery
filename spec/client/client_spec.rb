@@ -115,7 +115,6 @@ describe "API" do
         @node4 = Node.create!(model:@auto_model, pool: @pool, data:{"year"=>"2012", "make"=>"Prius", "name"=>"Recharge"})
 
         results = Cocupu::Node.find(@ident.short_name, @pool.short_name, "make" => "Prius")
-        puts results.map{|r| r.data.inspect}
         results.count.should == 2
         results.each do |n|
           n.should be_instance_of Cocupu::Node
