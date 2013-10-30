@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
       end 
       format.html do 
         logger.debug "permission denied #{exception.action} #{exception.subject}"
-        redirect_to root_path, alert: exception.message
+        redirect_to main_app.root_path, alert: exception.message
       end
     end
   end

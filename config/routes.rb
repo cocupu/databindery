@@ -1,10 +1,12 @@
 Bindery::Application.routes.draw do
 
+  devise_for :users, class_name: "LoginCredential", controllers: {registrations:  "users/registrations"}
+
+  mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
 
   match "bookmarks/clear", :to => "bookmarks#clear", :as => "clear_bookmarks"
   resources :bookmarks
 
-  devise_for :users, class_name: "LoginCredential", controllers: {registrations:  "users/registrations"}
   as :user do
     get "signin", :to => "devise/sessions#new"
     post "signin", :to => "devise/sessions#create"
