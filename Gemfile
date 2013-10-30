@@ -1,7 +1,8 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.2.11'
-
+gem "rails", "~> 4.0.0"
+gem "activerecord-session_store"
+gem "protected_attributes"
 gem 'json'
 
 # Gems used only for assets and not required
@@ -19,7 +20,6 @@ group :assets do
   gem 'rails-backbone'
   gem 'angularjs-rails', '~>1.0.8'
   gem 'bootstrap-kaminari-views'
-  gem 'haml_assets'
 end
 
 gem 'haml'
@@ -35,7 +35,6 @@ gem 'pg'
 gem 'foreigner'
 
 gem 'uuid'
-gem 'strong_parameters'
 gem 'kaminari'
 gem 's3_direct_upload'
 
@@ -45,7 +44,7 @@ group :test, :development do
   gem 'unicorn'  # Use unicorn as the webserver
   gem "factory_girl_rails"
   gem 'jasmine'
-  gem 'jasminerice'
+  gem 'jasminerice', github:"bradphelan/jasminerice", ref:"091349c27343bfa728b8e5745675f9ddbb7d9699"
   gem 'cocupu', github: 'cocupu/client', ref:"a988936bb0b7743687ab63868440df20ef19b1e3" # The ruby client
   #gem 'cocupu', path: '../databindery-client' # The ruby client
   gem "debugger"
