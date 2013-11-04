@@ -36,11 +36,11 @@
       label { width: 6em;}
     }
     .node-editor {
-      label {
+      label, .file-entity {
         margin-left: 1.5%;
         margin-top: 1em;
       }
-      input, ul.token-input-list-facebook {
+      input, ul.token-input-list-facebook, .media-display {
         width: 96%;
         margin-left: 1.5%;
       }

@@ -1,11 +1,14 @@
 .headsup.row-fluid
+  -#  Info Panel
   .panel.panel-default.info
     .panel-header{"ng-show"=>"selectedNodes.length > 0"}
       %h3 Items that Reference this
     .panel-body
       %div{"ng-repeat"=>"node in selectedNodes[0].inbound_associations()"}
         %b {{node.model().name}}
-        %span {{selectedNodes[0].title}}
+        %span {{node.title}}
+
+  -#  Main Panel
   .panel.panel-default.detail.selectedItems.node
     .panel-body{"ng-hide"=>"selectedNodes.length > 0"}
       %div.emptyMessage
@@ -28,6 +31,16 @@
             %input{"ng-switch-when"=>"date", type:"date", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
             %input{"ng-switch-when"=>"Has Many", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", "ng-focus"=>"focusOnField(fieldConfig)", "bindery-token-input"=>"nodeTokeninputOptions","data-url"=>"searchUrl+'?rows=100&model_id='+fieldConfig.references","ng-model"=>"node.associations[fieldConfig.code]", "data-field-config"=>"{{fieldConfig}}", multiple:true, class:"fieldControl colt{{$index}} col{{$index}}"}
             %input{"ng-switch-default"=>"true", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
+        .file-entity.clearfix{"ng-show"=>"node.file_entity"}
+          .media-display{"ng-switch"=>true, "on"=>"node.file_type"}
+            %audio{"ng-switch-when"=>"audio", controls:true}
+              %source{"ng-src"=>"{{node.download_url()}}", type:"audio/mpeg"}
+            %video{"ng-switch-when"=>"video", controls:true}
+              %source{"ng-src"=>"{{node.download_url()}}", type:"video/mp4"}
+          .spawn-action{"ng-show"=>"node.spawnable"}
+            %a{target:"_self", "ng-href"=>new_identity_pool_spawn_job_path(@identity, @pool, source_node_id:"")+"{{node.node_version_id}}"} Spawn entities from each row of this file
+          .download-link
+            %a{target:"_self", "ng-href"=>"{{node.download_url()}}"} Download ({{(node.data.file_size*.00000095367).toFixed(2)}}MB)
 
   -# Supplemental Panel
 

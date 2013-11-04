@@ -98,7 +98,7 @@ describe NodesController do
     it "should respond with json" do
       get :show, :id => @node1.persistent_id, :format=>'json', pool_id: @pool, identity_id: @identity
       response.should be_success
-      JSON.parse(response.body).should == { "title"=>@node1.title, "modified_by_id" => nil, "persistent_id" => @node1.persistent_id, "spawned_from_datum_id"=>nil, "spawned_from_node_id"=>nil, "url" => identity_pool_node_path(@identity, @pool, @node1), "pool"=>@pool.short_name, "identity"=>@identity.short_name, "binding"=>nil, "model_id"=>@node1.model_id, "associations"=>{}, "data"=>{} }
+      JSON.parse(response.body).should == { "title"=>@node1.title, "modified_by_id" => nil,"node_version_id"=>@node1.id, "persistent_id" => @node1.persistent_id, "spawned_from_datum_id"=>nil, "spawned_from_node_id"=>nil, "url" => identity_pool_node_path(@identity, @pool, @node1), "pool"=>@pool.short_name, "identity"=>@identity.short_name, "binding"=>nil, "model_id"=>@node1.model_id, "associations"=>{}, "data"=>{} }
     end
     it "should not load node we don't have access to" do
       get :show, :id => @different_pool_node.persistent_id, pool_id: @pool, identity_id: @identity 
