@@ -8,6 +8,7 @@ class Identity < ActiveRecord::Base
   has_many :google_accounts, :foreign_key=>'owner_id', :dependent => :destroy
   has_many :chattels, :foreign_key=>'owner_id', :dependent => :destroy
   has_many :changes, :class_name => "Node", :foreign_key=>"modified_by_id"
+  has_and_belongs_to_many :audiences
   validates :short_name, :presence=>true, :uniqueness=>true, :format=>{:with=>/\A\w+[\w-]+\z/,
     :message => "may only contain alphanumeric characters or dashes and cannot begin with a dash" }
 

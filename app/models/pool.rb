@@ -17,7 +17,7 @@ class Pool < ActiveRecord::Base
   has_many :mapping_templates, :dependent => :destroy
   has_many :s3_connections, :dependent => :destroy
   has_many :access_controls, :dependent => :destroy
-  
+  has_many :audience_categories
   accepts_nested_attributes_for :access_controls
 
   validates :short_name, :format=>{:with => /\A[\w-]+\Z/}, :uniqueness => true

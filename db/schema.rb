@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130903035509) do
+ActiveRecord::Schema.define(:version => 20131104222208) do
 
   create_table "access_controls", :force => true do |t|
     t.integer  "pool_id"
@@ -19,6 +19,28 @@ ActiveRecord::Schema.define(:version => 20130903035509) do
     t.string   "access"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+  end
+
+  create_table "audience_categories", :force => true do |t|
+    t.integer  "pool_id"
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  create_table "audiences", :force => true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.integer  "position"
+    t.integer  "audience_category_id"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+  end
+
+  create_table "audiences_identities", :force => true do |t|
+    t.integer "identity_id"
+    t.integer "audience_id"
   end
 
   create_table "bookmarks", :force => true do |t|

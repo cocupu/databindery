@@ -123,6 +123,13 @@ describe Pool do
       subject.all_associations(unique: true).should == [{type: 'Has One', code: "talk", name: "Talk", references: 38},{type: 'Has Many', code: 'authors', name: "Authors", references: 39}, {type: 'Ordered List', code: 'tracks', name: "Tracks", references: 40}, {type: 'Unordered List', code: 'members', name: "Members", references: 41}]
     end
   end
+
+  it "should have many audience categories" do
+    subject.audience_categories.should == []
+    @aud = AudienceCategory.new
+    subject.audience_categories << @aud
+    subject.audience_categories.should == [@aud]
+  end
   
   describe "default_bucket_id" do
     it "should be the pools persistent id" do
