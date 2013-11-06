@@ -46,11 +46,21 @@ class PoolsController < ApplicationController
     if params[:update_index]
       update_index
     end
-    @pool.access_controls = []
-    params[:pool][:access_controls].each do |ac|
-      ident = Identity.where(short_name: ac[:identity]).first
-      next if !ident or !['EDIT', 'READ'].include?(ac[:access]) ## TODO add error?
-      @pool.access_controls.build identity: ident, access: ac[:access]
+
+    # When content posted from JSON, this value is in params[:access_controls], not params[:pool][:access_controls]
+    if params[:access_controls]
+      access_controls = params[:access_controls]
+    else
+      access_controls = params[:pool][:access_controls]
+    end
+
+    unless access_controls.nil?
+      @pool.access_controls = []
+      access_controls.each do |ac|
+        ident = Identity.where(short_name: ac[:identity]).first
+        next if !ident or !['EDIT', 'READ'].include?(ac[:access]) ## TODO add error?
+        @pool.access_controls.build identity: ident, access: ac[:access]
+      end
     end
     @pool.update_attributes(params.require(:pool).permit(:description, :name, :short_name))
     flash[:notice] ||= []

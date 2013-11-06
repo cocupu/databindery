@@ -133,6 +133,22 @@ describe PoolsController do
         @my_pool.access_controls.first.identity.should == @another_identity
         @my_pool.access_controls.first.access.should == "EDIT"
       end
+      it "should support submission of json" do
+        # when submitting json pool info, access_controls isn't being copied into params[:pool].
+        # This test makes sure that the controller handles that case.
+        put :update, :access_controls=>[{identity: @another_identity.short_name, access: 'EDIT'},
+                                        {identity: @another_identity2.short_name, access: 'NONE'}],
+                      pool: {:name=>"ReName", :short_name=>'updated_pool'},
+            :format=>:json, identity_id: @identity.short_name, :id=>@my_pool
+        response.should  be_successful
+        @my_pool.reload
+        @my_pool.owner.should == @identity
+        @my_pool.name.should == "ReName"
+        @my_pool.short_name.should == "updated_pool"
+        @my_pool.access_controls.size.should == 1
+        @my_pool.access_controls.first.identity.should == @another_identity
+        @my_pool.access_controls.first.access.should == "EDIT"
+      end
       it "should give an error when don't have access to that identity" do
         put :update, :pool=>{:name=>"New Pool", :short_name=>'new_pool'}, :format=>:json, identity_id: @another_identity.short_name, :id=>@my_pool
         response.should be_not_found
