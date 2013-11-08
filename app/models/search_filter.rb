@@ -1,5 +1,5 @@
 class SearchFilter < ActiveRecord::Base
-  belongs_to :exhibit
+  belongs_to :filterable, :polymorphic => true
   serialize :values, Array
   attr_accessible :field_name, :operator, :values
 

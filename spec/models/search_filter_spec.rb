@@ -8,13 +8,13 @@ describe SearchFilter do
     subject.field_name = "subject"
     subject.operator = "+"
     subject.values = ["foo","bar"]
-    subject.exhibit = exhibit
+    subject.filterable   = exhibit
     subject.save
     reloaded = SearchFilter.find(subject.id)
     reloaded.field_name.should == "subject"
     reloaded.operator.should == "+"
     reloaded.values.should == ["foo","bar"]
-    reloaded.exhibit.should == exhibit
+    reloaded.filterable.should == exhibit
     exhibit.reload.filters.should == [reloaded]
   end
   it "should render solr params" do

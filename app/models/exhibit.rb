@@ -1,7 +1,7 @@
 class Exhibit < ActiveRecord::Base
   include ActiveModel::ForbiddenAttributesProtection
   belongs_to :pool
-  has_many :filters, class_name:"SearchFilter"
+  has_many :filters, class_name:"SearchFilter", as: :filterable
   validates :pool, presence: true
   serialize :facets
   serialize :index_fields

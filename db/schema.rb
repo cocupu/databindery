@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131104222208) do
+ActiveRecord::Schema.define(:version => 20131108021407) do
 
   create_table "access_controls", :force => true do |t|
     t.integer  "pool_id"
@@ -206,9 +206,12 @@ ActiveRecord::Schema.define(:version => 20131104222208) do
     t.text     "values"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
-    t.integer  "exhibit_id"
+    t.integer  "filterable_id"
     t.string   "association_code"
+    t.string   "filterable_type"
   end
+
+  add_index "search_filters", ["filterable_id", "filterable_type"], :name => "index_search_filters_on_filterable_id_and_filterable_type"
 
   create_table "searches", :force => true do |t|
     t.text     "query_params"
@@ -270,7 +273,5 @@ ActiveRecord::Schema.define(:version => 20131104222208) do
   add_foreign_key "pools", "change_sets", :name => "pools_head_id_fk", :column => "head_id"
   add_foreign_key "pools", "exhibits", :name => "pools_chosen_default_perspective_id_fk", :column => "chosen_default_perspective_id"
   add_foreign_key "pools", "identities", :name => "pools_owner_id_fk", :column => "owner_id"
-
-  add_foreign_key "search_filters", "exhibits", :name => "search_filters_exhibit_id_fk"
 
 end
