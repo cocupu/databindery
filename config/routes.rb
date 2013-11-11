@@ -38,7 +38,7 @@ Bindery::Application.routes.draw do
   end
   
   
-  resources :identities, :only=>:index
+  resources :identities, :only=>[:index, :show]
 
   #jasmine is the path of our testing library so, we have restricted identities from begining with 'jasmine'
   constraints = {:id=>/(?!jasmine)[^\/\.]*/} unless Rails.env.production?
@@ -55,6 +55,9 @@ Bindery::Application.routes.draw do
 
     resources :pools, :path=>'' do
       resources :exhibits, :except=>[:show]
+      resources :audience_categories do
+        resources :audiences
+      end
       resources :file_entities
       match '/facet/:id' => 'pool_searches#facet', :as => :pool_search_facet
 

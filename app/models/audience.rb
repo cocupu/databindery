@@ -1,6 +1,16 @@
 class Audience < ActiveRecord::Base
   belongs_to :audience_category
-  has_many :search_filters
+  has_one :pool, through: :audience_category
+  has_many :filters, class_name:"SearchFilter", as: :filterable
   has_and_belongs_to_many :members, class_name: "Identity"#, inverse_of: :audiences
-  attr_accessible :description, :name, :order, :pool_id
+  attr_accessible :description, :name, :order, :pool_id, :filters_attributes, :member_ids
+
+  accepts_nested_attributes_for :filters, allow_destroy: true
+
+  def as_json(opts=nil)
+    h = super(opts)
+    h["filters"] = self.filters.as_json
+    h["member_ids"] = self.member_ids
+    return h
+  end
 end

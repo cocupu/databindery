@@ -6,7 +6,7 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyModel, BinderyNode, memo
   $scope.currentNode = {}
   $scope.currentModel = {}
   $scope.currentModel = BinderyModel.get({modelId:$("#model-chooser .active").data("model-id")}, (m, getResponseHeaders) ->
-    memoService.createOrUpdate(m)
+    memoService.createOrUpdate("BinderyModel", m)
     $scope.columnDefs = m.columnDefsFromModel()
   )
 

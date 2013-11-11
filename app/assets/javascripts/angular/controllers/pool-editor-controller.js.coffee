@@ -1,9 +1,11 @@
 # Editable Grid
-PoolEditorCtrl = ($scope, $routeParams, BinderyPool) ->
+PoolEditorCtrl = ($scope, $routeParams, BinderyPool, BinderyIdentity, context) ->
 
   # General Scope properties
-  $scope.identityName = $routeParams.identityName
-  $scope.poolName = $routeParams.poolName
+  context.initialize($routeParams.identityName, $routeParams.poolName)
+  $scope.context = context
+  $scope.pool = context.pool
+
   $scope.navigationOptions =
     [
       { id: "pool_info", name: "Pool Info"  },
@@ -13,9 +15,7 @@ PoolEditorCtrl = ($scope, $routeParams, BinderyPool) ->
       { id: "indexing", name: "Indexing" }
     ]
   $scope.currentNav = $scope.navigationOptions[0]
-  $scope.pool = BinderyPool.get({identityName: $scope.identityName, poolName: $scope.poolName})
   $scope.updatePool = (pool) ->
-    pool.identityName = $scope.identityName
     pool.$update( (savedPool, putResponseHeaders) ->
       now = new Date()
       pool.lastUpdated = now.getHours()+':'+now.getMinutes().leftZeroPad(2)+':'+now.getSeconds().leftZeroPad(2)
@@ -27,5 +27,5 @@ PoolEditorCtrl = ($scope, $routeParams, BinderyPool) ->
 
   $scope.selectNavOption = (selection) -> $scope.currentNav = selection
 
-PoolEditorCtrl.$inject = ['$scope', '$routeParams', 'BinderyPool']
+PoolEditorCtrl.$inject = ['$scope', '$routeParams', 'BinderyPool', 'BinderyIdentity', 'contextService']
 angular.module("curateDeps").controller('PoolEditorCtrl', PoolEditorCtrl)

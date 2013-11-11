@@ -14,6 +14,13 @@ class Ability
       can :read, Pool, :access_controls => {:identity_id => identity.id }
       can :update, Pool, :access_controls => {:identity_id => identity.id, :access=>'EDIT' }
 
+      #can :read, AudienceCategory, :pool=>{ :access_controls=> {:identity_id => identity.id, :access=>'EDIT'}}
+      can [:read, :edit, :update, :create], AudienceCategory do |audience_category|
+        can? :update, audience_category.pool
+      end
+      can [:read, :edit, :update, :create], Audience do |audience|
+        can? :update, audience.pool
+      end
       #The owner of the pool that these objects are in can read/edit/update the objects
       can [:read, :update, :destroy], [Node, Model, Exhibit, MappingTemplate], :pool=>{ :owner_id => identity.id}
       can :read, [MappingTemplate], :pool=>{ :access_controls=> {:identity_id => identity.id}}
