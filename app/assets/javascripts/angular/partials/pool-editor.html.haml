@@ -9,93 +9,104 @@
         %a{"ng-click"=>"selectNavOption(navOption)"} {{navOption.name}}
 
   .span9
-    %div
-      %form{name:"poolInfoForm"}
-        -# Pool Info
-        .body{"ng-show"=>'currentNav.id == "pool_info"'}
+    %form.poolInfoForm{name:"poolInfoForm", "ng-show"=>'currentNav.id == "pool_info" || currentNav.id == "contributors" '}
+      -# Pool Info
+      .panel.panel-primary.pool-info{"ng-show"=>'currentNav.id == "pool_info"'}
+        .panel-heading
+          %h3.panel-title Pool Info
+        .panel-body
           %button.btn.btn-primary.pull-right{type:"submit", "ng-show"=>"poolInfoForm.$dirty", "ng-click"=>"updatePool(pool); poolInfoForm.$setPristine()"} Apply Changes
-          .control-group
+          .form-group
             %label Name
             %input{"ng-model"=>"pool.name"}
-          .control-group
+          .form-group
             %label Short Name
             %input{"ng-model"=>"pool.short_name"}
             %span.help-block No spaces or special characters
-          .control-group
+          .form-group
             %label Description
-            %textarea{size:"30", "ng-model"=>"pool.description"}
-        -# Contributors
-        .body{"ng-show"=>'currentNav.id == "contributors"'}
+            %textarea.form-control{size:"30", "ng-model"=>"pool.description"}
+      -# Contributors
+      .panel.panel-primary.contributors{"ng-show"=>'currentNav.id == "contributors"'}
+        .panel-heading
+          %h3.panel-title Contributors
+        .panel-body
           %button.btn.btn-primary.pull-right{type:"submit", "ng-show"=>"poolInfoForm.$dirty", "ng-click"=>"updatePool(pool); poolInfoForm.$setPristine()"} Apply Changes
-          %h3 Owner
-          TODO {{pool.owner_id}}
-          -#<%- if @pool.owner.name.nil? %>
-          -#  <%= @pool.owner.short_name %>
-          -#<%- else %>
-          -#  <%= @pool.owner.name %>(<%= @pool.owner.short_name %>)
-          -#<%- end %>
-          %h3 Contributors
           %table.permissions
             %tr
               %th User
               %th Access
             %tr{"ng-repeat"=>"ac in pool.access_controls"}
-              %td
-                %input{"ng-model"=>"ac.identity"}
-              %td
+              %td.contributor
+                %input{"bindery-token-input"=>"contributorTokeninputOptions","data-url"=>'"/identities"', "ng-model"=>"ac.identity"}
+              %td.access
                 %select{"ng-model"=>"ac.access"}
                   %option{value:"NONE"} No access
                   %option{value:"READ"} Read-only
                   %option{value:"EDIT"} Read and Write
               %td
-                %a.remove{"ng-click"=>"removeContributor(ac)"} remove
+                %a.remove.close{"ng-click"=>"removeContributor(ac)"} &times;
           .actions
-            %a.add{"ng-click"=>"addContributor()"} add another
+            %a.add{"ng-click"=>"addContributor()"} add another contributor
+        .panel-body
+          %h3.panel-title Owner
+          %span{"ng-show"=>"context.poolOwner.name"} {{context.poolOwner.name}}  ({{context.poolOwner.short_name}})
+          %span{"ng-hide"=>"context.poolOwner.name"} {{context.poolOwner.short_name}}
 
-      -# Audiences
-      .body{"ng-show"=>'currentNav.id == "audiences"', "ng-controller"=>"PoolAudienceEditorCtrl"}
-        %ul.nav.nav-tabs
-          %li{"ng-class"=>'{active: selectedCategory == "everyone"}'}
-            %a{"ng-click"=>'selectCategory("everyone")'} Everyone (all visitors)
-          %li{"ng-repeat"=>"category in audienceCategories", "ng-class"=>"{active: category == selectedCategory}"}
-            %a{"ng-click"=>"selectCategory(category)"} {{category.name}}
-          %li
-            %a{"ng-click"=>"newCategory()"} add a new audience category
-        -# General Audience Category Editor
-        .tab-content{"ng-hide"=>'selectedCategory == "everyone"'}
-          %ng-form{name:'audienceCategoryForm'}
-            %button.btn.btn-primary.pull-right{type:"submit", "ng-hide"=>"selectedCategory.id", "ng-click"=>"selectedCategory.$save()"} Create this Category
-            %button.btn.btn-primary.pull-right{type:"submit", "ng-show"=>"selectedCategory.id && audienceCategoryForm.$dirty", "ng-click"=>"selectedCategory.$update()"} Save Changes to this Category
-            Category Name
-            %input{"ng-model"=>"selectedCategory.name"}
-            .actions{"ng-show"=>"selectedCategory.audiences.length == 0"}
-              %a{"ng-click"=>"addAudienceToCategory(selectedCategory)"} add an audience to this category
-            .actions{"ng-show"=>"selectedCategory.audiences.length > 0"}
-              .control-group
-                %input{type:"checkbox", "ng-model"=>"selectedCategory.order_relevant"} The order of Audience memberships is relevant - permissions are cumulative
-              %a{"ng-click"=>"addAudienceToCategory(selectedCategory)"} add another audience
-
-          %form{name:"audienceForm", "ng-show"=>'selectedCategory.id'}
-            %fieldset
-              -#%legend {{selectedCategory.name}} Audiences
-              %fieldset.audience{"ng-repeat"=>"audience in selectedCategory.audiences"}
-                %legend {{audience.name}}
-
-                %button.btn.btn-primary.pull-right{type:"submit", "ng-hide"=>"audience.id", "ng-click"=>"audience.$save()"} Create this Audience
-                %button.btn.btn-primary.pull-right{type:"submit", "ng-show"=>'audience.id && audienceForm.$dirty', "ng-click"=>"audience.$update()"} Save Changes to this Audience
-                .control-group
-                  %label Audience Name:
-                  %input{"ng-model"=>"audience.name"}
-                .filters{"ng-show"=>"audience.id"}
-                  Filters:
-                .members{"ng-show"=>"audience.id"}
-                  Members:
+    -# Audiences
+    .audiences{"ng-show"=>'currentNav.id == "audiences"', "ng-controller"=>"PoolAudienceEditorCtrl"}
+      -#.panel.panel-primary
+      -#  .panel-heading
+      -#    %h3.panel-title Audiences
+      %ul.nav.nav-tabs.nav-pills
+        %li{"ng-class"=>'{active: selectedCategory == "everyone"}'}
+          %a{"ng-click"=>'selectCategory("everyone")'} Everyone (all visitors)
+        %li{"ng-repeat"=>"category in audienceCategories", "ng-class"=>"{active: category == selectedCategory}"}
+          %a{"ng-click"=>"selectCategory(category)"} {{category.name}}
+      .panel-body
+        .actions{style:"height:1.5em;"}
+          %a.pull-right{"ng-click"=>"newCategory()"} add a new audience category
+      -# Audiences:: General Audience Category Editor
+      .tab-content{"ng-hide"=>'selectedCategory == "everyone"'}
+        .panel.panel-default
+          .panel-body
+            %ng-form.audienceCategoryForm{name:'audienceCategoryForm'}
+              %button.btn.btn-primary.pull-right{type:"submit", "ng-hide"=>"selectedCategory.id", "ng-click"=>"selectedCategory.$save()"} Create this Category
+              %button.btn.btn-primary.pull-right{type:"submit", "ng-show"=>"selectedCategory.id && audienceCategoryForm.$dirty", "ng-click"=>"selectedCategory.$update()"} Save Changes to this Category
+              Category Name
+              %input{"ng-model"=>"selectedCategory.name"}
+              .actions{"ng-show"=>"selectedCategory.audiences.length == 0"}
+                %a{"ng-click"=>"addAudienceToCategory(selectedCategory)"} add an audience to this category
               .actions{"ng-show"=>"selectedCategory.audiences.length > 0"}
-                %a{"ng-click"=>"addAudienceToCategory(selectedCategory)"} add another audience
-        -# Everyone
-        .tab-content{"ng-show"=>'selectedCategory == "everyone"'}
-          %h3 Everyone (all visitors)
-          .control-group
+                .form-group
+                  %input{type:"checkbox", "ng-model"=>"selectedCategory.order_relevant"} The order of Audience memberships is relevant - permissions are cumulative
+        .actions{"ng-show"=>"selectedCategory.audiences.length > 0"}
+          %a{"ng-click"=>"addAudienceToCategory(selectedCategory)"} add another audience
+
+        .panel.panel-default.audience{"ng-repeat"=>"audience in selectedCategory.audiences"}
+          .panel-heading
+            %h3.panel-title {{audience.name}}
+          .panel-body
+            %form.audienceForm{name:"audienceForm", "ng-show"=>'selectedCategory.id'}
+              %button.btn.btn-primary.pull-right{type:"submit", "ng-hide"=>"audience.id", "ng-click"=>"audience.$save()"} Create this Audience
+              %button.btn.btn-primary.pull-right{type:"submit", "ng-show"=>'audience.id && audienceForm.$dirty', "ng-click"=>"audience.$update()"} Save Changes to this Audience
+              .form-group
+                %label Audience Name:
+                %input{"ng-model"=>"audience.name"}
+              .filters{"ng-show"=>"audience.id"}
+                Filters:
+              .members{"ng-show"=>"audience.id"}
+                Members:
+                %input{"bindery-token-input"=>"audienceMemberTokeninputOptions","data-url"=>'"/identities"', "ng-model"=>"audience.member_ids"}
+        .actions{"ng-show"=>"selectedCategory.audiences.length > 0"}
+          %a{"ng-click"=>"addAudienceToCategory(selectedCategory)"} add another audience
+
+      -# Audiences::Everyone
+      .tab-content.panel.panel-default.audience{"ng-show"=>'selectedCategory == "everyone"'}
+        .panel-heading
+          %h3.panel-title Everyone (all visitors)
+        .panel-body
+          .form-group
             .radio
               %input{type:"radio", name:"pool_default_visibility", "ng-model"=>"selectedCategory.default_visibility", value: "hidden"} hide this pool from people who are not in its audiences
             .radio
@@ -104,21 +115,23 @@
               %input{type:"radio", name:"pool_default_visibility", "ng-model"=>"selectedCategory.default_visibility", value:"open_access"} allow full access to everyone
 
 
-      -# Sources
-      .body{"ng-show"=>'currentNav.id == "sources"'}
-        .panel
-          .panel-header
-            %h3 Sources
-          .panel-body
-            .source.external
-              %h4 Bindery Storage
-          .panel-footer
-      -# Indexing
-      .body{"ng-show"=>'currentNav.id == "indexing"'}
+    -# Sources
+    .panel.panel-primary.sources{"ng-show"=>'currentNav.id == "sources"'}
+      .panel-heading
+        %h3.panel-title Sources
+      .panel-body
+        .source.external
+          %h4 Bindery Storage
+      .panel-footer
+    -# Indexing
+    .panel.panel-primary.indexing{"ng-show"=>'currentNav.id == "indexing"'}
+      .panel-heading
+        %h3.panel-title Indexing
+      .panel-body
         .form-actions
           %button.btn.btn-primary{type:"submit", name:"update_index"} Rebuild Solr Index
           Warning: Rebuilding the index can take a long time.
-      -#.panel-footer
-        .form-actions
-          -#%button.btn.btn-primary{type:"submit", "ng-click"=>"updatePool(pool)"} Apply Changes
+    -#.panel-footer
+      .form-actions
+        -#%button.btn.btn-primary{type:"submit", "ng-click"=>"updatePool(pool)"} Apply Changes
 

@@ -33,7 +33,7 @@ describe AudienceCategoriesController do
         json = JSON.parse(response.body)
         json.first.delete("created_at")
         json.first.delete("updated_at")
-        json.should == [{"description"=>"MyText", "id"=>@category.id, "name"=>"MyString", "pool_id"=>@pool.id, "audiences"=>[]}]
+        json.should == [{"description"=>"MyText", "id"=>@category.id, "name"=>"MyString", "pool_id"=>@pool.id, "audiences"=>[],  "pool_name"=>@pool.short_name, "identity_name"=>@identity.short_name}]
       end
     end
   end
@@ -64,7 +64,7 @@ describe AudienceCategoriesController do
           json = JSON.parse(response.body)
           json.delete("created_at")
           json.delete("updated_at")
-          json.should == {"description"=>"MyText", "id"=>@category.id, "name"=>"MyString", "pool_id"=>@pool.id, "audiences"=>[]}
+          json.should == {"description"=>"MyText", "id"=>@category.id, "name"=>"MyString", "pool_id"=>@pool.id, "audiences"=>[],  "pool_name"=>@pool.short_name, "identity_name"=>@identity.short_name}
         end
       end
     end

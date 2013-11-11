@@ -1,6 +1,13 @@
 class IdentitiesController < ApplicationController
   def index
-    render :json=>current_user.identities.map {|i| {short_name: i.short_name, url: identity_pools_path(i)}}
+    if params[:q]
+      q = params[:q]
+      capitalized = q.split.map(&:capitalize).join(' ')
+      @identities = Identity.where("name LIKE :prefix OR name LIKE :capitalized OR short_name LIKE :prefix OR short_name LIKE :capitalized", prefix: "%#{q}%", capitalized:"%#{capitalized}%").limit(25)
+    else
+      @identities = Identity.limit(25)
+    end
+    render :json=> @identities.map {|i| serialize_identity(i) }
   end
   def show
     if @identity.nil? && params[:id].to_i.to_s == params[:id]
@@ -8,6 +15,11 @@ class IdentitiesController < ApplicationController
     else
       @identity = Identity.find_by_short_name(params[:id])
     end
-    render :json=>@identity.as_json.reject {|k,v| k=="login_credential_id"}
+    render :json=>serialize_identity(@identity)
+  end
+
+  private
+  def serialize_identity(identity)
+    identity.as_json.reject {|k,v| k=="login_credential_id"}.merge({url: identity_pools_path(identity)})
   end
 end
