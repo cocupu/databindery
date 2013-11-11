@@ -32,9 +32,36 @@ table.results {
 .edit .header .actions {
   margin-top: 1.25em;
 }
+
+table.permissions {
+  td.access {
+    padding-left:0.5em;
+  }
+  .token-input-list-facebook {
+    width: 175px;
+  }
+}
+
+.audiences {
+  .nav {
+    margin-bottom: 5px;
+  }
+  .panel-body {
+    padding-top:5px;
+    padding-bottom:5px;
+  }
+
+}
 .audience legend {
   margin-bottom: 5px;
 }
-.audience legend + .control-group {
+.audience legend + .form-group {
   margin-top: 5px;
+}
+
+.audienceCategoryForm {
+  margin-bottom: 1em;
+  .actions {
+    margin-top: 1em;
+  }
 }
