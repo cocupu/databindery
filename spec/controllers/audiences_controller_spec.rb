@@ -119,19 +119,20 @@ describe AudiencesController do
         @audience.description.should == "New Description"
       end
       it "should allow you to update filters from a json property called filters (not filters_attributes)" do
-        put :update, audience:{"description"=>"New description", "id"=>@audience.id, "name"=>"The Category", "filters"=>[{"field_name"=>"title"}, {"field_name"=>"date_created"}, {"field_name"=>"date_updated"}]},
+        put :update, audience:{"description"=>"New description", "id"=>@audience.id, "name"=>"The Category", "filters"=>[{"field_name"=>"title", "values_tokens"=>"Title 1;;Title 3"}, {"field_name"=>"date_created"}, {"field_name"=>"date_updated"}]},
             :format=>:json, identity_id: @identity.short_name, :id=>@audience, pool_id:@pool.short_name, audience_category_id:@category
         response.should  be_successful
         @audience.reload
         @audience.description.should == "New description"
         @audience.name.should == "The Category"
         @audience.filters.count.should == 3
-        other_filter = @audience.filters.where(field_name: "date_created").first
-        put :update, audience:{"filters"=>[{"id"=>other_filter.id, "_destroy"=>"1"}]},
+        title_filter = @audience.filters.where(field_name: "title").first
+        title_filter.values.should == ["Title 1","Title 3"]
+        put :update, audience:{"filters"=>[{"id"=>title_filter.id, "_destroy"=>"1"}]},
             :format=>:json, identity_id: @identity.short_name, :id=>@audience, pool_id:@pool.short_name, audience_category_id:@category
         @audience.reload
         @audience.filters.count.should == 2
-        @audience.filters.where(field_name: "date_created").should be_empty
+        @audience.filters.where(field_name: "title").should be_empty
       end
       it "should support submission of json objects" do
         # when submitting json pool info, filters isn't being copied into params[:audience].

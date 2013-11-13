@@ -100,7 +100,7 @@
                   -#%input{value:"Grant access to items where"}
                   %select{"ng-model"=>"filter.field_name", "ng-options"=>"field.code as field.name for field in pool.fields()"}
                   = select_tag "exhibit[filters_attributes][][operator]", options_for_select({"is"=>"+", "is not"=>"-"}), "ng-model"=>"filter.operator", class:"operator"
-                  %input{"ng-model"=>"filter.values"}
+                  %input{"ng-model"=>"filter.values_tokens"}
                   %a.remove.close{"ng-click"=>"audience.removeFilter(filter)"} &times;
               .members{"ng-show"=>"audience.id"}
                 Members:
