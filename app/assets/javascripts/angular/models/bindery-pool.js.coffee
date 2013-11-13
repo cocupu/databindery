@@ -4,6 +4,17 @@ angular.module('curateDeps').factory('BinderyPool', ['$resource', 'BinderyAudien
     update: { method: 'PUT' }
   })
 
+  BinderyPool.prototype.fields = () ->
+    if (typeof(this.cache) == "undefined")
+      this.cache = {}
+    if (typeof(this.cache.fields) == "undefined") && this.identity_name
+      cache = this.cache
+      cache.fields = $.ajax(this.identity_name+"/"+this.short_name+"/fields"+".json", {
+            type: "get", contentType: "application/json"
+            success: (result) -> cache.fields = result
+        })
+    return this.cache.fields
+
   BinderyPool.prototype.loadAudienceCategories = () ->
     this.audience_categories = []
     audience_categories = this.audience_categories

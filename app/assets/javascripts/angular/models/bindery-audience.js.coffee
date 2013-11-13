@@ -10,6 +10,13 @@ angular.module('curateDeps').factory('BinderyAudience', ['$resource', ($resource
     }
     update: { method: 'PUT' }
   })
+  BinderyAudience.prototype.addFilter = () ->
+    newFilter = {field_name:"", values:[""], operator:"+"}
+    this.filters.push(newFilter)
+
+  BinderyAudience.prototype.removeFilter = (filter) ->
+    index = this.filters.indexOf(filter);
+    this.filters.splice(index, 1);
 
   return  BinderyAudience
 ])

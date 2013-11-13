@@ -37,8 +37,13 @@ class AudiencesController < ApplicationController
   private
 
   def move_json_filters_to_filters_attributes
-    if params["audience"]["filters"] && params["audience"]["filters_attributes"].nil?
-      params["audience"]["filters_attributes"] = params["audience"]["filters"]
+    if params["filters"]
+      to_move = params["filters"]
+    elsif params["audience"]["filters"]
+      to_move = params["audience"]["filters"]
+    end
+    if to_move && params["audience"]["filters_attributes"].nil?
+      params["audience"]["filters_attributes"] = to_move
     end
   end
 

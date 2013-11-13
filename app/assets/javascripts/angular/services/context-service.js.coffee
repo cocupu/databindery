@@ -7,7 +7,9 @@ angular.module('curateDeps').factory('contextService', ['BinderyPool', 'BinderyI
       contextService.identityName = identityName
       contextService.poolName = poolName
       contextService.pool = BinderyPool.get({identityName: identityName, poolName: poolName}, (data) ->
-        contextService.poolOwner = BinderyIdentity.get(name:data.owner_id)
+        contextService.pool.identity_name = identityName
+        contextService.poolOwner = BinderyIdentity.get({name:data.owner_id})
+        contextService.pool.fields()
       )
 
   return contextService

@@ -1,6 +1,8 @@
 class PoolsController < ApplicationController
-  load_resource :identity, :find_by => :short_name, :only=>[:index, :show, :edit]
+  load_resource :identity, :find_by => :short_name, :only=>[:index, :show, :edit, :fields]
   load_and_authorize_resource :find_by => :short_name, :through=>:identity, :only=>[:show, :edit]
+  load_resource :pool, :id_param=>:pool_id, :find_by => :short_name, :through=>:identity, :only=>[:fields]
+
 
   def index
     ### This query finds all the pools belonging to @identity that can be seen by current_identity
@@ -16,6 +18,15 @@ class PoolsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to identity_pool_search_path(@identity.short_name, @pool.short_name) }
       format.json { render :json=>@pool }
+    end
+  end
+
+  def fields
+    authorize! :edit, @pool
+    @fields = @pool.all_fields
+    respond_to do |format|
+      format.html { redirect_to identity_pool_search_path(@identity.short_name, @pool.short_name) }
+      format.json { render :json=>@fields }
     end
   end
   

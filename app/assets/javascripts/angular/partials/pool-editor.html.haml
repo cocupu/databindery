@@ -11,7 +11,7 @@
   .span9
     %form.poolInfoForm{name:"poolInfoForm", "ng-show"=>'currentNav.id == "pool_info" || currentNav.id == "contributors" '}
       -# Pool Info
-      .panel.panel-primary.pool-info{"ng-show"=>'currentNav.id == "pool_info"'}
+      .panel.panel-default.pool-info{"ng-show"=>'currentNav.id == "pool_info"'}
         .panel-heading
           %h3.panel-title Pool Info
         .panel-body
@@ -27,7 +27,7 @@
             %label Description
             %textarea.form-control{size:"30", "ng-model"=>"pool.description"}
       -# Contributors
-      .panel.panel-primary.contributors{"ng-show"=>'currentNav.id == "contributors"'}
+      .panel.panel-default.contributors{"ng-show"=>'currentNav.id == "contributors"'}
         .panel-heading
           %h3.panel-title Contributors
         .panel-body
@@ -94,7 +94,14 @@
                 %label Audience Name:
                 %input{"ng-model"=>"audience.name"}
               .filters{"ng-show"=>"audience.id"}
-                Filters:
+                Filters
+                %a{"ng-click"=>"audience.addFilter()"} add another filter
+                .form-group{"ng-repeat"=>"filter in audience.filters"}
+                  -#%input{value:"Grant access to items where"}
+                  %select{"ng-model"=>"filter.field_name", "ng-options"=>"field.code as field.name for field in pool.fields()"}
+                  = select_tag "exhibit[filters_attributes][][operator]", options_for_select({"is"=>"+", "is not"=>"-"}), "ng-model"=>"filter.operator", class:"operator"
+                  %input{"ng-model"=>"filter.values"}
+                  %a.remove.close{"ng-click"=>"audience.removeFilter(filter)"} &times;
               .members{"ng-show"=>"audience.id"}
                 Members:
                 %input{"bindery-token-input"=>"audienceMemberTokeninputOptions","data-url"=>'"/identities"', "ng-model"=>"audience.member_ids"}
@@ -116,7 +123,7 @@
 
 
     -# Sources
-    .panel.panel-primary.sources{"ng-show"=>'currentNav.id == "sources"'}
+    .panel.panel-default.sources{"ng-show"=>'currentNav.id == "sources"'}
       .panel-heading
         %h3.panel-title Sources
       .panel-body
@@ -124,7 +131,7 @@
           %h4 Bindery Storage
       .panel-footer
     -# Indexing
-    .panel.panel-primary.indexing{"ng-show"=>'currentNav.id == "indexing"'}
+    .panel.panel-default.indexing{"ng-show"=>'currentNav.id == "indexing"'}
       .panel-heading
         %h3.panel-title Indexing
       .panel-body

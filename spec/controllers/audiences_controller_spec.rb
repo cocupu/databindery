@@ -118,7 +118,7 @@ describe AudiencesController do
         @audience.name.should == "ReName"
         @audience.description.should == "New Description"
       end
-      it "should allow you to update audiences from a json property called audiences (not audiences_attributes)" do
+      it "should allow you to update filters from a json property called filters (not filters_attributes)" do
         put :update, audience:{"description"=>"New description", "id"=>@audience.id, "name"=>"The Category", "filters"=>[{"field_name"=>"title"}, {"field_name"=>"date_created"}, {"field_name"=>"date_updated"}]},
             :format=>:json, identity_id: @identity.short_name, :id=>@audience, pool_id:@pool.short_name, audience_category_id:@category
         response.should  be_successful
@@ -132,6 +132,16 @@ describe AudiencesController do
         @audience.reload
         @audience.filters.count.should == 2
         @audience.filters.where(field_name: "date_created").should be_empty
+      end
+      it "should support submission of json objects" do
+        # when submitting json pool info, filters isn't being copied into params[:audience].
+        # This test makes sure that the controller handles that case.
+        put :update, :filters=>[{"field_name"=>"title"}, {"field_name"=>"date_created"}, {"field_name"=>"date_updated"}],
+            :audience=>{},
+            :format=>:json, identity_id: @identity.short_name, :id=>@audience, pool_id:@pool.short_name, audience_category_id:@category
+        response.should  be_successful
+        @audience.reload
+        @audience.filters.count.should == 3
       end
       it "should give an error when don't have edit powers on the category (or its pool)" do
         put :update, :audience=>{:name=>"Rename"}, :format=>:json, identity_id: @another_identity.short_name, :id=>@not_my_audience, pool_id: @pool.short_name, audience_category_id:@not_my_category
