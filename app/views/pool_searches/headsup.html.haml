@@ -9,42 +9,45 @@
         %span {{node.title}}
 
   -#  Main Panel
-  .panel.panel-default.detail.selectedItems.node
-    .panel-body{"ng-hide"=>"selectedNodes.length > 0"}
+  .panel.panel-default.detail.selectedItems.node{"ng-hide"=>"selectedNodes.length > 0"}
+    .panel-body
       %div.emptyMessage
         Select a cell to see details here.
-    .panel-body{"ng-repeat"=>"node in selectedNodes"}
-      .panelHeader.panel-header
-        %h3 {{node.title}}
-        %span.savedIndicator{"ng-switch"=>true, "on"=>"node.dirty"}
-          %span.message{"ng-switch-when"=>"true"} You have unsaved changes
-          %span.message{"ng-switch-when"=>"false"} Saved at: {{node.lastUpdated}}
-        %button.btn.btn-default.pull-right{type:"button", "ng-click"=>"updateNode(node)"}=t('bindery.nodes.save_changes')
-      %form.node-editor.panel-body
-        -# fields & associations
-        %div.field.clearfix{"ng-repeat"=>"fieldConfig in node.model().fields.concat(node.model().associations)"}
-          %label
-            {{fieldConfig.name}}
-            %span.field-helper{"ng-show"=>"fieldConfig.type == 'date'"} {{node.data[fieldConfig.code]}}
-          %span{"ng-switch"=>true, "on"=>"fieldConfig.type"}
-            %textarea{"ng-switch-when"=>"textarea", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
-            %input{"ng-switch-when"=>"date", type:"date", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
-            %input{"ng-switch-when"=>"Has Many", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", "ng-focus"=>"focusOnField(fieldConfig)", "bindery-token-input"=>"nodeTokeninputOptions","data-url"=>"searchUrl+'?rows=100&model_id='+fieldConfig.references","ng-model"=>"node.associations[fieldConfig.code]", "data-field-config"=>"{{fieldConfig}}", multiple:true, class:"fieldControl colt{{$index}} col{{$index}}"}
-            %input{"ng-switch-default"=>"true", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
-        .file-entity.clearfix{"ng-show"=>"node.file_entity"}
-          .media-display{"ng-switch"=>true, "on"=>"node.file_type"}
-            %audio{"ng-switch-when"=>"audio", controls:true}
-              %source{"ng-src"=>"{{node.download_url()}}", type:"audio/mpeg"}
-            %video{"ng-switch-when"=>"video", controls:true}
-              %source{"ng-src"=>"{{node.download_url()}}", type:"video/mp4"}
-          .spawn-action{"ng-show"=>"node.spawnable"}
-            %a{target:"_self", "ng-href"=>new_identity_pool_spawn_job_path(@identity, @pool, source_node_id:"")+"{{node.node_version_id}}"} Spawn entities from each row of this file
-          .download-link
-            %a{target:"_self", "ng-href"=>"{{node.download_url()}}"} Download ({{(node.data.file_size*.00000095367).toFixed(2)}}MB)
+  .panel.panel-default.detail.selectedItems.node{"ng-repeat"=>"node in selectedNodes"}
+    .panelHeader.panel-header
+      %h3 {{node.title}}
+      %span.savedIndicator{"ng-switch"=>true, "on"=>"node.dirty"}
+        %span.message{"ng-switch-when"=>"true"} You have unsaved changes
+        %span.message{"ng-switch-when"=>"false"} Saved at: {{node.lastUpdated}}
+      %button.btn.btn-default.pull-right{type:"button", "ng-click"=>"updateNode(node)"}=t('bindery.nodes.save_changes')
+    %form.node-editor.panel-body
+      -# fields & associations
+      %div.field.clearfix{"ng-repeat"=>"fieldConfig in node.model().fields.concat(node.model().associations)"}
+        %label
+          {{fieldConfig.name}}
+          %span.field-helper{"ng-show"=>"fieldConfig.type == 'date'"} {{node.data[fieldConfig.code]}}
+        %span{"ng-switch"=>true, "on"=>"fieldConfig.type"}
+          %textarea{"ng-switch-when"=>"textarea", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
+          %input{"ng-switch-when"=>"date", type:"date", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
+          %input{"ng-switch-when"=>"Has Many", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", "ng-focus"=>"focusOnField(fieldConfig)", "bindery-token-input"=>"nodeTokeninputOptions","data-url"=>"searchUrl+'?rows=100&model_id='+fieldConfig.references","ng-model"=>"node.associations[fieldConfig.code]", "data-field-config"=>"{{fieldConfig}}", multiple:true, class:"fieldControl colt{{$index}} col{{$index}}"}
+          %input{"ng-switch-default"=>"true", "ng-model"=>"node.data[fieldConfig.code]", "ng-focus"=>"focusOnField(fieldConfig)", "id"=>"{{node.persistent_id+'_'+fieldConfig.code}}", class:"fieldControl colt{{$index}} col{{$index}}"}
+      .file-entity.clearfix{"ng-show"=>"node.file_entity"}
+        .media-display{"ng-switch"=>true, "on"=>"node.file_type"}
+          %audio{"ng-switch-when"=>"audio", controls:true}
+            %source{"ng-src"=>"{{node.download_url()}}", type:"audio/mpeg"}
+          %video{"ng-switch-when"=>"video", controls:true}
+            %source{"ng-src"=>"{{node.download_url()}}", type:"video/mp4"}
+        .spawn-action{"ng-show"=>"node.spawnable"}
+          %a{target:"_self", "ng-href"=>new_identity_pool_spawn_job_path(@identity, @pool, source_node_id:"")+"{{node.node_version_id}}"} Spawn entities from each row of this file
+        .download-link
+          %a{target:"_self", "ng-href"=>"{{node.download_url()}}"} Download ({{(node.data.file_size*.00000095367).toFixed(2)}}MB)
 
   -# Supplemental Panel
 
   %ng-switch{"on"=>"supplementalPanelState"}
+
+    -# -- Supplemental Panel::Default
+    .panel.panel-default.info.supplemental.node{"ng-switch-default"=>"true"}
 
     -# -- Supplemental node info
     .panel.panel-default.info.supplemental.node{"ng-switch-when"=>"node"}
