@@ -11,6 +11,7 @@ angular.module("binderyCurate").directive('binderyTokenInput', ['$compile',($com
         opts.initSelection(scope, element, (val) ->
                 element.tokenInput("add", val)
               )
+
       if opts.prePopulateFunc
         opts.prePopulate = opts.prePopulateFunc(scope, element)
 
@@ -27,7 +28,7 @@ angular.module("binderyCurate").directive('binderyTokenInput', ['$compile',($com
 
       element.bind('change', () ->
         scope.$apply( () ->
-          ngModel.$setViewValue(element.val().split(","))
+          ngModel.$setViewValue(element.val().split(";;"))
         )
       )
   }

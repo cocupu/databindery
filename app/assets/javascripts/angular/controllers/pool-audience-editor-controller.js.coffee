@@ -56,9 +56,10 @@ PoolAudienceEditorCtrl = ($scope, context, BinderyAudienceCategory, BinderyAudie
   $scope.filterValuesTokeninputOptions = {
     propertyToSearch: "value"
     jsonContainer: "values"
-    preventDuplicates: true
-    theme: "facebook"
     tokenValue: "value"
+    tokenDelimiter: ";;"
+#    preventDuplicates: true
+    theme: "facebook"
     resultsFormatter: (item) ->
       return "<li>"+item.value+" ("+item.count+")</li>"
     tokenFormatter: (item) ->
