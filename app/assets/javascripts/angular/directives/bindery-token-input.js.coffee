@@ -26,6 +26,16 @@ angular.module("binderyCurate").directive('binderyTokenInput', ['$compile',($com
 
       element.tokenInput(scope.lookupUrl, opts);
 
+      # If the url changes, reset the tokeninput with the new url
+      scope.$watch(() ->
+        return scope.$eval(attrs.url)
+      ,() ->
+        scope.lookupUrl =  scope.$eval(attrs.url)
+        # Remove the existing tokeninput before reloading
+        element.siblings(".token-input-list-facebook").remove()
+        element.tokenInput(scope.lookupUrl, opts)
+      )
+
       element.bind('change', () ->
         scope.$apply( () ->
           ngModel.$setViewValue(element.val().split(";;"))

@@ -65,3 +65,15 @@ table.permissions {
     margin-top: 1em;
   }
 }
+
+.filters {
+  .form-group {
+    .token-input-list-facebook {
+      display: inline-block;
+    }
+    select, .remove {
+      vertical-align: top;
+    }
+  }
+}
+

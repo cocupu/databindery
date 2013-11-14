@@ -8,6 +8,7 @@
  * ----> Note the missing = require_tree
  *= require bootstrap
  *= require bootstrap-tideover
+ *= require typography
  *= require main
  *= require exhibits
  *= require models
