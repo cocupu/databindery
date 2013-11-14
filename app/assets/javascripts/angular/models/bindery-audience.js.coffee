@@ -11,7 +11,7 @@ angular.module('curateDeps').factory('BinderyAudience', ['$resource', ($resource
     update: { method: 'PUT' }
   })
   BinderyAudience.prototype.addFilter = () ->
-    newFilter = {field_name:"", values:[""], operator:"+"}
+    newFilter = {field_name:"", values:[], operator:"+"}
     this.filters.push(newFilter)
 
   BinderyAudience.prototype.removeFilter = (filter) ->

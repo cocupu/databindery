@@ -27,11 +27,4 @@ describe SearchFilter do
     solr_params, user_params = subject.apply_solr_params({}, {})
     solr_params.should == {fq: ["subject_t:\"bar\" OR subject_t:\"baz\""]}
   end
-  it "should allow manipulation of filter values array via values_tokens" do
-    subject.values.should == []
-    subject.values_tokens = "foo;;bar;;And then, because values often include free text, they chose to use two semicolons as the delimiter."
-    subject.values.should == ["foo","bar","And then, because values often include free text, they chose to use two semicolons as the delimiter."]
-    subject.values << "Another Value"
-    subject.values_tokens.should  == "foo;;bar;;And then, because values often include free text, they chose to use two semicolons as the delimiter.;;Another Value"
-  end
 end

@@ -15,7 +15,7 @@ Bindery::Application.routes.draw do
   resources :drives, :only=>[:index]
   
   resources :models, :except=>[:create, :index] do
-    resources :fields
+    resources :fields, only:[:create]
     resources :associations, :only=>:create
     #resources :nodes 
   end
@@ -54,7 +54,7 @@ Bindery::Application.routes.draw do
     match ':pool_id/search' => 'pool_searches#index', :as => 'pool_search'
 
     resources :pools, :path=>'' do
-      match 'fields' => 'pools#fields'
+      resources :fields, only:[:index,:show]
       resources :exhibits, :except=>[:show]
       resources :audience_categories do
         resources :audiences

@@ -6,6 +6,7 @@ angular.module('curateDeps').factory('contextService', ['BinderyPool', 'BinderyI
     if identityName
       contextService.identityName = identityName
       contextService.poolName = poolName
+      contextService.poolUrl = "/"+identityName+"/"+poolName
       contextService.pool = BinderyPool.get({identityName: identityName, poolName: poolName}, (data) ->
         contextService.pool.identity_name = identityName
         contextService.poolOwner = BinderyIdentity.get({name:data.owner_id})

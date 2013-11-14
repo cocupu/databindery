@@ -119,7 +119,7 @@ describe AudiencesController do
         @audience.description.should == "New Description"
       end
       it "should allow you to update filters from a json property called filters (not filters_attributes)" do
-        put :update, audience:{"description"=>"New description", "id"=>@audience.id, "name"=>"The Category", "filters"=>[{"field_name"=>"title", "values_tokens"=>"Title 1;;Title 3"}, {"field_name"=>"date_created"}, {"field_name"=>"date_updated"}]},
+        put :update, audience:{"description"=>"New description", "id"=>@audience.id, "name"=>"The Category", "filters"=>[{"field_name"=>"title", "values"=>["Title 1","Title 3"]}, {"field_name"=>"date_created"}, {"field_name"=>"date_updated"}]},
             :format=>:json, identity_id: @identity.short_name, :id=>@audience, pool_id:@pool.short_name, audience_category_id:@category
         response.should  be_successful
         @audience.reload

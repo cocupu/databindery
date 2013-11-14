@@ -51,7 +51,32 @@ PoolAudienceEditorCtrl = ($scope, context, BinderyAudienceCategory, BinderyAudie
           callback(identity)
         )
       )
+  }
+
+  $scope.filterValuesTokeninputOptions = {
+    propertyToSearch: "value"
+    jsonContainer: "values"
+    preventDuplicates: true
+    theme: "facebook"
+    tokenValue: "value"
+    resultsFormatter: (item) ->
+      return "<li>"+item.value+" ("+item.count+")</li>"
+    tokenFormatter: (item) ->
+      name = item.value
+      fieldHtml = "<li class=\"selected-token\">"+name+"</li>"
+      return fieldHtml
+    # return an array of json objects to prepopulate the input with
+    # @param scope of the directive
+    # @param element the directive is attached to
+    prePopulateFunc: (scope, element) ->
+      objects = []
+      existingValues = scope.$eval(element.attr("ng-model"))
+      angular.forEach(existingValues, (value) ->
+        objects.push({value: value, count:"?"})
+      )
+      return objects
 
   }
+
 PoolAudienceEditorCtrl.$inject = ['$scope', 'contextService', 'BinderyAudienceCategory', 'BinderyAudience', 'BinderyIdentity']
 angular.module("curateDeps").controller('PoolAudienceEditorCtrl', PoolAudienceEditorCtrl)

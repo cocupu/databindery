@@ -157,36 +157,4 @@ describe PoolsController do
       end
     end
   end
-
-  describe "fields" do
-    describe "when not logged on" do
-      it "should redirect to home" do
-        get :fields, identity_id: @identity.short_name, :pool_id=>@my_pool
-        response.should redirect_to(root_path)
-      end
-    end
-    describe "when I cannot edit the pool" do
-      before do
-        @another_identity = FactoryGirl.create(:identity)
-        sign_in @another_identity.login_credential
-      end
-      it "should redirect to home" do
-        get :fields, identity_id: @identity.short_name, :pool_id=>@my_pool
-        response.should redirect_to(root_path)
-      end
-    end
-    describe "when I can edit the pool" do
-      before do
-        sign_in @identity.login_credential
-      end
-      it "should be successful when rendering json" do
-        get :fields, identity_id: @identity.short_name, :pool_id=>@my_pool, format: :json
-        puts response.body
-        response.should be_successful
-        assigns[:fields].should == @my_pool.all_fields
-        json = JSON.parse(response.body)
-        json.should == @my_pool.all_fields.as_json
-      end
-    end
-  end
 end

@@ -173,7 +173,25 @@ describe Pool do
       subject.short_name.should == 'short-name'
     end
   end
-  
-  
 
+  describe "all_fields" do
+    before do
+      subject.save
+      @model1 = FactoryGirl.create(:model, pool: subject)
+      @model1.fields << {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
+      @model1.fields << {:code=>'two', :name=>'Two', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
+      @model1.save
+      @model2 = FactoryGirl.create(:model, pool: subject)
+      @model2.fields << {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
+      @model2.fields << {:code=>'three', :name=>'Three', :type=>'textfield', :uri=>'dc:name', :multivalued=>false}.with_indifferent_access
+      @model2.save
+      subject.models << @model1
+      subject.models << @model2
+    end
+    it "should return all fields from all models, removing duplicates" do
+      subject.all_fields.count.should == 5
+      codes = subject.all_fields.map {|f| f["code"]}
+      ["model_name","description","one","two","three"].each {|code| codes.should include(code)}
+    end
+  end
 end
