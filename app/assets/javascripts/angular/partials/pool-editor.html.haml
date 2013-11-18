@@ -115,13 +115,29 @@
         .panel-heading
           %h3.panel-title Everyone (all visitors)
         .panel-body
-          .form-group
-            .radio
-              %input{type:"radio", name:"pool_default_visibility", "ng-model"=>"selectedCategory.default_visibility", value: "hidden"} hide this pool from people who are not in its audiences
-            .radio
-              %input{type:"radio", name:"pool_default_visibility", "ng-model"=>"selectedCategory.default_visibility", value:"landing_page"} allow all visitors to see the landing page
-            .radio
-              %input{type:"radio", name:"pool_default_visibility", "ng-model"=>"selectedCategory.default_visibility", value:"open_access"} allow full access to everyone
+          %p
+            %b This pool is only visible to people who are members of its audiences.
+            In order to visit this pool and see its content, you must be logged in as someone who is listed in at least one of the audiences.  If you are not logged in, or if you are logged in as someone who is not an audience member, you will be redirected to the DataBindery home page.
+          %p
+            %b If you are logged in as an audience member for this pool,
+            then your search results will be filtered based on the filters specified by the audiences you are a member of.
+          %p
+            %b To create audiences:
+            %ul
+              %li
+                Click
+                %a{"ng-click"=>"newCategory()"} add a new audience category
+              %li Name the category and click "Create this category"
+              %li Add any number of audiences to the category
+              %li Specify the filters that each audience should apply
+              %li Add members to the audience
+          -#.form-group
+          -#  .radio
+          -#    %input{type:"radio", name:"pool_default_visibility", "ng-model"=>"selectedCategory.default_visibility", value: "hidden"} hide this pool from people who are not in its audiences
+          -#  .radio
+          -#    %input{type:"radio", name:"pool_default_visibility", "ng-model"=>"selectedCategory.default_visibility", value:"landing_page"} allow all visitors to see the landing page
+          -#  .radio
+          -#    %input{type:"radio", name:"pool_default_visibility", "ng-model"=>"selectedCategory.default_visibility", value:"open_access"} allow full access to everyone
 
 
     -# Sources
