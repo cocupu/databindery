@@ -1,6 +1,6 @@
 angular.module('curateDeps').factory('BinderyPool', ['$resource', 'BinderyAudienceCategory', ($resource, BinderyAudienceCategory) ->
 
-  BinderyPool = $resource("/:identityName/:poolName", {identityName:'@identityName', poolName:'@short_name'}, {
+  BinderyPool = $resource("/:identityName/:poolName", {identityName:'@identity_name', poolName:'@short_name'}, {
     update: { method: 'PUT' }
   })
 
@@ -24,7 +24,7 @@ angular.module('curateDeps').factory('BinderyPool', ['$resource', 'BinderyAudien
     )
 
   BinderyPool.prototype.addContributor = () ->
-    this.access_controls.push {identity:"", access:"NONE"}
+    this.access_controls.push {identity:"", access:"EDIT"}
 
   BinderyPool.prototype.removeContributor = (contributor) ->
     index = this.access_controls.indexOf(contributor);

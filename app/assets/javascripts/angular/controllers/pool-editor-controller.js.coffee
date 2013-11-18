@@ -36,7 +36,12 @@ PoolEditorCtrl = ($scope, $routeParams, BinderyPool, BinderyIdentity, context) -
     tokenLimit: 1
     theme: "facebook"
     resultsFormatter: (item) ->
-      return "<li>"+item.name+" ("+item.short_name+")</li>"
+      if item.name
+        name = item.name+" ("+item.short_name+")"
+      else
+        name = item.short_name
+      return "<li>"+name+"</li>"
+
     tokenFormatter: (item) ->
       if item.name
         name = item.name+" ("+item.short_name+")"

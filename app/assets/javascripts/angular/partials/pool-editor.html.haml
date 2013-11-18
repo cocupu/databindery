@@ -15,7 +15,7 @@
         .panel-heading
           %h3.panel-title Pool Info
         .panel-body
-          %button.btn.btn-primary.pull-right{type:"submit", "ng-show"=>"poolInfoForm.$dirty", "ng-click"=>"updatePool(pool); poolInfoForm.$setPristine()"} Apply Changes
+          %button.btn.btn-primary.pull-right{type:"submit", "ng-click"=>"updatePool(pool); poolInfoForm.$setPristine()"} Apply Changes
           .form-group
             %label Name
             %input{"ng-model"=>"pool.name"}
@@ -31,7 +31,7 @@
         .panel-heading
           %h3.panel-title Contributors
         .panel-body
-          %button.btn.btn-primary.pull-right{type:"submit", "ng-show"=>"poolInfoForm.$dirty", "ng-click"=>"updatePool(pool); poolInfoForm.$setPristine()"} Apply Changes
+          %button.btn.btn-primary.pull-right{type:"submit", "ng-click"=>"updatePool(pool); poolInfoForm.$setPristine()"} Apply Changes
           %table.permissions
             %tr
               %th User
@@ -41,8 +41,8 @@
                 %input{"bindery-token-input"=>"contributorTokeninputOptions","data-url"=>'"/identities"', "ng-model"=>"ac.identity"}
               %td.access
                 %select{"ng-model"=>"ac.access"}
-                  %option{value:"READ"} Read-only access to All Content
                   %option{value:"EDIT"} Read and Write All Content
+                  %option{value:"READ"} Read-only access to All Content
               %td
                 %a.remove{"ng-click"=>"removeContributor(ac)"} &times;
           .actions
@@ -121,6 +121,9 @@
           %p
             %b If you are logged in as an audience member for this pool,
             then your search results will be filtered based on the filters specified by the audiences you are a member of.
+          %p
+            %b Note:
+            If you are listed as a contributor for this pool, you will see everything in the pool.  Audiences are specifically for filtering what is visible to people who are not contributors.
           %p
             %b To create audiences:
             %ul
