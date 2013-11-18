@@ -30,6 +30,33 @@ class Pool < ActiveRecord::Base
     # Must call unique or the owner will get multiple rows
     Pool.joins("LEFT OUTER JOIN access_controls ON access_controls.pool_id = pools.id").where("(owner_id = ?) OR access_controls.identity_id = ? ", identity.id, identity.id).uniq
   end
+
+  def audiences_for_identity(identity)
+    audiences = []
+    audience_categories.each {|ac| audiences.concat ac.audiences_for_identity(identity) }
+    audiences
+  end
+
+  def apply_solr_params_for_identity(identity, solr_params={}, user_params={})
+    # Unless user has explicit read/edit access, apply filters based on audience memberships
+    if access_controls.where(identity_id:identity.id).empty?
+      filters = []
+      audiences_for_identity(identity).each do |audience|
+        filters.concat(audience.filters)
+      end
+      if filters.empty?
+        SearchFilter.apply_solr_params_for_filters(default_filters, solr_params, user_params)
+      else
+        SearchFilter.apply_solr_params_for_filters(filters, solr_params, user_params)
+      end
+    end
+    return solr_params, user_params
+  end
+
+  def default_filters
+    # This filters out everything!
+    return [SearchFilter.new(operator:"-", filter_type:"RESTRICT", field_name:"*", values:["*"])]
+  end
   
   def perspectives
     exhibits.unshift(generated_default_perspective)

@@ -67,12 +67,19 @@ table.permissions {
 }
 
 .filters {
+  .filter {
+    margin-bottom:1.25em;
+  }
   .form-group {
     .token-input-list-facebook {
       display: inline-block;
+      margin-left: 8%;
     }
     select, .remove {
       vertical-align: top;
+    }
+    .remove {
+      margin-right: 0.25em;
     }
   }
 }

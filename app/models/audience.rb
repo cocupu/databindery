@@ -7,6 +7,13 @@ class Audience < ActiveRecord::Base
 
   accepts_nested_attributes_for :filters, allow_destroy: true
 
+  def apply_solr_params(solr_params, user_params={})
+    filters.each do |filter|
+      filter.apply_solr_params(solr_params, user_params)
+    end
+    return solr_params, user_params
+  end
+
   def as_json(opts=nil)
     h = super(opts)
     h["filters"] = self.filters.as_json

@@ -37,19 +37,19 @@ describe MappingTemplate do
 
   describe "attributes=" do
     before do
-      Model.count.should == 0
+      #Model.count.should == 0
       @template.pool = FactoryGirl.create :pool
       @template.owner = @template.pool.owner
       @template.attributes = {"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"Talk", :label=>'C', :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}}
     end
     it "should create the model and serialize the mapping" do
-      Model.count.should == 1
+      starting_model_count = 1
       model = Model.first
       model.name.should == 'Talk'
       model.label.should == 'title'
       model.fields.should == [{"code"=>"file_name", "name"=>"File Name"}, {"code"=>"title", "name"=>"Title"}]
 
-      @template.row_start.should == 2
+      @template.row_start.should == starting_model_count + 1
 
       @template.model_mappings[0][:field_mappings][1][:label].should == 'Title'
       @template.model_mappings[0][:field_mappings][1][:field].should == 'title'

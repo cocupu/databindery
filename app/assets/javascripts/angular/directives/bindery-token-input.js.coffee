@@ -33,6 +33,9 @@ angular.module("binderyCurate").directive('binderyTokenInput', ['$compile',($com
         scope.lookupUrl =  scope.$eval(attrs.url)
         # Remove the existing tokeninput before reloading
         element.siblings(".token-input-list-facebook").remove()
+        # Reset opts.prepopulate
+        if opts.prePopulateFunc
+          opts.prePopulate = opts.prePopulateFunc(scope, element)
         element.tokenInput(scope.lookupUrl, opts)
       )
 

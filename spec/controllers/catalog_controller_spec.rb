@@ -54,11 +54,11 @@ describe CatalogController do
 
     describe "index" do
       it "should apply filters and facets from exhibit" do
-        exhibit_with_filters = FactoryGirl.build(:exhibit, pool: @pool, filters_attributes: [field_name:"subject", operator:"-", values:["test", "barf"]])
+        exhibit_with_filters = FactoryGirl.build(:exhibit, pool: @pool, filters_attributes: [field_name:"subject", operator:"+", values:["test", "barf"]])
         exhibit_with_filters.save!
         get :index, :exhibit_id=>exhibit_with_filters.id, :q=>'bazaar', :identity_id=>@identity.short_name
         #user_params = {:exhibit_id=>exhibit_with_filters.id, :q=>'bazaar', :identity_id=>@identity.short_name}
-        subject.solr_search_params[:fq].should include('-subject_t:"test"', '-subject_t:"barf"')
+        subject.solr_search_params[:fq].should include('subject_t:"test" OR subject_t:"barf"')
       end
     end
     describe "show" do

@@ -28,10 +28,10 @@ describe Exhibit do
       # subject.filters = []
       subject.filters << SearchFilter.new(:field_name=>"model", :operator=>"+", :values=>["1","49"])
       subject.filters << SearchFilter.new(:field_name=>"access", :operator=>"+", :values=>["public"])
-      subject.filters << SearchFilter.new(:field_name=>"model_name", :operator=>"-", :values=>["song","person"])
-      subject.filters << SearchFilter.new(:field_name=>"storage_location", :operator=>"-", :values=>["disk1"])
+      subject.filters << SearchFilter.new(:filter_type=>"RESTRICT", :field_name=>"model_name", :operator=>"-", :values=>["song","person"])
+      subject.filters << SearchFilter.new(:filter_type=>"RESTRICT", :field_name=>"storage_location", :operator=>"-", :values=>["disk1"])
       solr_params, user_params = subject.apply_solr_params_logic({}, {})
-      solr_params.should == {fq: ['model:"1" OR model:"49"', '+access_t:"public"', '-model_name:"song"', '-model_name:"person"', '-storage_location_t:"disk1"']}
+      solr_params.should == {fq: ['-(model_name:"song" OR model_name:"person")', '-storage_location_t:"disk1"', 'model:"1" OR model:"49" OR access_t:"public"']}
     end
   end
 

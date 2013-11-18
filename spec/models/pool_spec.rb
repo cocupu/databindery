@@ -130,6 +130,33 @@ describe Pool do
     subject.audience_categories << @aud
     subject.audience_categories.should == [@aud]
   end
+
+  describe "audiences" do
+    before do
+      @identity = FactoryGirl.create :identity
+      @cat1 =  FactoryGirl.create :audience_category, pool:subject
+      @cat2 =  FactoryGirl.create :audience_category
+      @aud1 =  FactoryGirl.create :audience, audience_category:@cat1, name:"Audience 1"
+      @aud2 =  FactoryGirl.create :audience, audience_category:@cat1, name:"Audience 2"
+      @aud3 =  FactoryGirl.create :audience, audience_category:@cat2, name:"Audience 3"
+      @aud1.members << @identity
+      @aud3.members << @identity
+      subject.audience_categories << @cat1 << @cat2
+    end
+    describe "audiences_for_identity" do
+      it "should return all the applicable audiences for the given identity" do
+        subject.audiences_for_identity(@identity).should == [@aud1, @aud3]
+      end
+    end
+    describe "apply_solr_params_for_identity" do
+      it "should aggregate solr_params from all applicable audiences" do
+        @aud1.update_attributes filters_attributes:[{field_name:"subject", operator:"+", values:["foo","bar"]}]
+        @aud3.update_attributes filters_attributes:[{filter_type:"RESTRICT", field_name:"field2", operator:"-", values:["baz"]}]
+        solr_params, user_params = subject.apply_solr_params_for_identity(@identity, {}, {})
+        solr_params.should == {fq: ["-field2_t:\"baz\"", "subject_t:\"foo\" OR subject_t:\"bar\""]}
+      end
+    end
+  end
   
   describe "default_bucket_id" do
     it "should be the pools persistent id" do

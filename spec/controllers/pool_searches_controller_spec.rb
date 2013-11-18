@@ -52,11 +52,11 @@ describe PoolSearchesController do
           response.should be_success
         end
         it "should apply filters and facets from exhibit" do
-          exhibit_with_filters = FactoryGirl.build(:exhibit, pool: @my_pool, filters_attributes: [field_name:"subject", operator:"-", values:["test", "barf"]])
+          exhibit_with_filters = FactoryGirl.build(:exhibit, pool: @my_pool, filters_attributes: [field_name:"subject", operator:"+", values:["test", "barf"]])
           exhibit_with_filters.save!
           get :index, :pool_id=>@my_pool, :perspective=>exhibit_with_filters.id, identity_id: @identity.short_name
           subject.exhibit.should == exhibit_with_filters
-          subject.solr_search_params[:fq].should include('-subject_t:"test"', '-subject_t:"barf"')
+          subject.solr_search_params[:fq].should include('subject_t:"test" OR subject_t:"barf"')
         end
       end
     end

@@ -15,7 +15,7 @@ class PoolSearchesController < ApplicationController
   include Blacklight::Catalog
   include Bindery::AppliesPerspectives
 
-  solr_search_params_logic << :add_pool_to_fq << :add_index_fields_to_qf << :apply_google_refine_query_params << :apply_datatables_params_to_solr_params << :ensure_model_filtered_for_grid
+  solr_search_params_logic << :add_pool_to_fq << :add_index_fields_to_qf << :apply_google_refine_query_params << :apply_datatables_params_to_solr_params << :ensure_model_filtered_for_grid << :apply_audience_filters
 
   # get search results from the solr index
   # Had to override the whole method (rather than using super) in order to add json support
@@ -320,6 +320,12 @@ class PoolSearchesController < ApplicationController
     unless @model_for_grid.nil?
       solr_parameters[:fq] ||= []
       solr_parameters[:fq] << "model:#{@model_for_grid.id}"
+    end
+  end
+
+  def apply_audience_filters(solr_parameters, user_parameters)
+    unless can? :edit, @pool
+      @pool.apply_solr_params_for_identity(current_identity, solr_parameters, user_parameters)
     end
   end
 

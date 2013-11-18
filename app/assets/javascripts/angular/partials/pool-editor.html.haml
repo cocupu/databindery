@@ -41,9 +41,8 @@
                 %input{"bindery-token-input"=>"contributorTokeninputOptions","data-url"=>'"/identities"', "ng-model"=>"ac.identity"}
               %td.access
                 %select{"ng-model"=>"ac.access"}
-                  %option{value:"NONE"} No access
-                  %option{value:"READ"} Read-only
-                  %option{value:"EDIT"} Read and Write
+                  %option{value:"READ"} Read-only access to All Content
+                  %option{value:"EDIT"} Read and Write All Content
               %td
                 %a.remove{"ng-click"=>"removeContributor(ac)"} &times;
           .actions
@@ -77,9 +76,9 @@
               %input{"ng-model"=>"selectedCategory.name"}
               .actions{"ng-show"=>"selectedCategory.audiences.length == 0"}
                 %a{"ng-click"=>"addAudienceToCategory(selectedCategory)"} add an audience to this category
-              .actions{"ng-show"=>"selectedCategory.audiences.length > 0"}
-                .form-group
-                  %input{type:"checkbox", "ng-model"=>"selectedCategory.order_relevant"} The order of Audience memberships is relevant - permissions are cumulative
+              -#.actions{"ng-show"=>"selectedCategory.audiences.length > 0"}
+              -#  .form-group
+              -#    %input{type:"checkbox", "ng-model"=>"selectedCategory.order_relevant"} The order of Audience memberships is relevant - permissions are cumulative
         .actions{"ng-show"=>"selectedCategory.audiences.length > 0"}
           %a{"ng-click"=>"addAudienceToCategory(selectedCategory)"} add another audience
 
@@ -97,12 +96,14 @@
                 %h4 Filters
                 %a{"ng-click"=>"audience.addFilter()", "ng-show"=>"audience.filters.length == 0"} create a filter
                 %a{"ng-click"=>"audience.addFilter()", "ng-show"=>"audience.filters.length > 0"} add another filter
-                .form-group{"ng-repeat"=>"filter in audience.filters"}
-                  -#%input{value:"Grant access to items where"}
-                  %select{"ng-model"=>"filter.field_name", "ng-options"=>"field.code as field.name for field in pool.fields()"}
-                  = select_tag "exhibit[filters_attributes][][operator]", options_for_select({"is"=>"+", "is not"=>"-"}), "ng-model"=>"filter.operator", class:"operator"
-                  %input.filterValues{"bindery-token-input"=>"filterValuesTokeninputOptions","data-url"=>'context.poolUrl+"/fields/"+filter.field_name', "name"=>"filter[values]", "ng-model"=>"filter.values"}
+                .form-group.filter{"ng-repeat"=>"filter in audience.filters"}
                   %a.remove{"ng-click"=>"audience.removeFilter(filter)"} &times;
+                  = select_tag "exhibit[filters_attributes][][filter_type]", options_for_select({"Allow items where"=>"GRANT", "Restrict to items where"=>"RESTRICT"}), "ng-model"=>"filter.filter_type", class:"filter_type"
+                  %select{"ng-model"=>"filter.field_name", "ng-options"=>"field.code as field.name for field in pool.fields()"}
+                  %span.operator{"ng-hide"=>'filter.filter_type=="RESTRICT"'} is
+                  = select_tag "exhibit[filters_attributes][][operator]", options_for_select({"is"=>"+", "is not"=>"-"}), "ng-model"=>"filter.operator", "ng-show"=>'filter.filter_type=="RESTRICT"',class:"operator"
+                  %input.filterValues{"bindery-token-input"=>"filterValuesTokeninputOptions","data-url"=>'context.poolUrl+"/fields/"+filter.field_name', "name"=>"filter[values]", "ng-model"=>"filter.values", "id"=>"filter_{{filter.id}}"}
+
               .members{"ng-show"=>"audience.id"}
                 %h4 Members:
                 %input{"bindery-token-input"=>"audienceMemberTokeninputOptions","data-url"=>'"/identities"', "ng-model"=>"audience.member_ids"}

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131108021407) do
+ActiveRecord::Schema.define(:version => 20131115180023) do
 
   create_table "access_controls", :force => true do |t|
     t.integer  "pool_id"
@@ -204,11 +204,12 @@ ActiveRecord::Schema.define(:version => 20131108021407) do
     t.string   "field_name"
     t.string   "operator"
     t.text     "values"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
+    t.datetime "created_at",                            :null => false
+    t.datetime "updated_at",                            :null => false
     t.integer  "filterable_id"
     t.string   "association_code"
     t.string   "filterable_type"
+    t.string   "filter_type",      :default => "GRANT"
   end
 
   add_index "search_filters", ["filterable_id", "filterable_type"], :name => "index_search_filters_on_filterable_id_and_filterable_type"

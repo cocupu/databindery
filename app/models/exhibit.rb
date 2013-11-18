@@ -18,9 +18,10 @@ class Exhibit < ActiveRecord::Base
   # @param solr_parameters [Hash] parameters hash that Blacklight will render as Solr query
   # @param user_parameters [Hash] parameters from http request
   def apply_solr_params_logic(solr_parameters, user_parameters)
-    filters.each do |filter|
-      filter.apply_solr_params(solr_parameters, user_parameters)
-    end
+    SearchFilter.apply_solr_params_for_filters(filters, solr_parameters, user_parameters)
+    #filters.each do |filter|
+    #  filter.apply_solr_params(solr_parameters, user_parameters)
+    #end
     return solr_parameters, user_parameters
   end
 end

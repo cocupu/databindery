@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ReifyEachSpreadsheetRowJob do
   before do
     ## database should be clean
-    Node.count.should == 0 
+    @starting_node_count = Node.count
     @model = FactoryGirl.create(:model, fields: [{code: 'wheels', name: 'Wheels'}.with_indifferent_access])
     @template = MappingTemplate.new(owner: FactoryGirl.create(:identity))
     @template.model_mappings = [{:model_id=>@model.id, :field_mappings=> [{:source=>"B", :label=>"Wheels", :field=>"wheels"}, {:source=>"A", :label=>''}]}]
@@ -19,7 +19,7 @@ describe ReifyEachSpreadsheetRowJob do
     job = ReifyEachSpreadsheetRowJob.new(@ticket)
     job.enqueue
     job.perform
-    Node.count.should == 2
+    Node.count.should == @starting_node_count + 2
     # created = Node.all.select {|n| n != @source_node}.first
     created = Node.first
     created.model.should == @model

@@ -12,6 +12,9 @@ class Ability
       # The owner can read/edit/update it
       can [:read, :update], [Pool, Chattel], :owner_id => identity.id
       can :read, Pool, :access_controls => {:identity_id => identity.id }
+      can :read, Pool do |pool|
+        !pool.audiences_for_identity(identity).empty?
+      end
       can :update, Pool, :access_controls => {:identity_id => identity.id, :access=>'EDIT' }
 
       #can :read, AudienceCategory, :pool=>{ :access_controls=> {:identity_id => identity.id, :access=>'EDIT'}}
