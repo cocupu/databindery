@@ -68,6 +68,11 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyModel, BinderyNode, memo
     jsonContainer: "docs"
     preventDuplicates: true
     theme: "facebook"
+    onResult:  (results) ->
+      angular.forEach(results.docs, (item, idx) ->
+        results.docs[idx] = new BinderyNode(item)  #<-- replace each item with an instance of the resource object
+      )
+      return results;
     resultsFormatter: (item) ->
       return "<li>"+item.title+"</li>"
     tokenFormatter: (item) ->
