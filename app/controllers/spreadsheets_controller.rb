@@ -1,2 +1,2 @@
-class SpreadsheetController < ApplicationController
+class SpreadsheetsController < ApplicationController
 end
