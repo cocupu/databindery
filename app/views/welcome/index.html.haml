@@ -34,7 +34,7 @@
   .span3.offset1
 
     %h3 Get started today!
-    =form_for LoginCredential.new, :as=>:user, :url=>user_registration_path  do |f|
+    =form_for LoginCredential.new(identities_attributes:[{short_name:""}]), :as=>:user, :url=>user_registration_path  do |f|
       = f.fields_for :identities do |ident_form| 
         = ident_form.text_field :short_name, :placeholder=>"Username", :class=>'large' 
         .help-block Username may only contain alphanumeric characters or dashes and cannot begin with a dash.

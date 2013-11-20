@@ -28,6 +28,8 @@ RSpec.configure do |config|
 
   # Drop all columns before the test run.
   config.before(:all) do
+    Identity.destroy_all
+    LoginCredential.destroy_all
     Bindery.clear_index 
   end
 end

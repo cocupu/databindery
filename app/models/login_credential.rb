@@ -25,5 +25,12 @@ class LoginCredential < ActiveRecord::Base
     identities.build if identities.empty?
   end
 
+  # Devise RegistrationsController uses new_with_session
+  #def self.new_with_session(params, session)
+  #  login_credential = super(params, session)
+  #  puts "login_credential: #{login_credential}"
+  #  login_credential.create_identity
+  #  return login_credential
+  #end
 
 end

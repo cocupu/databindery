@@ -10,7 +10,9 @@ FactoryGirl.define do
     sequence :short_name do |n|
       "person#{n}"
     end
-    login_credential
+    after(:create) do |identity, evaluator|
+      identity.login_credential ||= FactoryGirl.create :login_credential, email:"#{identity.short_name}@cocupu.com", identities:[identity]
+    end
   end
 
   factory :exhibit do
