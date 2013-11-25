@@ -38,7 +38,7 @@
           %video{"ng-switch-when"=>"video", controls:true}
             %source{"ng-src"=>"{{node.download_url()}}", type:"video/mp4"}
         .spawn-action{"ng-show"=>"node.spawnable"}
-          %a{target:"_self", "ng-href"=>new_identity_pool_spawn_job_path(@identity, @pool, source_node_id:"")+"{{node.node_version_id}}"} Spawn entities from each row of this file
+          %a{target:"_self", "ng-href"=>new_identity_pool_spawn_job_path(@identity, @pool, source_node_id:"")+"{{node.persistent_id}}"} Spawn entities from each row of this file
         .download-link
           %a{target:"_self", "ng-href"=>"{{node.download_url()}}"} Download ({{(node.data.file_size*.00000095367).toFixed(2)}}MB)
 

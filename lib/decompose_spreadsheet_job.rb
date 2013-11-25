@@ -26,6 +26,7 @@ class DecomposeSpreadsheetJob < Struct.new(:node_id, :log)
   
   def ingest_all_worksheets(node, spreadsheet)
     spreadsheet.sheets.each_with_index do |worksheet, index|
+      #logger.warn("Ingesting worksheet #{index} from Node #{node.id}." )
       ingest_worksheet(spreadsheet, worksheet, node, index)
     end
   end
@@ -35,6 +36,7 @@ class DecomposeSpreadsheetJob < Struct.new(:node_id, :log)
     unless spreadsheet.first_row(worksheet).nil? || spreadsheet.last_row(worksheet).nil?
       sheet = Worksheet.create(:name=>worksheet, :order=>index)
       spreadsheet.first_row(worksheet).upto(spreadsheet.last_row(worksheet)) do |row_idx|
+        #logger.warn("Ingesting row #{row_idx} of #{spreadsheet.last_row(worksheet)} from worksheet #{index} in Node #{node.id}." )
         ingest_row(spreadsheet, worksheet, sheet, row_idx)
       end
       sheet.save #Saves associated rows
@@ -53,7 +55,25 @@ class DecomposeSpreadsheetJob < Struct.new(:node_id, :log)
       end
     end
     row = SpreadsheetRow.create(:row_number => row_idx, :job_log_item => @log, :values => stored_row)
+    update_progress(spreadsheet, worksheet, row_idx)
     sheet.rows << row
+  end
+
+  def update_progress(spreadsheet, worksheet, row_idx)
+    @total_rows ||= calculate_total_rows(spreadsheet)
+    @cumulative_rows ||= 0
+    @cumulative_rows += 1
+    percent_done = (@cumulative_rows.to_f/@total_rows.to_f * 100.0).round(2)
+    log.update_attributes(:message=>"#{percent_done}%")
+  end
+
+  def calculate_total_rows(spreadsheet)
+    total = 0
+    spreadsheet.sheets.each do |worksheet|
+      worksheet_rows = spreadsheet.last_row(worksheet)
+      total += worksheet_rows unless worksheet_rows.nil?
+    end
+    return total
   end
 
   def enqueue
@@ -68,7 +88,8 @@ class DecomposeSpreadsheetJob < Struct.new(:node_id, :log)
 
   def error(exception)
     log.status = 'ERROR'
-    log.message = "#{exception.message} (#{exception.class})" + exception.backtrace.join("\n")
+    progress = "After processing #{log.message} of the spreadsheet, \n" unless log.message.empty?
+    log.message = "#{progress} #{exception.message} (#{exception.class})" + exception.backtrace.join("\n")
     log.save!
   end
 

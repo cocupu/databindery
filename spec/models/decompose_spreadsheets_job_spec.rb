@@ -30,7 +30,7 @@ describe DecomposeSpreadsheetJob do
     # This requires S3 connection, so skipping.
     # @node.attach_file('dechen_rangdrol_archives_database.xls', @file.read)
     # @node.save!
-
+    original_versions = @node.versions
     # S3Object.read behaves like File.read, so returning a File as stub for the S3 Object
     @node.stub(:s3_obj).and_return(@file)
     @node.file_name = 'dechen_rangdrol_archives_database.xls'
@@ -44,6 +44,7 @@ describe DecomposeSpreadsheetJob do
     sheets = Bindery::Spreadsheet.find(@node.id).worksheets
     sheets.count.should == 1
     sheets.first.rows.count.should == 434
+    Node.versions(@node.persistent_id).count.should == original_versions.count
   end
   it "should not decompose spreadsheets that have already been decomposed" do
     @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
@@ -133,6 +134,7 @@ describe DecomposeSpreadsheetJob do
   end
   describe "ingest_worksheet" do
     it "should skip empty sheets within a spreadsheet" do
+      subject.log = JobLogItem.new
       @node.mime_type = 'application/vnd.oasis.opendocument.spreadsheet'
       type = Bindery::Spreadsheet.detect_type(@node)
       spreadsheet = type.new(File.expand_path(Rails.root + 'spec/fixtures/Texts.ods'))

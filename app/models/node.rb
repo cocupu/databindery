@@ -268,13 +268,32 @@ class Node < ActiveRecord::Base
     prefix + field_name.downcase.gsub(/\s+/,'_') + suffix 
   end
 
+  # Get the versions of the node with this persistent id in descending order of creation (newest first)
+  def self.versions(persistent_id)
+    Node.where(:persistent_id=>persistent_id).order('created_at desc')
+  end
+
+  def versions
+    Node.versions(persistent_id)
+  end
+
   # Get the latest version of the node with this persistent id
   def self.latest_version(persistent_id) 
-    Node.where(:persistent_id=>persistent_id).order('created_at desc').first
+    Node.versions(persistent_id).first
   end
 
   def latest_version
     Node.latest_version(persistent_id)
+  end
+
+  # Returns the node (version) where the latest file binding was set
+  def self.version_with_latest_file_binding(persistent_id)
+    self.versions(persistent_id).where(binding: self.latest_version(persistent_id).binding).last
+  end
+
+  # Returns the node (version) where the current node's file binding was set
+  def version_with_current_file_binding
+    self.versions.where(binding: self.binding).last
   end
   
   # Retrieves node by node_id.

@@ -14,5 +14,17 @@ class Bindery::Spreadsheet < Node
     end
   end
 
+  # Returns the node (version) where the latest file binding was set
+  def self.version_with_latest_file_binding(persistent_id)
+    node = self.versions(persistent_id).where(binding: self.latest_version(persistent_id).binding).select("created_at, binding, id, persistent_id").last
+    return  Bindery::Spreadsheet.find_by_identifier(node.id)
+  end
+
+  # Returns the node (version) where the current node's file binding was set
+  def version_with_current_file_binding
+    node = self.versions.where(binding: self.binding).select("created_at, binding, id, persistent_id").last
+    return  Bindery::Spreadsheet.find_by_identifier(node.id)
+  end
+
 
 end

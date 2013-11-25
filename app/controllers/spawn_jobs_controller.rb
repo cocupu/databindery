@@ -15,7 +15,12 @@ class SpawnJobsController < ApplicationController
     if params[:worksheet_id] 
       @worksheet = Worksheet.find(params[:worksheet_id])
     elsif params[:source_node_id]
-      @source_node = Bindery::Spreadsheet.find_by_identifier(params[:source_node_id])
+      if params[:source_node_id].include?("-")
+        @source_node = Bindery::Spreadsheet.version_with_latest_file_binding(params[:source_node_id])
+      else
+        current_node = Bindery::Spreadsheet.find_by_identifier(params[:source_node_id])
+        @source_node = current_node.version_with_current_file_binding
+      end
       @worksheet = @source_node.worksheets.first
       if params[:job_log_id]
         @job = DecomposeSpreadsheetJob.new(params[:source_node_id], JobLogItem.find(params[:job_log_id]))
