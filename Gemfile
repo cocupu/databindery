@@ -2,7 +2,6 @@ source 'http://rubygems.org'
 
 gem "rails", "~> 4.0.0"
 gem "activerecord-session_store"
-gem "protected_attributes"
 gem 'json'
 
 # Gems used only for assets and not required
