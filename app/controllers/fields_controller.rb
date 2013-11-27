@@ -32,7 +32,6 @@ class FieldsController < ApplicationController
     extra_controller_params[:rows] = 0
 
     solr_response = query_solr(params, extra_controller_params)
-    puts solr_response
     values_info = {"numDocs"=>solr_response["response"]["numFound"],"values"=>hashify_facet_counts(solr_response["facet_counts"]["facet_fields"][field_solr_name])}
 
     respond_to do |format|

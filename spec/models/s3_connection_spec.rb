@@ -10,9 +10,9 @@ describe S3Connection do
   
   describe "ensure_bucket_initialized" do
     it "should ensure that the pools bucket exists on s3 connection" do
-      stub_bucket = stub()
+      stub_bucket = double()
       stub_bucket.should_receive(:exists?).and_return(false)
-      stub_bucket_collection = stub()
+      stub_bucket_collection = double()
       stub_bucket_collection.should_receive(:create).with("myBucketName", :acl => :private).and_return("the bucket")
       # NOTE: .buckets is called twice.  First time is returning a Hash, the other is returning an object that responds to .create
       # this is how the S3 API actually behaves, where .buckets returns an object that supports Hash accessor operator

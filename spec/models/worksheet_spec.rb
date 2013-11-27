@@ -28,7 +28,7 @@ describe Worksheet do
     pool = FactoryGirl.create :pool
     ws = Worksheet.new()
     ws.stub(:rows => ['one', 'two', 'three'])
-    job = mock("job")
+    job = double("job")
     job.should_receive(:enqueue_collection).with(ReifyEachSpreadsheetRowJob, ['two', 'three'], {:template_id=>template.id, :pool_id=>pool.id})
     ConcurrentJob.should_receive(:create).and_return(job)
     ws.reify(template, pool)

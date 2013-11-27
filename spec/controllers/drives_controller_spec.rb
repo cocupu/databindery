@@ -40,15 +40,15 @@ describe DrivesController do
         before do
           session[:pool_id] = @pool.id # this gets set before leaving for the oauth (via current_pool=).
           controller.should_receive(:authorized?).and_return(true)
-          @mock_client = stub("Api client")
-          @mock_client.stub(:authorization).and_return(stub("authorization", :update_token! => true, :refresh_token=>false, :access_token=>'131', :expires_in => '9999', :issued_at=>'34234'))
+          @mock_client = double("Api client")
+          @mock_client.stub(:authorization).and_return(double("authorization", :update_token! => true, :refresh_token=>false, :access_token=>'131', :expires_in => '9999', :issued_at=>'34234'))
           controller.stub(:api_client).and_return(@mock_client)
         end
         describe "Requesting json" do
           before do
-            perm = stub("userPermission", :id=>"me")
-            @files = [stub('file1', :id=>'12303230', :mime_type=>'text/html', :userPermission=>perm, :modifiedDate=>Time.parse("2011-08-23T21:28:10.800Z"), :title=>'Title one'), stub('file2', :mime_type=>'application/pdf', :id=>'230920398209', :userPermission=>perm, :parents=>[{:id=>'file1'}], :modifiedDate=>Time.parse("2011-08-23T21:28:10.800Z"), :title=>'Title two'), stub('folder', :mime_type=>'application/vnd.google-apps.folder' , :id=>'230920398200', :userPermission=>perm, :parents=>[{:id=>'file1'}], :modifiedDate=>Time.parse("2011-08-23T21:28:10.800Z"), :title=>'Title three')]
-            @mock_client.should_receive(:execute!).with(:api_method => kind_of(Google::APIClient::Method)).and_return(stub("result", :data => stub("data", :items=>@files)))
+            perm = double("userPermission", :id=>"me")
+            @files = [double('file1', :id=>'12303230', :mime_type=>'text/html', :userPermission=>perm, :modifiedDate=>Time.parse("2011-08-23T21:28:10.800Z"), :title=>'Title one'), double('file2', :mime_type=>'application/pdf', :id=>'230920398209', :userPermission=>perm, :parents=>[{:id=>'file1'}], :modifiedDate=>Time.parse("2011-08-23T21:28:10.800Z"), :title=>'Title two'), double('folder', :mime_type=>'application/vnd.google-apps.folder' , :id=>'230920398200', :userPermission=>perm, :parents=>[{:id=>'file1'}], :modifiedDate=>Time.parse("2011-08-23T21:28:10.800Z"), :title=>'Title three')]
+            @mock_client.should_receive(:execute!).with(:api_method => kind_of(Google::APIClient::Method)).and_return(double("result", :data => double("data", :items=>@files)))
           end
           it "should list files for json" do
             get :index, :pool_id=>@pool, :format=>:json
@@ -72,14 +72,14 @@ describe DrivesController do
       sign_in @identity.login_credential
     end
     it "should be successfull" do
-      @mock_client = stub("Api client")
-      @mock_client.stub(:authorization).and_return(stub("authorization", :update_token! => true, :refresh_token=>false, :access_token=>'131', :expires_in => '9999', :issued_at=>'34234'))
-      @mock_client.should_receive(:execute!).with(:api_method => kind_of(Google::APIClient::Method),:parameters=>{"fileId"=>"12312415201"}).and_return(stub("result", :data => stub("data", :mime_type=>'text/html', :title=>'hey.xls', :downloadUrl=>'theRemoteFile')))
-      @mock_client.should_receive(:execute).with(:uri=>"theRemoteFile").and_return(stub("result", :data => stub("data", :mime_type=>'text/html', :title=>'hey.xls'), :body=>"resulting content"))
+      @mock_client = double("Api client")
+      @mock_client.stub(:authorization).and_return(double("authorization", :update_token! => true, :refresh_token=>false, :access_token=>'131', :expires_in => '9999', :issued_at=>'34234'))
+      @mock_client.should_receive(:execute!).with(:api_method => kind_of(Google::APIClient::Method),:parameters=>{"fileId"=>"12312415201"}).and_return(double("result", :data => double("data", :mime_type=>'text/html', :title=>'hey.xls', :downloadUrl=>'theRemoteFile')))
+      @mock_client.should_receive(:execute).with(:uri=>"theRemoteFile").and_return(double("result", :data => double("data", :mime_type=>'text/html', :title=>'hey.xls'), :body=>"resulting content"))
       controller.stub(:api_client).and_return(@mock_client)
-      mock_queue = mock('queue')
+      mock_queue = double('queue')
       Carrot.should_receive(:queue).with('decompose_spreadsheet').and_return(mock_queue)
-      mock_log = stub("log", :id=>'6HceCIKd3ucLNco9583DVnmGW5E')
+      mock_log = double("log", :id=>'6HceCIKd3ucLNco9583DVnmGW5E')
       JobLogItem.should_receive(:create).and_return(mock_log)
       mock_queue.should_receive(:publish).with('6HceCIKd3ucLNco9583DVnmGW5E')
 

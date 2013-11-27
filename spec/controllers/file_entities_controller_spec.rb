@@ -31,7 +31,7 @@ describe FileEntitiesController do
     it "should work with info posted by S3 Direct Upload" do
       params_from_s3_direct_upload = {:pool_id=>@pool.short_name, :identity_id=>@identity.short_name, "url"=>"https://s3.amazonaws.com/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg", "filepath"=>"/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg", "filename"=>"DSC_0549-3.jpg", "filesize"=>"471990", "filetype"=>"image/jpeg", "binding"=>"https://s3.amazonaws.com/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg"}
       # There's not actually an object in s3 for this test, so capture the attempt to update its metadata
-      S3Connection.any_instance.stub(:get).and_return(stub(:metadata=>{}))
+      S3Connection.any_instance.stub(:get).and_return(double(:metadata=>{}))
       post :create, params_from_s3_direct_upload
       response.should be_successful
       file_entity = assigns[:file_entity]
