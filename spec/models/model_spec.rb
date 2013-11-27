@@ -12,8 +12,10 @@ describe Model do
       @pool.models.size.should == 5
     end
     describe "for a pool owner" do
-      it "should return all the models in the pool" do
-        Model.for_identity(@pool.owner).size.should == 5
+      it "should return all the models in the pool plus the File Entity model" do
+        models = Model.for_identity(@pool.owner)
+        models.size.should == 6
+        models.should include(Model.file_entity)
       end
     end
     describe "for a non-pool owner" do
@@ -25,7 +27,7 @@ describe Model do
           AccessControl.create!(identity: @non_owner, pool: @pool, access: 'READ')
         end
         it "should return all the models in the pool" do
-          Model.for_identity(@non_owner).size.should == 5
+          Model.for_identity(@non_owner).size.should == 6
         end
       end
       describe "for a user with edit-access on the pool" do
@@ -33,7 +35,7 @@ describe Model do
           AccessControl.create!(identity: @non_owner, pool: @pool, access: 'EDIT')
         end
         it "should return all the models in the pool" do
-          Model.for_identity(@non_owner).size.should == 5
+          Model.for_identity(@non_owner).size.should == 6
         end
       end
       it "should return an empty set" do

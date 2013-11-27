@@ -99,14 +99,14 @@ describe Node do
     it "should return a hash, where the association name is the key" do
       obj = subject.associations_for_json
       obj['Contributing Authors'].should == [{"id"=>@author1.persistent_id, "persistent_id"=>@author1.persistent_id,
-          :title=>"Agatha Christie"},
+          "title"=>"Agatha Christie"},
          {"id"=>@author2.persistent_id, "persistent_id"=>@author2.persistent_id,
-          :title=>"Raymond Chandler"}]
+          "title"=>"Raymond Chandler"}]
 
       obj['undefined'].should == [{'id'=>@publisher.persistent_id, "persistent_id"=>@publisher.persistent_id,
-          :title=>'Simon & Schuster Ltd.'}]
+          "title"=>'Simon & Schuster Ltd.'}]
       obj['files'].should == [{'id'=>@file.persistent_id, "persistent_id"=>@file.persistent_id,
-          :title=>@file.persistent_id}]
+          "title"=>@file.persistent_id}]
     end
 
     it "should not return strings where there should be an array of ids" do
@@ -174,7 +174,7 @@ describe Node do
     subject.pool = @pool
     subject.save!
     subject.update_attributes(:data=>{'boo'=>'bap'})
-    all_versions = Node.find_all_by_persistent_id(subject.persistent_id)
+    all_versions = Node.where(persistent_id: subject.persistent_id).to_a
     all_versions.length.should == 2
   end
   it "should track who made changes" do

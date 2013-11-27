@@ -1,7 +1,6 @@
 class SearchFilter < ActiveRecord::Base
   belongs_to :filterable, :polymorphic => true
   serialize :values, Array
-  attr_accessible :field_name, :operator, :values, :filter_type
 
   def apply_solr_params(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []

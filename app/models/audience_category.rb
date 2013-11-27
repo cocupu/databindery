@@ -1,8 +1,7 @@
 class AudienceCategory < ActiveRecord::Base
-  has_many :audiences, :order => "position ASC, created_at ASC"
+  has_many :audiences, -> { order "position, created_at" }
   belongs_to :pool
 
-  attr_accessible :description, :name, :audiences_attributes
   accepts_nested_attributes_for :audiences, allow_destroy: true
 
   def audiences_for_identity(identity)
@@ -17,7 +16,7 @@ class AudienceCategory < ActiveRecord::Base
 
   def as_json(opts=nil)
     json = super(opts)
-    json["audiences"] = self.audiences.order.as_json
+    json["audiences"] = self.audiences.order(:position).as_json
     return json
   end
 end

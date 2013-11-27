@@ -17,7 +17,7 @@ class MappingTemplate < ActiveRecord::Base
 
   def model_mappings_attributes=(attrs)
     attrs.each_value do |value|
-      model = Model.find_or_initialize_by_name_and_pool_id(value[:name], pool.id)
+      model = Model.find_or_initialize_by(name: value[:name], pool_id:pool.id)
       model.owner = owner
       mapping = {} 
       original_mapping = {}

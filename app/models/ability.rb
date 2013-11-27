@@ -12,24 +12,19 @@ class Ability
       # The owner can read/edit/update it
       can [:read, :update], [Pool, Chattel], :owner_id => identity.id
       can :read, Pool do |pool|
-        !pool.audiences_for_identity(identity).empty?
+        pool.access_controls.where(:identity_id => identity.id ).any? || pool.audiences_for_identity(identity).any?
       end
       can :update, Pool do |pool|
-        pool.access_controls.where(:identity_id => identity.id, :access=>'EDIT' )
+        pool.access_controls.where(:identity_id => identity.id, :access=>'EDIT' ).any?
       end
 
-      can [:read, :edit, :update, :create], AudienceCategory do |audience_category|
-        can? :update, audience_category.pool
-      end
-      can [:read, :edit, :update, :create], Audience do |audience|
-        can? :update, audience.pool
-      end
-      #The owner of the pool that these objects are in can read/edit/update the objects
-      can [:read, :update, :destroy], [Node, Model, Exhibit, MappingTemplate], :pool=>{ :owner_id => identity.id}
-      can :read, [MappingTemplate], :pool=>{ :access_controls=> {:identity_id => identity.id}}
-      can [:update, :destroy], [Node, Model, Exhibit, MappingTemplate] do |target|
+      can [:read, :edit, :update, :destroy], [Node, Model, Exhibit, MappingTemplate, AudienceCategory, Audience] do |target|
         can? :update, target.pool
       end
+      can :read, [Node, Model, Exhibit] do |target|
+        can? :read, target.pool
+      end
+
 
       # Allow read access to models without a pool (e.g. Model.file_entity)
       can :read, Model, :pool_id=>nil
@@ -39,7 +34,7 @@ class Ability
       can :create, [Exhibit, Model, Node,  Pool, MappingTemplate, Chattel]
 
     end
-    can :read, [Node, Model, Exhibit], :pool=>{ :access_controls=> {:identity_id => identity.id}}
+
 
     can :read, Identity  #necessary for authorizing exhibit view (through identity)
     can :read, Exhibit

@@ -19,7 +19,7 @@ class Node < ActiveRecord::Base
   after_find :add_behaviors
 
   ## Id is our version, so this ensures that find_by_persistent_id always returns the most recent version
-  default_scope order('id desc')
+  default_scope { order('id desc') }
 
   # If the type is "File Entity"
   def add_behaviors
@@ -53,17 +53,38 @@ class Node < ActiveRecord::Base
     end
     super
   end
+
+  # Overrides alias that points to ActiveRecord::AttributeAssignment.assign_attributes.  Point to local method instead.
+  alias attributes= assign_attributes
   
-  # override activerecord to copy-on-write
+  # copy-on-write
+  # Mints a new node version with updated attributes, saves that new version and returns it
   def update
     update_file_ids
     n = Node.new
     copied_values = self.attributes.select {|k, v| !['created_at', 'updated_at', 'id'].include?(k) }
     copied_values[:parent_id] = id
-    n.assign_attributes(copied_values, :as=>:admin)
+    n.assign_attributes(copied_values)
     n.save
     n
   end
+
+  # override activerecord updates to use custom copy-on-write
+  def update_record
+    update
+  end
+
+  # reroute  activerecord updates to use custom copy-on-write
+  #def create_or_update
+  #  raise ReadOnlyRecord if readonly?
+  #  #result = new_record? ? create_record : update_record
+  #  if new_record?
+  #    result = create_record
+  #  else
+  #    result = update
+  #  end
+  #  result != false
+  #end
 
   # Stores file in an S3 bucket named after its Pool's persistent_id
   def attach_file(file_name, file)
