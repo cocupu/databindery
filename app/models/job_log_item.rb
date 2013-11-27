@@ -1,7 +1,7 @@
 class JobLogItem < ActiveRecord::Base
   include ActiveModel::ForbiddenAttributesProtection
   belongs_to :parent, :class_name=>'JobLogItem'
-  belongs_to :spreadsheet_row
+  belongs_to :loggable_job, :polymorphic => true
   default_scope { order("updated_at desc") }
 
   serialize :data
