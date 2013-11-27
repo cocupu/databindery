@@ -5,23 +5,17 @@
 // the compiled file.
 //
 //= require jquery
-//= require jquery_ujs
+//= require jquery-ujs
 //
 // Required by Blacklight
 //= require blacklight/blacklight
 // we're just using core and droppable from jquery-ui
-//= require jquery-ui-1.8.23.min 
+//= require jquery-ui
 //= require jquery.scrollTo-min.js
-//=# require underscore
-//=# require backbone
 //= require bootstrap
-// AJAX adapter for rails, that uses paramRoot to set up requests as rails expects 
-// (see http://stackoverflow.com/questions/8016296/backbone-model-save)
-//=# require backbone_rails_sync
-//=# require backbone/cocupu
-//= require dataTables/jquery.dataTables
 //= require angular
 //= require angular-bootstrap
+//= require angular-route
 //= require angular-resource
 //= require angular-sanitize
 //= require ng-grid

@@ -23,8 +23,7 @@
  *= require headsup
  *= depend_on _common
  *= require s3_direct_upload_progress_bars
- *= require jquery.ui.core
- *= require datatables
+ *= require jquery-ui/themes/base/jquery.ui.core
  *= require ng-grid
  *= require token-input
  *= require token-input-facebook

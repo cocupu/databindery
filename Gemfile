@@ -7,17 +7,13 @@ gem 'json'
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
+  gem "bower-rails"
   gem 'sass-rails'
   gem "bootstrap-sass"
   gem 'coffee-rails'
   gem 'uglifier', '>= 1.2.3'
   gem 'therubyracer', '~> 0.10.0'# required on linux (ver 0.11.0 wasn't building native extensions)
-  gem 'jquery-rails'
-  gem 'jquery-datatables-rails', github: 'rweng/jquery-datatables-rails'
-  gem 'jquery-ui-rails'
   gem 'handlebars_assets'
-  gem 'rails-backbone'
-  gem 'angularjs-rails', '~>1.0.8'
   gem 'bootstrap-kaminari-views'
 end
 
