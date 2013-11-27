@@ -20,7 +20,7 @@ class AudiencesController < ApplicationController
   end
 
   def create
-    @audience = @audience_category.audiences.build(params.require(:audience).permit(:description, :name, :filters_attributes, :member_ids))
+    @audience = @audience_category.audiences.build(audience_params)
     @audience.save
     respond_to do |format|
       format.json { render :json=>serialize_audience(@audience) }
@@ -28,13 +28,17 @@ class AudiencesController < ApplicationController
   end
 
   def update
-    @audience.update_attributes(params.require(:audience).permit(:description, :name, :filters_attributes, :member_ids))
+    @audience.update_attributes(audience_params)
     respond_to do |format|
       format.json { render :json=>serialize_audience(@audience) }
     end
   end
 
   private
+
+  def audience_params
+    params.require(:audience).permit(:description, :name, {member_ids:[]}, filters_attributes: [:id, :_destroy, :field_name, :operator, {values:[]}, :association_code, :filter_type])
+  end
 
   def move_json_filters_to_filters_attributes
     if params["filters"]

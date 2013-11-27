@@ -6,6 +6,7 @@ class ExhibitsController < ApplicationController
   before_filter :cleanup_filter_params, only: [:create, :update]
   
   def index
+    @exhibits = @pool.exhibits
   end
 
   def edit
@@ -18,18 +19,22 @@ class ExhibitsController < ApplicationController
 
   def create
     authorize! :create, Exhibit
-    @exhibit = Exhibit.new(params.require(:exhibit).permit(:title, :facets, :index_fields, :filters_attributes))
+    @exhibit = Exhibit.new(exhibit_params)
     @exhibit.pool = @pool
     @exhibit.save
     redirect_to identity_pool_search_path(@identity, @pool, perspective: @exhibit.id), :notice=>"Exhibit created"
   end
 
   def update
-    @exhibit.update_attributes(params.require(:exhibit).permit(:title, :facets, :index_fields, :filters_attributes))
+    @exhibit.update_attributes(exhibit_params)
     redirect_to edit_identity_pool_exhibit_path(@identity, @pool, @exhibit.id), :notice=>"Exhibit updated"
   end
 
   private
+
+  def exhibit_params
+    params.require(:exhibit).permit(:title, {facets:[]}, {index_fields: []}, filters_attributes: [:id, :_destroy, :field_name, :operator, {values:[]}, :association_code, :filter_type])
+  end
 
   def cleanup_filter_params
     if params[:exhibit][:filters_attributes]

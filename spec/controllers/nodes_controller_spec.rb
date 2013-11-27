@@ -233,12 +233,12 @@ describe NodesController do
       sign_in @identity.login_credential
     end
     it "should load the node and the models" do
-      put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }}, pool_id: @pool, identity_id: @identity
+      put :update, :id => @node1.persistent_id, :node=>{data:{ 'f1' => 'Updated val' }, associations:{foo:@node2.persistent_id}}, pool_id: @pool, identity_id: @identity
       new_version = Node.latest_version(@node1.persistent_id)
       response.should redirect_to identity_pool_solr_document_path(@identity, @pool, new_version)
       new_version.data['f1'].should == "Updated val"
+      new_version.associations['foo'].should == @node2.persistent_id
       flash[:notice].should == "#{@model.name} updated"
-      
     end
     it "should not load node we don't have access to" do
       put :update, :id => @different_pool_node.persistent_id, :node=>{:data=>{ }}, pool_id: @pool, identity_id: @identity

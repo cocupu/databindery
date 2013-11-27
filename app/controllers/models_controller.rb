@@ -28,7 +28,7 @@ class ModelsController < ApplicationController
 
   def create
     authorize! :create, Model
-    @model = Model.new(params.require(:model).permit(:name, :label, :associations, :fields, :allow_file_bindings))
+    @model = Model.new(model_params)
     identity = current_user.identities.find_by_short_name(params[:identity_id])
     raise CanCan::AccessDenied.new "You can't create for that identity" if identity.nil?
     @model.owner = identity
@@ -55,7 +55,7 @@ class ModelsController < ApplicationController
     @model = Model.find(params[:id])
     authorize! :update, @model
     respond_to do |format|
-      if @model.update_attributes(params.require(:model).permit(:name, :label, :associations, :fields, :allow_file_bindings)) 
+      if @model.update_attributes(model_params)
           format.html { redirect_to edit_model_path(@model), :notice=>"#{@model.name} has been updated" }
           format.json { render :json=>serialize_model(@model) }
       else
@@ -80,5 +80,17 @@ class ModelsController < ApplicationController
     json = {id: m.id, url: model_path(m), associations: m.associations, fields: m.fields, name: m.name, label: m.label, allow_file_bindings: m.allow_file_bindings }
     json.merge!(pool: m.pool.short_name, identity: m.pool.owner.short_name) if m.pool
     json
+  end
+
+  # Whitelisted attributes for create/update
+  def model_params
+    params.require(:model).permit(:name, :label, :allow_file_bindings).tap do |whitelisted|
+      if params[:model][:fields]
+        whitelisted[:fields] = params[:model][:fields]
+      end
+      if params[:model][:associations]
+        whitelisted[:associations] = params[:model][:associations]
+      end
+    end
   end
 end

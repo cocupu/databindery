@@ -18,10 +18,10 @@ describe Bindery::Spreadsheet do
 
   describe "file binding lookups" do
     before do
-      @version1 = FactoryGirl.create(:node, binding:"bindingXYZ")
-      @version2 = FactoryGirl.create(:node, binding:"binding1", persistent_id:@version1.persistent_id)
-      @version3 = FactoryGirl.create(:node, binding:"binding1", persistent_id:@version1.persistent_id)
-      @version4 = FactoryGirl.create(:node, binding:"binding1", persistent_id:@version1.persistent_id)
+      @version1 = FactoryGirl.create(:node, binding:"bindingXYZ", model: Model.file_entity)
+      @version2 = FactoryGirl.create(:node, binding:"binding1", persistent_id:@version1.persistent_id, model: Model.file_entity)
+      @version3 = FactoryGirl.create(:node, binding:"binding1", persistent_id:@version1.persistent_id, model: Model.file_entity)
+      @version4 = FactoryGirl.create(:node, binding:"binding1", persistent_id:@version1.persistent_id, model: Model.file_entity)
     end
     describe "#version_with_latest_file_binding" do
       it "should return the node where the latest file binding was set" do

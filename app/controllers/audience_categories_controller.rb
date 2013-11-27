@@ -19,7 +19,7 @@ class AudienceCategoriesController < ApplicationController
   end
 
   def create
-    @audience_category = @pool.audience_categories.build(params.require(:audience_category).permit(:description, :name, :audiences_attributes))
+    @audience_category = @pool.audience_categories.build(audience_category_params)
     @audience_category.save
     respond_to do |format|
       format.json { render :json=>serialize_category(@audience_category) }
@@ -27,13 +27,17 @@ class AudienceCategoriesController < ApplicationController
   end
 
   def update
-    @audience_category.update_attributes(params.require(:audience_category).permit(:description, :name, :audiences_attributes))
+    @audience_category.update_attributes(audience_category_params)
     respond_to do |format|
       format.json { render :json=>serialize_category(@audience_category)  }
     end
   end
 
   private
+
+  def audience_category_params
+    params.require(:audience_category).permit(:description, :name, audiences_attributes:[:description, :name, :position, :id, :_destroy])
+  end
 
   def move_json_audiences_to_audiences_attributes
     if params["audience_category"]["audiences"] && params["audience_category"]["audiences_attributes"].nil?

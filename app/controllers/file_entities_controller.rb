@@ -8,7 +8,7 @@ class FileEntitiesController < ApplicationController
     # Only return the target node if current user can edit it.
     @target_node = nil unless can?(:edit, @target_node)
     process_s3_direct_upload_params
-    @file_entity = FileEntity.register(@pool, params.permit(:binding, :data, :associations))
+    @file_entity = FileEntity.register(@pool, file_entity_params)
     unless @target_node.nil?
       @target_node.files << @file_entity 
       @target_node.save
@@ -29,7 +29,18 @@ class FileEntitiesController < ApplicationController
   end
 
   private
-  
+
+  def file_entity_params
+    params.permit(:binding).tap do |whitelisted|
+      if params[:data]
+        whitelisted[:data] = params[:data]
+      end
+      if params[:associations]
+        whitelisted[:associations] = params[:associations]
+      end
+    end
+  end
+
   def process_s3_direct_upload_params
     if params[:data].nil? && !params[:url].nil?
       params[:data] = params.slice(:storage_location_id, :file_name, :file_size, :mime_type)

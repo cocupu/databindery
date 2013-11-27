@@ -99,7 +99,7 @@ class NodesController < ApplicationController
   
   def create
     authorize! :create, Node
-    @node = Node.new(params.require(:node).permit(:binding, :data, :associations))
+    @node = Node.new(node_params)
     @node.modified_by = @identity
     begin
       model = @pool.models.find(params[:node][:model_id])
@@ -162,7 +162,7 @@ class NodesController < ApplicationController
   def update
     @node = Node.find_by_persistent_id(params[:id])
     authorize! :update, @node
-    @node.attributes = params.require(:node).permit(:data, :associations)
+    @node.attributes = node_params
     @node.modified_by = @identity
     new_version = @node.update
     respond_to do |format|
@@ -202,6 +202,18 @@ class NodesController < ApplicationController
 
   private
 
+  # Whitelisted attributes for create/update
+  def node_params
+    params.require(:node).permit(:binding).tap do |whitelisted|
+      if params[:node][:data]
+        whitelisted[:data] = params[:node][:data]
+      end
+      if params[:node][:associations]
+        whitelisted[:associations] = params[:node][:associations]
+      end
+    end
+  end
+
   def serialize_node(n)
     hash = n.as_json.merge({url: identity_pool_node_path(n.pool.owner, n.pool, n), pool: n.pool.short_name, identity: n.pool.owner.short_name, binding: n.binding, model_id: n.model_id })
     ["id", "parent_id", "pool_id", "identity_id", "created_at", "updated_at"].each {|key| hash.delete(key)}
@@ -217,7 +229,6 @@ class NodesController < ApplicationController
   end
   
   def init_node_from_params
-    @node = Node.new(params.require(:node).permit(:binding, :data, :associations))
     begin
       model = @pool.models.find(params[:node][:model_id])
     rescue ActiveRecord::RecordNotFound 
@@ -225,6 +236,7 @@ class NodesController < ApplicationController
       redirect_to new_identity_pool_node_path(@identity, @pool, :binding=>@node.binding)
       return
     end
+    @node = Node.new(node_params)
     @node.model = model
     @node.pool = @pool
   end

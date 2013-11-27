@@ -27,7 +27,7 @@ describe ApplicationHelper do
 
   it "should render_selected_facet" do
     out = helper.render_selected_facet('name_s', 'Aluminium', '7')
-    out.should == "Aluminium (7) <a href=\"/#{@exhibit.pool.owner.short_name}/#{@exhibit.pool.short_name}/exhibits/#{@exhibit.id}?&amp;q=term\" class=\"btn small\" title=\"Remove facet\">remove</a>"
+    out.should == "Aluminium (7) <a class=\"btn small\" href=\"/#{@exhibit.pool.owner.short_name}/#{@exhibit.pool.short_name}/exhibits/#{@exhibit.id}?&amp;q=term\" title=\"Remove facet\">remove</a>"
     
   end
 end

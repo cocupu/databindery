@@ -128,8 +128,8 @@ describe ModelsController do
           response.should be_successful
           assigns[:model].should == @model_i_can_edit
           assigns[:models].should == [@model_i_can_edit, @my_model]
-          assigns[:field].should == {name: '', type: '', uri: '', multivalued: false}.stringify_keys
-          assigns[:association].should == {name: '', type: '', references: ''}.stringify_keys
+          assigns[:field].should == {name: '', type: '', uri: '', multivalued: false}
+          assigns[:association].should == {name: '', type: '', references: ''}
           assigns[:association_types].should == ['Has Many', 'Has One', 'Ordered List', 'Unordered List']
           assigns[:field_types].should == [["Text Field", "text"], ["Text Area", "textarea"], ["Date", "date"]]
         end
@@ -140,8 +140,8 @@ describe ModelsController do
           response.should be_successful
           assigns[:model].should == @my_model
           assigns[:models].should == [@model_i_can_edit, @my_model]
-          assigns[:field].should == {name: '', type: '', uri: '', multivalued: false}.stringify_keys
-          assigns[:association].should == {name: '', type: '', references: ''}.stringify_keys
+          assigns[:field].should == {name: '', type: '', uri: '', multivalued: false}
+          assigns[:association].should == {name: '', type: '', references: ''}
           assigns[:association_types].should == ['Has Many', 'Has One', 'Ordered List', 'Unordered List']
           assigns[:field_types].should == [["Text Field", "text"], ["Text Area", "textarea"], ["Date", "date"]]
         end

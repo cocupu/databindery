@@ -12,12 +12,8 @@ module FileEntity
   def self.register(pool, opts={})
     opts = opts.with_indifferent_access
     opts[:data] = {} unless opts[:data]
-    opts[:data]["content-type"] = opts[:data][:mime_type] unless opts[:data][:mime_type].nil?      
-    if opts.class == ActionController::Parameters
-      file_entity = Node.new( opts.permit(:data, :associations, :binding) ) 
-    else
-      file_entity = Node.new( opts.slice(:data, :associations, :binding) ) 
-    end
+    opts[:data]["content-type"] = opts[:data][:mime_type] unless opts[:data][:mime_type].nil?
+    file_entity = Node.new( opts.slice(:data, :associations, :binding) )
     file_entity.pool = pool
     file_entity.extend FileEntity
     file_entity.file_entity_type = "S3"

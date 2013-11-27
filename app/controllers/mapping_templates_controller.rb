@@ -33,7 +33,7 @@ class MappingTemplatesController < ApplicationController
       mma['field_mappings_attributes'].delete('new_field_mappings')
     end
     begin
-      @mapping_template.attributes = params[:mapping_template]
+      @mapping_template.attributes = mapping_template_params
     rescue ActiveRecord::RecordInvalid => e
       ## Model was invalid
       flash[:alert] = e.record.errors.full_messages.join("\n")
@@ -46,4 +46,15 @@ class MappingTemplatesController < ApplicationController
 
   def show
   end
+
+  private
+
+  def mapping_template_params
+    params.require(:mapping_template).permit(:row_start,:pool_id).tap do |whitelisted|
+      if params[:mapping_template][:model_mappings_attributes]
+        whitelisted[:model_mappings_attributes] = params[:mapping_template][:model_mappings_attributes]
+      end
+    end
+  end
+
 end

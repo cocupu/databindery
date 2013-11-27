@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem "rails", "~> 4.0.0"
+gem "rails", "~> 4.0.1"
 gem "activerecord-session_store"
 gem 'json'
 
@@ -39,7 +39,7 @@ gem 's3_direct_upload'
 
 
 group :test, :development do
-  gem "rspec-rails"
+  gem "rspec-rails", ">= 2.14.0"
   gem 'unicorn'  # Use unicorn as the webserver
   gem "factory_girl_rails"
   gem 'jasmine'

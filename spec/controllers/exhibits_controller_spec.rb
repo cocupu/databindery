@@ -43,7 +43,7 @@ describe ExhibitsController do
         get :new, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should be_successful
         assigns[:exhibit].should be_kind_of Exhibit
-        assigns[:fields].should == [{"code"=>"model_name", "name"=>"Model"}, {'code' => 'f2', 'name'=> "Another one"}, {'code' => 'f1', 'name'=> 'Field good'}, {'code' => 'label', 'name'=> "Label"}, {'code' => 'style', 'name'=> 'Style'} ]
+        assigns[:fields].should == [{"code"=>"model_name", "name"=>"Model"}, {code:'f2', name:"Another one"}, {code:'f1', name:'Field good'}, {code:'label', name:"Label"}, {code:'style', name:'Style'} ]
       end
     end
 
@@ -64,7 +64,7 @@ describe ExhibitsController do
         get :edit, :id =>@exhibit.id, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should be_successful
         assigns[:exhibit].should be_kind_of Exhibit
-        assigns[:fields].should == [{"code"=>"model_name", "name"=>"Model"}, {'code' => 'f2', 'name'=> "Another one"}, {'code' => 'f1', 'name'=> 'Field good'}, {'code' => 'label', 'name'=> "Label"}, {'code' => 'style', 'name'=> 'Style'} ]
+        assigns[:fields].should == [{"code"=>"model_name", "name"=>"Model"}, {code:'f2', name:"Another one"}, {code:'f1', name:'Field good'}, {code:'label', name:"Label"}, {code:'style', name:'Style'} ]
       end
     end
 
