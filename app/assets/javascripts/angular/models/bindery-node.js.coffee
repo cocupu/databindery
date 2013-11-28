@@ -1,6 +1,6 @@
 angular.module('curateDeps').factory('BinderyNode', ['$resource', '$location', 'BinderyModel', 'memoService', 'BinderyNodeAssociations', ($resource, $location, BinderyModel, memoService, BinderyNodeAssociations) ->
 
-  BinderyNode = $resource($location.path().replace("search","nodes")+"/:nodeId", {nodeId:'@persistent_id'}, {
+  BinderyNode = $resource($location.path().replace("search","nodes")+"/:nodeId.json", {nodeId:'@persistent_id'}, {
       update: { method: 'PUT' }
   })
 

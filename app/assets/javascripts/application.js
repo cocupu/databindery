@@ -15,7 +15,7 @@
 //= require bootstrap
 //= require angular
 //= require angular-bootstrap
-//= require angular-route
+//=# require angular-route
 //= require angular-resource
 //= require angular-sanitize
 //= require ng-grid

@@ -1,5 +1,5 @@
 angular.module('curateDeps').factory('BinderyModel', ['$resource', '$sanitize', ($resource, $sanitize) ->
-        BinderyModel = $resource('/models/:modelId', { modelId:'@id' }, {
+        BinderyModel = $resource('/models/:modelId.json', { modelId:'@id' }, {
             update: { method: 'PUT' },
             query: {
                 method: 'GET',

@@ -1,6 +1,6 @@
 angular.module('curateDeps').factory('BinderyPool', ['$resource', 'BinderyAudienceCategory', ($resource, BinderyAudienceCategory) ->
 
-  BinderyPool = $resource("/:identityName/:poolName", {identityName:'@identity_name', poolName:'@short_name'}, {
+  BinderyPool = $resource("/:identityName/:poolName.json", {identityName:'@identity_name', poolName:'@short_name'}, {
     update: { method: 'PUT' }
   })
 

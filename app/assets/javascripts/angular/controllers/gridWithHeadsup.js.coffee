@@ -4,13 +4,14 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyModel, BinderyNode, memo
   # General Scope properties
   $scope.selectedNodes = []
   $scope.currentNode = {}
+  $scope.currentModelId = $("#model-chooser .active").data("model-id")
   $scope.currentModel = {}
-  $scope.currentModel = BinderyModel.get({modelId:$("#model-chooser .active").data("model-id")}, (m, getResponseHeaders) ->
+  $scope.currentModel = BinderyModel.get({modelId:$scope.currentModelId}, (m, getResponseHeaders) ->
     memoService.createOrUpdate("BinderyModel", m)
     $scope.columnDefs = m.columnDefsFromModel()
   )
 
-  $scope.searchUrl = $location.path()
+  $scope.searchUrl = $location.path()+".json"
   $scope.detailPanelState = "node"
   $scope.infoPanelState = "default"
   $scope.supplementalPanelState = "none"
@@ -138,8 +139,10 @@ GridWithHeadsupCtrl = ($scope, $http, $location, BinderyModel, BinderyNode, memo
         ft = searchText.toLowerCase()
       else
         ft = ""
-      $http.get($location.absUrl(), {
+      $http.get($scope.searchUrl, {
         params: {
+          model_id: $scope.currentModelId
+          view: "grid"
           rows: pageSize
           page: page
           q: searchText
