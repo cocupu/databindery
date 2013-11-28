@@ -18,7 +18,7 @@ group :assets do
 end
 
 gem 'haml'
-gem 'roo', github: 'Empact/roo'
+gem 'roo', "~> 1.12.2"
 
 gem 'google-api-client', '0.4.5', :require =>'google/api_client'
 

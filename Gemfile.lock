@@ -1,13 +1,4 @@
 GIT
-  remote: git://github.com/Empact/roo.git
-  revision: 72f4c956e356e18a765d37a7161a7e8c96edc0ba
-  specs:
-    roo (1.12.1)
-      nokogiri
-      rubyzip
-      spreadsheet (> 0.6.4)
-
-GIT
   remote: git://github.com/bradphelan/jasminerice.git
   revision: 091349c27343bfa728b8e5745675f9ddbb7d9699
   ref: 091349c27343bfa728b8e5745675f9ddbb7d9699
@@ -223,6 +214,10 @@ GEM
       thor (>= 0.18.1, < 2.0)
     raindrops (0.10.0)
     rake (10.1.0)
+    roo (1.12.2)
+      nokogiri
+      rubyzip
+      spreadsheet (> 0.6.4)
     rsolr (1.0.9)
       builder (>= 2.1.2)
     rspec (2.14.1)
@@ -262,7 +257,7 @@ GEM
       faraday (~> 0.8.1)
       jwt (>= 0.1.5)
       multi_json (>= 1.0.0)
-    spreadsheet (0.9.0)
+    spreadsheet (0.9.5)
       ruby-ole (>= 1.0)
     sprockets (2.10.1)
       hike (~> 1.2)
@@ -331,7 +326,7 @@ DEPENDENCIES
   kaminari
   pg
   rails (~> 4.0.1)
-  roo!
+  roo (~> 1.12.2)
   rsolr
   rspec-rails (>= 2.14.0)
   s3_direct_upload
