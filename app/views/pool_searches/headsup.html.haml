@@ -16,6 +16,9 @@
   .panel.panel-default.detail.selectedItems.node{"ng-repeat"=>"node in selectedNodes"}
     .panelHeader.panel-header
       %h3 {{node.title}}
+      .persistent-id
+        pid:
+        %a{target:"_self", "ng-href"=>"{{poolUrl}}/results/{{node.persistent_id}}"} {{node.persistent_id}}
       %span.savedIndicator{"ng-switch"=>true, "on"=>"node.dirty"}
         %span.message{"ng-switch-when"=>"true"} You have unsaved changes
         %span.message{"ng-switch-when"=>"false"} Saved at: {{node.lastUpdated}}

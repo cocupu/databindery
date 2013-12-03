@@ -2,6 +2,7 @@
 GridWithHeadsupCtrl = ($scope, $http, $location, BinderyModel, BinderyNode, memoService) ->
 
   # General Scope properties
+  $scope.poolUrl = $location.path().replace("/search", "")
   $scope.selectedNodes = []
   $scope.currentNode = {}
   $scope.currentModelId = $("#model-chooser .active").data("model-id")

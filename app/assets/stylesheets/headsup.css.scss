@@ -14,6 +14,7 @@
       margin-top: -4em;
       padding-right:5px;
       padding-bottom: 8px;
+      background-color: white;
       h3 {
         white-space: nowrap;
         overflow: scroll;
@@ -22,6 +23,7 @@
     }
 
     form {
+      margin-top: 1.25em;
       text-align: left;
       h4 { padding-left: 1em; }
       label {color: dimgrey;}
@@ -92,6 +94,14 @@
       background-color: white;
       margin-top: -7em;
     }
+  }
+}
+
+.persistent-id {
+  margin-top: -1em;
+  color: rgba(128, 128, 128, 0.76);
+  a {
+    color: rgba(128, 128, 128, 0.76);
   }
 }
 
