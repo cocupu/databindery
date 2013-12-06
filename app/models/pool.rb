@@ -110,17 +110,25 @@ class Pool < ActiveRecord::Base
     end
   end
 
+  def file_store_type
+    Bindery::Storage::S3
+  end
+
   def default_file_store
     # s3_connections.first
-    Bindery::Storage::S3.default_connection
+    file_store_type.default_connection
   end
   
   def default_bucket_id
     self.persistent_id
   end
+
+  def bucket_id
+    default_bucket_id
+  end
   
   def bucket
-    default_file_store.bucket(default_bucket_id)
+    default_file_store.bucket(bucket_id)
   end
   
   def ensure_bucket_initialized

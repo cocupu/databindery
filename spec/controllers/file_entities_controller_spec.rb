@@ -11,7 +11,7 @@ describe FileEntitiesController do
     end
     it "should create and return json" do
       FileEntity.should_receive(:register).with(@pool, {"binding"=>'1231249'}) {Node.new(pool:@pool, model:Model.file_entity)}
-      post :create, :format=>:json, :binding=>'1231249', :pool_id=>@pool.short_name, :identity_id=>@identity.short_name
+      post :create, :format=>:json, :pool_id=>@pool.short_name, :identity_id=>@identity.short_name, file: {:binding=>'1231249'}
       response.should be_successful
       json = JSON.parse(response.body)
       json.keys.should include('id')
@@ -23,7 +23,7 @@ describe FileEntitiesController do
       it "should add to file list of target_node" do
         # Need to return a persisted Node from stubbed FileEntity.register so it can be added to the target node
         FileEntity.should_receive(:register).with(@pool, {"binding"=>'1231249'}) {FactoryGirl.create(:node, pool:@pool, model:Model.file_entity)}
-        post :create, :format=>:json, :binding=>'1231249', :pool_id=>@pool.short_name, :identity_id=>@identity.short_name, :target_node_id=>@node_to_target.persistent_id
+        post :create, :format=>:json, :pool_id=>@pool.short_name, :identity_id=>@identity.short_name, :target_node_id=>@node_to_target.persistent_id, file: {:binding=>'1231249'}
         target_node = Node.latest_version(@node_to_target.persistent_id)
         target_node.files.last.should == assigns[:file_entity]
       end
@@ -42,6 +42,42 @@ describe FileEntitiesController do
       file_entity.mime_type.should == "image/jpeg"
       file_entity.pool.should == @pool
     end
+    it "should register the entity from rails-style file params" do
+      s3_key = "89d8de30-4013-0131-8fee-7cd1c3f26451_20131205T134412CST"
+      params_from_s3_upload = {
+          :pool_id=>@pool.short_name, :identity_id=>@identity.short_name, format: :json,
+          file: {
+              "file_name"=>"909-Last-Supper-Large.jpg",
+              "mime_type"=>"image/jpeg",
+              "file_size"=>"183237",
+              "bucket"=>@pool.persistent_id,
+              "persistent_id"=>"89d8de30-4013-0131-8fee-7cd1c3f26451",
+              "storage_location_id"=>"89d8de30-4013-0131-8fee-7cd1c3f26451_20131205T134412CST",
+          }}
+      S3Connection.any_instance.stub(:get).and_return(double(:metadata=>{}))
+      #FileEntity.should_receive(:register).with(@pool, {"persistent_id"=>"89d8de30-4013-0131-8fee-7cd1c3f26451", "bucket"=>@pool.persistent_id, "data"=>{"file_name"=>"909-Last-Supper-Large.jpg", "mime_type"=>"image/jpeg", "file_size"=>"183237", "storage_location_id"=>"89d8de30-4013-0131-8fee-7cd1c3f26451_20131205T134412CST"}}) { Node.new(pool:@pool, model:Model.file_entity) }
+      post :create, params_from_s3_upload
+      response.should be_successful
+    end
+  end
+
+  describe "s3_upload_info" do
+    before do
+      sign_in @identity.login_credential
+    end
+    it "should generate a pid, storage_location_id, and necessary s3 upload info" do
+      get :s3_upload_info, :pool_id=>@pool.short_name, :identity_id=>@identity.short_name, format: :json
+      json = JSON.parse(response.body)
+      response.should be_successful
+      placeholder = assigns[:file_entity]
+      placeholder.persistent_id.should_not be_nil
+      placeholder.storage_location_id.should_not be_nil
+      json["policy"].should_not be_nil
+      json["signature"].should_not be_nil
+      json["key"].should == placeholder.storage_location_id
+      json["success_action_redirect"].should == identity_pool_file_entities_path(@identity, @pool)
+      json["uuid"].should == placeholder.persistent_id
+    end
   end
   
   describe "new" do
@@ -58,20 +94,17 @@ describe FileEntitiesController do
       get :new, pool_id: @pool.short_name, identity_id: @identity.short_name
       response.should be_success
       assigns[:target_node].should be_nil
-      S3DirectUpload.config.bucket.should == @pool.persistent_id
     end
     it "should load target node if node is readable" do
       get :new, :model_id => @my_model, pool_id: @pool.short_name, identity_id: @identity.short_name, target_node_id: @node_to_target.persistent_id
       response.should be_success
       assigns[:target_node].should == @node_to_target
       assigns[:pool].should == @pool
-      S3DirectUpload.config.bucket.should == @pool.persistent_id
     end
     it "should not load target node if unreadable" do
       get :new, :model_id => @my_model, pool_id: @pool.short_name, identity_id: @identity.short_name, target_node_id: @not_my_node.persistent_id
       response.should be_success
       assigns[:target_node].should be_nil
-      S3DirectUpload.config.bucket.should == @pool.persistent_id
     end
     it "should be redirect when pool is not editable" do 
       get :new, pool_id: @not_my_pool.short_name, identity_id: @not_me.short_name

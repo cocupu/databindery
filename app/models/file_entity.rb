@@ -1,5 +1,9 @@
 module FileEntity
-  
+
+  def self.build(opts={})
+    file_entity = Node.new( opts )
+    file_entity.extend FileEntity
+  end
   # Creates a FileEntity corresponding to a remote file with the given characteristics.
   # Required parameters:
   #   pool <Pool>
@@ -13,16 +17,40 @@ module FileEntity
     opts = opts.with_indifferent_access
     opts[:data] = {} unless opts[:data]
     opts[:data]["content-type"] = opts[:data][:mime_type] unless opts[:data][:mime_type].nil?
-    file_entity = Node.new( opts.slice(:data, :associations, :binding) )
+    file_entity = Node.new( opts.slice(:data, :associations, :binding, :persistent_id, :storage_location_id) )
     file_entity.pool = pool
     file_entity.extend FileEntity
     file_entity.file_entity_type = "S3"
     if file_entity.storage_location_id.include?(file_entity.bucket)
-      file_entity.storage_location_id = Bindery::Storage::S3.key_from_filepath(file_entity.storage_location_id,bucket:file_entity.bucket) 
+      file_entity.storage_location_id = Bindery::Storage::S3.key_from_filepath(file_entity.storage_location_id,bucket:file_entity.bucket)
     end
+    # If a binding URL was not provided, generate it based on node info before saving.
+    file_entity.binding = pool.file_store_type.binding_url_from_node_info(file_entity) unless file_entity.binding
     file_entity.model = Model.file_entity
     file_entity.save!
     file_entity.send(:set_metadata)
+    return file_entity
+  end
+
+  # Creates an un-saved FileEntity with all of the desired info for creating a remote file (ie. persistent_id and storage_location_id).
+  # This is primarily for use when preparing to upload content to remote storage like Amazon S3.  After successful remote uploads, a real FileAsset will be persisted using the #register method (often via the FileEntitiesController.s3_confirm method)
+  # Required parameters:
+  #   pool <Pool>
+  # @example
+  #   file_entity = FileEntity.placeholder_for_upload(my_pool, :data=>{"filepath"=>"/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg", "filename"=>"DSC_0549-3.jpg", "filesize"=>"471990", "filetype"=>"image/jpeg", "binding"=>"https://s3.amazonaws.com/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg"})
+  def self.placeholder_for_upload(pool, opts={})
+    #opts = opts.with_indifferent_access
+    #opts[:data] = {} unless opts[:data]
+    #opts[:data]["content-type"] = opts[:data][:mime_type] unless opts[:data][:mime_type].nil?
+    #file_entity = Node.new( opts.slice(:data, :associations, :binding) )
+    file_entity = Node.new
+    file_entity.pool = pool
+    file_entity.extend FileEntity
+    file_entity.file_entity_type = "S3"
+    file_entity.model = Model.file_entity
+    file_entity.generate_uuid
+    file_entity.storage_location_id = file_entity.pool.file_store_type.generate_storage_location_id(file_entity)
+    #file_entity.save!
     return file_entity
   end
   

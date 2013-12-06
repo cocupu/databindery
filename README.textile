@@ -14,6 +14,7 @@ h2. TL;DR.
   rails g bindery:jetty
   rake jetty:start
   rake spec
+  rake bower:install
   unicorn_rails
 </pre>
 
@@ -22,6 +23,7 @@ h2. Dependencies
 * postgres
 * rabbitmq
 * jetty
+* node & bower (for managing javascript dependencies)
 
 Only necessary for production system:
 * mpg321 and vorbis-tools

@@ -44,6 +44,9 @@ class S3Connection < ActiveRecord::Base
     if Rails.env == "production"
       name = "http://"+name unless name.include?("http://")
     end
+    if Rails.env == "development"
+      name = "http://localhost:8080"
+    end
     name
   end
 end

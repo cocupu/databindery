@@ -2,9 +2,6 @@
   - post_url = identity_pool_file_entities_url(@pool.owner, @pool, target_node_id:@target_node.persistent_id)
 - else
   - post_url = identity_pool_file_entities_url(@pool.owner, @pool)
-  
-= s3_uploader_form post: post_url, as: "binding", id: "myS3Uploader" do 
-  = file_field_tag :file, multiple: true
 
 - unless @target_node.nil? 
   = link_to "Return to #{@target_node.title}", identity_pool_solr_document_path(@identity, @pool, @target_node)
@@ -13,7 +10,60 @@
   %div{id:"file-#{@pool.persistent_id}", class: "upload"}
     .progress
       .bar{style: "width: 0%"}
-      
-%script
-  $("#myS3Uploader").S3Uploader();
 
+%form#file_upload(action="#{@pool.bucket.url}" method="post" enctype="multipart/form-data")
+  -# order is important!
+  -# also, the things that are not filled in right now *will* be filled in soon.  See below.
+  %input{:type => :hidden, :name => :key}
+  %input{:type => :hidden, :name => "AWSAccessKeyId", :value => AWS.config.access_key_id}
+  %input{:type => :hidden, :name => :acl,  :value => :private}
+  %input{:type => :hidden, :name => :success_action_status, :value => "200"}
+  %input{:type => :hidden, :name => :policy}
+  %input{:type => :hidden, :name => :signature}
+
+  .fileupload-content
+    .fileupload-progress
+  .file-upload
+    %label.fileinput-button
+      %span Upload Document
+      %input{:type => :file, :name => :file}
+
+:javascript
+  $('#file_upload').fileupload({
+        forceIframeTransport: true,
+        autoUpload: true,
+        add: function(event, data) {
+          console.log(data.files[0])
+          $.ajax({
+            url: "#{post_url}",
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              doc: {
+                file_name: data.files[0].name,
+                mime_type: data.files[0].type,
+                file_size: data.files[0].size
+              }
+            },
+            async: false,
+            success: function(retdata) {
+              $('#file_upload').find('input[name=key]').val(retdata.key);
+              $('#file_upload').find('input[name=policy]').val(retdata.policy);
+              $('#file_upload').find('input[name=signature]').val(retdata.signature);
+            }
+           });
+          data.submit();
+          return data;
+        },
+        send: function(e, data) {
+          return $('#loading').show();
+        },
+        fail: function(e, data) {
+          console.log('fail');
+          return console.log(data);
+        },
+        done: function(event, data) {
+          $('#your_documents').load("/documents?for_item=1234");
+          return $('#loading').hide();
+        }
+      });

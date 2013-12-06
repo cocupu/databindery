@@ -13,4 +13,16 @@ module Bindery::Storage::S3
     key.gsub!(/^[\/]*/, "")
     return key
   end
+
+  def self.generate_storage_location_id(file_entity)
+    generated_id = file_entity.persistent_id + "_" + Time.now.strftime('%Y%m%dT%H%M%S%Z')
+    if file_entity.file_name
+      generated_id = [generated_id, file_entity.file_name].join("_")
+    end
+    return generated_id
+  end
+
+  def self.binding_url_from_node_info(file_entity)
+    "https://s3.amazonaws.com/#{file_entity.bucket}/#{file_entity.storage_location_id}"
+  end
 end

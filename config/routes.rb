@@ -59,7 +59,11 @@ Bindery::Application.routes.draw do
       resources :audience_categories do
         resources :audiences
       end
-      resources :file_entities
+      resources :file_entities do
+        collection do
+          get "s3_upload_info"
+        end
+      end
       get '/facet/:id' => 'pool_searches#facet', :as => :pool_search_facet
 
       # can't do :path => '' because that breaks models, nodes, etc. in client api

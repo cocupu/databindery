@@ -31,7 +31,6 @@ gem 'foreigner'
 
 gem 'uuid'
 gem 'kaminari'
-gem 's3_direct_upload'
 
 
 group :test, :development do

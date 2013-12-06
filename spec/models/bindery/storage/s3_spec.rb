@@ -14,4 +14,20 @@ describe Bindery::Storage::S3 do
       key.should == "uploads/20130306T1135Z_7f3c6aa9d5d5a164e047281b6603bed7/DSC_0426-7.jpg"
     end
   end
+  describe "generate_storage_location_id" do
+    before do
+      @file_entity = FileEntity.build persistent_id:"samplePid"
+      @now = Time.now
+      @formatted_now = @now.strftime('%Y%m%dT%H%M%S%Z')
+    end
+    it "should generate the desired S3 key for the given File Entity" do
+      Time.stub(:now).and_return(@now)
+      Bindery::Storage::S3.generate_storage_location_id(@file_entity).should == "samplePid_#{@formatted_now}"
+    end
+    it "should include filename if available" do
+      Time.stub(:now).and_return(@now)
+      @file_entity.file_name ="my file.jpg"
+      Bindery::Storage::S3.generate_storage_location_id(@file_entity).should == "samplePid_#{@formatted_now}_my file.jpg"
+    end
+  end
 end

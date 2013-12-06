@@ -24,7 +24,41 @@ describe FileEntity do
       file_entity.mime_type.should == "image/jpeg"
       file_entity.pool.should == @pool
     end
+    it "should pass through metadata, including persistent_id" do
+      @pool.default_file_store.should_receive(:get).with(@pool.persistent_id, "myPid_20131205T134412CST").and_return(double("S3 Object", :metadata=>{}))
+      params = {"persistent_id"=>"myPid","binding"=>"http://s3.amazon.com/sampleBinding", "data"=>{"file_name"=>"909-Last-Supper-Large.jpg", "mime_type"=>"image/jpeg", "file_size"=>"183237", "storage_location_id"=>"myPid_20131205T134412CST"}}
+      file_entity = FileEntity.register(@pool, params)
+      file_entity.persistent_id.should == "myPid"
+      file_entity.binding.should == "http://s3.amazon.com/sampleBinding"
+      file_entity.storage_location_id.should == "myPid_20131205T134412CST"
+      file_entity.bucket.should == @pool.persistent_id
+      file_entity.file_name.should == "909-Last-Supper-Large.jpg"
+      file_entity.file_size.should == "183237"
+      puts file_entity.data
+      file_entity.mime_type.should == "image/jpeg"
+      file_entity.pool.should == @pool
+    end
+    it "should generate binding url if only storage_location_id is provided" do
+      @pool.default_file_store.should_receive(:get).with(@pool.persistent_id, "myPid_20131205T134412CST").and_return(double("S3 Object", :metadata=>{}))
+      params = {"persistent_id"=>"myPid", "data"=>{ "storage_location_id"=>"myPid_20131205T134412CST"}}
+      file_entity = FileEntity.register(@pool, params)
+      file_entity.binding.should == "https://s3.amazonaws.com/#{file_entity.bucket}/myPid_20131205T134412CST"
+    end
   end
+  describe '#placeholder_for_upload' do
+    before do
+      @identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create :pool, :owner=>@identity
+    end
+    it "should generate an UNSAVED FileEntity with persistent_id and storage_location_id" do
+      Bindery::Storage::S3.should_receive(:generate_storage_location_id).and_return("generated storage id")
+      file_entity = FileEntity.placeholder_for_upload(@pool, {})
+      file_entity.should be_new_record
+      file_entity.persistent_id.should_not be_nil
+      file_entity.storage_location_id.should == "generated storage id"
+    end
+  end
+
   describe "local file handling" do
     subject {Node.new.extend(FileEntity)}
     describe "local_file_pathname" do
