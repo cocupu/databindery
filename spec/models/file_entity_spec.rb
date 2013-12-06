@@ -134,10 +134,10 @@ describe FileEntity do
       end
     end
     describe "spreadsheet?" do
-      it "should test for pdf mimetype" do
+      it "should test for spreadsheet mimetypes" do
         subject.stub(:mime_type).and_return("audio/mpeg")
         subject.spreadsheet?.should be_false
-        ["application/vnd.ms-excel", "application/vnd.oasis.opendocument.spreadsheet"].each do |mimetype|
+        ["application/vnd.ms-excel", "application/vnd.oasis.opendocument.spreadsheet", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"].each do |mimetype|
           subject.stub(:mime_type).and_return(mimetype)
           subject.spreadsheet?.should be_true
         end

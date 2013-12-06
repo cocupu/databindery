@@ -193,7 +193,7 @@ module FileEntity
   end
   
   def spreadsheet?
-    ["application/vnd.ms-excel", "application/vnd.oasis.opendocument.spreadsheet"].include? self.mime_type
+    ["application/vnd.ms-excel", "application/vnd.oasis.opendocument.spreadsheet", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"].include? self.mime_type
   end
 
   def file_type

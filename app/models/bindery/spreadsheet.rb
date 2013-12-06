@@ -9,8 +9,10 @@ class Bindery::Spreadsheet < Node
       Roo::Excel
     when "application/vnd.oasis.opendocument.spreadsheet"
       Roo::OpenOffice
+    when "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      Roo::Excelx
     else
-      raise "UnknownType: #{chattel.attachment_content_type}"
+      raise "UnknownType: #{node.mime_type}"
     end
   end
 

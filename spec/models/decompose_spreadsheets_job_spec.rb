@@ -25,7 +25,7 @@ describe DecomposeSpreadsheetJob do
     @job.node.should == @node
   end
 
-  it "should break up the Excel spreadsheet" do
+  it "should break up xls spreadsheets" do
     @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
     # This requires S3 connection, so skipping.
     # @node.attach_file('dechen_rangdrol_archives_database.xls', @file.read)
@@ -44,6 +44,28 @@ describe DecomposeSpreadsheetJob do
     sheets = Bindery::Spreadsheet.find(@node.id).worksheets
     sheets.count.should == 1
     sheets.first.rows.count.should == 434
+    Node.versions(@node.persistent_id).count.should == original_versions.count
+  end
+  it "should break up xlsx spreadsheets" do
+    @file  =File.new(Rails.root + 'spec/fixtures/KTGR Audio Collection Sample.xlsx')
+    # This requires S3 connection, so skipping.
+    # @node.attach_file('dechen_rangdrol_archives_database.xls', @file.read)
+    # @node.save!
+    original_versions = @node.versions
+    # S3Object.read behaves like File.read, so returning a File as stub for the S3 Object
+    @node.stub(:s3_obj).and_return(@file)
+    @node.file_name = 'KTGR Audio Collection Sample.xlsx'
+    @node.mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    @job = DecomposeSpreadsheetJob.new(@node.id, JobLogItem.new)
+    # Bindery::Spreadsheet.stub(:find).with(@node.id).and_return(@node)
+    @job.node = @node
+    @job.enqueue #start the logger
+    @job.perform
+    # Bindery::Spreadsheet.unstub(:find)
+    sheets = Bindery::Spreadsheet.find(@node.id).worksheets
+    sheets.count.should == 2
+    sheets.first.rows.count.should == 18
+    sheets.last.rows.count.should == 112
     Node.versions(@node.persistent_id).count.should == original_versions.count
   end
   it "should not decompose spreadsheets that have already been decomposed" do
