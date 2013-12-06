@@ -659,7 +659,14 @@ $.TokenList = function (input, url_or_data, settings) {
     }
     
     function find_value_and_highlight_term(template, value, term) {
-        return template.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + value + ")(?![^<>]*>)(?![^&;]+;)", "g"), highlight_term(value, term));
+        // DataBindery fix: Wrapped this in a try ... catch to handle values that throw lexigraphical errors
+        // (ie. a value of "?" prevented the whole result set from being displayed)
+        try {
+            return template.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + value + ")(?![^<>]*>)(?![^&;]+;)", "g"), highlight_term(value, term));
+        }
+        catch(err) {
+            return template
+        }
     }
 
     // Populate the results dropdown with some results
