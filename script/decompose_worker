@@ -6,7 +6,7 @@ puts "Decompose worker running using #{Rails.env} environment"
 
 def work(payload)
     log = JobLogItem.find(payload)
-    puts "Found log_item #{log}"
+    puts "Found log_item #{log.id}"
     puts "it has a spreadsheet: #{log.data}"
     job = DecomposeSpreadsheetJob.new(log.data, log)
     begin
