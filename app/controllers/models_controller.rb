@@ -84,12 +84,17 @@ class ModelsController < ApplicationController
 
   # Whitelisted attributes for create/update
   def model_params
-    params.require(:model).permit(:name, :label, :allow_file_bindings).tap do |whitelisted|
-      if params[:model][:fields]
-        whitelisted[:fields] = params[:model][:fields]
+    if params.has_key?(:model)
+      model_params = params.require(:model)
+    else
+      model_params = params
+    end
+    model_params.permit(:name, :label, :allow_file_bindings).tap do |whitelisted|
+      if model_params[:fields]
+        whitelisted[:fields] = model_params[:fields]
       end
-      if params[:model][:associations]
-        whitelisted[:associations] = params[:model][:associations]
+      if model_params[:associations]
+        whitelisted[:associations] = model_params[:associations]
       end
     end
   end

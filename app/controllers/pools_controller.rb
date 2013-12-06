@@ -30,7 +30,7 @@ class PoolsController < ApplicationController
     # Make sure they own the currently set identity.
     identity = current_user.identities.find_by_short_name(params[:identity_id])
     raise CanCan::AccessDenied.new "You can't create for that identity" if identity.nil?
-    @pool = identity.pools.build(params.require(:pool).permit(:description, :name, :short_name))
+    @pool = identity.pools.build(pool_params)
 
     @pool.owner = identity
     @pool.save!
@@ -64,7 +64,7 @@ class PoolsController < ApplicationController
         @pool.access_controls.build identity: ident, access: ac[:access]
       end
     end
-    @pool.update_attributes(params.require(:pool).permit(:description, :name, :short_name))
+    @pool.update_attributes(pool_params)
     flash[:notice] ||= []
     flash[:notice] << "#{@pool.name} updated"
     respond_to do |format|
@@ -74,7 +74,15 @@ class PoolsController < ApplicationController
   end
   
   private
-  
+
+  def pool_params
+    if params.has_key?(:pool)
+      pool_params = params.require(:pool)
+    else
+      pool_params = params
+    end
+    pool_params.permit(:description, :name, :short_name)
+  end
   # Update the solr index with the pool's head (current version of all nodes)
   def update_index
     failed_nodes = []

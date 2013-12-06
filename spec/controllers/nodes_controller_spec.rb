@@ -249,6 +249,13 @@ describe NodesController do
       put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }}, pool_id: @pool, identity_id: @identity
       assigns[:node].modified_by.should == @identity
     end
+    it "should accept json without fields wrapped in a :node hash" do
+      put :update, :id => @node1.persistent_id, :format=>'json', pool_id: @pool, identity_id: @identity, :data=>{ 'f1' => 'Updated val' }, :associations=>{'talk' => ['68a9ae10-ea2d-012f-5e29-3c075405d3d7']}
+      new_version = Node.latest_version(@node1.persistent_id)
+      response.code.should == "204" # no content
+      new_version.data['f1'].should == "Updated val"
+      new_version.associations.should == {'talk' => ['68a9ae10-ea2d-012f-5e29-3c075405d3d7']}
+    end
     it "should not show anything for json" do
       put :update, :id => @node1.persistent_id, :node=>{:data=>{ 'f1' => 'Updated val' }, :associations=>{'talk' => ['68a9ae10-ea2d-012f-5e29-3c075405d3d7']}}, :format=>'json', pool_id: @pool, identity_id: @identity
       new_version = Node.latest_version(@node1.persistent_id)

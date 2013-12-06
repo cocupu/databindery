@@ -3,8 +3,6 @@ class AudienceCategoriesController < ApplicationController
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity, :only=>[:index, :create]
   load_and_authorize_resource :only=>[:show, :edit, :update]
 
-  before_filter :move_json_audiences_to_audiences_attributes, only: [:create, :update]
-
   def index
     @audience_categories = @pool.audience_categories
     respond_to do |format|
@@ -36,12 +34,20 @@ class AudienceCategoriesController < ApplicationController
   private
 
   def audience_category_params
-    params.require(:audience_category).permit(:description, :name, audiences_attributes:[:description, :name, :position, :id, :_destroy])
+    if params.has_key?(:audience_category)
+      audience_category_params = params.require(:audience_category)
+    else
+      audience_category_params = params
+    end
+    rename_json_audiences_to_audiences_attributes(audience_category_params)
+    audience_category_params.permit(:description, :name, audiences_attributes:[:description, :name, :position, :id, :_destroy])
   end
 
-  def move_json_audiences_to_audiences_attributes
-    if params["audience_category"]["audiences"] && params["audience_category"]["audiences_attributes"].nil?
-      params["audience_category"]["audiences_attributes"] = params["audience_category"]["audiences"]
+  # json objects list the filters as :filters, not :filters_attributes
+  # this renames those submitted params so that they will be applied properly by update_attributes
+  def rename_json_audiences_to_audiences_attributes(target_hash)
+    if target_hash["audiences"] && target_hash["audiences_attributes"].nil?
+      target_hash["audiences_attributes"] = target_hash["audiences"]
     end
   end
 

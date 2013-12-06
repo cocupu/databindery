@@ -130,22 +130,21 @@ describe AudienceCategoriesController do
         @category.audiences.count.should == 2
         @category.audiences.where(name: "Other Level").should be_empty
       end
-      #it "should support submission of json" do
-      #  # when submitting json pool info, access_controls isn't being copied into params[:pool].
-      #  # This test makes sure that the controller handles that case.
-      #  put :update, :access_controls=>[{identity: @another_identity.short_name, access: 'EDIT'},
-      #                                  {identity: @another_identity2.short_name, access: 'NONE'}],
-      #      pool: {:name=>"ReName", :short_name=>'updated_pool'},
-      #      :format=>:json, identity_id: @identity.short_name, :id=>@pool
-      #  response.should  be_successful
-      #  @pool.reload
-      #  @pool.owner.should == @identity
-      #  @pool.name.should == "ReName"
-      #  @pool.short_name.should == "updated_pool"
-      #  @pool.access_controls.size.should == 1
-      #  @pool.access_controls.first.identity.should == @another_identity
-      #  @pool.access_controls.first.access.should == "EDIT"
-      #end
+      it "should allow you to post json objects that are not wrapped in :audience_category hash" do
+        put :update, "description"=>"New description", "id"=>@category.id, "name"=>"The Category", "audiences"=>[{"description"=>nil, "name"=>"Level One", "position"=>nil}, {"description"=>nil, "name"=>"Level Two", "position"=>nil}, {"name"=>"Other Level"}],
+            :format=>:json, identity_id: @identity.short_name, :id=>@category, pool_id:@pool.short_name
+        response.should  be_successful
+        @category.reload
+        @category.description.should == "New description"
+        @category.name.should == "The Category"
+        @category.audiences.count.should == 3
+        other_audience = @category.audiences.where(name: "Other Level").first
+        put :update, audience_category:{"audiences"=>[{"id"=>other_audience.id, "_destroy"=>"1"}]},
+            :format=>:json, identity_id: @identity.short_name, :id=>@category, pool_id:@pool.short_name
+        @category.reload
+        @category.audiences.count.should == 2
+        @category.audiences.where(name: "Other Level").should be_empty
+      end
       it "should give an error when don't have edit powers on the category (or its pool)" do
         put :update, :audience_category=>{:name=>"Rename"}, :format=>:json, identity_id: @another_identity.short_name, :id=>@not_my_category, pool_id: @pool.short_name
         json = JSON.parse(response.body)

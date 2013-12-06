@@ -134,11 +134,10 @@ describe AudiencesController do
         @audience.filters.count.should == 2
         @audience.filters.where(field_name: "title").should be_empty
       end
-      it "should support submission of json objects" do
+      it "should support submission of json objects without :audience hash" do
         # when submitting json pool info, filters isn't being copied into params[:audience].
         # This test makes sure that the controller handles that case.
         put :update, :filters=>[{"field_name"=>"title"}, {"field_name"=>"date_created"}, {"field_name"=>"date_updated"}],
-            :audience=>{},
             :format=>:json, identity_id: @identity.short_name, :id=>@audience, pool_id:@pool.short_name, audience_category_id:@category
         response.should  be_successful
         @audience.reload

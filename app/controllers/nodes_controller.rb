@@ -204,12 +204,17 @@ class NodesController < ApplicationController
 
   # Whitelisted attributes for create/update
   def node_params
-    params.require(:node).permit(:binding).tap do |whitelisted|
-      if params[:node][:data]
-        whitelisted[:data] = params[:node][:data]
+    if params.has_key?(:node)
+      node_params = params.require(:node)
+    else
+      node_params = params
+    end
+    node_params.permit(:binding).tap do |whitelisted|
+      if node_params[:data]
+        whitelisted[:data] = node_params[:data]
       end
-      if params[:node][:associations]
-        whitelisted[:associations] = params[:node][:associations]
+      if node_params[:associations]
+        whitelisted[:associations] = node_params[:associations]
       end
     end
   end
