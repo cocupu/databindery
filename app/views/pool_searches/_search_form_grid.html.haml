@@ -1,10 +1,10 @@
 = form_tag search_action_url, :method => :get, :class => 'search-query-form span9' do
   = search_as_hidden_fields(:omit_keys => [:q, :search_field, :qt, :page]).html_safe
 
-  - unless search_fields.empty?
-    .pull-left
-      %label#search_field.hide-text= t('bindery.perspectives.switch')
-      = render partial: "pool_searches/perspective_chooser"
+  -#- unless search_fields.empty?
+  -#  .perspective-chooser.pull-left
+  -#    %label#search_field.hide-text= t('bindery.perspectives.switch')
+  -#    = render partial: "pool_searches/perspective_chooser"
   .input-append.pull-left
     %label.hide-text{for:"q"}= t('blacklight.search.form.q')
     = text_field_tag :q, params[:q], :placeholder => t('blacklight.search.form.q'), :class => "search_q q", :id => "q"

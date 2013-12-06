@@ -97,10 +97,14 @@
                 %a{"ng-click"=>"audience.addFilter()", "ng-show"=>"audience.filters.length == 0"} create a filter
                 %a{"ng-click"=>"audience.addFilter()", "ng-show"=>"audience.filters.length > 0"} add another filter
                 .form-group.filter{"ng-repeat"=>"filter in audience.filters"}
-                  = select_tag "exhibit[filters_attributes][][filter_type]", options_for_select({"Allow items where"=>"GRANT", "Restrict to items where"=>"RESTRICT"}), "ng-model"=>"filter.filter_type", class:"filter_type"
+                  %select.filter_type{name:"exhibit[filters_attributes][][filter_type]", "ng-model"=>"filter.filter_type"}
+                    %option{value:"GRANT"} Allow items where
+                    %option{value:"RESTRICT"} Restrict to items where
                   %select{"ng-model"=>"filter.field_name", "ng-options"=>"field.code as field.name for field in pool.fields()"}
                   %span.operator{"ng-hide"=>'filter.filter_type=="RESTRICT"'} is
-                  = select_tag "exhibit[filters_attributes][][operator]", options_for_select({"is"=>"+", "is not"=>"-"}), "ng-model"=>"filter.operator", "ng-show"=>'filter.filter_type=="RESTRICT"',class:"operator"
+                  %select.operator{name:"exhibit[filters_attributes][][operator]", "ng-model"=>"filter.operator", "ng-show"=>'filter.filter_type=="RESTRICT"'}
+                    %option{value:"+"} is
+                    %option{value:"-"} is not
                   %input.filterValues{"bindery-token-input"=>"filterValuesTokeninputOptions","data-url"=>'context.poolUrl+"/fields/"+filter.field_name', "name"=>"filter[values]", "ng-model"=>"filter.values", "id"=>"filter_{{filter.id}}"}
                   %a.remove{"ng-click"=>"audience.removeFilter(filter)"} &times;
               .members{"ng-show"=>"audience.id"}

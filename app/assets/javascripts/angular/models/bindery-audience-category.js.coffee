@@ -1,6 +1,6 @@
 angular.module('curateDeps').factory('BinderyAudienceCategory', ['$resource', 'BinderyAudience', ($resource, BinderyAudience) ->
 
-  BinderyAudienceCategory = $resource("/:identityName/:poolName/audience_categories/:categoryId.json", {identityName:'@identity_name', poolName:'@pool_name', categoryId:'@id'}, {
+  BinderyAudienceCategory = $resource("/:identityName/:poolName/audience_categories/:categoryId", {identityName:'@identity_name', poolName:'@pool_name', categoryId:'@id'}, {
     update: { method: 'PUT' }
   })
 
