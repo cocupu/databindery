@@ -3,6 +3,7 @@ class Pool < ActiveRecord::Base
   include Bindery::Identifiable
   
   before_create :generate_uuid
+  before_destroy :delete_bucket
   belongs_to :owner, class_name: "Identity"
   validates :owner, presence: true
   has_many :exhibits, :dependent => :destroy
@@ -136,6 +137,12 @@ class Pool < ActiveRecord::Base
     default_file_store.ensure_bucket_initialized(default_bucket_id)
   end
 
+  def delete_bucket
+    if bucket.exists?
+      bucket.clear!
+      bucket.delete
+    end
+  end
   # Serialize the pool and it's access_controls to a basic datastruture.
   def as_json(opts = nil)
     h = super

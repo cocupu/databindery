@@ -63,7 +63,7 @@
             async: false
           })
           file.url = "<%=identity_pool_file_entities_path(@pool.owner, @pool)%>/"+ file.uuid
-          file.node_url = "<%=identity_pool_nodes_path(@pool.owner, @pool)%>/"+ file.uuid
+          file.node_url = "<%=identity_pool_path(@pool.owner, @pool)%>/results/"+ file.uuid
           angular.element('[data-ng-controller=DemoFileUploadController]').scope().$apply()
         }
       };

@@ -1,0 +1,25 @@
+.row
+  .span3
+    %ul.nav.nav-pills.nav-stacked
+      -#%li{"ng-repeat"=>"navOption in navigationOptions", "ng-class"=>"{active: navOption == currentNav}"}
+
+
+  .span10
+
+    = form_for Pool.new, url:identity_pools_path do |f|
+      -# Pool Info
+      .panel.panel-default.pool-info
+        .panel-heading
+          %h3.panel-title Pool Info
+        .panel-body
+          %button.btn.btn-primary.pull-right{type:"submit"} Create this Pool
+          .form-group
+            %label Name
+            = f.text_field :name
+          .form-group
+            %label Short Name
+            = f.text_field :short_name
+            %span.help-block No spaces or special characters
+          .form-group
+            %label Description
+            = f.text_area :description, size:30, class:"form-control"

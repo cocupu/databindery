@@ -38,7 +38,7 @@
     %h3
       Your Pools
       %span.pool-count="(#{@pools.to_a.size})" #rails 6865 workaround
-      =link_to "New Pool", identity_pools_path(controller.current_identity.short_name, :anchor=>'new'), :class=>'btn btn-new-pool'
+      =link_to "New Pool", new_identity_pool_path(controller.current_identity.short_name), :class=>'btn btn-new-pool'
     %ul.pools
       -@pools.each do |pool|
         %li

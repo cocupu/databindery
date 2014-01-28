@@ -35,8 +35,6 @@
             = link_to "Models", identity_pool_models_path(@identity.short_name, @pool)
           %li{:class => (if controller?("exhibits") then "active" end)}
             = link_to "Perspectives", identity_pool_exhibits_path(@identity.short_name, @pool)
-          %li{:class => (if controller?("exhibits") then "active" end)}
-            = link_to "Publish", identity_pool_exhibits_path(@identity.short_name, @pool)
           %li{:class => (if controller?("pools") then "active" end)}
             = link_to "Admin", edit_identity_pool_path(@identity.short_name, @pool)
         .btn-group
