@@ -15,19 +15,24 @@ class MappingTemplate < ActiveRecord::Base
     super(attrs)
   end
 
-  def model_mappings_attributes=(attrs)
-    attrs.each_value do |value|
-      model = Model.find_or_initialize_by(name: value[:name], pool_id:pool.id)
+  def model_mappings_attributes=(model_mappings_attributes)
+    # model_mappings_attributes is a hash whose keys are basically array indexes, so each_pair basically gives you []index, value]
+    model_mappings_attributes.each_pair do |index, value|
+      model_attributes = value.with_indifferent_access
+      model = Model.find(model_attributes[:model_id]) if model_attributes[:model_id]
+      model = Model.find_or_initialize_by(name: model_attributes[:name], pool_id:pool.id) unless (model && model.pool_id == pool.id)
       model.owner = owner
-      mapping = {} 
-      original_mapping = {}
-      model_mapping = {:field_mappings => value[:field_mappings_attributes].values, :name=>value[:name], :label=>value[:label]}
+      model.name = model_attributes[:name] # Updates name on pre-existing models if it has changed
+      model_mapping = {:field_mappings => model_attributes[:field_mappings_attributes].values, :name=>model_attributes[:name], :label=>model_attributes[:label]}
       model_mapping[:field_mappings].each do |map|
-        field_code = Model.field_name(map[:label])
-        unless field_code.blank? 
-          model.fields << {:code => field_code, :name =>map[:label]}.with_indifferent_access
-          model.label= field_code if value[:label] == map[:source]
-          map[:field] = field_code
+        map_wia = map.with_indifferent_access
+        unless map_wia[:label].nil? || map_wia[:label].empty?
+          field_code = Model.field_name(map_wia[:label])
+          unless field_code.blank?
+            model.fields << {:code => field_code, :name =>map_wia[:label]}.with_indifferent_access
+            model.label= field_code if model_attributes[:label] == map_wia[:source] || model_attributes[:label].to_i == map_wia[:source]
+            map[:field] = field_code
+          end
         end
       end
       begin
@@ -37,7 +42,7 @@ class MappingTemplate < ActiveRecord::Base
         raise e
       end
       model_mapping[:model_id] = model.id
-      model_mappings << model_mapping
+      model_mappings[index.to_i] = model_mapping
     end
   end
 

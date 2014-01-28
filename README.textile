@@ -64,6 +64,6 @@ h3. In production:
 
 h3. In development:
 
-<pre>$ script/reify_worker</pre>
-<pre>$ script/decompose_worker</pre>
+<pre>$ ./script/reify_worker</pre>
+<pre>$ ./script/decompose_worker</pre>
 

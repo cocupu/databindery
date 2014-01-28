@@ -50,6 +50,14 @@ class FieldsController < ApplicationController
     end
   end
 
+  def new
+    field_code = Model.field_name(params[:name])
+    field = params.permit(:name, :type).merge(code: field_code)
+    respond_to do |format|
+      format.json {render json: field}
+    end
+  end
+
   private
 
   def add_pool_to_fq(solr_parameters, user_parameters)

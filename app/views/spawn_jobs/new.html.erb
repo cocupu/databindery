@@ -1,0 +1,4 @@
+<div class="edit" ng-app="binderyCurate" ng-controller="SpawnJobEditorCtrl">
+  <ng-view></ng-view>
+  <%= link_to "Classic Spawning Config", params.merge(job_log_id: @job.log.id, classic:true), target:"_self" %>
+</div>

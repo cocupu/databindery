@@ -7,12 +7,24 @@ app.config( ['$routeProvider', '$locationProvider', '$httpProvider', ($routeProv
   $locationProvider.hashPrefix('!');
 
   $routeProvider.
+  when('/:identityName/new', {
+    controller: 'PoolEditorCtrl'
+    templateUrl: '/assets/angular/partials/pool-new.html'
+  }).
   when('/:identityName/:poolName/edit', {
     controller: 'PoolEditorCtrl'
     templateUrl: '/assets/angular/partials/pool-editor.html'
   }).
   when('/:identityName/:poolName/search', {
     controller: 'GridWithHeadsupCtrl'
+  }).
+  when('/:identityName/:poolName/mapping_templates/:action', {
+    controller: 'MappingTemplateEditorCtrl'
+    templateUrl: '/assets/angular/partials/mapping-template-editor.html'
+  }).
+  when('/:identityName/:poolName/spawn_jobs/:action', {
+  controller: 'SpawnJobEditorCtrl'
+  templateUrl: '/assets/angular/partials/spawn-job-editor.html'
   }).
   otherwise({
     redirectTo: '/phones'

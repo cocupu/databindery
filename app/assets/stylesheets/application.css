@@ -19,6 +19,7 @@
  *= require pools
  *= require welcome
  *= require pool_searches
+ *= require spawn_jobs
  *= require grid_edit
  *= require headsup
  *= depend_on _common

@@ -38,7 +38,7 @@ describe MappingTemplatesController do
            {"label"=>"Title", "source"=>"C", 'field' => 'title'},
            {"label"=>"", "source"=>"D"}]
 
-        response.should redirect_to( new_identity_pool_spawn_job_path(@identity, @pool, worksheet_id:@worksheet.id, mapping_template_id:assigns[:mapping_template].id, skip_decompose:true) )        
+        response.should redirect_to( new_identity_pool_spawn_job_path(@identity, @pool, classic:true, worksheet_id:@worksheet.id, mapping_template_id:assigns[:mapping_template].id, skip_decompose:true) )
       end
       it "should raise errors if no model name was supplied" do
         Worksheet.any_instance.should_receive(:reify).never
@@ -56,10 +56,31 @@ describe MappingTemplatesController do
       end
       it "should raise not_found errors when identity does not belong to the logged in user" do
         Worksheet.any_instance.should_receive(:reify).never
-
         post :create, :worksheet_id=>@worksheet.id, :identity_id=>FactoryGirl.create(:identity).short_name, :mapping_template=>{"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"", :label=>'C', :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>"D"}}}}}, :pool_id=>@pool
         response.should be_not_found
       end
+      it "should support simplified model and field mappings from json" do
+        params = {:identity_id=>@identity.short_name, :pool_id=>@pool, :worksheet_id=>nil,
+                  mapping_template: {
+                    "row_start"=>2,
+                    "model_mappings"=>[{
+                        "name"=>"KTGR Archive Collection List Sample.xls Row",
+                        "label" => 2,
+                        "field_mappings"=>[{"source"=>0, "label"=>"Location"}, {"source"=>1, "label"=>"Submitted By"}, {"source"=>2, "label"=>"Collection Name"}]
+
+                    }]
+                  }
+        }
+        post :create, params
+        generated_template = assigns[:mapping_template].model_mappings[0]
+        generated_template[:field_mappings].should ==
+            [{"source"=>"0", "label"=>"Location", "field"=>"location"},
+             {"source"=>"1", "label"=>"Submitted By", "field"=>"submitted_by"},
+             {"source"=>"2", "label"=>"Collection Name", "field"=>"collection_name"}]
+        model = Model.find(assigns[:mapping_template].model_mappings.first[:model_id])
+        model.label.should == "collection_name"
+      end
+
     end
   end
 

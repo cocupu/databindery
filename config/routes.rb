@@ -54,7 +54,7 @@ Bindery::Application.routes.draw do
     get ':pool_id/search' => 'pool_searches#index', :as => 'pool_search'
 
     resources :pools, :path=>'' do
-      resources :fields, only:[:index,:show]
+      resources :fields, only:[:index,:show,:new]
       resources :exhibits, :except=>[:show]
       resources :audience_categories do
         resources :audiences

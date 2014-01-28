@@ -20,7 +20,10 @@ class PoolsController < ApplicationController
       format.json { render :json=>@pool }
     end
   end
-  
+
+  def new
+  end
+
   def edit
     authorize! :edit, @pool
   end
@@ -36,6 +39,7 @@ class PoolsController < ApplicationController
     @pool.save!
     respond_to do |format|
       format.json { render :json=>@pool}
+      format.html {redirect_to identity_pool_path(identity_id:@identity.short_name, id:@pool.short_name) }
     end
   end
 

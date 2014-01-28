@@ -16,7 +16,12 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:log)
       vals = {}
       model_tmpl[:field_mappings].each do |map|
         next unless map[:field]
-        vals[map[:field]] = row.values[map[:source].ord - 65]
+        if letter?(map[:source])
+          field_index = map[:source].ord - 65
+        else
+          field_index = map[:source]
+        end
+        vals[map[:field]] = row.values[field_index]
       end
       n = Node.new(:data=>vals)
       n.spawned_from_datum = row
@@ -24,6 +29,10 @@ class ReifyEachSpreadsheetRowJob < Struct.new(:log)
       n.pool = pool 
       n.save!
     end
+  end
+
+  def letter?(character)
+    character =~ /[A-Za-z]/
   end
 
   def success

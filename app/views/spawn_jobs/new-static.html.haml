@@ -13,6 +13,7 @@
   %h3 Spreadsheet Preview
   =render :partial=>'mapping_templates/spreadsheet_preview'
   =render file:"mapping_templates/show"
+  = render partial:"form"
 - else
   - content_for :page_name do
     Specify a Mapping Template for the Spawn Job
@@ -27,7 +28,7 @@
     - else 
       %h3.alert.alert-error 
         - if params[:job_log_id] 
-          Bindery is still decomposing your spreadsheet.  
+          = "Bindery is still decomposing your spreadsheet.  It is #{@job.log.message}% done."
         - else
           Bindery is decomposing your spreadsheet.  
       = link_to "Click this link to see if it's done.", params.merge(job_log_id: @job.log.id)
@@ -41,7 +42,7 @@
     %ul
       - @pool.mapping_templates.each do |mapping_template|
         %li
-          =link_to "Created: #{mapping_template.created_at.to_s} Model: #{mapping_template.model_mappings.first[:model_id]}",  new_identity_pool_spawn_job_path(@identity, @pool, worksheet_id:@worksheet.id, mapping_template_id:mapping_template.id, skip_decompose:true)
+          =link_to "Created: #{mapping_template.created_at.to_s} Model: #{mapping_template.model_mappings.first[:model_id]}",  new_identity_pool_spawn_job_path(@identity, @pool, worksheet_id:@worksheet.id, classic:true, mapping_template_id:mapping_template.id, skip_decompose:true)
     = link_to "Create a new Mapping Template", new_identity_pool_mapping_template_path(@identity, @pool, mapping_template:{worksheet_id: @worksheet.id})
 
 

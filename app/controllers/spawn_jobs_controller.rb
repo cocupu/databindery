@@ -41,6 +41,9 @@ class SpawnJobsController < ApplicationController
       raise ArgumentError, "You must provide either worksheet_id or node_id parameter in order to create a new MappingTemplate."
     end
     @model = Model.find( @mapping_template.model_mappings.first[:model_id] ) unless @mapping_template.nil? || @mapping_template.model_mappings.empty?
+    if params[:classic]
+      render file: "spawn_jobs/new-static"
+    end
   end
 
   def create

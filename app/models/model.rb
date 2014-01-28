@@ -78,7 +78,12 @@ class Model < ActiveRecord::Base
 
   validates :name, :presence=>true
   #TODO add a fk on node.model_id
-  has_many :nodes, :dependent => :destroy
+  has_many :nodes, :dependent => :destroy do
+    def head
+      model_pids = map {|n| n.persistent_id}.uniq
+      return model_pids.map {|pid| Node.latest_version(pid)}
+    end
+  end
 
   belongs_to :pool
   validates :pool, presence: true, :unless=>:code
@@ -142,7 +147,11 @@ class Model < ActiveRecord::Base
   end
 
   def self.field_name(label)
-    label.downcase.gsub(/\s+/, '_')
+    if label.nil? || label.empty?
+      UUID.new.generate
+    else
+      label.downcase.gsub(/\s+/, '_').gsub(/\W+/, '')
+    end
   end
 
   def inbound_associations

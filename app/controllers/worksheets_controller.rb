@@ -1,5 +1,6 @@
 class WorksheetsController < ApplicationController
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
+  load_resource
 
   # Note: spreadsheet_id should be the Node id, *not the Node persistent_id*, because worksheets are attached to specific versions of nodes.
   def index
@@ -10,5 +11,9 @@ class WorksheetsController < ApplicationController
       redirect_to new_identity_pool_mapping_template_path(@identity.short_name, @pool, :mapping_template=>{:worksheet_id=>@worksheets.first.id})
       return
     end
+  end
+
+  def show
+    render json: @worksheet.as_json(params.permit(:start, :rows))
   end
 end

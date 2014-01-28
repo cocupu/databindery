@@ -55,6 +55,24 @@ describe MappingTemplate do
       @template.model_mappings[0][:name].should == 'Talk'
       @template.model_mappings[0][:label].should == 'C'
     end
+    it "should parse model mappings and field mappings with indifferent access -- most importantly, setting the label on the model" do
+      @template.attributes = {"row_start"=>"2", :model_mappings_attributes=>{'0'=>{"name"=>"Joke", "label"=>2, :field_mappings_attributes=>{'0'=>{"source"=>0, "label"=>"Location"}, '1'=>{"source"=>1, "label"=>"Submitted By"},'2'=>{"source"=>2, "label"=>"Collection Name"}}}}}
+      model = Model.last
+      model.name.should == 'Joke'
+      model.label.should == 'collection_name'
+    end
+    it "should match model label to fields even when label is in a string and field source value is an integer" do
+      @template.attributes = {"row_start"=>"2", :model_mappings_attributes=>{'0'=>{"name"=>"Joke", "label"=>"1", :field_mappings_attributes=>{'0'=>{"source"=>0, "label"=>"Location"}, '1'=>{"source"=>1, "label"=>"Submitted By"},'2'=>{"source"=>2, "label"=>"Collection Name"}}}}}
+      model = Model.last
+      model.label.should == 'submitted_by'
+    end
+    it "should update, not duplicate, model mappings on consecutive calls" do
+      @template.model_mappings.count.should == 1
+      original_model_id = @template.model_mappings.first[:model_id]
+      @template.attributes = {"row_start"=>"2", :model_mappings_attributes=>{'0'=>{"name"=>"Joke", "label"=>2, model_id: original_model_id, :field_mappings_attributes=>{'0'=>{"source"=>0, "label"=>"Location"}, '1'=>{"source"=>1, "label"=>"Submitted By"},'2'=>{"source"=>2, "label"=>"Collection Name"}}}}}
+      @template.model_mappings.count.should == 1
+      @template.model_mappings.first[:model_id].should == original_model_id
+    end
   end
 
   describe "file_type" do
