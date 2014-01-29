@@ -32,6 +32,8 @@ RSpec.configure do |config|
     LoginCredential.destroy_all
     Bindery.clear_index 
   end
+
+  Resque::Plugins::Status::Hash.expire_in = (60 * 3) # 1 hour
 end
 
 

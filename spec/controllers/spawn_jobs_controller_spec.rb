@@ -12,7 +12,7 @@ describe SpawnJobsController do
     describe "when not logged in" do
       it "should not create" do
         pool = FactoryGirl.create(:pool)
-        Worksheet.any_instance.should_receive(:reify).never
+        SpawnJob.should_receive(:new).never
         post :create, :worksheet_id=>@worksheet.id, :identity_id=>'bob', :mapping_template_id=>@mapping_template.id, :pool_id=>pool
         response.should redirect_to new_user_session_path
         flash[:alert].should == "You need to sign in or sign up before continuing."
@@ -24,17 +24,25 @@ describe SpawnJobsController do
         @pool = FactoryGirl.create(:pool, owner: @identity)        
         sign_in @identity.login_credential
         @mapping_template = FactoryGirl.create(:mapping_template, {"row_start"=>"2", :model_mappings_attributes=>{'0'=>{:name=>"Talk", :field_mappings_attributes=>{'0'=>{:label=>"File Name", :source=>"A"}, '1'=>{:label=>"Title", :source=>"C"},'2'=>{:label=>"", :source=>""}}}}})
+        @file  =File.new(Rails.root + 'spec/fixtures/KTGR Audio Collection Sample.xlsx')
+        @node.stub(:s3_obj).and_return(@file)
+        @node.file_name = 'KTGR Audio Collection Sample.xlsx'
+        @node.mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        Bindery::Spreadsheet.stub(:find_by_identifier).and_return(@node)
       end
       it "should create" do
-        Worksheet.any_instance.should_receive(:reify).with(@mapping_template, @pool)
-        post :create, :worksheet_id=>@worksheet.id, :identity_id=>@identity.short_name, :mapping_template_id=>@mapping_template.id, :pool_id=>@pool        
+        Bindery::ReifyRowJob.stub(:create).and_return("jobId")
+        post :create, :source_node_id=>@node.id, :identity_id=>@identity.short_name, :mapping_template_id=>@mapping_template.id, :pool_id=>@pool
         assigns[:mapping_template].should == @mapping_template
-        flash[:notice].should == "Spawning #{@worksheet.rows.count} entities from #{@node.title}. Refresh this page to see them appear in your search results as they spawn."        
+        assigns[:spawn_job].pool.should == @pool
+        assigns[:spawn_job].mapping_template.should == @mapping_template
+        assigns[:spawn_job].node.should == @node
+        assigns[:spawn_job].reification_job_ids.count.should == 18
+        flash[:notice].should == "Spawning 18 entities from #{@node.title}. Refresh this page to see them appear in your search results as they spawn."
         response.should redirect_to(identity_pool_search_path(@identity, @pool))
       end
       it "should raise not_found errors when identity does not belong to the logged in user" do
-        Worksheet.any_instance.should_receive(:reify).never
-
+        SpawnJob.should_receive(:new).never
         post :create, :worksheet_id=>@worksheet.id, :identity_id=>FactoryGirl.create(:identity).short_name, :mapping_template_id=>@mapping_template.id, :pool_id=>@pool
         response.should be_not_found
       end

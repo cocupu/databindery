@@ -46,8 +46,8 @@
                   %option{value:"date"} Date
 
     .span7
-      -#%button.btn.btn-primary.pull-right{type:"submit", "ng-show"=>"mappingTemplate.id", "ng-click"=>"spawn(mappingTemplate, spreadsheet)"} Spawn using this Config
-      %a.btn.btn-primary.pull-right{"target"=>"_self", "ng-show"=>"mappingTemplate.id", "ng-href"=>"{{context.poolUrl}}/spawn_jobs/new?source_node_id={{spreadsheet.node_version_id}}&classic=true&mapping_template_id={{mappingTemplate.id}}&skip_decompose=true"} Spawn using this Config
+      %button.btn.btn-primary.pull-right{type:"submit", "ng-show"=>"mappingTemplate.id", "ng-click"=>"spawn(mappingTemplate, spreadsheet)"} Spawn using this Config
+      -#%a.btn.btn-primary.pull-right{"target"=>"_self", "ng-show"=>"mappingTemplate.id", "ng-href"=>"{{context.poolUrl}}/spawn_jobs/new?source_node_id={{spreadsheet.node_version_id}}&classic=true&mapping_template_id={{mappingTemplate.id}}&skip_decompose=true"} Spawn using this Config
       %h3 Preview
       %ul
         %li Each row will be spawned as a {{mappingTemplate.model_mappings[0].name}}.
@@ -59,4 +59,3 @@
           %span{"ng-repeat"=>"value in row"}
             %dt {{mappingTemplate.model_mappings[0].field_mappings[$index].label}}
             %dd {{value}} &nbsp;
-{{mappingTemplate}}

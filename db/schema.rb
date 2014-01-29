@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131127001337) do
+ActiveRecord::Schema.define(version: 20140128210001) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -240,6 +240,19 @@ ActiveRecord::Schema.define(version: 20131127001337) do
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", using: :btree
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
+
+  create_table "spawn_jobs", force: true do |t|
+    t.text     "reification_job_ids"
+    t.integer  "mapping_template_id"
+    t.integer  "node_id"
+    t.integer  "pool_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "spawn_jobs", ["mapping_template_id"], name: "index_spawn_jobs_on_mapping_template_id", using: :btree
+  add_index "spawn_jobs", ["node_id"], name: "index_spawn_jobs_on_node_id", using: :btree
+  add_index "spawn_jobs", ["pool_id"], name: "index_spawn_jobs_on_pool_id", using: :btree
 
   create_table "spreadsheet_rows", force: true do |t|
     t.integer  "row_number"

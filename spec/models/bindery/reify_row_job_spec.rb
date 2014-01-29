@@ -1,0 +1,24 @@
+require 'spec_helper'
+
+describe Bindery::ReifyRowJob do
+  before do
+    ## database should be clean
+    @starting_node_count = Node.count
+    @pool = FactoryGirl.create :pool
+    @model = FactoryGirl.create(:model, fields: [{code: 'location', name: 'Location'}.with_indifferent_access, {code: 'title_en', name: 'Title'}.with_indifferent_access, {code: 'creator', name: 'Creator'}.with_indifferent_access])
+    @template = MappingTemplate.new(owner: FactoryGirl.create(:identity))
+    @template.model_mappings = [{:name=>"Talk", model_id: @model.id, :field_mappings=>[{:field=>"title", :source=>"0"},{:field=>"location", :source=>"1"},{:field=>"creator", :source=>"2"}]}]
+    @template.save!
+  end
+  it "should process" do
+    uuid ||= Resque::Plugins::Status::Hash.generate_uuid
+    job = Bindery::ReifyRowJob.new(uuid, {"pool"=>@pool.id, "source_node"=>202, "mapping_template"=>@template.id, "row_index"=>3, "row_content"=>['My Title', 'Paris, France', 'Ken Burns'] })
+    returned = job.perform
+    Node.count.should == @starting_node_count + 1
+    # created = Node.all.select {|n| n != @source_node}.first
+    created = Node.first
+    created.model.should == @model
+    created.data.should == {"title"=>"My Title", "location"=>"Paris, France", "creator"=>"Ken Burns"}
+    created.spawned_from_node_id.should == 202
+  end
+end

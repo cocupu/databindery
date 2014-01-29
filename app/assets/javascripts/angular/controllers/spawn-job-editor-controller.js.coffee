@@ -1,5 +1,5 @@
 # Editable Grid
-SpawnJobEditorCtrl = ($scope, $routeParams, context, BinderySpreadsheet, BinderyMappingTemplate) ->
+SpawnJobEditorCtrl = ($scope, $routeParams, $http, context, BinderySpreadsheet, BinderyMappingTemplate) ->
 
   # General Scope properties
   context.initialize($routeParams.identityName, $routeParams.poolName)
@@ -28,6 +28,14 @@ SpawnJobEditorCtrl = ($scope, $routeParams, context, BinderySpreadsheet, Bindery
       $scope.mappingTemplate = returnedTemplate
       console.log($scope.mappingTemplate)
     )
+  $scope.spawn = (mappingTemplate, spreadsheet) ->
+    data = {
+      source_node_id: spreadsheet.node_version_id
+      mapping_template_id: mappingTemplate.id
+    }
+    $http.post(context.poolUrl+'/spawn_jobs', data).success(
+      window.location.replace(context.poolUrl);
+    )
 
   $scope.headerRow = []
   $scope.sampleRows = []
@@ -44,5 +52,5 @@ SpawnJobEditorCtrl = ($scope, $routeParams, context, BinderySpreadsheet, Bindery
   }
 
 
-SpawnJobEditorCtrl.$inject = ['$scope', '$routeParams', 'contextService', 'BinderySpreadsheet', 'BinderyMappingTemplate']
+SpawnJobEditorCtrl.$inject = ['$scope', '$routeParams', '$http', 'contextService', 'BinderySpreadsheet', 'BinderyMappingTemplate']
 angular.module("curateDeps").controller('SpawnJobEditorCtrl', SpawnJobEditorCtrl)
