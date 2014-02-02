@@ -21,6 +21,7 @@ module FileEntity
     file_entity.pool = pool
     file_entity.extend FileEntity
     file_entity.file_entity_type = "S3"
+    file_entity.content_type
     if file_entity.storage_location_id.include?(file_entity.bucket)
       file_entity.storage_location_id = Bindery::Storage::S3.key_from_filepath(file_entity.storage_location_id,bucket:file_entity.bucket)
     end
@@ -68,6 +69,14 @@ module FileEntity
 
   def file_name
     data['file_name']
+  end
+
+  def content_type=(name)
+    data['content_type='] = name
+  end
+
+  def content_type
+    data['content_type'] ||= file_type.capitalize
   end
   
   def file_size=(name)

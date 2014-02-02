@@ -33,6 +33,7 @@ describe FileEntity do
       file_entity.storage_location_id.should == "myPid_20131205T134412CST"
       file_entity.bucket.should == @pool.persistent_id
       file_entity.file_name.should == "909-Last-Supper-Large.jpg"
+      file_entity.content_type.should == "Image"
       file_entity.file_size.should == "183237"
       puts file_entity.data
       file_entity.mime_type.should == "image/jpeg"
@@ -84,7 +85,12 @@ describe FileEntity do
   end
   
   describe "content type inspectors" do
-    subject {Node.new.extend(FileEntity)}
+    subject {Node.new(model:Model.file_entity).extend(FileEntity)}
+    it "should be included in solr doc" do
+      subject.stub(:mime_type).and_return("image/jpeg")
+      subject.content_type # this is usually called by #register
+      subject.to_solr["content_type_t"].should == "Image"
+    end
     describe "audio?" do
       it "should test for audio mimetypes" do
         subject.stub(:mime_type).and_return("image/jpeg")

@@ -117,7 +117,7 @@ class Model < ActiveRecord::Base
   end
 
   def self.file_entity
-    Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity", label:'file_name', fields: [{'code' => 'file_name', 'type' => 'textfield', 'name' => "Filename" }.with_indifferent_access] )
+    Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity", label:'file_name', fields: [{'code' => 'file_name', 'type' => 'textfield', 'name' => "Filename" }.with_indifferent_access, {'code' => 'content_type', 'type' => 'textfield', 'name' => "Content Type" }.with_indifferent_access] )
   end
   
   # @return [Boolean] current value of allow_file_bindings attribute
