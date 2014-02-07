@@ -27,6 +27,7 @@ gem 'amqp'
 gem "resque", "~> 1.25.1"
 # Need the github version of resque-status to avoid bug where mocha was declared as runtime dependency
 gem 'resque-status', github:'quirkey/resque-status', ref: '66f3f35f945859c80a56b4b573325a79b556f243'
+gem 'resque-pool'
 
 gem 'pg'
 
