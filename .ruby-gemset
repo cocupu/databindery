@@ -1,1 +1,2 @@
+# if changing the gemset name, install passenger and change /etc/apache2/init.d/passenger.conf
 cocupu
