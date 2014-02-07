@@ -7,9 +7,8 @@ gem 'json'
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
-  gem "bower-rails"
+  gem "bower-rails", "~> 0.7.0"
   gem 'sass-rails'
-  gem "bootstrap-sass"
   gem 'coffee-rails'
   gem 'uglifier', '>= 1.2.3'
   gem 'therubyracer', '~> 0.10.0'# required on linux (ver 0.11.0 wasn't building native extensions)

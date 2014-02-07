@@ -88,7 +88,7 @@ GEM
       rails (>= 3.1)
     bootstrap-sass (2.3.2.2)
       sass (~> 3.2)
-    bower-rails (0.5.0)
+    bower-rails (0.7.0)
     builder (3.1.4)
     cancan (1.6.8)
     capybara (2.0.1)
@@ -327,8 +327,7 @@ DEPENDENCIES
   aws-sdk
   blacklight
   bootstrap-kaminari-views
-  bootstrap-sass
-  bower-rails
+  bower-rails (~> 0.7.0)
   cancan
   capybara (>= 1.1.2)
   carrot

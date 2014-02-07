@@ -16,6 +16,8 @@ bower_components
 /log
 /tmp
 
+.ruby-gemset
+
 # Generate jetty, don't store in git
 jetty/
 
