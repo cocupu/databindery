@@ -1,7 +1,9 @@
 Bindery::Application.routes.draw do
 
+  # mount the resque admin interface
+  mount Resque::Server,:at => "/queues"
 
-  get "bookmarks/clear", :to => "bookmarks#clear", :as => "clear_bookmarks"
+   get "bookmarks/clear", :to => "bookmarks#clear", :as => "clear_bookmarks"
   resources :bookmarks
 
   devise_for :users, class_name: "LoginCredential", controllers: {registrations:  "users/registrations"}
