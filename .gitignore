@@ -25,7 +25,9 @@ jetty/
 public/system
 
 # Don't store generated public/assets
-public/assets
+# ... actually, store them! Local precomilation of assets!
+#public/assets
+public/dev-assets
 
 # Ignore vim swap files
 *.swp

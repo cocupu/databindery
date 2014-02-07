@@ -1,0 +1,71 @@
+<div class='spawning-editor' ng-hide='spreadsheet.rows'>
+  <h1>Spawning Configuration</h1>
+  <div class='panel panel-default loading'>
+    <div class='panel-body'>
+      <p>DataBindery is preparing your spreadsheet.  This should only take a few moments.</p>
+    </div>
+  </div>
+</div>
+<div class='spawning-editor' ng-show='spreadsheet.rows'>
+  <h1>Spawning Configuration</h1>
+  {{spreadsheet.title}} ({{spreadsheet.totalRows}} rows)
+  <div class='headerGrid' ng-grid='headerGridOptions'></div>
+  <div class='gridStyle preview' ng-grid='gridOptions'></div>
+  <div class='row' ng-show='spreadsheet.rows'>
+    <div class='span1'></div>
+    <div class='span6'>
+      <button class='btn btn-primary pull-right' ng-click='createMappingTemplate(mappingTemplate)' ng-hide='mappingTemplate.id' type='submit'>Create this Mapping Template</button>
+      <button class='btn btn-primary pull-right' ng-click='updateMappingTemplate(mappingTemplate)' ng-show='mappingTemplate.id' type='submit'>Save Changes to Mapping Template</button>
+      <h3>Model</h3>
+      <form>
+        <div class='entityName'>
+          <label>Each row should be spawned as a</label>
+          <input ng-model='mappingTemplate.model_mappings[0].name'>
+        </div>
+        <fieldset>
+          <legend>Fields & Labels</legend>
+          <table>
+            <table-head>
+              <th>Title</th>
+              <th>Label</th>
+              <th>Type</th>
+            </table-head>
+            <tr ng-repeat='field_mapping in mappingTemplate.model_mappings[0].field_mappings'>
+              <td>
+                <input ng-model='mappingTemplate.model_mappings[0].label' type='radio' value='{{$index}}'>
+              </td>
+              <td>
+                <input ng-model='field_mapping.label'>
+              </td>
+              <td>
+                <select class='operator' ng-model='field_mapping.type'>
+                  <option selected value='text'>Text</option>
+                  <option value='textarea'>Text Area</option>
+                  <option value='date'>Date</option>
+                </select>
+              </td>
+            </tr>
+          </table>
+        </fieldset>
+      </form>
+    </div>
+    <div class='span7'>
+      <button class='btn btn-primary pull-right' ng-click='spawn(mappingTemplate, spreadsheet)' ng-show='mappingTemplate.id' type='submit'>Spawn using this Config</button>
+      <h3>Preview</h3>
+      <ul>
+        <li>Each row will be spawned as a {{mappingTemplate.model_mappings[0].name}}.</li>
+        <li ng-show='mappingTemplate.model_mappings[0].label'>The title will come from the {{mappingTemplate.model_mappings[0].field_mappings[mappingTemplate.model_mappings[0].label].label}} column.</li>
+      </ul>
+      <div ng-repeat='row in sampleRows'>
+        <h4 ng-hide='mappingTemplate.model_mappings[0].label'>{{mappingTemplate.model_mappings[0].name + " " +$index}}</h4>
+        <h4 ng-show='mappingTemplate.model_mappings[0].label'>{{row[mappingTemplate.model_mappings[0].label]}}</h4>
+        <dl class='dl-horizontal dl-invert'>
+          <span ng-repeat='value in row'>
+            <dt>{{mappingTemplate.model_mappings[0].field_mappings[$index].label}}</dt>
+            <dd>{{value}} &nbsp;</dd>
+          </span>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
