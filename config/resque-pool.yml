@@ -1,2 +1,2 @@
 # Add the names of the queues inside the quotes, the number of workers after the :
-"update,audit,characterize": 5
+"reify_rows,spawn_from_file": 5
