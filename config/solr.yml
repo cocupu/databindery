@@ -4,6 +4,9 @@
 #
 # If you want to use a port other than 8983, set TEST_JETTY_PORT environment variable
 
+production:
+  url: http://127.0.0.1:8080/solr_cocupu/
+
 development:
   url: http://127.0.0.1:8983/solr/development
 test: &test
