@@ -81,49 +81,13 @@ describe SpawnJobsController do
       get :new, :mapping_template_id=>@template.id, :worksheet_id=>@one.id, :pool_id=>@pool, identity_id: @identity.short_name
       response.should be_success
       assigns[:pool].should == @pool
-      assigns[:worksheet].should == @one
       assigns[:mapping_template].should == @template
     end
     it "should be success when template not specified" do
       get :new, :worksheet_id=>@one.id, :pool_id=>@pool, identity_id: @identity.short_name
       response.should be_success
       assigns[:pool].should == @pool
-      assigns[:worksheet].should == @one
       assigns[:mapping_template].should == nil
-    end
-    describe "when worksheet_id is not provided but source_node_id is provided" do
-      it "if skip_decompose is set, should just grab worksheet from node" do
-        @one.spreadsheet = @node
-        @one.save
-        @job = DecomposeSpreadsheetJob.new(@node.id, JobLogItem.new)
-        DecomposeSpreadsheetJob.stub(:new).and_return(@job)
-        @job.should_receive(:enqueue).never
-        get :new, :skip_decompose=>"true", :source_node_id=>@node.id, :pool_id=>@pool, identity_id: @identity.short_name
-        response.should be_success
-        assigns[:worksheet].should == @one
-        assigns[:job].should == @job
-      end
-      it "should trigger decomposition of the nodes current worksheet" do
-        # setup for decomposing spreadsheet (stubs s3 connection).  See decompose_spreadsheet_job_spec.rb for more of this
-          @file  =File.new(Rails.root + 'spec/fixtures/dechen_rangdrol_archives_database.xls') 
-          @node = Bindery::Spreadsheet.create(pool: FactoryGirl.create(:pool), model: Model.file_entity)
-          # S3Object.read behaves like File.read, so returning a File as stub for the S3 Object
-          @node.stub(:s3_obj).and_return(@file)
-          @node.file_name = 'dechen_rangdrol_archives_database.xls'
-          @node.mime_type = 'application/vnd.ms-excel'
-          Bindery::Spreadsheet.stub(:find_by_persistent_id).with(@node.persistent_id).and_return(@node)
-        # /setup for decomposing spreadsheet
-        @node.worksheets.should be_empty
-        get :new, :source_node_id=>@node.persistent_id, :pool_id=>@pool, identity_id: @identity.short_name
-        response.should be_success
-        assigns[:pool].should == @pool
-        assigns[:worksheet].should == @node.worksheets.first
-        
-        # force the job to run & check its output
-        assigns[:job].perform
-        processed_sheet = assigns[:source_node].worksheets.first
-        processed_sheet.rows.count.should == 434
-      end
     end
   end
 

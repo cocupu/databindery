@@ -11,32 +11,7 @@ class SpawnJobsController < ApplicationController
   # persistent_id for that Node or the database key of a specific version of the Node.  
   def new
     authorize! :create, Node
-    if params[:worksheet_id] 
-      @worksheet = Worksheet.find(params[:worksheet_id])
-    elsif @source_node
-      @worksheet = @source_node.worksheets.first
-      if params[:job_log_id]
-        @job = DecomposeSpreadsheetJob.new(params[:source_node_id], JobLogItem.find(params[:job_log_id]))
-      else
-        # If there is already a decomposed worksheet, no @job is queued.
-        # You can force decomposition with params[:force_decompose] == "true"
-        if @worksheet.nil? || params[:force_decompose]
-          @job = DecomposeSpreadsheetJob.new(params[:source_node_id], JobLogItem.new)
-          @job.enqueue #start the logger
-          # @job.perform
-        else
-          # Create a stub successful job for rendering in the view
-          @job = DecomposeSpreadsheetJob.new(params[:source_node_id], JobLogItem.new)
-          @job.success
-        end
-      end
-    else 
-      raise ArgumentError, "You must provide either worksheet_id or node_id parameter in order to create a new MappingTemplate."
-    end
-    @model = Model.find( @mapping_template.model_mappings.first[:model_id] ) unless @mapping_template.nil? || @mapping_template.model_mappings.empty?
-    if params[:classic]
-      render file: "spawn_jobs/new-static"
-    end
+
   end
 
   def create
@@ -54,6 +29,11 @@ class SpawnJobsController < ApplicationController
   end
 
   private
+
+  def lookup_node_with_binding
+
+  end
+
   def load_source_node
     if params[:source_node_id]
       if params[:source_node_id].kind_of?(Fixnum) || !params[:source_node_id].include?("-")

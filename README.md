@@ -1,14 +1,10 @@
-h1. CoCuPu
+# CoCuPu
 
 UGH: https://github.com/rails/rails/pull/2948#issuecomment-5832017
 
-h2. TL;DR.
+## TL;DR.
 
-<pre>
-  rabbitmq-server start
-</pre>
-
-<pre>
+```
   rake db:create
   rake db:migrate
   rails g bindery:jetty
@@ -16,19 +12,23 @@ h2. TL;DR.
   rake spec
   rake bower:install
   unicorn_rails
-</pre>
+```
 
-h2. Dependencies
+```
+  rake resque:work QUEUE=*
+```
+
+## Dependencies
 
 * postgres
-* rabbitmq
+* redis & resque
 * jetty
 * node & bower (for managing javascript dependencies)
 
 Only necessary for production system:
 * mpg321 and vorbis-tools
 
-h3. Installing Jetty
+### Installing Jetty
 
 To install jetty run the generator:
 <pre>rails g bindery:jetty</pre>
@@ -36,7 +36,7 @@ $ cp contrib/analysis-extras/lib/icu4j-4_8_1_1.jar lib/
 $ cp contrib/analysis-extras/lucene-libs/*.jar lib/
 $ cp contrib/velocity/lib/*.jar lib/
 
-h2. Linux-specific notes for Prod server
+## Linux-specific notes for Prod server
 
 # Install a javascript runtime (already installed on the Mac)
   See https://github.com/sstephenson/execjs
@@ -44,26 +44,28 @@ h2. Linux-specific notes for Prod server
 <pre>gem install therubyracer</pre>
 
 # Install mp3 to ogg transcoding stuff:
-  sudo apt-get install mpg321 vorbis-tools
 
-h2. Running Server
+`sudo apt-get install mpg321 vorbis-tools`
 
-<pre>
-  unicorn_rails
-</pre>
+## Running Server
 
-# Copy config/client_secrets.json.example to config/client_secrets.json and put in appropriate values.  Get the values from here: https://code.google.com/apis/console/b/3/?pli=1#project:840123515072:access
+`unicorn_rails`
+
+Copy config/client_secrets.json.example to config/client_secrets.json and put in appropriate values.  Get the values from here: https://code.google.com/apis/console/b/3/?pli=1#project:840123515072:access
 
 
-h2. Workers
+## Workers
 
-h3. In production:
+### In production:
 
-<pre>export RAILS_ENV=production; ./script/reify_worker</pre>
-<pre>export RAILS_ENV=production; ./script/decompose_worker</pre>
+We use "resque-pool":https://github.com/nevans/resque-pool in production.  See that README for more info.
 
-h3. In development:
+`resque-pool --daemon --environment production`
 
-<pre>$ ./script/reify_worker</pre>
-<pre>$ ./script/decompose_worker</pre>
+### In development:
+
+```
+  rake resque:work QUEUE=*
+```
+
 
