@@ -30,22 +30,25 @@ Only necessary for production system:
 
 ### Installing Jetty
 
-To install jetty run the generator:
-<pre>rails g bindery:jetty</pre>
+To install jetty run the generator:  
+`rails g bindery:jetty`
+
+Might be necessary:
+```
 $ cp contrib/analysis-extras/lib/icu4j-4_8_1_1.jar lib/
 $ cp contrib/analysis-extras/lucene-libs/*.jar lib/
 $ cp contrib/velocity/lib/*.jar lib/
+```
 
-## Linux-specific notes for Prod server
+### Linux-specific notes for Prod server
 
-# Install a javascript runtime (already installed on the Mac)
+1. Install a javascript runtime (already installed on the Mac)
   See https://github.com/sstephenson/execjs
-  I tried this one:
-<pre>gem install therubyracer</pre>
+  I tried this one:  
+  `gem install therubyracer`
 
-# Install mp3 to ogg transcoding stuff:
-
-`sudo apt-get install mpg321 vorbis-tools`
+1. Install mp3 to ogg transcoding stuff:  
+  `sudo apt-get install mpg321 vorbis-tools`
 
 ## Running Server
 
