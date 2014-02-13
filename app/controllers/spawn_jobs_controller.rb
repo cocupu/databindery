@@ -11,7 +11,8 @@ class SpawnJobsController < ApplicationController
   # persistent_id for that Node or the database key of a specific version of the Node.  
   def new
     authorize! :create, Node
-
+    render file: "app/assets/javascripts/angular/pages/spawn_job_editor.html"
+    #render file: "vendor/assets/bindery-ui/spawn-job-editor.html", layout: false
   end
 
   def create
