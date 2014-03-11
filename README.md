@@ -5,12 +5,14 @@ UGH: https://github.com/rails/rails/pull/2948#issuecomment-5832017
 ## TL;DR.
 
 ```
+  bundle install
   rake db:create
   rake db:migrate
+  rake rails:update:bin   # see http://edgeguides.rubyonrails.org/4_0_release_notes.html#railties-notable-changes
   rails g bindery:jetty
   rake jetty:start
   rake spec
-  rake bower:install
+  rake bower:install      # installs javascript dependencies using bower & puts them into asset pipeline
   unicorn_rails
 ```
 
@@ -54,7 +56,8 @@ $ cp contrib/velocity/lib/*.jar lib/
 
 `unicorn_rails`
 
-Copy config/client_secrets.json.example to config/client_secrets.json and put in appropriate values.  Get the values from here: https://code.google.com/apis/console/b/3/?pli=1#project:840123515072:access
+Copy config/client_secrets.json.example to config/client_secrets.json and put in appropriate values.  
+For now, just enter this as client_id: "840123515072-1ke126hupk0tml04ir9elj9a90hg2cfv.apps.googleusercontent.com"
 
 
 ## Workers
