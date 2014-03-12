@@ -17,7 +17,7 @@ UGH: https://github.com/rails/rails/pull/2948#issuecomment-5832017
 ```
 
 ```
-  rake resque:work QUEUE=*
+  rake resque:work QUEUE=reify_rows,reify_hashes,statused
 ```
 
 ## Dependencies

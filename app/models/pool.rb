@@ -72,9 +72,19 @@ class Pool < ActiveRecord::Base
   end
   
   def generated_default_perspective
-    all_field_codes = all_fields.map {|f| f["code"]}.uniq
-    @generated_default_perspective ||= Exhibit.new(pool_id:self.id, index_fields: all_field_codes, facets: all_field_codes, title: "All Content, All fields")
+    unless @generated_default_perspective
+      all_field_codes = all_fields.map {|f| f["code"]}.uniq
+      if all_field_codes.count < 36
+        @generated_default_perspective = Exhibit.new(pool_id:self.id, index_fields: all_field_codes, facets: all_field_codes, title: "All Content, All fields")
+      else
+        limited_field_codes = all_field_codes[0..29]
+        @generated_default_perspective = Exhibit.new(pool_id:self.id, index_fields: limited_field_codes, facets: limited_field_codes, title: "All Content, First 30 fields")
+      end
+    end
+
+    return @generated_default_perspective
   end
+
 
   
   def short_name=(name)
