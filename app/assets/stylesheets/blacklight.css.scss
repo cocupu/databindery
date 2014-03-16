@@ -16,3 +16,15 @@
 @import "blacklight/modal";
 
 @import "improved-modal/bootstrap-modal";
+
+#facets {
+  li {
+    overflow: hidden;
+    a:hover {
+      background-color: white;
+    }
+  }
+  li:hover {
+    overflow: visible;
+  }
+}

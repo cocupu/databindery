@@ -14,6 +14,11 @@ class Pool < ActiveRecord::Base
       return pool_pids.map {|pid| Node.latest_version(pid)}
     end
   end
+  # A more efficient way to load complete head state of the pool
+  def nodes_head(args = {})
+    node_pids = ActiveRecord::Base.connection.execute("SELECT DISTINCT persistent_id FROM nodes WHERE pool_id = #{self.id}").values
+    return node_pids.map {|pid| Node.latest_version(pid)}
+  end
   has_many :models, :dependent => :destroy
   has_many :mapping_templates, :dependent => :destroy
   has_many :s3_connections, :dependent => :destroy

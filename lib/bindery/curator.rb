@@ -37,16 +37,19 @@ module Bindery
       elsif source_model_association[:references] != destination_model.id
         raise StandardError, "Source model already has an association called #{association_code}, but it references model #{source_model_association[:references]} when you are trying to use that association to point at model #{destination_model.id}."
       end
-
-      source_nodes = source_model.nodes.where("nodes.pool_id = ?", pool).head
+      source_nodes = source_model.nodes_head(pool: pool)
       source_field_values = source_nodes.map {|sn| sn.data[source_field_name]}.uniq
       source_field_values.reject! do |v|
         v.nil? || v.empty?
       end
+      # puts "Spawning from #{source_field_values.count} field values."
       source_field_values.each do |value_to_spawn|
+        # puts '###'+ value_to_spawn
         destination_node_data = {destination_field_name=>value_to_spawn}
         destination_node = find_or_create_node(pool:pool, model:destination_model, data:destination_node_data)
+        # puts "...Selecting nodes to process"
         source_nodes_to_process = source_nodes.select {|sn| sn.data[source_field_name] == value_to_spawn}
+        # puts "...Found #{source_nodes_to_process.count} nodes to process"
         source_nodes_to_process.each do |sn|
           sn.associations[association_code] = [destination_node.persistent_id]
           if opts[:delete_source_value] == true
@@ -71,7 +74,9 @@ module Bindery
             end
           end
           sn.save
+          # puts "...Processed #{sn.title}"
         end
+        # puts "...done with source nodes. saving destination node."
         destination_node.save
       end
       if opts[:delete_source_value] == true

@@ -84,6 +84,23 @@ class Model < ActiveRecord::Base
       return model_pids.map {|pid| Node.latest_version(pid)}
     end
   end
+  # A more efficient way to load complete head state of all nodes using this model.
+  # option to pass :pool argument to explicitly constrain to a specific pool
+  # @example model.nodes_head(pool:23)
+  def nodes_head(args = {})
+    if args.has_key?(:pool)
+      if args[:pool].instance_of?(Pool)
+        pool_id = args[:pool].id
+      else
+        pool_id = args[:pool]
+      end
+      sql_query = "SELECT DISTINCT persistent_id FROM nodes WHERE model_id = #{self.id} AND pool_id = #{pool_id}"
+    else
+      sql_query =  "SELECT DISTINCT persistent_id FROM nodes WHERE model_id = #{self.id}"
+    end
+    node_pids = ActiveRecord::Base.connection.execute(sql_query).values
+    return node_pids.map {|pid| Node.latest_version(pid)}
+  end
 
   belongs_to :pool
   validates :pool, presence: true, :unless=>:code
