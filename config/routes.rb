@@ -75,7 +75,7 @@ Bindery::Application.routes.draw do
           get 'spawn'
         end
       end
-      resources :models, :only=>[:create, :index] do
+      resources :models do
         resources :nodes, :only=>[] do
           collection do
             get 'search'

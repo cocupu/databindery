@@ -5,7 +5,8 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   before_filter :load_identity
-
+  after_filter :set_csrf_cookie_for_ng
+  
   rescue_from CanCan::AccessDenied do |exception|
     respond_to do |format|
       format.json do 
@@ -58,4 +59,16 @@ class ApplicationController < ActionController::Base
   def current_identity
     current_user.identities.first if current_user
   end
+  
+  private
+  
+  def set_csrf_cookie_for_ng
+    cookies['XSRF-TOKEN'] = form_authenticity_token #if protect_against_forgery?
+  end
+  
+  def verified_request?
+    super || form_authenticity_token == request.headers['X-XSRF-TOKEN']
+  end
+  
+  
 end
