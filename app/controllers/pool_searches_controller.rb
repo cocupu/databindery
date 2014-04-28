@@ -49,6 +49,16 @@ class PoolSearchesController < ApplicationController
     end
   end
 
+  # Provides a pool overview with models, perspectives and facets
+  def overview
+    authorize! :show, @pool
+    (@response, @document_list) = get_search_results(rows:0)
+    respond_to do |format|
+      format.json { render :json=>{id:@pool.id, models:@pool.models.as_json, perspectives:@pool.exhibits.as_json, facets:@response["facet_counts"]["facet_fields"], numFound:@response["response"]["numFound"] } }    
+    end
+  end
+  
+  
   protected
 
   # Given an Array of persistent_ids, loads the corresponding Nodes

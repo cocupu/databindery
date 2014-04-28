@@ -161,6 +161,7 @@ class Pool < ActiveRecord::Base
   # Serialize the pool and it's access_controls to a basic datastruture.
   def as_json(opts = nil)
     h = super
+    h['identity'] = owner.short_name
     h['access_controls'] = access_controls.map {|ac| {'identity' => ac.identity.short_name, 'access' => ac.access  }}
     h
   end

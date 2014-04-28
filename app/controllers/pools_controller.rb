@@ -9,7 +9,7 @@ class PoolsController < ApplicationController
     @pools = Pool.for_identity(current_identity).where(:owner_id => @identity)
     respond_to do |format|
       format.html {}
-      format.json { render :json=>@pools.map {|i| {short_name: i.short_name, url: identity_pool_path(i.owner, i)}} }
+      format.json { render :json=>@pools.map {|p| {short_name: p.short_name, name:p.name, description:p.description, identity:@identity.short_name, url: identity_pool_path(@identity, p)}} }
     end
   end
 

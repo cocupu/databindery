@@ -179,4 +179,51 @@ describe PoolSearchesController do
       end
     end
   end
+  
+  describe "overview" do
+    describe "when not logged on" do
+      it "should redirect to root" do
+        get :overview, pool_id: @my_pool, identity_id: @identity.short_name
+        response.should redirect_to root_path
+      end
+    end
+    describe "when logged on" do
+      before do
+        sign_in @identity.login_credential
+        @my_model = FactoryGirl.create(:model, pool: @identity.pools.first)
+        @other_pool = FactoryGirl.create(:pool, owner: @identity)
+        @my_model_different_pool = FactoryGirl.create(:model, pool: @other_pool)
+        @not_my_model = FactoryGirl.create(:model)
+      end
+      describe "requesting a pool I don't own" do
+        it "should redirect to root" do
+          get :overview, :pool_id=>@not_my_pool, identity_id: @identity.short_name
+          response.should be_not_found
+        end
+      end
+      describe "requesting a pool I own" do
+        it "should be successful" do
+          get :overview, :pool_id=>@my_pool, identity_id: @identity.short_name, :format=>:json
+          redirect_to( identity_pool_search_path(@identity.short_name, @my_pool.id) )
+        end
+      end
+      describe "requesting a pool I can edit" do
+        before do
+          @other_identity = FactoryGirl.create(:identity)
+          AccessControl.create!(:pool=>@my_pool, :identity=>@other_identity, :access=>'EDIT')
+        end
+        it "should be successful when rendering json" do
+          get :overview, :pool_id=>@my_pool, :format=>:json, identity_id: @identity.short_name
+          response.should  be_successful
+          json = JSON.parse(response.body)
+          json['id'].should == @my_pool.id
+          json['models'].should == JSON.parse(@my_pool.models.to_json)
+          json['perspectives'].should == @my_pool.exhibits.as_json
+          json['facets'].should == {"model_name"=>[], "description_facet"=>[]}
+          json["numFound"].should == 0
+        end
+      end
+    end
+  end
+  
 end

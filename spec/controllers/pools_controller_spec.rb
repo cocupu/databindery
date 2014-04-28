@@ -27,7 +27,7 @@ describe PoolsController do
       it "should return json" do
         get :index, identity_id: @identity.short_name, format: :json
         response.should be_successful
-        JSON.parse(response.body).should == [{"short_name"=>@my_pool.short_name, "url"=>"/#{@identity.short_name}/#{@my_pool.short_name}"}]
+        JSON.parse(response.body).should == [{"short_name"=>@my_pool.short_name, "name"=>@my_pool.name, "description"=>nil, "identity"=>@identity.short_name, "url"=>"/#{@identity.short_name}/#{@my_pool.short_name}"}]
       end
     end
   end
@@ -60,7 +60,7 @@ describe PoolsController do
           redirect_to( identity_pool_search_path(@identity.short_name, @my_pool.id) )
         end
       end
-      describe "requesting a pool I own" do
+      describe "requesting a pool I can edit" do
         before do
           @other_identity = FactoryGirl.create(:identity)
           AccessControl.create!(:pool=>@my_pool, :identity=>@other_identity, :access=>'EDIT')

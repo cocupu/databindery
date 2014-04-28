@@ -34,7 +34,7 @@ Bindery::Application.configure do
   config.assets.compress = false
 
   # For local precompiliation of assets.  See http://guides.rubyonrails.org/asset_pipeline.html#local-precompilation
-  config.assets.prefix = "/dev-assets"
+  # config.assets.prefix = "/dev-assets"
 
   # Expands the lines which load the assets
   config.assets.debug = true
