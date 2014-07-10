@@ -11,7 +11,7 @@ describe Audience do
   it "should render solr params based on filters" do
     subject.update_attributes filters_attributes:[{field_name:"subject", operator:"+", values:["foo","bar"]}, {filter_type:"RESTRICT", field_name:"field2", operator:"-", values:["baz"]}]
     solr_params, user_params = subject.apply_solr_params({}, {})
-    solr_params.should == {fq: ["-field2_t:\"baz\"", "subject_t:\"foo\" OR subject_t:\"bar\""]}
+    solr_params.should == {fq: ["-field2_s:\"baz\"", "subject_s:\"foo\" OR subject_s:\"bar\""]}
   end
   it "has many members who can belong to many audiences (has and belongs to many)" do
     @identity = FactoryGirl.create(:identity)

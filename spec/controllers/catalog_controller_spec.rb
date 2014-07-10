@@ -58,7 +58,7 @@ describe CatalogController do
         exhibit_with_filters.save!
         get :index, :exhibit_id=>exhibit_with_filters.id, :q=>'bazaar', :identity_id=>@identity.short_name
         #user_params = {:exhibit_id=>exhibit_with_filters.id, :q=>'bazaar', :identity_id=>@identity.short_name}
-        subject.solr_search_params[:fq].should include('subject_t:"test" OR subject_t:"barf"')
+        subject.solr_search_params[:fq].should include('subject_s:"test" OR subject_s:"barf"')
       end
     end
     describe "show" do

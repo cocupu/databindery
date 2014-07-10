@@ -169,13 +169,13 @@ class Node < ActiveRecord::Base
       doc["bindery__associations_facet"] ||= []
       find_association(f['code']).each do |instance|
         doc["bindery__associations_facet"] << instance.persistent_id
-        facet_name_for_association = Node.solr_name(f['code'], type: 'facet')  
+        facet_name_for_association = Node.solr_name(f['code'], type: 'facet', multiple:true)
         doc[facet_name_for_association] ||= []
         doc[facet_name_for_association] << instance.title
-        field_name_for_association = Node.solr_name(f['code'])
+        field_name_for_association = Node.solr_name(f['code'], multiple:true)
         doc[field_name_for_association] ||= []
         doc[field_name_for_association] << instance.title
-        instance.solr_attributes(f['code'] + '__').each do |k, v|
+        instance.solr_attributes(f['code'] + '__', multiple:true).each do |k, v|
           doc[k] ||= []
           doc[k] << v
         end
@@ -185,13 +185,16 @@ class Node < ActiveRecord::Base
   end
 
   # Produce the part of the solr document that is just the model attributes
-  def solr_attributes(prefix = "")
+  def solr_attributes(prefix = "", opts={})
     doc = {}
     return doc if data.nil?
     model.fields.each do |f|
       val = data[f['code']]
+      if opts[:multiple]
+        f['multiple'] = true
+      end
       if val
-        doc[Node.solr_name(f['code'], prefix: prefix)] = val
+        doc[Node.solr_name(f['code'], prefix: prefix, multiple:f['multiple'])] = val
         doc[Node.solr_name(f['code'], type: 'facet', prefix: prefix)] = val
       end
     end
@@ -280,7 +283,7 @@ class Node < ActiveRecord::Base
     prefix= args[:prefix] || ''
     suffix = case type
       when "text"
-        '_t'
+        args[:multiple] ? '_t' : '_s'
       when "facet"
         '_facet'
       else

@@ -7,7 +7,7 @@ describe Node do
                               fields: [{'code' => 'first_name'}, {'code' => 'last_name'}, {'code' => 'title'}],
                               label: 'last_name')
     subject.model = FactoryGirl.create(:model,
-                      fields: [{'code' => 'first_name'}, {'code' => 'last_name'}, {'code' => 'title'}],
+                      fields: [{'code' => 'first_name', 'multiple' => false}, {'code' => 'last_name'}, {'code' => 'title', 'multiple' => true}],
                       label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: @ref.id}])
   end
 
@@ -275,7 +275,7 @@ describe Node do
 
   describe "solr_name" do
     it "should remove whitespaces" do
-      Node.solr_name("one two\t\tthree").should == "one_two_three_t"
+      Node.solr_name("one two\t\tthree").should == "one_two_three_s"
     end
     it "should use the type" do
       Node.solr_name("one two", :type=>'facet').should == "one_two_facet"
@@ -298,9 +298,9 @@ describe Node do
       subject.data = {'f1'=>'good', 'first_name' => 'Heathcliff', 'last_name' => 'Huxtable', 'title'=>'Dr.'}
     end
 
-    it "should produce a solr document" do
+    it "should produce a solr document with correct field names, skipping fields that are not defined in the model" do
       # f1 is not defined as a field on the model, so it's not indexed.
-      subject.to_solr.should == {'id'=>subject.persistent_id, 'version'=>subject.id, 'model_name' =>subject.model.name, 'pool' => @pool.id, 'format'=>'Node', 'model'=>subject.model.id, 'title'=>'Huxtable', 'first_name_t'=>'Heathcliff', 'first_name_facet'=>'Heathcliff', 'last_name_t'=>'Huxtable', 'last_name_facet'=>'Huxtable', 'title_t' => 'Dr.', 'title_facet' => 'Dr.'}
+      subject.to_solr.should == {'id'=>subject.persistent_id, 'version'=>subject.id, 'model_name' =>subject.model.name, 'pool' => @pool.id, 'format'=>'Node', 'model'=>subject.model.id, 'title'=>'Huxtable', 'first_name_s'=>'Heathcliff', 'first_name_facet'=>'Heathcliff', 'last_name_s'=>'Huxtable', 'last_name_facet'=>'Huxtable', 'title_t' => 'Dr.', 'title_facet' => 'Dr.'}
     end
     it "should have a title" do
       subject.title.should == 'Huxtable'
@@ -333,7 +333,7 @@ describe Node do
         'contributing_authors__full_name_t'=>['Agatha Christie', 'Raymond Chandler'],
         'contributing_authors__full_name_facet'=>['Agatha Christie', 'Raymond Chandler'],
         "book_title_facet" => "How to write mysteries",
-        "book_title_t" => "How to write mysteries",
+        "book_title_s" => "How to write mysteries",
         "title" => "How to write mysteries",
         "bindery__associations_facet" => [@author1.persistent_id, @author2.persistent_id]
       }
