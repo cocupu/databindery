@@ -153,7 +153,7 @@ describe Pool do
         @aud1.update_attributes filters_attributes:[{field_name:"subject", operator:"+", values:["foo","bar"]}]
         @aud3.update_attributes filters_attributes:[{filter_type:"RESTRICT", field_name:"field2", operator:"-", values:["baz"]}]
         solr_params, user_params = subject.apply_solr_params_for_identity(@identity, {}, {})
-        solr_params.should == {fq: ["-field2_s:\"baz\"", "subject_s:\"foo\" OR subject_s:\"bar\""]}
+        solr_params.should == {fq: ["-field2_ssi:\"baz\"", "subject_ssi:\"foo\" OR subject_ssi:\"bar\""]}
       end
     end
   end

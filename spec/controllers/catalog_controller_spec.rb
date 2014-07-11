@@ -58,7 +58,7 @@ describe CatalogController do
         exhibit_with_filters.save!
         get :index, :exhibit_id=>exhibit_with_filters.id, :q=>'bazaar', :identity_id=>@identity.short_name
         #user_params = {:exhibit_id=>exhibit_with_filters.id, :q=>'bazaar', :identity_id=>@identity.short_name}
-        subject.solr_search_params[:fq].should include('subject_s:"test" OR subject_s:"barf"')
+        subject.solr_search_params[:fq].should include('subject_ssi:"test" OR subject_ssi:"barf"')
       end
     end
     describe "show" do
@@ -66,7 +66,7 @@ describe CatalogController do
         get :index, :exhibit_id=>@exhibit.id, :q=>'bazaar', :identity_id=>@identity.short_name
         assigns[:document_list].size.should == 1
         assigns[:exhibit].should == @exhibit
-        assigns[:response]['facet_counts']['facet_fields'].should == {"f2_facet"=>["Bizarre", 1]}
+        assigns[:response]['facet_counts']['facet_fields'].should == {"f2_sim"=>["Bizarre", 1]}
         response.should be_successful
       end
     end
@@ -77,7 +77,7 @@ describe CatalogController do
         get :index, :exhibit_id=>@exhibit.id, :q=>'bazaar', :identity_id=>@identity.short_name
         assigns[:document_list].size.should == 1
         assigns[:exhibit].should == @exhibit
-        assigns[:response]['facet_counts']['facet_fields'].should == {"f2_facet"=>["Bizarre", 1]}
+        assigns[:response]['facet_counts']['facet_fields'].should == {"f2_sim"=>["Bizarre", 1]}
         response.should be_successful
       end
     end

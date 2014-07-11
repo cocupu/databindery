@@ -7,7 +7,7 @@ describe Node do
                               fields: [{'code' => 'first_name'}, {'code' => 'last_name'}, {'code' => 'title'}],
                               label: 'last_name')
     subject.model = FactoryGirl.create(:model,
-                      fields: [{'code' => 'first_name', 'multiple' => false}, {'code' => 'last_name'}, {'code' => 'title', 'multiple' => true}],
+                      fields: [{'code' => 'first_name', 'multivalue' => false}, {'code' => 'last_name'}, {'code' => 'title', 'multivalue' => true}],
                       label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: @ref.id}])
   end
 
@@ -275,13 +275,13 @@ describe Node do
 
   describe "solr_name" do
     it "should remove whitespaces" do
-      Node.solr_name("one two\t\tthree").should == "one_two_three_s"
+      Node.solr_name("one two\t\tthree").should == "one_two_three_ssi"
     end
     it "should use the type" do
-      Node.solr_name("one two", :type=>'facet').should == "one_two_facet"
+      Node.solr_name("one two", :type=>'facet').should == "one_two_sim"
     end
     it "should use the prefix" do
-      Node.solr_name("first name", :prefix=>'related_object__', :type=>'facet').should == "related_object__first_name_facet"
+      Node.solr_name("first name", :prefix=>'related_object__', :type=>'facet').should == "related_object__first_name_sim"
     end
     it "should handle special terms" do
       Node.solr_name("model_name").should == "model_name"
@@ -300,7 +300,7 @@ describe Node do
 
     it "should produce a solr document with correct field names, skipping fields that are not defined in the model" do
       # f1 is not defined as a field on the model, so it's not indexed.
-      subject.to_solr.should == {'id'=>subject.persistent_id, 'version'=>subject.id, 'model_name' =>subject.model.name, 'pool' => @pool.id, 'format'=>'Node', 'model'=>subject.model.id, 'title'=>'Huxtable', 'first_name_s'=>'Heathcliff', 'first_name_facet'=>'Heathcliff', 'last_name_s'=>'Huxtable', 'last_name_facet'=>'Huxtable', 'title_t' => 'Dr.', 'title_facet' => 'Dr.'}
+      subject.to_solr.should == {'id'=>subject.persistent_id, 'version'=>subject.id, 'model_name' =>subject.model.name, 'pool' => @pool.id, 'format'=>'Node', 'model'=>subject.model.id, 'title'=>'Huxtable', 'first_name_ssi'=>'Heathcliff', 'first_name_sim'=>'Heathcliff', 'last_name_ssi'=>'Huxtable', 'last_name_sim'=>'Huxtable', 'title_tesim' => 'Dr.', 'title_sim' => 'Dr.'}
     end
     it "should have a title" do
       subject.title.should == 'Huxtable'
@@ -328,14 +328,14 @@ describe Node do
     it "should index the properties of the child associations and add their persistent ids to an bindery__associations_facet field" do
       subject.to_solr.should == {'id'=>subject.persistent_id, 'version'=>subject.id, 'model_name' =>subject.model.name, 'pool' => @pool.id, 
         'format'=>'Node', 'model'=>subject.model.id, 
-        'contributing_authors_facet'=>['Agatha Christie', 'Raymond Chandler'],
-        'contributing_authors_t'=>['Agatha Christie', 'Raymond Chandler'],
-        'contributing_authors__full_name_t'=>['Agatha Christie', 'Raymond Chandler'],
-        'contributing_authors__full_name_facet'=>['Agatha Christie', 'Raymond Chandler'],
-        "book_title_facet" => "How to write mysteries",
-        "book_title_s" => "How to write mysteries",
+        'contributing_authors_sim'=>['Agatha Christie', 'Raymond Chandler'],
+        'contributing_authors_tesim'=>['Agatha Christie', 'Raymond Chandler'],
+        'contributing_authors__full_name_tesim'=>['Agatha Christie', 'Raymond Chandler'],
+        'contributing_authors__full_name_sim'=>['Agatha Christie', 'Raymond Chandler'],
+        "book_title_sim" => "How to write mysteries",
+        "book_title_ssi" => "How to write mysteries",
         "title" => "How to write mysteries",
-        "bindery__associations_facet" => [@author1.persistent_id, @author2.persistent_id]
+        "bindery__associations_sim" => [@author1.persistent_id, @author2.persistent_id]
       }
     end
     describe "find_association" do

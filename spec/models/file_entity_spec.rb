@@ -89,7 +89,7 @@ describe FileEntity do
     it "should be included in solr doc" do
       subject.stub(:mime_type).and_return("image/jpeg")
       subject.content_type # this is usually called by #register
-      subject.to_solr["content_type_s"].should == "Image"
+      subject.to_solr["content_type_ssi"].should == "Image"
     end
     describe "audio?" do
       it "should test for audio mimetypes" do

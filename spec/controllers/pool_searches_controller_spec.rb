@@ -56,7 +56,7 @@ describe PoolSearchesController do
           exhibit_with_filters.save!
           get :index, :pool_id=>@my_pool, :perspective=>exhibit_with_filters.id, identity_id: @identity.short_name
           subject.exhibit.should == exhibit_with_filters
-          subject.solr_search_params[:fq].should include('subject_s:"test" OR subject_s:"barf"')
+          subject.solr_search_params[:fq].should include('subject_ssi:"test" OR subject_ssi:"barf"')
         end
       end
     end
@@ -219,7 +219,7 @@ describe PoolSearchesController do
           json['id'].should == @my_pool.id
           json['models'].should == JSON.parse(@my_pool.models.to_json)
           json['perspectives'].should == @my_pool.exhibits.as_json
-          json['facets'].should == {"model_name"=>[], "description_facet"=>[]}
+          json['facets'].should == {"model_name"=>[], "description_sim"=>[]}
           json["numFound"].should == 0
         end
       end

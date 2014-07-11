@@ -31,7 +31,7 @@ describe Exhibit do
       subject.filters << SearchFilter.new(:filter_type=>"RESTRICT", :field_name=>"model_name", :operator=>"-", :values=>["song","person"])
       subject.filters << SearchFilter.new(:filter_type=>"RESTRICT", :field_name=>"storage_location", :operator=>"-", :values=>["disk1"])
       solr_params, user_params = subject.apply_solr_params_logic({}, {})
-      solr_params.should == {fq: ['-(model_name:"song" OR model_name:"person")', '-storage_location_s:"disk1"', 'model:"1" OR model:"49" OR access_s:"public"']}
+      solr_params.should == {fq: ['-(model_name:"song" OR model_name:"person")', '-storage_location_ssi:"disk1"', 'model:"1" OR model:"49" OR access_ssi:"public"']}
     end
   end
 

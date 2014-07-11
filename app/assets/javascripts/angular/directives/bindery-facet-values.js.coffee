@@ -10,7 +10,7 @@ angular.module("binderyCurate").directive('binderyFacetValues', ['$compile','$lo
     controller: ['$scope', '$element', ($scope, $element) ->
       $scope.applyFacetLimit = (value) ->
         searchParams = $location.search()
-        searchParams["f["+$scope.field.code+"_facet][]"] = encode(value)
+        searchParams["f["+$scope.field.code+"_sim][]"] = encode(value)
 #        $location.path( $location.path() ).search(searchParams)
 #        $location.replace()
         console.log(searchParams)

@@ -166,16 +166,16 @@ class Node < ActiveRecord::Base
     model.associations.each do |f|
       instances = find_association(f['code'])
       next unless instances
-      doc["bindery__associations_facet"] ||= []
+      doc["bindery__associations_sim"] ||= []
       find_association(f['code']).each do |instance|
-        doc["bindery__associations_facet"] << instance.persistent_id
-        facet_name_for_association = Node.solr_name(f['code'], type: 'facet', multiple:true)
+        doc["bindery__associations_sim"] << instance.persistent_id
+        facet_name_for_association = Node.solr_name(f['code'], type: 'facet', multivalue:true)
         doc[facet_name_for_association] ||= []
         doc[facet_name_for_association] << instance.title
-        field_name_for_association = Node.solr_name(f['code'], multiple:true)
+        field_name_for_association = Node.solr_name(f['code'], multivalue:true)
         doc[field_name_for_association] ||= []
         doc[field_name_for_association] << instance.title
-        instance.solr_attributes(f['code'] + '__', multiple:true).each do |k, v|
+        instance.solr_attributes(f['code'] + '__', multivalue:true).each do |k, v|
           doc[k] ||= []
           doc[k] << v
         end
@@ -190,11 +190,11 @@ class Node < ActiveRecord::Base
     return doc if data.nil?
     model.fields.each do |f|
       val = data[f['code']]
-      if opts[:multiple]
-        f['multiple'] = true
+      if opts[:multivalue]
+        f['multivalue'] = true
       end
       if val
-        doc[Node.solr_name(f['code'], prefix: prefix, multiple:f['multiple'])] = val
+        doc[Node.solr_name(f['code'], type: f['type'], prefix: prefix, multivalue:f['multivalue'])] = val
         doc[Node.solr_name(f['code'], type: 'facet', prefix: prefix)] = val
       end
     end
@@ -215,7 +215,7 @@ class Node < ActiveRecord::Base
     # Constrain results to this pool
     fq = "format:Node"
     # fq += " AND pool:#{pool.id}"
-    http_response = Bindery.solr.select(params: {q:persistent_id, qf:"bindery__associations_facet", qt:'search', fq:fq})
+    http_response = Bindery.solr.select(params: {q:persistent_id, qf:"bindery__associations_sim", qt:'search', fq:fq})
     results = http_response["response"]["docs"].map{|d| Node.find_by_persistent_id(d['id'])}
   end
 
@@ -279,17 +279,31 @@ class Node < ActiveRecord::Base
     if ["model_name", "model", "*"].include?(field_name)
       return field_name
     end
-    type = args[:type] || "text"
-    prefix= args[:prefix] || ''
-    suffix = case type
-      when "text"
-        args[:multiple] ? '_t' : '_s'
+
+    case args[:type]
       when "facet"
-        '_facet'
+        data_type = args[:type] || :string
+        indexing_strategy = :facetable
       else
-        raise "Unknown solr suffix for #{type}"
+        data_type = args[:type] || :string
+    end
+
+    if indexing_strategy.nil?
+      if args[:multivalue]
+        indexing_strategy = :stored_searchable
+      else
+        indexing_strategy = :stored_sortable
       end
-    prefix + field_name.downcase.gsub(/\s+/,'_') + suffix 
+    end
+
+    prefix= args[:prefix] || ''
+    normalized_field_name = field_name.downcase.gsub(/\s+/,'_')
+
+    return prefix + default_mapper.solr_name( normalized_field_name, indexing_strategy, type: data_type.to_sym )
+  end
+
+  def self.default_mapper
+    @default_mapper ||= Solrizer::FieldMapper.new
   end
 
   # Get the versions of the node with this persistent id in descending order of creation (newest first)

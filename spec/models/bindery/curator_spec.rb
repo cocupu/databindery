@@ -87,7 +87,7 @@ describe Bindery::Curator do
         created_seminar.data[field_code].should_not be_nil
       end
       created_seminar.data["title_en"].should == "Joy of Living 1"
-      created_seminar.data["location_name"].should == "Portland, OR"
+      created_seminar.data["location_name"].should == "Malibu"
     end
     it "should create destination model if none specified" do
       prev_model_count = Model.count
