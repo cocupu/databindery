@@ -219,7 +219,7 @@ describe PoolSearchesController do
           json['id'].should == @my_pool.id
           json['models'].should == JSON.parse(@my_pool.models.to_json)
           json['perspectives'].should == @my_pool.exhibits.as_json
-          json['facets'].should == {"model_name"=>[], "description_sim"=>[]}
+          json['facets'].should == {"model_name"=>[], "description_ssi"=>[]}
           json["numFound"].should == 0
         end
       end

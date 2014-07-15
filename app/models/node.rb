@@ -193,6 +193,9 @@ class Node < ActiveRecord::Base
       if opts[:multivalue]
         f['multivalue'] = true
       end
+      if f['type'] == 'date' || f['type'] == :date
+        val = sanitize_date(val)
+      end
       if val
         doc[Node.solr_name(f['code'], type: f['type'], prefix: prefix, multivalue:f['multivalue'])] = val
         doc[Node.solr_name(f['code'], type: 'facet', prefix: prefix)] = val
@@ -284,6 +287,10 @@ class Node < ActiveRecord::Base
       when "facet"
         data_type = args[:type] || :string
         indexing_strategy = :facetable
+      when "textarea"
+        data_type = :text
+      when "textfield"
+        data_type = :string
       else
         data_type = args[:type] || :string
     end
@@ -347,4 +354,11 @@ class Node < ActiveRecord::Base
     return node
   end
 
+  def self.sanitize_date(value)
+    Time.parse(value).utc.iso8601 unless value.nil?
+  end
+
+  def sanitize_date(value)
+    Node.sanitize_date(value)
+  end
 end

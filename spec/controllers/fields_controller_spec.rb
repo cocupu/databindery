@@ -24,15 +24,15 @@ describe FieldsController do
         response.should redirect_to root_path
       end
       it "should create and redirect" do
-        post :create, :model_id=>@my_model.id, :field=>{name: 'Event Date', type: 'Date', uri: 'dc:date', multivalued: true}
+        post :create, :model_id=>@my_model.id, :field=>{name: 'Event Date', type: 'date', uri: 'dc:date', multivalued: true}
         @my_model.reload.fields.should == 
-           [{"name"=>"Description", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"description"}, {"name" => 'Event Date', "code"=>"event_date", "type" => 'Date', "uri" => 'dc:date', "multivalued" => true}]
+           [{"name"=>"Description", "type"=>"textfield", "uri"=>"dc:description", "code"=>"description"}, {"name" => 'Event Date', "code"=>"event_date", "type" => 'date', "uri" => 'dc:date', "multivalued" => true}]
         response.should redirect_to edit_model_path(@my_model)
       end
       it "should be successful with json" do
-        post :create, :model_id=>@my_model.id, :field=>{name: 'Event Date', type: 'Date', uri: 'dc:date', multivalued: true}, :format=>:json
+        post :create, :model_id=>@my_model.id, :field=>{name: 'Event Date', type: 'date', uri: 'dc:date', multivalued: true}, :format=>:json
         @my_model.reload.fields.should == 
-           [{"name"=>"Description", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"description"}, {"name" => 'Event Date', "code"=>"event_date", "type" => 'Date', "uri" => 'dc:date', "multivalued" => true}]
+           [{"name"=>"Description", "type"=>"textfield", "uri"=>"dc:description", "code"=>"description"}, {"name" => 'Event Date', "code"=>"event_date", "type" => 'date', "uri" => 'dc:date', "multivalued" => true}]
         response.should be_successful
       end
     end

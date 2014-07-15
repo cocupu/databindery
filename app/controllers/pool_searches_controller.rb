@@ -123,14 +123,20 @@ class PoolSearchesController < ApplicationController
       #
       # :show may be set to false if you don't want the facet to be drawn in the 
       # facet bar
-      exhibit.facets.uniq.each do |key|
-        if key == "model_name"
-          config.add_facet_field Node.solr_name(key, type: 'facet'), :label => "Model", limit: 10
-        else
-          config.add_facet_field Node.solr_name(key, type: 'facet'), :label => key.humanize, limit: 10
+      exhibit.facets.uniq.each do |facet_info|
+        case facet_info
+          when "model_name"
+            config.add_facet_field Node.solr_name(facet_info, type: 'facet'), :label => "Model", limit: 10
+          when Hash
+            facet_info = facet_info.with_indifferent_access
+            if facet_info[:name].nil?
+              facet_info[:name] = facet_info[:code].humanize
+            end
+            config.add_facet_field Node.solr_name(facet_info[:code], type: facet_info[:type]), :label => facet_info[:name], limit: 10
+          else
+            config.add_facet_field Node.solr_name(facet_info, type: 'facet'), :label => facet_info.humanize, limit: 10
         end
       end
-
 
       # Have BL send all facet field names to Solr, which has been the default
       # previously. Simply remove these lines if you'd rather use Solr request
@@ -139,11 +145,23 @@ class PoolSearchesController < ApplicationController
 
       # solr fields to be displayed in the index (search results) view
       #   The ordering of the field names is the order of the display 
-      exhibit.index_fields.uniq.each do |f|
-        if f == "model_name"
-          config.add_index_field Node.solr_name(f, type: 'facet'), :label => "Model"
-        else
-          config.add_index_field Node.solr_name(f), :label => f.humanize+':' 
+      exhibit.index_fields.uniq.each do |field_info|
+        #if f == "model_name"
+        #  config.add_index_field Node.solr_name(f, type: 'facet'), :label => "Model"
+        #else
+        #  config.add_index_field Node.solr_name(f), :label => f.humanize+':'
+        #end
+        case field_info
+          when "model_name"
+            config.add_index_field Node.solr_name(field_info, type: 'facet'), :label => "Model"
+          when Hash
+            field_info = field_info.with_indifferent_access
+            if field_info[:name].nil?
+              field_info[:name] = field_info[:code].humanize
+            end
+            config.add_index_field Node.solr_name(field_info[:code], type: field_info[:type]), :label => field_info[:name]+':'
+          else
+            config.add_index_field Node.solr_name(field_info), :label => field_info.humanize+':'
         end
       end
       # query_fields = exhibit.pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
@@ -151,11 +169,18 @@ class PoolSearchesController < ApplicationController
 
       # solr fields to be displayed in the show (single result) view
       #   The ordering of the field names is the order of the display 
-      exhibit.index_fields.uniq.each do |f|
-        if f == "model_name"
-          config.add_show_field Node.solr_name(f, type: 'facet'), :label => "Model"
-        else
-          config.add_show_field Node.solr_name(f), :label => f.humanize+':' 
+      exhibit.index_fields.uniq.each do |field_info|
+        case field_info
+          when "model_name"
+            config.add_show_field Node.solr_name(field_info, type: 'facet'), :label => "Model"
+          when Hash
+            field_info = field_info.with_indifferent_access
+            if field_info[:name].nil?
+              field_info[:name] = field_info[:code].humanize
+            end
+            config.add_show_field Node.solr_name(field_info[:code], type: field_info[:type]), :label => field_info[:name]+':'
+          else
+            config.add_show_field Node.solr_name(field_info), :label => field_info.humanize+':'
         end
       end
 

@@ -47,7 +47,7 @@ describe ModelsController do
           "associations"=>[],
           "fields"=>
            [{"name"=>"Description",
-             "type"=>"Text Field",
+             "type"=>"textfield",
              "uri"=>"dc:description",
              "code"=>"description"}],
           "name"=>@my_model.name,
@@ -91,7 +91,7 @@ describe ModelsController do
           response.should  be_successful
           json = JSON.parse(response.body)
           json['associations'].should == []
-          json['fields'].should == [{"name"=>"Description", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"description"}]
+          json['fields'].should == [{"name"=>"Description", "type"=>"textfield", "uri"=>"dc:description", "code"=>"description"}]
         end
       end
       describe "requesting a model I own" do
@@ -100,7 +100,7 @@ describe ModelsController do
           response.should  be_successful
           json = JSON.parse(response.body)
           json['associations'].should == []
-          json['fields'].should == [{"name"=>"Description", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"description"}]
+          json['fields'].should == [{"name"=>"Description", "type"=>"textfield", "uri"=>"dc:description", "code"=>"description"}]
         end
       end
     end

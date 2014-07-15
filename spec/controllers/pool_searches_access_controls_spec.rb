@@ -5,8 +5,8 @@ describe PoolSearchesController do
     @owner = FactoryGirl.create :identity
     @pool = FactoryGirl.create :pool, :owner=>@owner
     @pool.audience_categories.build.save
-    @model1 = FactoryGirl.create(:model, pool: @pool, name:"Things", fields:[{"name"=>"Topic", "type"=>"text", "code"=>"topic"}, {"name"=>"Location", "type"=>"text", "code"=>"location"}])
-    @model2 = FactoryGirl.create(:model, pool: @pool, name:"Restricted Things", fields:[{"name"=>"Access Level", "type"=>"text", "code"=>"access_level"}, {"name"=>"Name", "type"=>"text", "code"=>"name"}])
+    @model1 = FactoryGirl.create(:model, pool: @pool, name:"Things", fields:[{"name"=>"Topic", "type"=>"text", "code"=>"topic"}, {"name"=>"Location", "type"=>"string", "code"=>"location"}])
+    @model2 = FactoryGirl.create(:model, pool: @pool, name:"Restricted Things", fields:[{"name"=>"Access Level", "type"=>"string", "code"=>"access_level"}, {"name"=>"Name", "type"=>"text", "code"=>"name"}])
     @node_kittens = FactoryGirl.create(:node, pool: @pool, model:@model1, data:{"topic"=>"Kittens", "location"=>"Albuquerque"})
     @node_puppies = FactoryGirl.create(:node, pool: @pool, model:@model1, data:{"topic"=>"Puppies", "location"=>"Albuquerque"})
     @node_pandas = FactoryGirl.create(:node, pool: @pool, model:@model1, data:{"topic"=>"Pandas", "location"=>"Yunan"})

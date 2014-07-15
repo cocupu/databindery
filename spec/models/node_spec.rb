@@ -81,13 +81,13 @@ describe Node do
       @identity = FactoryGirl.create :identity
       pool = FactoryGirl.create :pool, :owner=>@identity
       @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
-          fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
+          fields: [{"name"=>"Name", "type"=>"textfield", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
           owner: @identity)#, :associations=>[{:name=>'books', :type=>'Belongs To', :references=>@book_model.id}])
       subject.model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations => [{:name=>'Contributing Authors', :code=>'contributing_authors', :type=>'Ordered List', :references=>@author_model.id}])
       @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
       @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
       @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name', 
-          fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"name"}.with_indifferent_access],
+          fields: [{"name"=>"Name", "type"=>"textfield", "uri"=>"dc:description", "code"=>"name"}.with_indifferent_access],
           owner: @identity)
       @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {'name' => 'Simon & Schuster Ltd.'})
       @file = FactoryGirl.create(:node, model: Model.file_entity, pool: pool, data: {})
@@ -312,7 +312,7 @@ describe Node do
       @identity = FactoryGirl.create :identity
       @pool = FactoryGirl.create :pool, :owner=>@identity
       @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
-          fields: [{"name"=>"Name", "type"=>"Text Field", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
+          fields: [{"name"=>"Name", "type"=>"text", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
           owner: @identity)
       @author1 = FactoryGirl.create(:node, model: @author_model, pool: @pool, data: {'full_name' => 'Agatha Christie'})
       @author2 = FactoryGirl.create(:node, model: @author_model, pool: @pool, data: {'full_name' => 'Raymond Chandler'})
