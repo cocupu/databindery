@@ -1,18 +1,20 @@
 class SearchFilter < ActiveRecord::Base
+  # Filterable might be an Exhibit, Audience, etc.  Anything that declares & applies filters.
   belongs_to :filterable, :polymorphic => true
+  belongs_to :field
   serialize :values, Array
 
   def apply_solr_params(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
     if filter_type == "GRANT"
-      solr_parameters[:fq] << values.map {|v| "#{Node.solr_name(field_name)}:#{quoted_query_value(v)}" }.join(" OR ")
+      solr_parameters[:fq] << values.map {|v| "#{Node.solr_name(field)}:#{quoted_query_value(v)}" }.join(" OR ")
     else  # filter_type == "RESTRICT"
       if values.length > 1
-        query = values.map {|v| "#{Node.solr_name(field_name)}:#{quoted_query_value(v)}" }.join(" OR ")
+        query = values.map {|v| "#{Node.solr_name(field)}:#{quoted_query_value(v)}" }.join(" OR ")
         solr_parameters[:fq] << "#{operator}(#{query})"
       else
         v = values.first
-        solr_parameters[:fq] << "#{operator}#{Node.solr_name(field_name)}:#{quoted_query_value(v)}"
+        solr_parameters[:fq] << "#{operator}#{Node.solr_name(field)}:#{quoted_query_value(v)}"
       end
     end
     solr_parameters
@@ -43,4 +45,5 @@ class SearchFilter < ActiveRecord::Base
     end
     return solr_parameters, user_parameters
   end
+
 end

@@ -60,7 +60,7 @@ describe "API" do
         ref.save
         m = Cocupu::Model.new({'identity' =>@ident.short_name, 'pool'=>@pool.short_name, 'name'=>"Car"})
         m.save
-        m.fields = [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}, {"name"=>"Date Completed", "type"=>"text", "uri"=>"", "code"=>"date_completed"}]
+        m.fields = [{"name"=>"Name", "type"=>"TextField", "uri"=>"", "code"=>"name"}, {"name"=>"Date Completed", "type"=>"DateField", "uri"=>"", "code"=>"date_completed"}]
         m.associations = [ {"type"=>"Has One","name"=>"recording","references"=>ref.id}] #service throws a 404 if the references isn't a valid model.id
         m.label = 'name'
         m.allow_file_bindings = false
@@ -79,7 +79,7 @@ describe "API" do
         model = Cocupu::Model.load(@model.id)
         model.should be_instance_of Cocupu::Model
         model.id.should == @model.id
-        model.fields.should == @model.fields
+        model.fields.should == JSON.parse(@model.fields.to_json)
         model.pool.should == @model.pool.short_name
         model.identity.should == @model.pool.owner.short_name
       end
@@ -107,7 +107,7 @@ describe "API" do
         end
       end
       it "should find nodes with fielded search" do
-        @auto_model = FactoryGirl.create(:model, pool: @pool, name:"/automotive/model", fields: [{"code"=>"name", "name"=>"Name"},{"code"=>"year", "name"=>"Year"}, {"code"=>"make", "name"=>"Make", "uri"=>"/automotive/model/make"}])
+        @auto_model = FactoryGirl.create(:model, pool: @pool, name:"/automotive/model", fields_attributes: [{"code"=>"name", "name"=>"Name"},{"code"=>"year", "name"=>"Year"}, {"code"=>"make", "name"=>"Make", "uri"=>"/automotive/model/make"}])
 
         @node1 = Node.create!(model:@auto_model, pool: @pool, data:{"year"=>"2009", "make"=>"/en/ford", "name"=>"Ford Taurus"})
         @node2 = Node.create!(model:@auto_model, pool: @pool, data:{"year"=>"2011", "make"=>"/en/ford", "name"=>"Ford Taurus"})
@@ -144,7 +144,7 @@ describe "API" do
     describe "Node#find_or_create" do
       before do
         @model = FactoryGirl.create(:model, pool: @pool, label: 'first_name',
-                    fields: [{:code=>'first_name'}.with_indifferent_access, {:code=>'last_name'}.with_indifferent_access, {:code=>'title'}.with_indifferent_access])
+                                    fields_attributes: [{:code=>'first_name'}, {:code=>'last_name'}, {:code=>'title'}])
         @node1 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
         @node2 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'})
         @node3 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Ball', 'title'=>'Mr.'})
@@ -171,9 +171,9 @@ describe "API" do
       describe "spawn_from_field" do
         before do
           @dest_model = FactoryGirl.create(:model, pool: @pool, label: 'full_name',
-                      fields: [{:code=>'full_name'}.with_indifferent_access])
+                                           fields_attributes: [{:code=>'full_name'}])
           @source_model = FactoryGirl.create(:model, pool: @pool, label: 'title',
-                      fields: [{:code=>'submitted_by'}.with_indifferent_access, {:code=>'location'}.with_indifferent_access, {:code=>'title'}.with_indifferent_access])
+                                             fields_attributes: [{:code=>'submitted_by'}, {:code=>'location'}, {:code=>'title'}])
           @node1 = FactoryGirl.create(:node, model: @source_model, pool: @pool, :data=>{'submitted_by'=>'Justin Coyne', 'location'=>'Malibu', 'title'=>'My Vacation'})
           @node2 = FactoryGirl.create(:node, model: @source_model, pool: @pool, :data=>{'submitted_by'=>'Matt Zumwalt', 'location'=>'Berlin', 'title'=>'My Holiday'})
           @node3 = FactoryGirl.create(:node, model: @source_model, pool: @pool, :data=>{'submitted_by'=>'Justin Coyne', 'location'=>'Bali', 'title'=>'My other Vacation'})

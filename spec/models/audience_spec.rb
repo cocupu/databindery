@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Audience do
+  let(:subject_field) {Field.create(name:"subject")}
+  let(:field2) {Field.create(name:"field2")}
   it "has many search filters" do
     subject.filters.should == []
     @sf = FactoryGirl.create(:search_filter)
@@ -9,7 +11,7 @@ describe Audience do
     subject.filters.should == [@sf]
   end
   it "should render solr params based on filters" do
-    subject.update_attributes filters_attributes:[{field_name:"subject", operator:"+", values:["foo","bar"]}, {filter_type:"RESTRICT", field_name:"field2", operator:"-", values:["baz"]}]
+    subject.update_attributes filters_attributes:[{field:subject_field, operator:"+", values:["foo","bar"]}, {filter_type:"RESTRICT", field:field2, operator:"-", values:["baz"]}]
     solr_params, user_params = subject.apply_solr_params({}, {})
     solr_params.should == {fq: ["-field2_ssi:\"baz\"", "subject_ssi:\"foo\" OR subject_ssi:\"bar\""]}
   end

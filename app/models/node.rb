@@ -189,16 +189,13 @@ class Node < ActiveRecord::Base
     doc = {}
     return doc if data.nil?
     model.fields.each do |f|
-      val = data[f['code']]
+      val = f.sanitize(data[f.code])
       if opts[:multivalue]
         f['multivalue'] = true
       end
-      if f['type'] == 'date' || f['type'] == :date
-        val = sanitize_date(val)
-      end
       if val
-        doc[Node.solr_name(f['code'], type: f['type'], prefix: prefix, multivalue:f['multivalue'])] = val
-        doc[Node.solr_name(f['code'], type: 'facet', prefix: prefix)] = val
+        doc[Node.solr_name(f, prefix: prefix)] = val
+        doc[Node.solr_name(f, type: 'facet', prefix: prefix)] = val
       end
     end
     doc
@@ -278,7 +275,16 @@ class Node < ActiveRecord::Base
     output
   end
 
-  def self.solr_name(field_name, args = {})
+  # @param field [Field or String] Either the field or its field_name
+  # @param args [Hash] accepts :type and :multivalue.  These will be read from the field if it's provided, but values provided here have precedence
+  def self.solr_name(field, args = {})
+    if field.kind_of? Field
+      field_name = field.code
+      args[:multivalue] ||= field.multivalue
+      args[:type] ||= field.type
+    else
+      field_name = field
+    end
     if ["model_name", "model", "*"].include?(field_name)
       return field_name
     end
@@ -287,10 +293,14 @@ class Node < ActiveRecord::Base
       when "facet"
         data_type = args[:type] || :string
         indexing_strategy = :facetable
-      when "textarea"
+      when "TextArea"
         data_type = :text
-      when "textfield"
+      when "TextField"
         data_type = :string
+      when "DateField"
+        data_type = :date
+      when "IntegerField"
+        data_type = :integer
       else
         data_type = args[:type] || :string
     end
@@ -352,13 +362,5 @@ class Node < ActiveRecord::Base
       node = self.find_by_persistent_id(node_id)
     end
     return node
-  end
-
-  def self.sanitize_date(value)
-    Time.parse(value).utc.iso8601 unless value.nil?
-  end
-
-  def sanitize_date(value)
-    Node.sanitize_date(value)
   end
 end

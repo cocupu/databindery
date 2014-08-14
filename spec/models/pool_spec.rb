@@ -82,8 +82,8 @@ describe Pool do
     describe "generated_default_perspective" do
       before do
         @model1 = FactoryGirl.create(:model, pool: subject)
-        @model1.fields << {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
-        @model1.fields << {:code=>'two', :name=>'Two', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
+        @model1.fields << Field.create(:code=>'one', :name=>'One', :type=>'TextField', :uri=>'dc:name', :multivalue=>true)
+        @model1.fields << Field.create(:code=>'two', :name=>'Two', :type=>'TextField', :uri=>'dc:name', :multivalue=>true)
         @model1.save
         subject.models << @model1
       end
@@ -132,6 +132,8 @@ describe Pool do
   end
 
   describe "audiences" do
+    let(:subject_field) {FactoryGirl.create(:subject_field)}
+    let(:location_field) {FactoryGirl.create(:location_field)}
     before do
       @identity = FactoryGirl.create :identity
       @cat1 =  FactoryGirl.create :audience_category, pool:subject
@@ -150,10 +152,10 @@ describe Pool do
     end
     describe "apply_solr_params_for_identity" do
       it "should aggregate solr_params from all applicable audiences" do
-        @aud1.update_attributes filters_attributes:[{field_name:"subject", operator:"+", values:["foo","bar"]}]
-        @aud3.update_attributes filters_attributes:[{filter_type:"RESTRICT", field_name:"field2", operator:"-", values:["baz"]}]
+        @aud1.update_attributes filters_attributes:[{field:subject_field, operator:"+", values:["foo","bar"]}]
+        @aud3.update_attributes filters_attributes:[{field:location_field, filter_type:"RESTRICT", operator:"-", values:["baz"]}]
         solr_params, user_params = subject.apply_solr_params_for_identity(@identity, {}, {})
-        solr_params.should == {fq: ["-field2_ssi:\"baz\"", "subject_ssi:\"foo\" OR subject_ssi:\"bar\""]}
+        solr_params.should == {fq: ["-location_ssi:\"baz\"", "subject_ssi:\"foo\" OR subject_ssi:\"bar\""]}
       end
     end
   end
@@ -205,19 +207,19 @@ describe Pool do
     before do
       subject.save
       @model1 = FactoryGirl.create(:model, pool: subject)
-      @model1.fields << {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
-      @model1.fields << {:code=>'two', :name=>'Two', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
+      @model1.fields << Field.create(:code=>'one', :name=>'One', :type=>'TextField', :uri=>'dc:name', :multivalue=>true)
+      @model1.fields << Field.create(:code=>'two', :name=>'Two', :type=>'TextField', :uri=>'dc:name', :multivalue=>true)
       @model1.save
       @model2 = FactoryGirl.create(:model, pool: subject)
-      @model2.fields << {:code=>'one', :name=>'One', :type=>'textfield', :uri=>'dc:name', :multivalued=>true}.with_indifferent_access
-      @model2.fields << {:code=>'three', :name=>'Three', :type=>'textfield', :uri=>'dc:name', :multivalued=>false}.with_indifferent_access
+      @model2.fields << Field.create(:code=>'one', :name=>'One', :type=>'TextField', :uri=>'dc:name', :multivalue=>true)
+      @model2.fields << Field.create(:code=>'three', :name=>'Three', :type=>'TextField', :uri=>'dc:name', :multivalue=>false)
       @model2.save
       subject.models << @model1
       subject.models << @model2
     end
     it "should return all fields from all models, removing duplicates" do
-      subject.all_fields.count.should == 5
-      codes = subject.all_fields.map {|f| f["code"]}
+      #subject.all_fields.count.should == 5
+      codes = subject.all_fields.map {|f| f.code }
       ["model_name","description","one","two","three"].each {|code| codes.should include(code)}
     end
   end

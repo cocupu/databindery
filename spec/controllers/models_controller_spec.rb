@@ -42,14 +42,17 @@ describe ModelsController do
         get :index, :identity_id=>@identity.short_name, :pool_id=>@pool.short_name, :format=>:json
         response.should  be_successful
         json = JSON.parse(response.body)
+        first_model_field = @my_model.fields.first
         json.should ==  [{"id"=>@my_model.id,
           "url"=>"/models/#{@my_model.id}", 
           "associations"=>[],
           "fields"=>
-           [{"name"=>"Description",
-             "type"=>"textfield",
+           [{"id"=>first_model_field.id,
+             "name"=>"Description",
+             "type"=>"TextField",
              "uri"=>"dc:description",
-             "code"=>"description"}],
+             "code"=>"description",
+            "label"=>nil,"multivalue"=>nil,"created_at"=>first_model_field.created_at.as_json,"updated_at"=>first_model_field.updated_at.as_json}],
           "name"=>@my_model.name,
           "label"=>nil,
           "allow_file_bindings"=>true,
@@ -58,7 +61,7 @@ describe ModelsController do
           {"id"=>@file_model.id,
           "url"=>"/models/#{@file_model.id}", 
           "associations"=>[],
-          "fields"=> [{"code"=>"file_name", "type"=>"textfield", "name"=>"Filename"}, {"code"=>"content_type", "type"=>"textfield", "name"=>"Content Type"}],
+          "fields"=> JSON.parse(Model.file_entity.fields.to_json),
           "name"=>@file_model.name,
           "label"=>"file_name","allow_file_bindings"=>true}]
       end
@@ -91,7 +94,7 @@ describe ModelsController do
           response.should  be_successful
           json = JSON.parse(response.body)
           json['associations'].should == []
-          json['fields'].should == [{"name"=>"Description", "type"=>"textfield", "uri"=>"dc:description", "code"=>"description"}]
+          json['fields'].should == [{"id"=>@model_i_can_edit.fields.first.id,"name"=>"Description", "type"=>"TextField", "uri"=>"dc:description", "code"=>"description", "label"=>nil,"multivalue"=>nil,"created_at"=>@model_i_can_edit.fields.first.created_at.as_json,"updated_at"=>@model_i_can_edit.fields.first.updated_at.as_json}]
         end
       end
       describe "requesting a model I own" do
@@ -99,8 +102,10 @@ describe ModelsController do
           get :show, :id=>@my_model, :format=>:json
           response.should  be_successful
           json = JSON.parse(response.body)
+          json["id"].should == @my_model.id
+          json["name"].should == @my_model.name
           json['associations'].should == []
-          json['fields'].should == [{"name"=>"Description", "type"=>"textfield", "uri"=>"dc:description", "code"=>"description"}]
+          json['fields'].should == JSON.parse(@my_model.fields.to_json)
         end
       end
     end
@@ -127,11 +132,12 @@ describe ModelsController do
           get :edit, :id=>@model_i_can_edit.id
           response.should be_successful
           assigns[:model].should == @model_i_can_edit
-          assigns[:models].should == [@model_i_can_edit, @my_model]
-          assigns[:field].should == {name: '', type: '', uri: '', multivalued: false}
+          assigns[:models].count.should == 2
+          [@model_i_can_edit, @my_model].each {|m| assigns[:models].should include (m)}
+          assigns[:field].should == {name: '', type: '', uri: '', multivalue: false}
           assigns[:association].should == {name: '', type: '', references: ''}
           assigns[:association_types].should == ['Has Many', 'Has One', 'Ordered List', 'Unordered List']
-          assigns[:field_types].should == [["Text Field", "text"], ["Text Area", "textarea"], ["Date", "date"]]
+          assigns[:field_types].should == [["Text Field", "TextField"], ["Text Area", "TextArea"], ["Number", "IntegerField"], ["Date", "DateField"]]
         end
       end
       describe "when requesting a model I own" do
@@ -139,11 +145,12 @@ describe ModelsController do
           get :edit, :id=>@my_model.id
           response.should be_successful
           assigns[:model].should == @my_model
-          assigns[:models].should == [@model_i_can_edit, @my_model]
-          assigns[:field].should == {name: '', type: '', uri: '', multivalued: false}
+          assigns[:models].count.should == 2
+          [@model_i_can_edit, @my_model].each {|m| assigns[:models].should include (m)}
+          assigns[:field].should == {name: '', type: '', uri: '', multivalue: false}
           assigns[:association].should == {name: '', type: '', references: ''}
           assigns[:association_types].should == ['Has Many', 'Has One', 'Ordered List', 'Unordered List']
-          assigns[:field_types].should == [["Text Field", "text"], ["Text Area", "textarea"], ["Date", "date"]]
+          assigns[:field_types].should == [["Text Field", "TextField"], ["Text Area", "TextArea"], ["Number", "IntegerField"], ["Date", "DateField"]]
         end
       end
     end
@@ -195,7 +202,7 @@ describe ModelsController do
       it "should be successful with json" do
         reference = FactoryGirl.create(:model)
         in_pool = FactoryGirl.create(:pool, owner: @identity)
-        post :create, :model=>{:name=>'Turkey', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]}, :pool_id=>in_pool, :format=>:json, identity_id: @identity
+        post :create, :model=>{:name=>'Turkey', :fields=>[{"name"=>"Name", "type"=>"TextField", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]}, :pool_id=>in_pool, :format=>:json, identity_id: @identity
         response.should be_successful
         json = JSON.parse response.body
         json["name"].should == 'Turkey'
@@ -203,7 +210,10 @@ describe ModelsController do
         json["identity"].should == @identity.short_name
         json["id"].should_not be_nil
         model = Model.last
-        model.fields.should == [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}]
+        model.fields.count.should == 1
+        model.fields.first.name.should == "Name"
+        model.fields.first.type.should == "TextField"
+        model.fields.first.code.should == "name"
         model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>reference.name, 'code'=>'workers', 'references'=>reference.id}]
       end
       it "should not allow you to create models in someone elses pool" do
@@ -242,29 +252,35 @@ describe ModelsController do
         put :update, :id=>@model_i_can_edit, :model=>{:label=>'title'}
         response.should be_success
       end
-      it "should be able to set the identifier" do
+      it "should be able to set the label/identifier" do
         put :update, :id=>@my_model, :model=>{:label=>'description'}
 
         response.should redirect_to edit_model_path(@my_model)
         flash[:notice].should == "#{@my_model.name} has been updated"
         @my_model.reload.label.should == 'description'
       end
-      it "should be able to set the identifier via json" do
+      it "should be able to update the model via json" do
         reference = FactoryGirl.create(:model)
-        put :update, :id=>@my_model, :model=>{:label=>'name', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]}, :format=>:json
-        response.should be_successful 
+        put :update, :id=>@my_model, :model=>{:label=>'name', :fields=>[{"id"=>@my_model.fields.first.id,"name"=>"New Name", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]}, :format=>:json
+        response.should be_successful
         @my_model = Model.find(@my_model.id)
         @my_model.label.should == 'name'
-        @my_model.fields.should == [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}]
+        @my_model.fields.count.should == 1
+        @my_model.fields.first.name.should == "New Name"
+        @my_model.fields.first.type.should == "TextField"
+        @my_model.fields.first.code.should == "name"
         @my_model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>reference.name, 'code'=>'workers', 'references'=>reference.id}]
       end
       it "should accept json without fields wrapped in a :model hash" do
         reference = FactoryGirl.create(:model)
-        put :update, :id=>@my_model, :format=>:json, :label=>'name', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]
+        put :update, :id=>@my_model, :format=>:json, :label=>'name', :fields=>[{"id"=>@my_model.fields.first.id,"name"=>"Newer Name", "type"=>"TextField", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]
         response.should be_successful
         @my_model = Model.find(@my_model.id)
         @my_model.label.should == 'name'
-        @my_model.fields.should == [{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}]
+        @my_model.fields.count.should == 1
+        @my_model.fields.first.name.should == "Newer Name"
+        @my_model.fields.first.type.should == "TextField"
+        @my_model.fields.first.code.should == "name"
         @my_model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>reference.name, 'code'=>'workers', 'references'=>reference.id}]
       end
       it "should be able to update the model" do
@@ -275,7 +291,7 @@ describe ModelsController do
 
       it "should send errors over json" do
         reference = FactoryGirl.create(:model)
-        put :update, :id=>@my_model, :model=>{:label=>'description', :fields=>[{"name"=>"Name", "type"=>"text", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'label'=>'People', 'code'=>'workers', 'references'=>reference.id}]}, :format=>:json
+        put :update, :id=>@my_model, :model=>{:label=>'nonexistent_field_code'}, :format=>:json
         response.code.should eq('422')
         JSON.parse(response.body).should == {'status'=>'error', 'errors'=>["Label must be a field"]}
       end

@@ -9,9 +9,9 @@ describe Bindery::Curator do
       @identity = FactoryGirl.create :identity
       @pool = FactoryGirl.create :pool, :owner=>@identity
       @dest_model = FactoryGirl.create(:model, pool: @pool, label: 'full_name',
-                                       fields: [{:code=>'full_name'}.with_indifferent_access])
+                                       fields_attributes: [{:code=>'full_name'}])
       @source_model = FactoryGirl.create(:model, pool: @pool, label: 'title',
-                                         fields: [{:code=>'submitted_by'}.with_indifferent_access, {:code=>'location'}.with_indifferent_access, {:code=>'title'}.with_indifferent_access])
+                                         fields_attributes: [{:code=>'submitted_by'}, {:code=>'location'}, {:code=>'title'}])
       @node1 = FactoryGirl.create(:node, model: @source_model, pool: @pool, :data=>{'submitted_by'=>'Justin Coyne', 'location'=>'Malibu', 'title'=>'My Vacation'})
       @node2 = FactoryGirl.create(:node, model: @source_model, pool: @pool, :data=>{'submitted_by'=>'Matt Zumwalt', 'location'=>'Berlin', 'title'=>'My Holiday'})
       @node3 = FactoryGirl.create(:node, model: @source_model, pool: @pool, :data=>{'submitted_by'=>'Justin Coyne', 'location'=>'Bali', 'title'=>'My other Vacation'})
@@ -44,17 +44,17 @@ describe Bindery::Curator do
     it "should delete fields from source model and nodes if delete_source_value:true" do
       Bindery::Curator.instance.spawn_from_field(@ident, @pool, @source_model.id, "submitted_by", "creator", @dest_model.id, "full_name", :delete_source_value=>true)
       @node1.latest_version.data.should_not have_key("submitted_by")
-      @source_model.reload.fields.select {|f| f[:code] == "submitted_by"}.should be_empty
+      @source_model.reload.fields.where(code:"submitted_by").should be_empty
     end
     it "should set up association on source model and fields on destination model if they do not exist yet" do
       audio_cassette_model = FactoryGirl.create(:model, pool: @pool, label: 'program_title_english',
-                                                fields: [{:code=>'program_title_english'}.with_indifferent_access,
-                                                         {:code=>'program_location', name:"Program Location"}.with_indifferent_access,
-                                                         {:code=>'main_text_title_english', name:"Main Text (English)"}.with_indifferent_access,
-                                                         {:code=>'date_from', name:"Start Date", type:"date"}.with_indifferent_access, {:code=>'date_tpo', name:"End Date", type:"date"}.with_indifferent_access
+                                                fields_attributes: [{:code=>'program_title_english'},
+                                                         {:code=>'program_location', name:"Program Location"},
+                                                         {:code=>'main_text_title_english', name:"Main Text (English)"},
+                                                         {:code=>'date_from', name:"Start Date", type:"DateField"}, {:code=>'date_tpo', name:"End Date", type:"DateField"}
                                                 ])
       seminar_model = FactoryGirl.create(:model, pool: @pool, label: 'location_name',
-                                         fields: [{:code=>'location_name'}.with_indifferent_access])
+                                         fields_attributes: [{:code=>'location_name'}])
       audio_cassette1 = FactoryGirl.create(:node, model: audio_cassette_model, pool: @pool, :data=>{'submitted_by'=>'Justin Coyne', 'program_location'=>'Malibu', 'program_title_english'=>'Joy of Living 1', "teacher"=>"Andy Kauffman", "main_text_title_english"=>"Life and Times of Andy Kauffman", "main_text_title_tibetan"=>"blo rig", "date_from"=>"10-1-2011", "date_to"=>"10-6-2011", "restricted?"=>"No","translation_languages"=>"english"})
       audio_cassette2 = FactoryGirl.create(:node, model: audio_cassette_model, pool: @pool, :data=>{'submitted_by'=>'Justin Coyne', 'program_location'=>'Georgetown', 'program_title_english'=>'Aint I a Woman', "teacher"=>"Sojourner Truth", "main_text_title_english"=>"Modern History Sourcebook", "main_text_title_tibetan"=>"rnams bshes", "date_from"=>"12-1-1851", "date_to"=>"12-1-1851", "restricted?"=>"No","translation_languages"=>"english"})
       audio_cassette3 = FactoryGirl.create(:node, model: audio_cassette_model, pool: @pool, :data=>{'submitted_by'=>'Sally Ride', 'program_location'=>'Portland, OR', 'program_title_english'=>'Joy of Living 1', "teacher"=>"Mingyur Rinpoche", "main_text_title_english"=>"Joy of Living", "main_text_title_tibetan"=>"tse gyi dewa", "date_from"=>"10-1-2011", "date_to"=>"10-6-2011", "restricted?"=>"Yes","translation_languages"=>"greek, english"})
@@ -75,11 +75,12 @@ describe Bindery::Curator do
       # Seminars (destinations)
       seminar_model.reload
       # Ensure that all the fields were copied into the destination model
+      constructed_field_codes = seminar_model.fields.map {|f| f.code}
       ["location_name","teacher", "main_text_title_english", "main_text_title_tibetan", "date_from", "date_to", "restricted?","translation_languages"].each do |field_code|
-        constructed_field_def = seminar_model.fields.select {|f| f[:code] == field_code}.should_not be_empty
+        constructed_field_codes.should include(field_code)
       end
-      seminar_model.fields.select {|f| f[:code] == "main_text_title_english"}.first[:name].should == "Main Text (English)"
-      seminar_model.fields.select {|f| f[:code] == "date_from"}.first[:type].should == "date"
+      seminar_model.fields.where(code: "main_text_title_english").first.name.should == "Main Text (English)"
+      seminar_model.fields.where(code: "date_from").first.type.should == "DateField"
 
       seminar_model.nodes.head.count.should == previous_seminars+2
       created_seminar = Node.find_by_persistent_id(updated_cassette.associations["seminar"].first)
@@ -120,7 +121,7 @@ describe Bindery::Curator do
       @identity = FactoryGirl.create :identity
       @pool = FactoryGirl.create :pool, :owner=>@identity
       @model = FactoryGirl.create(:model, pool: @pool, label: 'first_name',
-                                  fields: [{:code=>'first_name'}.with_indifferent_access, {:code=>'last_name'}.with_indifferent_access, {:code=>'title'}.with_indifferent_access])
+                                  fields_attributes: [{:code=>'first_name'}, {:code=>'last_name'}, {:code=>'title'}])
       @node1 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
       @node2 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'})
       @node3 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Ball', 'title'=>'Mr.'})

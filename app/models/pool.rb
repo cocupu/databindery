@@ -59,9 +59,9 @@ class Pool < ActiveRecord::Base
     return solr_params, user_params
   end
 
+  # This filters out everything by default!
   def default_filters
-    # This filters out everything!
-    return [SearchFilter.new(operator:"-", filter_type:"RESTRICT", field_name:"*", values:["*"])]
+    return [SearchFilter.new(operator:"-", filter_type:"RESTRICT", field:Field.new(code:"*"), values:["*"])]
   end
   
   def perspectives
@@ -103,7 +103,7 @@ class Pool < ActiveRecord::Base
   end
 
   def all_fields
-    [{"code"=>"model_name", "name"=>"Model"}] + self.models.map {|m| m.fields}.flatten.uniq.sort{|x, y| x[:name] <=> y[:name]}
+    [Field.canonical("model_name")] + self.models.map {|m| m.fields}.flatten.sort{|x, y| x.code <=> y.code}
   end
   
   # Returns all the associations from all Models in this Pool

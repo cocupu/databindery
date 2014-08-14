@@ -5,7 +5,7 @@ describe Bindery::ReifyHashJob do
     ## database should be clean
     @starting_node_count = Node.count
     @pool = FactoryGirl.create :pool
-    @model = FactoryGirl.create(:model, fields: [{code: 'location', name: 'Location'}.with_indifferent_access, {code: 'title_en', name: 'Title'}.with_indifferent_access, {code: 'creator', name: 'Creator'}.with_indifferent_access])
+    @model = FactoryGirl.create(:model, fields_attributes: [{code: 'location', name: 'Location'}, {code: 'title_en', name: 'Title'}, {code: 'creator', name: 'Creator'}])
   end
   it "should process" do
     row_content = {"title_en"=>'My Title', "location"=>'Paris, France', "creator"=>'Ken Burns'}

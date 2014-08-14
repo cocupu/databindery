@@ -52,7 +52,7 @@ describe PoolSearchesController do
           response.should be_success
         end
         it "should apply filters and facets from exhibit" do
-          exhibit_with_filters = FactoryGirl.build(:exhibit, pool: @my_pool, filters_attributes: [field_name:"subject", operator:"+", values:["test", "barf"]])
+          exhibit_with_filters = FactoryGirl.build(:exhibit, pool: @my_pool, filters_attributes: [field:FactoryGirl.create(:subject_field), operator:"+", values:["test", "barf"]])
           exhibit_with_filters.save!
           get :index, :pool_id=>@my_pool, :perspective=>exhibit_with_filters.id, identity_id: @identity.short_name
           subject.exhibit.should == exhibit_with_filters
@@ -64,11 +64,7 @@ describe PoolSearchesController do
       before do
         sign_in @identity.login_credential
         @other_pool = FactoryGirl.create(:pool, owner: @identity)
-        @auto_model = FactoryGirl.create(:model, pool: @other_pool, name:"/automotive/model")
-        @auto_model.fields << {"code"=>"name", "name"=>"Name"}.with_indifferent_access
-        @auto_model.fields << {"code"=>"year", "name"=>"Year"}.with_indifferent_access
-        @auto_model.fields << {"code"=>"make", "name"=>"Make", "uri"=>"/automotive/model/make"}.with_indifferent_access
-        @auto_model.label = "name"
+        @auto_model = FactoryGirl.create(:model, pool: @other_pool, name:"/automotive/model", label: "name", fields_attributes: [{"code"=>"name", "name"=>"Name"},{"code"=>"year", "name"=>"Year"}, {"code"=>"make", "name"=>"Make", "uri"=>"/automotive/model/make"}])
         @auto_model.save
         AccessControl.create!(:pool=>@other_pool, :identity=>@identity, :access=>'READ')
         @node1 = Node.create!(model:@auto_model, pool: @other_pool, data:{"year"=>"2009", "make"=>"/en/ford", "name"=>"Ford Taurus"})

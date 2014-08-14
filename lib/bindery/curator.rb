@@ -24,7 +24,7 @@ module Bindery
           destination_model = Model.find(destination_model)
         rescue ActiveRecord::RecordNotFound
           model_name =  association_code.capitalize
-          destination_model = Model.new(pool:pool, label:destination_field_name, name:model_name, owner:pool.owner, fields:[{"code"=>destination_field_name, "name"=>destination_field_name.gsub("_", " ").capitalize}.with_indifferent_access])
+          destination_model = Model.new(pool:pool, label:destination_field_name, name:model_name, owner:pool.owner, fields_attributes:[{"code"=>destination_field_name, "name"=>destination_field_name.gsub("_", " ").capitalize}])
           destination_model.save
         end
       end
@@ -87,7 +87,7 @@ module Bindery
           else
             field_code = field_info
           end
-          source_model.fields.delete_if {|f| f[:code] == field_code}
+          source_model.fields.delete( source_model.fields.where(code:field_code) )
         end
         source_model.save
       end
@@ -171,25 +171,31 @@ module Bindery
     def ensure_fields_exist_on_model(destination_model, fields_array, opts)
       if opts.has_key?(:source_model)
         source_model_fields = opts[:source_model].fields
-      else
-        source_model_fields = {}
       end
       fields_array.each do |field_info|
         if field_info.instance_of?(String)
-          field_code = field_info
-          field_config = source_model_fields.select {|f| f[:code] == field_info}.first
-        elsif field_info.instance_of?(Hash)
-          field_code = field_info.values.first
-          field_config = source_model_fields.select {|f| f[:code] == field_info.keys.first}.first
+          destination_field_code = field_info
+          source_field_code = field_info
+        elsif field_info.instance_of?(Hash) # Uses new field name in destination model
+          destination_field_code = field_info.values.first
+          source_field_code =  field_info.keys.first
         end
-        if destination_model.fields.select {|f| f[:code] == field_code}.empty?
-          field_config ||= {}.with_indifferent_access
-          field_config[:code] = field_code
-          field_config[:name] = field_code.gsub("_", " ").capitalize if field_config[:name].nil?
-          destination_model.fields << field_config
+        if destination_model.fields.where(code:destination_field_code).empty?
+          source_field = source_model_fields.where(code:source_field_code).first
+          if source_field
+            if destination_field_code  == source_field_code
+              new_field = source_field  # Re-use original field if it exists.
+            else
+              new_field = source_field.class.create(code:destination_field_code) # Make destination the same field type if source field exists.
+            end
+          else
+            new_field = Field.create(code:destination_field_code)
+          end
+          destination_model.fields << new_field
+          destination_model.save
         end
       end
-      destination_model.save
+
     end
   end
 end

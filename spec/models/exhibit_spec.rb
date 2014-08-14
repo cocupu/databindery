@@ -25,13 +25,12 @@ describe Exhibit do
 
   describe "filtering: "  do
     it "should apply filters to solr params logic" do
-      # subject.filters = []
-      subject.filters << SearchFilter.new(:field_name=>"model", :operator=>"+", :values=>["1","49"])
-      subject.filters << SearchFilter.new(:field_name=>"access", :operator=>"+", :values=>["public"])
-      subject.filters << SearchFilter.new(:filter_type=>"RESTRICT", :field_name=>"model_name", :operator=>"-", :values=>["song","person"])
-      subject.filters << SearchFilter.new(:filter_type=>"RESTRICT", :field_name=>"storage_location", :operator=>"-", :values=>["disk1"])
+      subject.filters << SearchFilter.new(:field=>FactoryGirl.create(:model_field), :operator=>"+", :values=>["1","49"])
+      subject.filters << SearchFilter.new(:field=>FactoryGirl.create(:access_level_field), :operator=>"+", :values=>["public"])
+      subject.filters << SearchFilter.new(:filter_type=>"RESTRICT", :field=>FactoryGirl.create(:model_name_field), :operator=>"-", :values=>["song","person"])
+      subject.filters << SearchFilter.new(:filter_type=>"RESTRICT", :field=>FactoryGirl.create(:location_field), :operator=>"-", :values=>["disk1"])
       solr_params, user_params = subject.apply_solr_params_logic({}, {})
-      solr_params.should == {fq: ['-(model_name:"song" OR model_name:"person")', '-storage_location_ssi:"disk1"', 'model:"1" OR model:"49" OR access_ssi:"public"']}
+      solr_params.should == {fq: ['-(model_name:"song" OR model_name:"person")', '-location_ssi:"disk1"', 'model:"1" OR model:"49" OR access_level_ssi:"public"']}
     end
   end
 

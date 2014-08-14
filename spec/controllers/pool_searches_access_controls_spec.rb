@@ -1,12 +1,14 @@
 require 'spec_helper'
 
 describe PoolSearchesController do
+  let(:access_level_field) {FactoryGirl.create(:access_level_field)}
+  let(:location_field) {FactoryGirl.create(:location_field)}
   before(:all) do
     @owner = FactoryGirl.create :identity
     @pool = FactoryGirl.create :pool, :owner=>@owner
     @pool.audience_categories.build.save
-    @model1 = FactoryGirl.create(:model, pool: @pool, name:"Things", fields:[{"name"=>"Topic", "type"=>"text", "code"=>"topic"}, {"name"=>"Location", "type"=>"string", "code"=>"location"}])
-    @model2 = FactoryGirl.create(:model, pool: @pool, name:"Restricted Things", fields:[{"name"=>"Access Level", "type"=>"string", "code"=>"access_level"}, {"name"=>"Name", "type"=>"text", "code"=>"name"}])
+    @model1 = FactoryGirl.create(:model, pool: @pool, name:"Things", fields_attributes:[{"name"=>"Topic", "type"=>"TextArea", "code"=>"topic"}, {"name"=>"Location", "type"=>"TextField", "code"=>"location"}])
+    @model2 = FactoryGirl.create(:model, pool: @pool, name:"Restricted Things", fields_attributes:[{"name"=>"Access Level", "type"=>"TextField", "code"=>"access_level"}, {"name"=>"Name", "type"=>"TextArea", "code"=>"name"}])
     @node_kittens = FactoryGirl.create(:node, pool: @pool, model:@model1, data:{"topic"=>"Kittens", "location"=>"Albuquerque"})
     @node_puppies = FactoryGirl.create(:node, pool: @pool, model:@model1, data:{"topic"=>"Puppies", "location"=>"Albuquerque"})
     @node_pandas = FactoryGirl.create(:node, pool: @pool, model:@model1, data:{"topic"=>"Pandas", "location"=>"Yunan"})
@@ -28,7 +30,7 @@ describe PoolSearchesController do
       assigns[:document_list].count.should == 7
     end
     it "I should not be constrained by filters from any audiences I am in" do
-      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{filter_type:"RESTRICT", field_name:"access_level", operator:"+", values:["ordinary"]}])
+      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{filter_type:"RESTRICT", field:access_level_field, operator:"+", values:["ordinary"]}])
       @audience.members << @identity
       @audience.save
       get :index, pool_id: @pool, identity_id: @owner.short_name
@@ -44,7 +46,7 @@ describe PoolSearchesController do
       assigns[:document_list].count.should == 7
     end
     it "I should not be constrained by filters from any audiences I am in" do
-      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{filter_type:"RESTRICT", field_name:"access_level", operator:"+", values:["ordinary"]}])
+      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{filter_type:"RESTRICT", field:access_level_field, operator:"+", values:["ordinary"]}])
       @audience.members << @identity
       @audience.save
       get :index, pool_id: @pool, identity_id: @owner.short_name
@@ -70,7 +72,7 @@ describe PoolSearchesController do
   end
   describe "when I belong to one audience that defines one filter" do
     before do
-      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{field_name:"access_level", operator:"+", values:["ordinary"]}])
+      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{field:access_level_field, operator:"+", values:["ordinary"]}])
       @audience.members << @identity
       @audience.save
     end
@@ -81,7 +83,7 @@ describe PoolSearchesController do
   end
   describe "when I belong to an audience that defines multiple filters" do
     before do
-      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{field_name:"access_level", operator:"+", values:["ordinary"]},{field_name:"location", operator:"+", values:["Albuquerque"]}])
+      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{field:access_level_field, operator:"+", values:["ordinary"]},{field:location_field, operator:"+", values:["Albuquerque"]}])
       @audience.members << @identity
       @audience.save
     end
@@ -92,10 +94,10 @@ describe PoolSearchesController do
   end
   describe "when I belong to multiple audiences that define multiple filters" do
     before do
-      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{field_name:"access_level", operator:"+", values:["ordinary"]}])
+      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{field:access_level_field, operator:"+", values:["ordinary"]}])
       @audience.members << @identity
       @audience.save
-      @audience2 = @pool.audience_categories.first.audiences.build(filters_attributes:[{field_name:"location", operator:"+", values:["Albuquerque"]}])
+      @audience2 = @pool.audience_categories.first.audiences.build(filters_attributes:[{field:location_field, operator:"+", values:["Albuquerque"]}])
       @audience2.members << @identity
       @audience2.save
     end
@@ -106,7 +108,7 @@ describe PoolSearchesController do
   end
   describe "when I belong to multiple audiences that defines a RESTRICT filter" do
     before do
-      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{filter_type:"RESTRICT", field_name:"access_level", operator:"+", values:["ordinary"]}])
+      @audience = @pool.audience_categories.first.audiences.build(filters_attributes:[{filter_type:"RESTRICT", field:access_level_field, operator:"+", values:["ordinary"]}])
       @audience.members << @identity
       @audience.save
     end

@@ -1,82 +1,24 @@
 class Model < ActiveRecord::Base
-  has_many :node
-  
-  class Association
-    INBOUND = ['Has Many', 'Has One']
-    OUTBOUND = ['Ordered List', 'Unordered List']
-    TYPES = INBOUND + OUTBOUND
-    instance_methods.each { |m| undef_method m unless m.to_s =~ /^(?:nil\?|send|object_id|to_a)$|^__|^respond_to|proxy_/ }
-    def initialize(data)
-      @data = data
-    end
-
-    def data
-      @data
-    end
-
-    def label
-      @label ||= "#{type} #{name.capitalize}"
-    end
-
-
-    def model
-      @model ||= Model.find(@data[:references])
-    end
-
-
-
-    private
-    def method_missing(method, *args)
-      if @data.has_key?(method)
-        @data[method]
-      elsif @data.respond_to?(method)
-        if block_given?
-          @data.send(method, *args)  { |*block_args| yield(*block_args) }
-        else
-          @data.send(method, *args)
-        end
-      else
-        message = "undefined method `#{method.to_s}' for \"#{@target}\":#{@target.class.to_s}"
-        raise NoMethodError, message
-      end
-    end
-  end
-
-  class AssociationSet
-    instance_methods.each { |m| undef_method m unless m.to_s =~ /^(?:nil\?|send|object_id|to_a)$|^__|^respond_to|proxy_/ }
-    
-    def initialize(data)
-      @target = data.map { |d| Association.new(d) }
-    end
-
-    def target
-      @target
-    end
-
-    private
-    def method_missing(method, *args)
-      unless @target.respond_to?(method)
-        message = "undefined method `#{method.to_s}' for \"#{@target}\":#{@target.class.to_s}"
-        raise NoMethodError, message
-      end
-
-      if block_given?
-        @target.send(method, *args)  { |*block_args| yield(*block_args) }
-      else
-        @target.send(method, *args)
-      end
-    end
-  end
-
-
   FILE_ENTITY_CODE = 'FILE'
   include ActiveModel::ForbiddenAttributesProtection
-  serialize :fields, Array 
-  serialize :associations, Array 
+
+  has_many :node
+  has_and_belongs_to_many :fields
+  accepts_nested_attributes_for :fields, allow_destroy: true
+
+  serialize :associations, Array
+  belongs_to :pool
+  validates :pool, presence: true, :unless=>:code
+
+  belongs_to :owner, class_name: "Identity", :foreign_key => 'identity_id'
+  validates :owner, presence: true, :unless=>:code
+
+  validates :label, :inclusion => {:in=> lambda {|foo| foo.keys }, :message=>"must be a field"}, :if=>Proc.new { |a| a.label }
+  validate :association_cannot_be_named_undefined
+  validates :name, :presence=>true
 
   after_initialize :init
 
-  validates :name, :presence=>true
   #TODO add a fk on node.model_id
   has_many :nodes, :dependent => :destroy do
     def head
@@ -102,16 +44,6 @@ class Model < ActiveRecord::Base
     return node_pids.map {|pid| Node.latest_version(pid)}
   end
 
-  belongs_to :pool
-  validates :pool, presence: true, :unless=>:code
-
-  belongs_to :owner, class_name: "Identity", :foreign_key => 'identity_id'
-  validates :owner, presence: true, :unless=>:code
-
-  validates :label, :inclusion => {:in=> lambda {|foo| foo.keys }, :message=>"must be a field"}, :if=>Proc.new { |a| a.label }
-
-  validate :association_cannot_be_named_undefined
-
   def self.for_identity_and_pool(identity, pool)
     # Cancan 1.6.8 was producing incorrect query, for accessible_by:
     #SELECT "models".* FROM "models" INNER JOIN "pools" ON "pools"."id" = "models"."pool_id" WHERE (("models"."pool_id" IS NULL) OR ("pools"."owner_id" = 134))
@@ -134,7 +66,7 @@ class Model < ActiveRecord::Base
   end
 
   def self.file_entity
-    Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity", label:'file_name', fields: [{'code' => 'file_name', 'type' => 'textfield', 'name' => "Filename" }.with_indifferent_access, {'code' => 'content_type', 'type' => 'textfield', 'name' => "Content Type" }.with_indifferent_access] )
+    Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity", label:'file_name', fields_attributes: [{'code' => 'file_name', 'type' => 'TextField', 'name' => "Filename"}, {'code' => 'content_type', 'type' => 'TextField', 'name' => "Content Type"}] )
   end
   
   # @return [Boolean] current value of allow_file_bindings attribute
@@ -149,8 +81,8 @@ class Model < ActiveRecord::Base
   end
 
   def init
-    self.fields ||= []
-    self.associations ||= []
+    #self.fields ||= []
+    #self.associations ||= []
   end
 
   def index
@@ -172,11 +104,11 @@ class Model < ActiveRecord::Base
   end
 
   def inbound_associations
-    @inbound ||= AssociationSet.new(associations.select {|assoc| Association::INBOUND.include?(assoc[:type]) })
+    @inbound ||= Bindery::AssociationSet.new(associations.select {|assoc| Bindery::Association::INBOUND.include?(assoc[:type]) })
   end
 
   def outbound_associations
-    @outbound ||= AssociationSet.new(associations.select {|assoc| Association::OUTBOUND.include?(assoc[:type]) })
+    @outbound ||= Bindery::AssociationSet.new(associations.select {|assoc| Bindery::Association::OUTBOUND.include?(assoc[:type]) })
   end
 
 

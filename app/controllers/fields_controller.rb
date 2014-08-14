@@ -42,7 +42,8 @@ class FieldsController < ApplicationController
 
   def create
     field_code = Model.field_name(params[:field][:name])
-    @model.fields << params[:field].merge(code: field_code)
+    @field = Field.create(params[:field].merge(code: field_code).permit(:id, :name, :type, :code, :uri, :multivalue))
+    @model.fields << @field
     @model.save!
     respond_to do |format|
       format.html { redirect_to edit_model_path(@model) }

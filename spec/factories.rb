@@ -56,7 +56,7 @@ FactoryGirl.define do
     sequence :name do |n|
       "Factory model name #{n}"
     end
-    fields [{"name"=>"Description", "type"=>"textfield", "uri"=>"dc:description", "code"=>"description"}.with_indifferent_access]
+    fields_attributes [{"name"=>"Description", "type"=>"TextField", "uri"=>"dc:description", "code"=>"description"}]
     owner
   end
   

@@ -27,11 +27,11 @@ describe AssociationsController do
           before do
             pool = FactoryGirl.create :pool, :owner=>@identity
             @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
-                fields: [{"name"=>"Name", "type"=>"textfield", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
+                fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"full_name"}],
                 owner: @identity)#, :associations=>[{:name=>'books', :type=>'Belongs To', :references=>@book_model.id}])
             @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations => [{:name=>'Contributing Authors', :code=>'contributing_authors', :type=>'Ordered List', :references=>@author_model.id}])
-            @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name', 
-                fields: [{"name"=>"Name", "type"=>"textfield", "uri"=>"dc:description", "code"=>"name"}.with_indifferent_access],
+            @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name',
+                fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"name"}],
                 owner: @identity)
 
             @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
@@ -83,12 +83,12 @@ describe AssociationsController do
         describe "on a model that is mine" do
           before do
             pool = FactoryGirl.create :pool, :owner=>@identity
-            @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
-                fields: [{"name"=>"Name", "type"=>"textfield", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
+            @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name',
+                fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"full_name"}],
                 owner: @identity)#, :associations=>[{:name=>'books', :type=>'Belongs To', :references=>@book_model.id}])
             @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations=>[{:name=>'authors', :type=>'Ordered List', :references=>@author_model.id}])
-            @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name', 
-                fields: [{"name"=>"Name", "type"=>"textfield", "uri"=>"dc:description", "code"=>"name"}.with_indifferent_access],
+            @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name',
+                fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"name"}],
                 owner: @identity)
 
             @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})

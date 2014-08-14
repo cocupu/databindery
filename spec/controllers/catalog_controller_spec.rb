@@ -17,10 +17,10 @@ describe CatalogController do
 
     @model1 = FactoryGirl.create(:model, :name=>"Mods and Rockers", :pool=>@exhibit.pool)
 
-    @model1.fields = [{code: 'f1', name: 'Field good'}.with_indifferent_access, {code: 'f2', name: "Another one"}.with_indifferent_access]
+    @model1.update_attributes fields_attributes: [{code: 'f1', name: 'Field good'}, {code: 'f2', name: "Another one"}]
     @model1.save!
     @model2 = FactoryGirl.create(:model, :pool=>@exhibit.pool)
-    @model2.fields = [{code: 'style', name: 'Style'}.with_indifferent_access, {code: 'label', name: "Label"}.with_indifferent_access, {code: 'f2', name: "Another one"}.with_indifferent_access]
+    @model2.update_attributes fields_attributes: [{code: 'style', name: 'Style'}, {code: 'label', name: "Label"}, {code: 'f2', name: "Another one"}]
 
     #TODO ensure that code is unique for all fields in a pool, so that Author.name is separate from Book.name
     @model2.save!
@@ -54,7 +54,7 @@ describe CatalogController do
 
     describe "index" do
       it "should apply filters and facets from exhibit" do
-        exhibit_with_filters = FactoryGirl.build(:exhibit, pool: @pool, filters_attributes: [field_name:"subject", operator:"+", values:["test", "barf"]])
+        exhibit_with_filters = FactoryGirl.build(:exhibit, pool: @pool, filters_attributes: [field:FactoryGirl.create(:subject_field), operator:"+", values:["test", "barf"]])
         exhibit_with_filters.save!
         get :index, :exhibit_id=>exhibit_with_filters.id, :q=>'bazaar', :identity_id=>@identity.short_name
         #user_params = {:exhibit_id=>exhibit_with_filters.id, :q=>'bazaar', :identity_id=>@identity.short_name}

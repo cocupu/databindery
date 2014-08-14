@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :search_filter do
-    field_name "MyString"
+    field
     operator "MyString"
     values ["MyText"]
   end

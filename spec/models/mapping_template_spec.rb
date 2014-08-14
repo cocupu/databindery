@@ -18,7 +18,7 @@ describe MappingTemplate do
   describe "model_mappings" do
     before do
       @template.owner = FactoryGirl.create :identity
-      @model = Model.create(:name=>'Truck', :fields=>{'avail_colors' => {:name=>"Colors"}})
+      @model = Model.create(:name=>'Truck', :fields_attributes=>[{code:'avail_colors', :name=>"Colors"}])
     end
     it "should serialize and deserialize the mapping" do
       @template.model_mappings = [ 
@@ -46,7 +46,9 @@ describe MappingTemplate do
       model = Model.last
       model.name.should == 'Talk'
       model.label.should == 'title'
-      model.fields.should == [{"code"=>"file_name", "name"=>"File Name"}, {"code"=>"title", "name"=>"Title"}]
+      model.fields.count.should == 2
+      model.fields.where(code:"file_name").first.name.should == "File Name"
+      model.fields.where(code:"title").first.name.should == "Title"
 
       @template.row_start.should == 2
 

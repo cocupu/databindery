@@ -19,7 +19,7 @@ describe SpawnJob do
     before do
       @pool = FactoryGirl.create :pool
       @node = Bindery::Spreadsheet.create(pool: @pool, model: Model.file_entity)
-      @model = FactoryGirl.create(:model, fields: [{code: 'wheels', name: 'Wheels'}.with_indifferent_access])
+      @model = FactoryGirl.create(:model, fields_attributes: [{code: 'wheels', name: 'Wheels'}])
       @mapping_template = MappingTemplate.new(owner: FactoryGirl.create(:identity))
       @mapping_template.model_mappings = [{:model_id=>@model.id, :field_mappings=> [{:source=>"B", :label=>"Wheels", :field=>"wheels"}, {:source=>"A", :label=>''}]}]
       @mapping_template.save!

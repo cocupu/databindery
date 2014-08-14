@@ -45,10 +45,10 @@ class ModelsController < ApplicationController
 
   def edit
     @models = Model.for_identity(current_identity) # for the sidebar
-    @field = {name: '', type: '', uri: '', multivalued: false}
+    @field = {name: '', type: '', uri: '', multivalue: false}
     @association= {name: '', type: '', references: ''}
-    @association_types = Model::Association::TYPES
-    @field_types = [['Text Field', 'text'], ['Text Area', 'textarea'], ['Date', 'date']]
+    @association_types = Bindery::Association::TYPES
+    @field_types = [['Text Field', 'TextField'], ['Text Area', 'TextArea'], ['Number', 'IntegerField'], ['Date', 'DateField']]
   end
 
   def update
@@ -89,13 +89,26 @@ class ModelsController < ApplicationController
     else
       model_params = params
     end
-    model_params.permit(:name, :label, :allow_file_bindings).tap do |whitelisted|
-      if model_params[:fields]
-        whitelisted[:fields] = model_params[:fields]
-      end
+    rename_json_fields_to_fields_attributes(model_params)
+    model_params.permit(:name, :label, :allow_file_bindings, fields_attributes: [:id, :_destroy, :name, :type, :code, :uri, :multivalue]).tap do |whitelisted|
       if model_params[:associations]
         whitelisted[:associations] = model_params[:associations]
       end
+    end
+  end
+
+  # json objects list the filters as :filters, not :filters_attributes
+  # this renames those submitted params so that they will be applied properly by update_attributes
+  def rename_json_fields_to_fields_attributes(target_hash)
+    # Grab the fields params out of the full submitted params hash
+    if params["fields"]
+      to_move = params["fields"]
+    elsif params["model"]["fields"]
+      to_move = params["model"]["fields"]
+    end
+    # Write the filters params into the target_hash as filters_attributes
+    if to_move && target_hash["fields_attributes"].nil?
+      target_hash["fields_attributes"] = to_move
     end
   end
 end

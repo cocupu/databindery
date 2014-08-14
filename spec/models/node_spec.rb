@@ -4,10 +4,10 @@ describe Node do
   before do
     @pool = FactoryGirl.create :pool
     @ref = FactoryGirl.create(:model,
-                              fields: [{'code' => 'first_name'}, {'code' => 'last_name'}, {'code' => 'title'}],
+                              fields_attributes: [{'code' => 'first_name'}, {'code' => 'last_name'}, {'code' => 'title'}],
                               label: 'last_name')
     subject.model = FactoryGirl.create(:model,
-                      fields: [{'code' => 'first_name', 'multivalue' => false}, {'code' => 'last_name'}, {'code' => 'title', 'multivalue' => true}],
+                      fields_attributes: [{'code' => 'first_name', 'multivalue' => false}, {'code' => 'last_name'}, {'code' => 'title', 'multivalue' => true}],
                       label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: @ref.id}])
   end
 
@@ -81,13 +81,13 @@ describe Node do
       @identity = FactoryGirl.create :identity
       pool = FactoryGirl.create :pool, :owner=>@identity
       @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
-          fields: [{"name"=>"Name", "type"=>"textfield", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
+          fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"full_name"}],
           owner: @identity)#, :associations=>[{:name=>'books', :type=>'Belongs To', :references=>@book_model.id}])
       subject.model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations => [{:name=>'Contributing Authors', :code=>'contributing_authors', :type=>'Ordered List', :references=>@author_model.id}])
       @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
       @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
       @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name', 
-          fields: [{"name"=>"Name", "type"=>"textfield", "uri"=>"dc:description", "code"=>"name"}.with_indifferent_access],
+          fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"name"}],
           owner: @identity)
       @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {'name' => 'Simon & Schuster Ltd.'})
       @file = FactoryGirl.create(:node, model: Model.file_entity, pool: pool, data: {})
@@ -312,13 +312,13 @@ describe Node do
       @identity = FactoryGirl.create :identity
       @pool = FactoryGirl.create :pool, :owner=>@identity
       @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
-          fields: [{"name"=>"Name", "type"=>"text", "uri"=>"dc:description", "code"=>"full_name"}.with_indifferent_access],
+          fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"full_name"}],
           owner: @identity)
       @author1 = FactoryGirl.create(:node, model: @author_model, pool: @pool, data: {'full_name' => 'Agatha Christie'})
       @author2 = FactoryGirl.create(:node, model: @author_model, pool: @pool, data: {'full_name' => 'Raymond Chandler'})
 
       subject.model = FactoryGirl.create(:model, name: 'Book', label: 'book_title', owner: @identity,
-          fields: [{"code" => "book_title", "name"=>"Book title"}],
+          fields_attributes: [{"code" => "book_title", "name"=>"Book title"}],
           :associations => [{:name=>'Contributing Authors', :code=>'contributing_authors', :type=>'Ordered List', :references=>@author_model.id}.with_indifferent_access])
       subject.data = {'book_title'=>'How to write mysteries'}
       subject.associations['contributing_authors'] = [@author1.persistent_id, @author2.persistent_id]

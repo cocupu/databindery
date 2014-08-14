@@ -12,16 +12,8 @@ describe ExhibitsController do
     @exhibit.facets = ['f2']
     @exhibit.save!
     @exhibit2 = FactoryGirl.create(:exhibit, :pool=>FactoryGirl.create(:pool, :owner=>@identity)) #should not show this exhibit in index.
-    @model1 = FactoryGirl.create(:model, :name=>"Mods and Rockers", :pool=>@exhibit.pool)
-
-    @model1.fields = [{code: 'f1', name: 'Field good'}, {code: 'f2', name: "Another one"}]
-    @model1.save!
-
-    @model2 = FactoryGirl.create(:model, :pool=>@exhibit.pool)
-    @model2.fields = [{code: 'style', name: 'Style'}, {code: 'label', name: "Label"}, {code: 'f2', name: "Another one"}]
-
-    #TODO ensure that code is unique for all fields in a pool, so that Author.name is separate from Book.name
-    @model2.save!
+    @model1 = FactoryGirl.create(:model, :name=>"Mods and Rockers", :pool=>@exhibit.pool, fields_attributes: [{code: 'f1', name: 'Field good'}, {code: 'f2', name: "Another one"}])
+    @model2 = FactoryGirl.create(:model, :pool=>@exhibit.pool, fields_attributes: [{code: 'style', name: 'Style'}, {code: 'label', name: "Label"}, {code: 'f2', name: "Another one"}])
   end
 
   describe "when signed in" do
@@ -43,7 +35,7 @@ describe ExhibitsController do
         get :new, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should be_successful
         assigns[:exhibit].should be_kind_of Exhibit
-        assigns[:fields].should == [{"code"=>"model_name", "name"=>"Model"}, {code:'f2', name:"Another one"}, {code:'f1', name:'Field good'}, {code:'label', name:"Label"}, {code:'style', name:'Style'} ]
+        assigns[:fields].should == @pool.all_fields
       end
     end
 
@@ -64,7 +56,7 @@ describe ExhibitsController do
         get :edit, :id =>@exhibit.id, :pool_id=>@pool, :identity_id=>@identity.short_name
         response.should be_successful
         assigns[:exhibit].should be_kind_of Exhibit
-        assigns[:fields].should == [{"code"=>"model_name", "name"=>"Model"}, {code:'f2', name:"Another one"}, {code:'f1', name:'Field good'}, {code:'label', name:"Label"}, {code:'style', name:'Style'} ]
+        assigns[:fields].should == @pool.all_fields
       end
     end
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140131203332) do
+ActiveRecord::Schema.define(version: 20140806215748) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,6 +80,22 @@ ActiveRecord::Schema.define(version: 20140131203332) do
     t.datetime "updated_at",   null: false
     t.integer  "pool_id"
     t.text     "index_fields"
+  end
+
+  create_table "fields", force: true do |t|
+    t.string   "name"
+    t.string   "type"
+    t.string   "uri"
+    t.string   "code"
+    t.string   "label"
+    t.boolean  "multivalue"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "fields_models", id: false, force: true do |t|
+    t.integer "field_id"
+    t.integer "model_id"
   end
 
   create_table "google_accounts", force: true do |t|
@@ -217,6 +233,7 @@ ActiveRecord::Schema.define(version: 20140131203332) do
     t.string   "association_code"
     t.string   "filterable_type"
     t.string   "filter_type",      default: "GRANT"
+    t.integer  "field_id"
   end
 
   add_index "search_filters", ["filterable_id", "filterable_type"], name: "index_search_filters_on_filterable_id_and_filterable_type", using: :btree
