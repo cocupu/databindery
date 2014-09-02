@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140806215748) do
+ActiveRecord::Schema.define(version: 20140902190229) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -186,14 +186,16 @@ ActiveRecord::Schema.define(version: 20140806215748) do
     t.string   "parent_id"
     t.integer  "pool_id"
     t.integer  "identity_id"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
     t.integer  "model_id"
     t.string   "binding"
     t.text     "associations"
     t.integer  "spawned_from_node_id"
     t.integer  "spawned_from_datum_id"
     t.integer  "modified_by_id"
+    t.boolean  "is_fork",               default: false
+    t.string   "log"
   end
 
   add_index "nodes", ["binding"], name: "index_nodes_on_binding", using: :btree

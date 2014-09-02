@@ -124,7 +124,7 @@ module Bindery
       node_attributes = node_attributes.with_indifferent_access
       pool = node_attributes[:pool]
       model = node_attributes[:model]
-      node = Node.new(node_attributes)
+      node = ::Node.new(node_attributes)
 
       if  model.nodes.empty?
         node.save
@@ -143,7 +143,7 @@ module Bindery
         # puts query
 
         ## TODO do we need to add query_fields for File entities?
-        query_fields = pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
+        query_fields = pool.models.map {|model| model.keys.map{ |key| ::Node.solr_name(key) } }.flatten.uniq
         (solr_response, facet_fields) = get_search_results( {:q=>query}, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'advanced', :fq=>fq, :rows=>10, 'facet.field' => ['name_si', 'model']})
 
         #puts "solr_response: #{solr_response.docs}"
@@ -155,7 +155,7 @@ module Bindery
           node.save
           #flash[:notice] = "Created a new #{@node.model.name} based on your request."
         else
-          node =  Node.find_by_persistent_id(first_result['id'])
+          node =  ::Node.find_by_persistent_id(first_result['id'])
           #flash[:notice] = "Found a #{@node.model.name} matching your query."
         end
       end
