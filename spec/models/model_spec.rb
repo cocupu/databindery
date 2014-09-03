@@ -46,7 +46,7 @@ describe Model do
 
   describe "update_attributes" do
     it "should update" do
-        params = {name:"Collection", label:"collection_name_<set_by_franklin>", fields_attributes:[{"code"=>"submitted_by", "name"=>"Submitted By"}, {"code"=>"collection_name_<set_by_franklin>", "name"=>"Collection Name        <set by Franklin>"}, {"code"=>"media_<select>", "name"=>"Media        <select>"}, {"code"=>"#_of_media", "name"=>"# of Media"}, {"code"=>"collection_owner", "name"=>"Collection Owner"}, {"code"=>"collection_location", "name"=>"Collection Location"}, {"code"=>"program_title_english", "name"=>"Program Title English"}, {"code"=>"main_text_title_tibetan_<select>", "name"=>"Main Text Title Tibetan        <select>"}, {"code"=>"main_text_title_english_<select>", "name"=>"Main Text Title English        <select>"}, {"code"=>"program_location_<select>", "name"=>"Program Location        <select>"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"teacher", "name"=>"Teacher"}, {"code"=>"restricted?_<select>", "name"=>"Restricted?        <select>"}, {"code"=>"original_recorded_by_<select>", "name"=>"Original Recorded By        <select>"}, {"code"=>"copy_or_original_<select>", "name"=>"Copy or Original        <select>"}, {"code"=>"translation_languages", "name"=>"Translation Languages"}, {"code"=>"notes", "name"=>"Notes"}, {"code"=>"post-digi_notes", "name"=>"Post-Digi Notes"}, {"code"=>"post-production_notes", "name"=>"Post-Production Notes"}], allow_file_bindings: true, associations: nil, code:nil, created_at:"2013-06-17T01:43:35Z",  id: 4, identity_id: 1}
+        params = {name:"Collection", label:"collection_name_<set_by_franklin>", fields_attributes:[{"code"=>"submitted_by", "name"=>"Submitted By"}, {"code"=>"collection_name_<set_by_franklin>", "name"=>"Collection Name        <set by Franklin>"}, {"code"=>"media_<select>", "name"=>"Media        <select>"}, {"code"=>"#_of_media", "name"=>"# of Media"}, {"code"=>"collection_owner", "name"=>"Collection Owner"}, {"code"=>"collection_location", "name"=>"Collection Location"}, {"code"=>"program_title_english", "name"=>"Program Title English"}, {"code"=>"main_text_title_tibetan_<select>", "name"=>"Main Text Title Tibetan        <select>"}, {"code"=>"main_text_title_english_<select>", "name"=>"Main Text Title English        <select>"}, {"code"=>"program_location_<select>", "name"=>"Program Location        <select>"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"teacher", "name"=>"Teacher"}, {"code"=>"restricted?_<select>", "name"=>"Restricted?        <select>"}, {"code"=>"original_recorded_by_<select>", "name"=>"Original Recorded By        <select>"}, {"code"=>"copy_or_original_<select>", "name"=>"Copy or Original        <select>"}, {"code"=>"translation_languages", "name"=>"Translation Languages"}, {"code"=>"notes", "name"=>"Notes"}, {"code"=>"post-digi_notes", "name"=>"Post-Digi Notes"}, {"code"=>"post-production_notes", "name"=>"Post-Production Notes"}], allow_file_bindings: true, associations_attributes: [], code:nil, created_at:"2013-06-17T01:43:35Z",  id: 4, identity_id: 1}
         subject.update_attributes( params )
         subject.label.should == "collection_name_<set_by_franklin>"
         subject.associations.should == []
@@ -75,22 +75,23 @@ describe Model do
   end
 
   describe "associations" do
+    let(:other_model) { FactoryGirl.create(:model) }
+    let(:association1) {FactoryGirl.create(:association, name: 'talk', label: "Talk", multivalue:false, references: other_model.id)}
+    let(:association2) {FactoryGirl.create(:association, name: 'authors', label: "Authors", multivalue:true, references: 39)}
+    let(:association3) {FactoryGirl.create(:association, name: 'tracks', label: "Tracks", multivalue:true, references: 40)}
+    let(:association4) {FactoryGirl.create(:association, name: 'members', label: "Members", multivalue:true, references: 41)}
     before do
-      @other_model = FactoryGirl.create(:model)
-      subject.associations << {type: 'Has One', name: 'talk', label: "Talk", references: @other_model.id}
-      subject.associations << {type: 'Has Many', name: 'authors', label: "Authors", references: 39}
-      subject.associations << {type: 'Ordered List', name: 'tracks', label: "Tracks", references: 40}
-      subject.associations << {type: 'Unordered List', name: 'members', label: "Members", references: 41}
+      subject.associations << association1
+      subject.associations << association2
+      subject.associations << association3
+      subject.associations << association4
     end
     it "should have many associations" do
-      subject.associations.should == [{type: 'Has One', name: 'talk', label: "Talk", references: @other_model.id},
-        {type: 'Has Many', name: 'authors', label: "Authors", references: 39}, 
-        {type: 'Ordered List', name: 'tracks', label: "Tracks", references: 40}, 
-        {type: 'Unordered List', name: 'members', label: "Members", references: 41}]
+      subject.associations.should == [association1, association2, association3, association4]
     end
 
     it "should not allow an association to be named undefined" do
-      subject.associations << {type: 'Has One', name: 'undefined', references: 77}
+      subject.associations << OrderedListAssociation.create(name: 'undefined', references: 77)
       subject.owner = Identity.create
       subject.pool = FactoryGirl.create :pool
       subject.should_not be_valid
@@ -98,19 +99,11 @@ describe Model do
     end
 
     it "should have labels" do
-      subject.inbound_associations.map(&:label).should include("Has One Talk", "Has Many Authors")
+      subject.associations.map(&:label).should include("Talk", "Authors")
     end
 
     it "should have model" do
-      subject.inbound_associations.first.model.should == @other_model
-    end
-
-
-    it "should have many outbound associations" do
-      subject.outbound_associations.should == [{type: 'Ordered List', name: 'tracks', label: 'Tracks', references: 40}, {type: 'Unordered List', name: 'members', label: 'Members', references: 41}]
-    end
-    it "should have many inbound associations" do
-      subject.inbound_associations.should == [{type: 'Has One', name: 'talk', label: 'Talk', references: @other_model.id}, {type: 'Has Many', name: 'authors', label: 'Authors', references: 39}]
+      subject.associations.first.model.should == other_model
     end
   end
 

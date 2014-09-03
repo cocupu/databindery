@@ -90,11 +90,8 @@ class ModelsController < ApplicationController
       model_params = params
     end
     rename_json_fields_to_fields_attributes(model_params)
-    model_params.permit(:name, :label, :allow_file_bindings, fields_attributes: [:id, :_destroy, :name, :type, :code, :uri, :multivalue]).tap do |whitelisted|
-      if model_params[:associations]
-        whitelisted[:associations] = model_params[:associations]
-      end
-    end
+    rename_json_associations_to_associations_attributes(model_params)
+    model_params.permit(:name, :label, :allow_file_bindings, fields_attributes: [:id, :_destroy, :name, :type, :code, :uri, :references, :multivalue], associations_attributes: [:id, :_destroy, :name, :type, :code, :uri, :references, :multivalue])
   end
 
   # json objects list the filters as :filters, not :filters_attributes
@@ -109,6 +106,19 @@ class ModelsController < ApplicationController
     # Write the filters params into the target_hash as filters_attributes
     if to_move && target_hash["fields_attributes"].nil?
       target_hash["fields_attributes"] = to_move
+    end
+  end
+
+  def rename_json_associations_to_associations_attributes(target_hash)
+    # Grab the fields params out of the full submitted params hash
+    if params["associations"]
+      to_move = params["associations"]
+    elsif params.has_key?(:model) && params["model"]["associations"]
+      to_move = params["model"]["associations"]
+    end
+    # Write the filters params into the target_hash as filters_attributes
+    if to_move && target_hash["associations_attributes"].nil?
+      target_hash["associations_attributes"] = to_move
     end
   end
 end

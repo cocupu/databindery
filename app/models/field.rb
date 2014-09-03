@@ -36,3 +36,16 @@ class DateField < Field
     Time.parse(value).utc.iso8601 unless value.nil?
   end
 end
+class OrderedListAssociation < Field
+  validates :name, exclusion: { in: %w(undefined), message: "can't be \'%{value}\'" }
+  before_create :initialize_label
+
+  def model
+    Model.find(references)
+  end
+
+  private
+  def initialize_label
+    self.label ||= Model.find(self[:references]).name.capitalize
+  end
+end

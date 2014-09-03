@@ -6,7 +6,7 @@ describe Node do
   let(:model) do
     FactoryGirl.create(:model,
                        fields_attributes: [{'code' => 'first_name', 'multivalue' => false}, {'code' => 'last_name'}, {'code' => 'title', 'multivalue' => true}],
-                       label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: ref.id}])
+                       label: 'last_name', associations_attributes: [{name: 'authors', references: ref.id}])
   end
   let(:ref) do
     FactoryGirl.create(:model,
@@ -65,7 +65,7 @@ describe Node do
 
       subject.model = FactoryGirl.create(:model, name: 'Book', label: 'book_title', owner: identity,
                                          fields_attributes: [{"code" => "book_title", "name"=>"Book title"}],
-                                         :associations => [{:name=>'Contributing Authors', :code=>'contributing_authors', :type=>'Ordered List', :references=>@author_model.id}.with_indifferent_access])
+                                         associations_attributes: [{:name=>'Contributing Authors', :code=>'contributing_authors', :references=>@author_model.id}])
       subject.data = {'book_title'=>'How to write mysteries'}
       subject.associations['contributing_authors'] = [@author1.persistent_id, @author2.persistent_id]
       subject.pool = pool

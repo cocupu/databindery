@@ -4,8 +4,7 @@ class AssociationsController < ApplicationController
 
   def create
     if @model
-      @model.add_association(params[:association])
-      @model.save!
+      @model.associations.create(association_params)
       respond_to do |format|
         format.html { redirect_to edit_model_path(@model) }
         format.json { head :no_content }
@@ -30,5 +29,14 @@ class AssociationsController < ApplicationController
         end
       end
     end
+  end
+
+  def association_params
+    if params.has_key?(:association)
+      association_params = params.require(:association)
+    else
+      association_params = params
+    end
+    association_params.permit(:id, :_destroy, :name, :type, :code, :uri, :references, :multivalue)
   end
 end

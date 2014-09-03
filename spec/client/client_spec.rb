@@ -61,7 +61,7 @@ describe "API" do
         m = Cocupu::Model.new({'identity' =>@ident.short_name, 'pool'=>@pool.short_name, 'name'=>"Car"})
         m.save
         m.fields = [{"name"=>"Name", "type"=>"TextField", "uri"=>"", "code"=>"name"}, {"name"=>"Date Completed", "type"=>"DateField", "uri"=>"", "code"=>"date_completed"}]
-        m.associations = [ {"type"=>"Has One","name"=>"recording","references"=>ref.id}] #service throws a 404 if the references isn't a valid model.id
+        m.associations = [ {"name"=>"recording","references"=>ref.id}] #service throws a 404 if the references isn't a valid model.id
         m.label = 'name'
         m.allow_file_bindings = false
         m.save 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140902190229) do
+ActiveRecord::Schema.define(version: 20140902212830) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -91,6 +91,7 @@ ActiveRecord::Schema.define(version: 20140902190229) do
     t.boolean  "multivalue"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "references"
   end
 
   create_table "fields_models", id: false, force: true do |t|
@@ -171,10 +172,10 @@ ActiveRecord::Schema.define(version: 20140902190229) do
     t.datetime "updated_at",                         null: false
     t.string   "label"
     t.integer  "identity_id"
-    t.text     "associations"
     t.integer  "pool_id"
     t.string   "code"
     t.boolean  "allow_file_bindings", default: true
+    t.text     "associations"
   end
 
   add_index "models", ["code"], name: "index_models_on_code", unique: true, using: :btree

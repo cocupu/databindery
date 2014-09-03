@@ -6,7 +6,7 @@ describe Node do
   let(:model) do
     FactoryGirl.create(:model,
                        fields_attributes: [{'code' => 'first_name', 'multivalue' => false}, {'code' => 'last_name'}, {'code' => 'title', 'multivalue' => true}],
-                       label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: ref.id}])
+                       label: 'last_name', associations_attributes: [{name: 'authors', references: ref.id}])
   end
   let(:ref) do
     FactoryGirl.create(:model,
@@ -22,6 +22,11 @@ describe Node do
     subject.pool = pool
     subject.save!
     subject.to_param.should == subject.persistent_id
+  end
+
+
+  it "should store fields and associations in one 'data' attribute hash" do
+    true == false
   end
 
   it "should store a hash of data" do
@@ -59,7 +64,7 @@ describe Node do
       @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
           fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"full_name"}],
           owner: identity)#, :associations=>[{:name=>'books', :type=>'Belongs To', :references=>@book_model.id}])
-      subject.model = FactoryGirl.create(:model, name: 'Book', owner: identity, :associations => [{:name=>'Contributing Authors', :code=>'contributing_authors', :type=>'Ordered List', :references=>@author_model.id}])
+      subject.model = FactoryGirl.create(:model, name: 'Book', owner: identity, associations_attributes: [{:name=>'Contributing Authors', :code=>'contributing_authors', :references=>@author_model.id}])
       @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
       @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
       @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name', 

@@ -29,7 +29,7 @@ describe AssociationsController do
             @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
                 fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"full_name"}],
                 owner: @identity)#, :associations=>[{:name=>'books', :type=>'Belongs To', :references=>@book_model.id}])
-            @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations => [{:name=>'Contributing Authors', :code=>'contributing_authors', :type=>'Ordered List', :references=>@author_model.id}])
+            @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations_attributes => [{:name=>'Contributing Authors', :code=>'contributing_authors', :references=>@author_model.id}])
             @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name',
                 fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"name"}],
                 owner: @identity)
@@ -86,7 +86,7 @@ describe AssociationsController do
             @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name',
                 fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"full_name"}],
                 owner: @identity)#, :associations=>[{:name=>'books', :type=>'Belongs To', :references=>@book_model.id}])
-            @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations=>[{:name=>'authors', :type=>'Ordered List', :references=>@author_model.id}])
+            @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations_attributes=>[{:name=>'authors', :references=>@author_model.id}])
             @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name',
                 fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"name"}],
                 owner: @identity)
@@ -131,16 +131,18 @@ describe AssociationsController do
           response.should redirect_to root_path
         end
         it "should be successful" do
-          post :create, :model_id=>@my_model.id, :association=>{type: 'Has One', name: 'talks', references: @associated_model.id}
-          @my_model.reload.associations.should == 
-             [{"type" => 'Has One', "name"=>"talks", "references" => @associated_model.id.to_s, "label"=>@associated_model.name, "code"=>'talks'}]
+          @my_model.associations.count.should == 0
+          post :create, :model_id=>@my_model.id, :association=>{name: 'talks', references: @associated_model.id}
+          @my_model.reload.associations.count.should == 1
+          @my_model.associations.first.name.should == "talks"
           response.should redirect_to edit_model_path(@my_model)
         end
         it "should not redirect when json" do
-          post :create, :model_id=>@my_model.id, :association=>{type: 'Has Many', name: 'talks', references: @associated_model.id}, :format=>:json
-          @my_model.reload.associations.should == 
-             [{"type" => 'Has Many', "name"=>"talks", "references" => @associated_model.id, "label"=>@associated_model.name, "code"=>'talks'}]
-          response.should be_successful 
+          @my_model.associations.count.should == 0
+          post :create, :model_id=>@my_model.id, :association=>{name: 'talks', references: @associated_model.id}, :format=>:json
+          @my_model.reload.associations.count.should == 1
+          @my_model.associations.first.name.should == "talks"
+          response.should be_successful
         end
       end
     end

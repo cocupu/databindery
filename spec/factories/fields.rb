@@ -32,4 +32,8 @@ FactoryGirl.define do
   factory :integer_field, class:IntegerField do
     name "a_number"
   end
+  factory :association, class:OrderedListAssociation do
+    name "an_association"
+    label "association_label"
+  end
 end

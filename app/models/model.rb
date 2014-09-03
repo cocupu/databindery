@@ -3,8 +3,12 @@ class Model < ActiveRecord::Base
   include ActiveModel::ForbiddenAttributesProtection
 
   has_many :node
+
+  # NOTE: associations are a subset of fields.  You can create/modify fields via either .fields or .associations methods.
   has_and_belongs_to_many :fields
+  has_and_belongs_to_many :associations, -> {where type:"OrderedListAssociation"}, class_name:"OrderedListAssociation", join_table:"fields_models", foreign_key: "model_id", association_foreign_key:"field_id"
   accepts_nested_attributes_for :fields, allow_destroy: true
+  accepts_nested_attributes_for :associations, allow_destroy: true
 
   serialize :associations, Array
   belongs_to :pool
@@ -14,7 +18,6 @@ class Model < ActiveRecord::Base
   validates :owner, presence: true, :unless=>:code
 
   validates :label, :inclusion => {:in=> lambda {|foo| foo.keys }, :message=>"must be a field"}, :if=>Proc.new { |a| a.label }
-  validate :association_cannot_be_named_undefined
   validates :name, :presence=>true
 
   after_initialize :init
@@ -74,12 +77,6 @@ class Model < ActiveRecord::Base
     return allow_file_bindings
   end
 
-  def association_cannot_be_named_undefined
-    if associations.any?{|a| a[:name] == 'undefined'}
-      errors.add(:associations, "name can't be 'undefined'")
-    end
-  end
-
   def init
     #self.fields ||= []
     #self.associations ||= []
@@ -101,33 +98,6 @@ class Model < ActiveRecord::Base
     else
       label.downcase.gsub(/\s+/, '_').gsub(/\W+/, '')
     end
-  end
-
-  def inbound_associations
-    @inbound ||= Bindery::AssociationSet.new(associations.select {|assoc| Bindery::Association::INBOUND.include?(assoc[:type]) })
-  end
-
-  def outbound_associations
-    @outbound ||= Bindery::AssociationSet.new(associations.select {|assoc| Bindery::Association::OUTBOUND.include?(assoc[:type]) })
-  end
-
-
-  def associations=(attributes)
-    write_attribute :associations, []
-    unless attributes.nil?
-      attributes.each do |attr|
-        add_association(attr.with_indifferent_access)
-      end
-    end
-  end
-
-  def add_association(attributes)
-    if attributes[:label].nil? || attributes[:label].empty?
-      attributes[:label] = Model.find(attributes[:references]).name.capitalize
-    end
-    ## TODO association code should be unique
-    attributes[:code] = Model.field_name(attributes[:name])
-    self.associations << attributes
   end
 
   # Return the Model's array of fields and associations as they are ordered in the edit view

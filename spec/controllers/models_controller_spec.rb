@@ -52,6 +52,7 @@ describe ModelsController do
              "type"=>"TextField",
              "uri"=>"dc:description",
              "code"=>"description",
+             "references"=>nil,
             "label"=>nil,"multivalue"=>nil,"created_at"=>first_model_field.created_at.as_json,"updated_at"=>first_model_field.updated_at.as_json}],
           "name"=>@my_model.name,
           "label"=>nil,
@@ -94,7 +95,7 @@ describe ModelsController do
           response.should  be_successful
           json = JSON.parse(response.body)
           json['associations'].should == []
-          json['fields'].should == [{"id"=>@model_i_can_edit.fields.first.id,"name"=>"Description", "type"=>"TextField", "uri"=>"dc:description", "code"=>"description", "label"=>nil,"multivalue"=>nil,"created_at"=>@model_i_can_edit.fields.first.created_at.as_json,"updated_at"=>@model_i_can_edit.fields.first.updated_at.as_json}]
+          json['fields'].should == [{"id"=>@model_i_can_edit.fields.first.id,"name"=>"Description", "references"=>nil, "type"=>"TextField", "uri"=>"dc:description", "code"=>"description", "label"=>nil,"multivalue"=>nil,"created_at"=>@model_i_can_edit.fields.first.created_at.as_json,"updated_at"=>@model_i_can_edit.fields.first.updated_at.as_json}]
         end
       end
       describe "requesting a model I own" do
@@ -202,7 +203,7 @@ describe ModelsController do
       it "should be successful with json" do
         reference = FactoryGirl.create(:model)
         in_pool = FactoryGirl.create(:pool, owner: @identity)
-        post :create, :model=>{:name=>'Turkey', :fields=>[{"name"=>"Name", "type"=>"TextField", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]}, :pool_id=>in_pool, :format=>:json, identity_id: @identity
+        post :create, :model=>{:name=>'Turkey', :fields=>[{"name"=>"Name", "type"=>"TextField", "uri"=>"", "code"=>"name"}], :associations=>[{'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]}, :pool_id=>in_pool, :format=>:json, identity_id: @identity
         response.should be_successful
         json = JSON.parse response.body
         json["name"].should == 'Turkey'
@@ -210,11 +211,14 @@ describe ModelsController do
         json["identity"].should == @identity.short_name
         json["id"].should_not be_nil
         model = Model.last
-        model.fields.count.should == 1
+        model.fields.count.should == 2
         model.fields.first.name.should == "Name"
         model.fields.first.type.should == "TextField"
         model.fields.first.code.should == "name"
-        model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>reference.name, 'code'=>'workers', 'references'=>reference.id}]
+        model.associations.count.should == 1
+        model.associations.first.name.should == 'workers'
+        model.associations.first.label.should == reference.name
+        model.associations.first.references.should == reference.id
       end
       it "should not allow you to create models in someone elses pool" do
         in_pool = FactoryGirl.create(:pool)
@@ -261,27 +265,33 @@ describe ModelsController do
       end
       it "should be able to update the model via json" do
         reference = FactoryGirl.create(:model)
-        put :update, :id=>@my_model, :model=>{:label=>'name', :fields=>[{"id"=>@my_model.fields.first.id,"name"=>"New Name", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]}, :format=>:json
+        put :update, :id=>@my_model, :model=>{:label=>'name', :fields=>[{"id"=>@my_model.fields.first.id,"name"=>"New Name", "code"=>"name"}], :associations=>[{'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]}, :format=>:json
         response.should be_successful
         @my_model = Model.find(@my_model.id)
         @my_model.label.should == 'name'
-        @my_model.fields.count.should == 1
+        @my_model.fields.count.should == 2
         @my_model.fields.first.name.should == "New Name"
         @my_model.fields.first.type.should == "TextField"
         @my_model.fields.first.code.should == "name"
-        @my_model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>reference.name, 'code'=>'workers', 'references'=>reference.id}]
+        @my_model.associations.count.should == 1
+        @my_model.associations.first.name.should == 'workers'
+        @my_model.associations.first.label.should == reference.name
+        @my_model.associations.first.references.should == reference.id
       end
       it "should accept json without fields wrapped in a :model hash" do
         reference = FactoryGirl.create(:model)
-        put :update, :id=>@my_model, :format=>:json, :label=>'name', :fields=>[{"id"=>@my_model.fields.first.id,"name"=>"Newer Name", "type"=>"TextField", "uri"=>"", "code"=>"name"}], :associations=>[{'type'=> "Has Many",  'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]
+        put :update, :id=>@my_model, :format=>:json, :label=>'name', :fields=>[{"id"=>@my_model.fields.first.id,"name"=>"Newer Name", "type"=>"TextField", "uri"=>"", "code"=>"name"}], :associations_attributes=>[{'name'=> "workers", 'code'=>'workers', 'references'=>reference.id}]
         response.should be_successful
         @my_model = Model.find(@my_model.id)
         @my_model.label.should == 'name'
-        @my_model.fields.count.should == 1
+        @my_model.fields.count.should == 2
         @my_model.fields.first.name.should == "Newer Name"
         @my_model.fields.first.type.should == "TextField"
         @my_model.fields.first.code.should == "name"
-        @my_model.associations.should == [{'type'=> "Has Many",  'name'=> "workers", 'label'=>reference.name, 'code'=>'workers', 'references'=>reference.id}]
+        @my_model.associations.count.should == 1
+        @my_model.associations.first.name.should == 'workers'
+        @my_model.associations.first.label.should == reference.name
+        @my_model.associations.first.references.should == reference.id
       end
       it "should be able to update the model" do
         params = {:model => {name:"Collection", label:"collection_name_<set_by_franklin>", fields:[{"code"=>"submitted_by", "name"=>"Submitted By"}, {"code"=>"collection_name_<set_by_franklin>", "name"=>"Collection Name        <set by Franklin>"}, {"code"=>"media_<select>", "name"=>"Media        <select>"}, {"code"=>"#_of_media", "name"=>"# of Media"}, {"code"=>"collection_owner", "name"=>"Collection Owner"}, {"code"=>"collection_location", "name"=>"Collection Location"}, {"code"=>"program_title_english", "name"=>"Program Title English"}, {"code"=>"main_text_title_tibetan_<select>", "name"=>"Main Text Title Tibetan        <select>"}, {"code"=>"main_text_title_english_<select>", "name"=>"Main Text Title English        <select>"}, {"code"=>"program_location_<select>", "name"=>"Program Location        <select>"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"teacher", "name"=>"Teacher"}, {"code"=>"restricted?_<select>", "name"=>"Restricted?        <select>"}, {"code"=>"original_recorded_by_<select>", "name"=>"Original Recorded By        <select>"}, {"code"=>"copy_or_original_<select>", "name"=>"Copy or Original        <select>"}, {"code"=>"translation_languages", "name"=>"Translation Languages"}, {"code"=>"notes", "name"=>"Notes"}, {"code"=>"post-digi_notes", "name"=>"Post-Digi Notes"}, {"code"=>"post-production_notes", "name"=>"Post-Production Notes"}], allow_file_bindings: true, associations: nil, code:nil, created_at:"2013-06-17T01:43:35Z",  id: 4, identity_id: 1, pool_id: @my_model.pool.id}}

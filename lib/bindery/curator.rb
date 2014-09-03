@@ -32,7 +32,7 @@ module Bindery
       source_model_association = source_model.associations.select {|a| a[:code] == association_code}.first
       if source_model_association.nil?
         association_name = association_code.pluralize.capitalize
-        source_model.associations << {"type"=>"Has Many", "references"=>destination_model.id, "code"=>association_code, "name"=>association_name,"label"=>association_name, }.with_indifferent_access
+        source_model.associations.create(references:destination_model.id, code:association_code, name:association_name, label:association_name)
         source_model.save
       elsif source_model_association[:references] != destination_model.id
         raise StandardError, "Source model already has an association called #{association_code}, but it references model #{source_model_association[:references]} when you are trying to use that association to point at model #{destination_model.id}."

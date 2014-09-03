@@ -103,24 +103,30 @@ describe Pool do
   end
   
   describe "all_associations" do
+    let(:a1) {FactoryGirl.create(:association, code: "talk", name: "Talk", references: 38)}
+    let(:a2) {FactoryGirl.create(:association, code: "authors", name: "Authors", references: 39)}
+    let(:a3) {FactoryGirl.create(:association, code: "tracks", name: "Tracks", references: 40)}
+    let(:a4) {FactoryGirl.create(:association, code: "members", name: "Members", references: 41)}
+    let(:a5) {FactoryGirl.create(:association, code: "authors", name: "Authors", references: 39)}
+    let(:model1) {FactoryGirl.create(:model, associations:[a1, a2])}
+    let(:model2) {FactoryGirl.create(:model, associations:[a3, a4, a5])}
+
     before do
-      @model1 = FactoryGirl.create(:model)
-      @model2 = FactoryGirl.create(:model)
-      @model1.associations << {type: 'Has One', code: "talk", name: "Talk", references: 38}
-      @model1.associations << {type: 'Has Many', code: "authors", name: "Authors", references: 39}
-      @model2.associations << {type: 'Ordered List', code: "tracks", name: "Tracks", references: 40}
-      @model2.associations << {type: 'Unordered List', code: "members", name: "Members", references: 41}
-      @model2.associations << {type: 'Has Many', code: "authors", name: "Authors", references: 39}
-      subject.models << @model1
-      subject.models << @model2
+      #@model1 = FactoryGirl.create(:model)
+      #@model2 = FactoryGirl.create(:model)
+      #
+      #@model1.associations =  [a1, a2]
+      #@model2.associations  = [a3, a4, a5]
+      subject.models << model1
+      subject.models << model2
     end
     it "should return all Model associations in the pool" do
-      subject.all_associations.should == [{type: 'Has One', code: "talk", name: "Talk", references: 38},{type: 'Has Many', code: 'authors', name: "Authors", references: 39}, {type: 'Ordered List', code: 'tracks', name: "Tracks", references: 40}, {type: 'Unordered List', code: 'members', name: "Members", references: 41}, {type: 'Has Many', code: 'authors', name: "Authors", references: 39}]
+      subject.all_associations.should == [a1, a2, a3, a4, a5]
     end
     it "should support filtering for uniqueness based on association code" do
       subject.all_associations().length.should == 5
       subject.all_associations(unique: true).length.should == 4
-      subject.all_associations(unique: true).should == [{type: 'Has One', code: "talk", name: "Talk", references: 38},{type: 'Has Many', code: 'authors', name: "Authors", references: 39}, {type: 'Ordered List', code: 'tracks', name: "Tracks", references: 40}, {type: 'Unordered List', code: 'members', name: "Members", references: 41}]
+      subject.all_associations(unique: true).should == [a1, a2, a3, a4]
     end
   end
 

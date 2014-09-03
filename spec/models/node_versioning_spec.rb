@@ -6,7 +6,7 @@ describe Node do
   let(:model) do
     FactoryGirl.create(:model,
                        fields_attributes: [{'code' => 'first_name', 'multivalue' => false}, {'code' => 'last_name'}, {'code' => 'title', 'multivalue' => true}],
-                       label: 'last_name', associations: [{type: 'Has Many', name: 'authors', references: ref.id}])
+                       label: 'last_name', associations_attributes: [{name: 'authors', references: ref.id}])
   end
   let(:ref) do
     FactoryGirl.create(:model,
