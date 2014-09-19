@@ -2,6 +2,7 @@ source 'http://rubygems.org'
 
 gem "rails", "~> 4.0.1"
 gem "activerecord-session_store"
+gem 'activerecord-import'
 gem 'json'
 
 # Gems used only for assets and not required
@@ -42,7 +43,7 @@ group :test, :development do
   gem "factory_girl_rails"
   gem 'jasmine'
   gem 'jasminerice', github:"bradphelan/jasminerice", ref:"091349c27343bfa728b8e5745675f9ddbb7d9699"
-  gem 'cocupu', github: 'cocupu/client', ref:"a988936bb0b7743687ab63868440df20ef19b1e3" # The ruby client
+  gem 'cocupu', github: 'cocupu/databindery-client', ref:"f5fa3e399babbd1e705c91957fd38ae3c026ef3c" # The ruby client
   #gem 'cocupu', path: '../databindery-client' # The ruby client
   gem "debugger"
 end

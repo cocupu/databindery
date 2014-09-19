@@ -8,6 +8,7 @@ module Bindery::Node
     include Bindery::Node::Indexing
     include Bindery::Node::Versioning
     include Bindery::Node::Forking
+    include Bindery::Node::Importing
   end
 
   # If the type is "File Entity"

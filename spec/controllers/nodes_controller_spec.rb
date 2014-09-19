@@ -215,7 +215,6 @@ describe NodesController do
       @my_model.nodes.count.should == 1
       @my_model.nodes.first.data.should == {'f1' => 'New val'}
       @my_model.nodes.first.associations.should == {'talk' => ['68a9ae10-ea2d-012f-5e29-3c075405d3d7']}
-
     end
   end
 
@@ -264,6 +263,24 @@ describe NodesController do
       new_version.associations.should == {'talk' => ['68a9ae10-ea2d-012f-5e29-3c075405d3d7']}
     end
     
+  end
+
+  describe "import" do
+    before do
+      @identity = FactoryGirl.create :identity
+      @pool = FactoryGirl.create :pool, :owner=>@identity
+      @model = FactoryGirl.create(:model, pool: @pool)
+      sign_in @identity.login_credential
+    end
+    it "should import nodes from an array of data records" do
+      r1 = { 'f1' => 'A val' }
+      r2 = { 'f1' => 'Another val' }
+      nodes_before = Node.count
+      post :import, :data=>[r1, r2], :model_id=>@model, pool_id: @pool, identity_id: @identity.short_name
+      expect(Node.count).to eq(nodes_before + 2)
+      expect(Node.last.data).to eq(r1)
+      expect(Node.find(Node.last.id+1).data).to eq(r2)
+    end
   end
 
   describe "attach_file" do

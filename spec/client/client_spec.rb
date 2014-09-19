@@ -163,6 +163,22 @@ describe "API" do
         n.data.should == {'first_name'=>'Julius', 'last_name'=>'Caesar', 'title'=>'First Citizen'}
       end
     end
+
+    describe "Node#import" do
+      before do
+        @model = FactoryGirl.create(:model, pool: @pool)
+      end
+      it "should import nodes from an array of data records" do
+        r1 = { 'f1' => 'A val' }
+        r2 = { 'f1' => 'Another val' }
+        nodes_before = Node.count
+        response = Cocupu::Node.import({'identity'=>@ident.short_name, 'pool'=>@pool.short_name, "model_id"=>@model.id, "data"=>[r1, r2]})
+        expect(response.body).to eq('{"failed_instances":[],"num_inserts":1}')
+        expect(Node.count).to eq(nodes_before + 2)
+        #expect(Node.last.data).to eq(r1)
+        #expect(Node.find(Node.last.id+1).data).to eq(r2)
+      end
+    end
   
     #
     # Cocupu::Curator

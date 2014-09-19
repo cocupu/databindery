@@ -1,7 +1,7 @@
 class NodesController < ApplicationController
   include Blacklight::Controller
   include Blacklight::SolrHelper
-  load_and_authorize_resource :except=>[:index, :search, :update, :create, :find_or_create], :find_by => :persistent_id
+  load_and_authorize_resource :except=>[:index, :search, :update, :create, :import, :find_or_create], :find_by => :persistent_id
   load_and_authorize_resource :pool, :find_by => :short_name, :through=>:identity
   load_resource :model, through: :node, singleton: true, only: [:show]
 
@@ -114,6 +114,16 @@ class NodesController < ApplicationController
     respond_to do |format|
       format.html { redirect_to identity_pool_search_path(@identity, @pool), :notice=>"#{model.name} created" }
       format.json { render :json=>serialize_node(@node)}
+    end
+  end
+
+  def import
+    authorize! :create, Node
+    model = @pool.models.find(params[:model_id])
+    @import_results = Node.bulk_import_records(params[:data], @pool, model)
+    respond_to do |format|
+      format.html { redirect_to identity_pool_search_path(@identity, @pool), :notice=>"#{params[:data].count} #{model.name.pluralize} created" }
+      format.json { render :json=>@import_results}
     end
   end
   

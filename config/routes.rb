@@ -88,6 +88,7 @@ Bindery::Application.routes.draw do
         collection do
           get 'search'
           post 'find_or_create'
+          post 'import'
         end
         match 'files' => 'nodes#attach_file', :via=>:post
       end

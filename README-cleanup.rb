@@ -12,3 +12,8 @@ pool.nodes.head.each do |node|
     node.save
   end
 end
+
+
+# Destroy all nodes created in the last hour in a given pool
+pool = Pool.find(...)
+pool.nodes.where("created_at > ?", Time.now -  1*60*60).each {|n| n.destroy}
