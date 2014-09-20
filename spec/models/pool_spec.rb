@@ -84,6 +84,7 @@ describe Pool do
         @model1 = FactoryGirl.create(:model, pool: subject)
         @model1.fields << Field.create(:code=>'one', :name=>'One', :type=>'TextField', :uri=>'dc:name', :multivalue=>true)
         @model1.fields << Field.create(:code=>'two', :name=>'Two', :type=>'TextField', :uri=>'dc:name', :multivalue=>true)
+        @model1.associations << FactoryGirl.create(:association, name: 'authors', label: "Authors", multivalue:true, references: 39)
         @model1.save
         subject.models << @model1
       end

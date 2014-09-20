@@ -10,7 +10,9 @@ class Model < ActiveRecord::Base
   accepts_nested_attributes_for :fields, allow_destroy: true
   accepts_nested_attributes_for :associations, allow_destroy: true
 
+  # Legacy data in :fields and :associations attributes on Model objects
   serialize :associations, Array
+  serialize :fields, Array
   belongs_to :pool
   validates :pool, presence: true, :unless=>:code
 

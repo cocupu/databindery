@@ -37,6 +37,6 @@ class AssociationsController < ApplicationController
     else
       association_params = params
     end
-    association_params.permit(:id, :_destroy, :name, :type, :code, :uri, :references, :multivalue)
+    association_params.permit(:id, :_destroy, :name, :type, :code, :uri, :references, :multivalue, :label)
   end
 end
