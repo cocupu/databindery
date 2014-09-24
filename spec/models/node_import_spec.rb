@@ -13,6 +13,16 @@ describe Node do
       expect(Node.count).to eq(count_before + source_records.count)
     end
   end
+  describe '#import_nodes' do
+    it "should import all of the records in a source array" do
+      count_before = Node.count
+      source_records = (1..2).to_a.map { generate_node_of_size(500) }
+      expect(Bindery).to receive(:index)
+      expect(Bindery.solr).to receive(:commit)
+      Node.import_nodes(source_records)
+      expect(Node.count).to eq(count_before + source_records.count)
+    end
+  end
   describe '#bulk_import_records' do
     it "should import small batches in one chunk" do
       compact_source_records = (1..200).to_a.map { generate_node_of_size(500) }
