@@ -134,7 +134,7 @@ class PoolSearchesController < ApplicationController
             when "model_name"
               config.add_facet_field Node.solr_name(field, type: 'facet'), :label => "Model", limit: 10
             when String
-              config.add_facet_field Node.solr_name(field, type: 'facet'), :label => field.name.humanize, limit: 10
+              config.add_facet_field Node.solr_name(field, type: 'facet'), :label => field.humanize, limit: 10
           end
         end
       end
