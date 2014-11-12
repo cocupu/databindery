@@ -20,6 +20,10 @@ describe IdentitiesController do
       identity_json.delete("updated_at")
       identity_json.should == {"id"=>@identity.id, "name"=>@identity.name, "short_name"=>@identity.short_name, "url"=>"/#{@identity.short_name}"}
     end
+    it "should allow searching for identities belonging to current_user" do
+      get :index, q:"current_user"
+      assigns[:identities].should == @identity.login_credential.identities.all
+    end
   end
 
 end
