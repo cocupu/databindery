@@ -60,6 +60,12 @@ describe CatalogController do
         #user_params = {:exhibit_id=>exhibit_with_filters.id, :q=>'bazaar', :identity_id=>@identity.short_name}
         subject.solr_search_params[:fq].should include('subject_ssi:"test" OR subject_ssi:"barf"')
       end
+      it "should convert sort field names to solr fieldnames" do
+        field1 = @model1.fields.first
+        field2 = @model1.fields[1]
+        get :index, :exhibit_id=>@exhibit.id, :q=>'', sort_fields:[{field_id:field1.id,direction:"asc"},{field_id:field2.id,direction:"desc"}], :identity_id=>@identity.short_name
+        expect(subject.solr_search_params[:sort]).to eq("#{field1.solr_name} asc,#{field2.solr_name} desc")
+      end
     end
     describe "show" do
       it "should be success" do

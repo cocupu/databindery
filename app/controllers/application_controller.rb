@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
 
   before_filter :load_identity
   after_filter :set_csrf_cookie_for_ng
+  respond_to :html, :json
   
   rescue_from CanCan::AccessDenied do |exception|
     respond_to do |format|

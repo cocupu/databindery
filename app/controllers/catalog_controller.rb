@@ -12,7 +12,7 @@ class CatalogController < ApplicationController
   include Blacklight::Catalog
   include Bindery::AppliesPerspectives
 
-  solr_search_params_logic << :add_pool_to_fq << :add_index_fields_to_qf
+  solr_search_params_logic << :add_pool_to_fq << :add_index_fields_to_qf << :process_sort_field_params
 
   protected
 
@@ -148,6 +148,21 @@ class CatalogController < ApplicationController
     blacklight_config.index_fields.each do |field_name, obj|
       solr_parameters[:qf] << field_name
     end
+  end
+
+  def process_sort_field_params(solr_parameters, user_parameters)
+    if user_parameters.has_key?(:sort_fields)
+      sorts = []
+      #if solr_parameters[:sort]
+      #  sorts << solr_parameters[:sort]
+      #end
+      user_parameters[:sort_fields].each do |sort_options|
+        field = Field.find(sort_options[:field_id])
+        sorts << "#{field.solr_name} #{sort_options[:direction]}"
+      end
+      solr_parameters[:sort] = sorts.join(",")
+    end
+
   end
 
 end

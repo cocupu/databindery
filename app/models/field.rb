@@ -13,6 +13,10 @@ class Field < ActiveRecord::Base
     value
   end
 
+  def solr_name
+    Node.solr_name(self)
+  end
+
   # Finds or Creates a canonical field with the given code
   def self.canonical(field_code)
     Field.where(code: field_code).first_or_create!(name: field_code.humanize)
