@@ -3,15 +3,19 @@ require 'spec_helper'
 describe Node do
   let(:identity) { FactoryGirl.create :identity }
   let(:pool){ FactoryGirl.create :pool, :owner=>identity }
+  let(:first_name_field) { FactoryGirl.create :first_name_field }
+  let(:last_name_field) { FactoryGirl.create :last_name_field }
+  let(:title_field) { FactoryGirl.create :title_field }
   let(:model) do
     FactoryGirl.create(:model,
-                       fields_attributes: [{'code' => 'first_name', 'multivalue' => false}, {'code' => 'last_name'}, {'code' => 'title', 'multivalue' => true}],
-                       label: 'last_name', associations_attributes: [{name: 'authors', references: ref.id}])
+                       fields: [first_name_field, last_name_field, title_field],
+                       label_field: last_name_field,
+                       associations_attributes: [{name: 'authors', references: ref.id}])
   end
   let(:ref) do
     FactoryGirl.create(:model,
-                       fields_attributes: [{'code' => 'first_name'}, {'code' => 'last_name'}, {'code' => 'title'}],
-                       label: 'last_name')
+                       fields: [first_name_field, last_name_field, title_field],
+                       label_field: last_name_field)
   end
 
   before do

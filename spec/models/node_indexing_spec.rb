@@ -3,15 +3,19 @@ require 'spec_helper'
 describe Node do
   let(:identity) { FactoryGirl.create :identity }
   let(:pool){ FactoryGirl.create :pool, :owner=>identity }
+  let(:first_name_field) { FactoryGirl.create :first_name_field }
+  let(:last_name_field) { FactoryGirl.create :last_name_field }
+  let(:title_field) { FactoryGirl.create :title_field }
+
   let(:model) do
     FactoryGirl.create(:model,
-                       fields_attributes: [{'code' => 'first_name', 'multivalue' => false}, {'code' => 'last_name'}, {'code' => 'title', 'multivalue' => true}],
-                       label: 'last_name', associations_attributes: [{name: 'authors', references: ref.id}])
+                       fields: [first_name_field, last_name_field, title_field],
+                       label_field: last_name_field, associations_attributes: [{name: 'authors', references: ref.id}])
   end
   let(:ref) do
     FactoryGirl.create(:model,
-                       fields_attributes: [{'code' => 'first_name'}, {'code' => 'last_name'}, {'code' => 'title'}],
-                       label: 'last_name')
+                       fields: [first_name_field, last_name_field, title_field],
+                       label_field: last_name_field)
   end
 
   before do
@@ -24,6 +28,13 @@ describe Node do
     subject.pool = pool
     subject.model = FactoryGirl.create(:model)
     subject.save!
+  end
+
+  describe "solr_attributes" do
+    it "should return the part of the solr document that is just the model attributes" do
+      subject.data = {first_name_field.id.to_s=>'Nina', last_name_field.id.to_s=>'Simone', title_field.id.to_s=>'Ms.'}
+      expect(subject.solr_attributes).to eq({"first_name_ssi"=>"Nina", "first_name_sim"=>"Nina", "last_name_ssi"=>"Simone", "last_name_sim"=>"Simone", "title_tesim"=>"Ms.", "title_sim"=>"Ms."})
+    end
   end
 
   describe "solr_name" do
@@ -46,7 +57,7 @@ describe Node do
   describe "with data" do
     before do
       subject.pool = pool
-      subject.data = {'f1'=>'good', 'first_name' => 'Heathcliff', 'last_name' => 'Huxtable', 'title'=>'Dr.'}
+      subject.data = {'f1'=>'good', first_name_field.id.to_s => 'Heathcliff', last_name_field.id.to_s => 'Huxtable', title_field.id.to_s=>'Dr.'}
     end
 
     it "should produce a solr document with correct field names, skipping fields that are not defined in the model" do
@@ -56,18 +67,21 @@ describe Node do
   end
 
   describe "with associations" do
-    before do
-      @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name',
-                                         fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"full_name"}],
-                                         owner: identity)
-      @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
-      @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
+    let(:full_name_field) {Field.create("name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"full_name")}
+    let(:book_title_field) {Field.create("code" => "book_title", "name"=>"Book title")}
 
-      subject.model = FactoryGirl.create(:model, name: 'Book', label: 'book_title', owner: identity,
-                                         fields_attributes: [{"code" => "book_title", "name"=>"Book title"}],
-                                         associations_attributes: [{:name=>'Contributing Authors', :code=>'contributing_authors', :references=>@author_model.id}])
-      subject.data = {'book_title'=>'How to write mysteries'}
-      subject.associations['contributing_authors'] = [@author1.persistent_id, @author2.persistent_id]
+    before do
+      @author_model = FactoryGirl.create(:model, name: 'Author', label_field: full_name_field,
+                                         fields: [full_name_field],
+                                         owner: identity)
+      @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {full_name_field.id.to_s => 'Agatha Christie'})
+      @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {full_name_field.id.to_s => 'Raymond Chandler'})
+      @contributing_authors_association = OrderedListAssociation.create(:name=>'Contributing Authors', :code=>'contributing_authors', :references=>@author_model.id)
+      subject.model = FactoryGirl.create(:model, name: 'Book', label_field: book_title_field, owner: identity,
+                                         fields: [book_title_field],
+                                         associations: [@contributing_authors_association])
+      subject.data = {book_title_field.id.to_s=>'How to write mysteries'}
+      subject.associations[@contributing_authors_association.id.to_s] = [@author1.persistent_id, @author2.persistent_id]
       subject.pool = pool
       subject.save!
     end

@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe AssociationsController do
+  let(:full_name_field) { FactoryGirl.create(:full_name_field) }
+  let(:title_field) { FactoryGirl.create(:title_field) }
+
   before do
     @identity = FactoryGirl.create :identity
   end
@@ -26,20 +29,21 @@ describe AssociationsController do
         describe "on a model that is mine" do
           before do
             pool = FactoryGirl.create :pool, :owner=>@identity
-            @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
-                fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"full_name"}],
+            @author_model = FactoryGirl.create(:model, name: 'Author', label_field: full_name_field,
+                fields: [full_name_field],
                 owner: @identity)#, :associations=>[{:name=>'books', :type=>'Belongs To', :references=>@book_model.id}])
-            @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations_attributes => [{:name=>'Contributing Authors', :code=>'contributing_authors', :references=>@author_model.id}])
-            @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name',
-                fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"name"}],
+            @contributing_authors_association = OrderedListAssociation.create(:name=>'Contributing Authors', :code=>'contributing_authors', :references=>@author_model.id)
+            @book_model = FactoryGirl.create(:model, name: 'Book', owner: @identity, :associations => [@contributing_authors_association])
+            @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label_field: title_field,
+                fields: [title_field],
                 owner: @identity)
 
-            @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
-            @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
-            @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {'name' => 'Simon & Schuster Ltd.'})
+            @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {full_name_field.id.to_s => 'Agatha Christie'})
+            @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {full_name_field.id.to_s => 'Raymond Chandler'})
+            @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {title_field.id.to_s => 'Simon & Schuster Ltd.'})
             @file = FactoryGirl.create(:node, model: Model.file_entity, pool: pool, data: {})
             @book = FactoryGirl.create(:node, model: @book_model, pool: pool, 
-                    :associations=>{'contributing_authors'=>[@author1.persistent_id, @author2.persistent_id], 'undefined'=>[@publisher.persistent_id], 'files'=>[@file.persistent_id]})
+                    :associations=>{@contributing_authors_association.id.to_s=>[@author1.persistent_id, @author2.persistent_id], 'undefined'=>[@publisher.persistent_id], 'files'=>[@file.persistent_id]})
           end
           it "should be successful" do
             get :index, :node_id=>@book.persistent_id, :format=>:json
@@ -63,6 +67,8 @@ describe AssociationsController do
             json = JSON.parse(response.body)
             json["incoming"].first["persistent_id"].should == @book.persistent_id
             @book.as_json.keys.select {|k| (k != "created_at") && (k != "updated_at")}.each do |key|
+              expected = @book.as_json[key]
+              expected.stringify_keys! if expected.instance_of? Hash
               json["incoming"].first[key].should ==  @book.as_json[key]
             end
 
@@ -91,10 +97,10 @@ describe AssociationsController do
                 fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"name"}],
                 owner: @identity)
 
-            @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
-            @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
-            @author3 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Mark Twain'})
-            @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {'name' => 'Simon & Schuster Ltd.'})
+            @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {full_name_field.id.to_s => 'Agatha Christie'})
+            @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {full_name_field.id.to_s => 'Raymond Chandler'})
+            @author3 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {full_name_field.id.to_s => 'Mark Twain'})
+            @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {title_field.id.to_s => 'Simon & Schuster Ltd.'})
             @book = FactoryGirl.create(:node, model: @book_model, pool: pool, 
                     :associations=>{'authors'=>[@author1.persistent_id, @author2.persistent_id], 'undefined'=>[@publisher.persistent_id]})
           end

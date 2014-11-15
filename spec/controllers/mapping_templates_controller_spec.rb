@@ -33,7 +33,7 @@ describe MappingTemplatesController do
         model.fields.where(code:"file_name").first.name.should == "File Name"
         model.fields.where(code:"title").first.name.should == "Title"
         model.name.should == 'Talk'
-        model.label.should == "title"
+        model.label_field.should == model.fields.where(code:'title').first
         mapping = assigns[:mapping_template].model_mappings[0]
         mapping[:field_mappings].should == [ {"label"=>"File Name", "source"=>"A", 'field' => 'file_name'},
            {"label"=>"Title", "source"=>"C", 'field' => 'title'},
@@ -79,7 +79,7 @@ describe MappingTemplatesController do
              {"source"=>"1", "label"=>"Submitted By", "field"=>"submitted_by"},
              {"source"=>"2", "label"=>"Collection Name", "field"=>"collection_name"}]
         model = Model.find(assigns[:mapping_template].model_mappings.first[:model_id])
-        model.label.should == "collection_name"
+        model.label_field.should == model.fields.where(code:'collection_name').first
       end
 
     end

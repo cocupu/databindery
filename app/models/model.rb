@@ -3,6 +3,7 @@ class Model < ActiveRecord::Base
   include ActiveModel::ForbiddenAttributesProtection
 
   has_many :node
+  belongs_to :label_field, class_name:Field
 
   # NOTE: associations are a subset of fields.  You can create/modify fields via either .fields or .associations methods.
   has_and_belongs_to_many :fields
@@ -19,7 +20,8 @@ class Model < ActiveRecord::Base
   belongs_to :owner, class_name: "Identity", :foreign_key => 'identity_id'
   validates :owner, presence: true, :unless=>:code
 
-  validates :label, :inclusion => {:in=> lambda {|foo| foo.keys }, :message=>"must be a field"}, :if=>Proc.new { |a| a.label }
+  validates :label_field, :inclusion => {:in=> lambda {|model|  model.fields }, :message=>"must be one of the fields in this model"}, :if=>Proc.new { |a| a.label_field }
+
   validates :name, :presence=>true
 
   after_initialize :init
@@ -71,7 +73,11 @@ class Model < ActiveRecord::Base
   end
 
   def self.file_entity
-    Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity", label:'file_name', fields_attributes: [{'code' => 'file_name', 'type' => 'TextField', 'name' => "Filename"}, {'code' => 'content_type', 'type' => 'TextField', 'name' => "Content Type"}] )
+    Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity", fields_attributes: [{'code' => 'file_name', 'type' => 'TextField', 'name' => "Filename"}, {'code' => 'content_type', 'type' => 'TextField', 'name' => "Content Type"}] ) do |file_entity_model|
+      file_name_field = file_entity_model.fields.select {|f| f.code == 'file_name' }.first
+      file_name_field.save
+      file_entity_model.label_field = file_name_field
+    end
   end
   
   # @return [Boolean] current value of allow_file_bindings attribute
@@ -90,8 +96,38 @@ class Model < ActiveRecord::Base
     Bindery.index(Node.find(max_ids).map {|m| m.to_solr })
   end
 
+  # Keys used in Node data corresponding to all Fields in this Model
   def keys
-    fields.map{|f| f['code']}
+    field_ids.map {|field_id| field_id.to_s}
+  end
+
+  # Field codes corresponding to all Fields in this Model -- these are used to generate the solr documents
+  def field_codes
+    @field_codes ||= fields.map{|f| f.code}
+  end
+
+  def map_field_codes_to_id_strings
+    if @field_codes_and_id_strings
+      return @field_codes_and_id_strings
+    else
+      @field_codes_and_id_strings = {}
+      fields.each do |field|
+        @field_codes_and_id_strings[field.code] = field.id.to_s
+      end
+      return @field_codes_and_id_strings
+    end
+  end
+
+  # Returns a copy of `source_data` with field codes converted to the id strings for the corresponding Field with each code
+  # Does not modify values where the key (field_code) does not correspond to any Fields on the model
+  # See also Model#map_field_codes_to_id_strings
+  # @param [Hash] source_data to be converted
+  def convert_data_field_codes_to_id_strings(source_data)
+    new_data = source_data.dup
+    map_field_codes_to_id_strings.each_pair do |field_code,id_string|
+      new_data[id_string] = new_data.delete(field_code) unless new_data[field_code].nil?
+    end
+    new_data
   end
 
   def self.field_name(label)
@@ -100,6 +136,12 @@ class Model < ActiveRecord::Base
     else
       label.downcase.gsub(/\s+/, '_').gsub(/\W+/, '')
     end
+  end
+
+  # The key to use for looking up the node label within the data on nodes belonging to this Model
+  # Currently hard-coded as the stringified id of the Model's label_field
+  def label_key
+    label_field_id.to_s
   end
 
   # Return the Model's array of fields and associations as they are ordered in the edit view

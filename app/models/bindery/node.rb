@@ -3,12 +3,14 @@ module Bindery::Node
 
   included do
     include Bindery::Identifiable
+    include Bindery::Node::DataManipulations
     include Bindery::Node::HasFiles
     include Bindery::Node::Finders
     include Bindery::Node::Indexing
     include Bindery::Node::Versioning
     include Bindery::Node::Forking
     include Bindery::Node::Importing
+    include Bindery::Node::Associations
   end
 
   # If the type is "File Entity"
@@ -69,18 +71,7 @@ module Bindery::Node
   #end
 
   def title
-    data[model.label].present? ? data[model.label] : persistent_id
-  end
-
-
-  def association_display
-    serializable_hash(:only=>[:id, :persistent_id], :methods=>[:title])
-  end
-
-  def serializable_hash(args)
-    hash = super
-    hash['id'] = hash['persistent_id']
-    hash
+    @title ||= data[model.label_key].present? ? data[model.label_key] : persistent_id
   end
 
   def as_json(opts=nil)
@@ -94,34 +85,12 @@ module Bindery::Node
     h
   end
 
-  def associations_for_json
-    output = {}
-    update_file_ids
-    model.associations.each do |a|
-      assoc_name = a[:name]
-      assoc_code = a[:code]
-      output[assoc_name] = []
-      if associations[assoc_code] && associations[assoc_code].kind_of?(Array)
-        associations[assoc_code].each do |id|
-          node = Node.latest_version(id)
-          output[assoc_name] <<  node.association_display if node
-        end
-      end
-    end
-    output['undefined'] = []
-    if associations['undefined']
-      associations['undefined'].each do |id|
-        node = Node.latest_version(id)
-        output['undefined'] << node.association_display if node
-      end
-    end
-    if files
-      output['files'] = []
-      files.each do |file_entity|
-        output['files'] << file_entity.association_display
-      end
-    end
-    output
+  # This ensures that persistent_id is used as the key when nodes and associations are serialized as a hash
+  def serializable_hash(args)
+    hash = super
+    hash['id'] = hash['persistent_id']
+    hash
   end
+
 
 end

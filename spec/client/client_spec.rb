@@ -109,10 +109,10 @@ describe "API" do
       it "should find nodes with fielded search" do
         @auto_model = FactoryGirl.create(:model, pool: @pool, name:"/automotive/model", fields_attributes: [{"code"=>"name", "name"=>"Name"},{"code"=>"year", "name"=>"Year"}, {"code"=>"make", "name"=>"Make", "uri"=>"/automotive/model/make"}])
 
-        @node1 = Node.create!(model:@auto_model, pool: @pool, data:{"year"=>"2009", "make"=>"/en/ford", "name"=>"Ford Taurus"})
-        @node2 = Node.create!(model:@auto_model, pool: @pool, data:{"year"=>"2011", "make"=>"/en/ford", "name"=>"Ford Taurus"})
-        @node3 = Node.create!(model:@auto_model, pool: @pool, data:{"year"=>"2013", "make"=>"Prius", "name"=>"Zippy"})
-        @node4 = Node.create!(model:@auto_model, pool: @pool, data:{"year"=>"2012", "make"=>"Prius", "name"=>"Recharge"})
+        @node1 = Node.create!(model:@auto_model, pool: @pool, data:@auto_model.convert_data_field_codes_to_id_strings("year"=>"2009", "make"=>"/en/ford", "name"=>"Ford Taurus"))
+        @node2 = Node.create!(model:@auto_model, pool: @pool, data:@auto_model.convert_data_field_codes_to_id_strings("year"=>"2011", "make"=>"/en/ford", "name"=>"Ford Taurus"))
+        @node3 = Node.create!(model:@auto_model, pool: @pool, data:@auto_model.convert_data_field_codes_to_id_strings("year"=>"2013", "make"=>"Prius", "name"=>"Zippy"))
+        @node4 = Node.create!(model:@auto_model, pool: @pool, data:@auto_model.convert_data_field_codes_to_id_strings("year"=>"2012", "make"=>"Prius", "name"=>"Recharge"))
 
         results = Cocupu::Node.find(@ident.short_name, @pool.short_name, "make" => "Prius")
         results.count.should == 2
@@ -145,15 +145,15 @@ describe "API" do
       before do
         @model = FactoryGirl.create(:model, pool: @pool, label: 'first_name',
                                     fields_attributes: [{:code=>'first_name'}, {:code=>'last_name'}, {:code=>'title'}])
-        @node1 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
-        @node2 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'})
-        @node3 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Ball', 'title'=>'Mr.'})
+        @node1 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>@model.convert_data_field_codes_to_id_strings('first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'))
+        @node2 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>@model.convert_data_field_codes_to_id_strings('first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'))
+        @node3 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>@model.convert_data_field_codes_to_id_strings('first_name'=>'Justin', 'last_name'=>'Ball', 'title'=>'Mr.'))
       end
       it "if a match exists should load the found node " do
-        n = Cocupu::Node.find_or_create({'identity'=>@ident.short_name, 'pool'=>@pool.short_name, "node"=>{'model_id' => @model.id, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}} })
+        n = Cocupu::Node.find_or_create({'identity'=>@ident.short_name, 'pool'=>@pool.short_name, "node"=>{'model_id' => @model.id, :data=>@model.convert_data_field_codes_to_id_strings('first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.')} })
         n.should be_instance_of Cocupu::Node
         n.persistent_id.should == @node1.persistent_id
-        n.data.should == {'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}
+        n.data.should == @model.convert_data_field_codes_to_id_strings('first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.')
       end
       it "if no match exists should load the created Cocupu::Node" do
         count_before = Node.count

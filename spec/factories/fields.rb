@@ -17,6 +17,21 @@ FactoryGirl.define do
   factory :subject_field, class:TextField do
     name "subject"
   end
+  factory :title_field, class:TextField do
+    name "title"
+    multivalue true
+  end
+  factory :full_name_field, class:TextField do
+    name 'Name'
+    uri "dc:description"
+    code "full_name"
+  end
+  factory :first_name_field, class:TextField do
+    name "first_name"
+  end
+  factory :last_name_field, class:TextField do
+    name "last_name"
+  end
   factory :location_field, class:Field do
     name "location"
   end

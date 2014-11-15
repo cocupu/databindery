@@ -119,6 +119,8 @@ GEM
       debugger-ruby_core_source (~> 1.2.1)
     debugger-linecache (1.2.0)
     debugger-ruby_core_source (1.2.4)
+    deprecation (0.1.0)
+      activesupport
     devise (3.1.0)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
@@ -350,6 +352,7 @@ DEPENDENCIES
   coffee-rails
   database_cleaner (>= 0.7.0)
   debugger
+  deprecation
   devise
   factory_girl_rails
   foreigner

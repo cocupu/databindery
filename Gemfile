@@ -36,6 +36,7 @@ gem 'foreigner'
 
 gem 'uuid'
 gem 'kaminari'
+gem 'deprecation'
 
 
 group :test, :development do

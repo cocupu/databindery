@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 describe Model do
+  let(:identity) { FactoryGirl.create :identity }
+  let(:pool) { FactoryGirl.create :pool, owner:identity }
+  let(:full_name_field) { FactoryGirl.create :first_name_field }
+  let(:first_name_field) { FactoryGirl.create :first_name_field }
+  let(:last_name_field) { FactoryGirl.create :last_name_field }
+
   before do
     subject.name = "Test Name"
   end
@@ -46,9 +52,9 @@ describe Model do
 
   describe "update_attributes" do
     it "should update" do
-        params = {name:"Collection", label:"collection_name_<set_by_franklin>", fields_attributes:[{"code"=>"submitted_by", "name"=>"Submitted By"}, {"code"=>"collection_name_<set_by_franklin>", "name"=>"Collection Name        <set by Franklin>"}, {"code"=>"media_<select>", "name"=>"Media        <select>"}, {"code"=>"#_of_media", "name"=>"# of Media"}, {"code"=>"collection_owner", "name"=>"Collection Owner"}, {"code"=>"collection_location", "name"=>"Collection Location"}, {"code"=>"program_title_english", "name"=>"Program Title English"}, {"code"=>"main_text_title_tibetan_<select>", "name"=>"Main Text Title Tibetan        <select>"}, {"code"=>"main_text_title_english_<select>", "name"=>"Main Text Title English        <select>"}, {"code"=>"program_location_<select>", "name"=>"Program Location        <select>"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"teacher", "name"=>"Teacher"}, {"code"=>"restricted?_<select>", "name"=>"Restricted?        <select>"}, {"code"=>"original_recorded_by_<select>", "name"=>"Original Recorded By        <select>"}, {"code"=>"copy_or_original_<select>", "name"=>"Copy or Original        <select>"}, {"code"=>"translation_languages", "name"=>"Translation Languages"}, {"code"=>"notes", "name"=>"Notes"}, {"code"=>"post-digi_notes", "name"=>"Post-Digi Notes"}, {"code"=>"post-production_notes", "name"=>"Post-Production Notes"}], allow_file_bindings: true, associations_attributes: [], code:nil, created_at:"2013-06-17T01:43:35Z",  id: 4, identity_id: 1}
+        params = {name:"Collection", fields_attributes:[{"code"=>"submitted_by", "name"=>"Submitted By"}, {"code"=>"collection_name_<set_by_franklin>", "name"=>"Collection Name        <set by Franklin>"}, {"code"=>"media_<select>", "name"=>"Media        <select>"}, {"code"=>"#_of_media", "name"=>"# of Media"}, {"code"=>"collection_owner", "name"=>"Collection Owner"}, {"code"=>"collection_location", "name"=>"Collection Location"}, {"code"=>"program_title_english", "name"=>"Program Title English"}, {"code"=>"main_text_title_tibetan_<select>", "name"=>"Main Text Title Tibetan        <select>"}, {"code"=>"main_text_title_english_<select>", "name"=>"Main Text Title English        <select>"}, {"code"=>"program_location_<select>", "name"=>"Program Location        <select>"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"date_from_", "name"=>"Date from "}, {"code"=>"date_to", "name"=>"Date to"}, {"code"=>"teacher", "name"=>"Teacher"}, {"code"=>"restricted?_<select>", "name"=>"Restricted?        <select>"}, {"code"=>"original_recorded_by_<select>", "name"=>"Original Recorded By        <select>"}, {"code"=>"copy_or_original_<select>", "name"=>"Copy or Original        <select>"}, {"code"=>"translation_languages", "name"=>"Translation Languages"}, {"code"=>"notes", "name"=>"Notes"}, {"code"=>"post-digi_notes", "name"=>"Post-Digi Notes"}, {"code"=>"post-production_notes", "name"=>"Post-Production Notes"}], allow_file_bindings: true, associations_attributes: [], code:nil, created_at:"2013-06-17T01:43:35Z",  id: 4, identity_id: 1}
         subject.update_attributes( params )
-        subject.label.should == "collection_name_<set_by_franklin>"
+        subject.fields.length.should == 22
         subject.associations.should == []
     end
   end
@@ -60,7 +66,7 @@ describe Model do
     file_entity.code.should == Model::FILE_ENTITY_CODE
     file_entity.fields.first.code.should == 'file_name'
     file_entity.fields.last.code.should == "content_type"
-    file_entity.label.should == 'file_name'
+    file_entity.label_field.should == file_entity.fields.where(code:'file_name').first
   end
 
   it "should have many fields" do
@@ -72,6 +78,26 @@ describe Model do
     subject.fields << field2
     subject.save!
     subject.reload.fields.first.should == field1
+  end
+
+  let(:full_name_field) { FactoryGirl.create :full_name_field }
+  let(:first_name_field) { FactoryGirl.create :first_name_field }
+  let(:last_name_field) { FactoryGirl.create :last_name_field }
+  let(:field_list) { [full_name_field,first_name_field,last_name_field] }
+  let(:model_with_fields) { FactoryGirl.create(:model, fields:field_list) }
+  describe "map_field_codes_to_id_strings" do
+    it "should return a hash that maps field codes to id strings" do
+      expected = {}
+      field_list.each {|f| expected[f.code] = f.id.to_s}
+      expect( model_with_fields.map_field_codes_to_id_strings ).to eq(expected)
+    end
+  end
+
+  let(:data_with_field_codes) { {"full_name"=>"Bessie Smith", "last_name"=>"Smith", "passion"=>"Jazz", "profession"=>"Singer"} }
+  describe "convert_data_field_codes_to_id_strings" do
+    it "should replace field codes with id strings where possible" do
+      expect( model_with_fields.convert_data_field_codes_to_id_strings(data_with_field_codes) ).to eq( {full_name_field.id.to_s=>"Bessie Smith", last_name_field.id.to_s=>"Smith", "passion"=>"Jazz", "profession"=>"Singer"} )
+    end
   end
 
   describe "associations" do
@@ -108,17 +134,26 @@ describe Model do
   end
 
   it "should have a label" do
-    subject.label = "title"
-    subject.label.should == "title"
+    first_name_field = FactoryGirl.create(:first_name_field)
+    subject.label_field = first_name_field
+    subject.label_field.should == first_name_field
   end
 
-  it "should validate that label is a field" do
-    subject.owner = Identity.create
-    subject.pool = FactoryGirl.create :pool
-    subject.label = "title"
+  it "should validate that label_field is a field" do
+    subject.owner = identity
+    subject.pool = pool
+    subject.label_field =  FactoryGirl.create(:subject_field)
     subject.should_not be_valid
-    subject.errors.full_messages.should == ["Label must be a field"]
+    subject.errors.full_messages.should == ["Label field must be one of the fields in this model"]
 #    subject.fields
+  end
+
+  it "should validate that label_field_id corresponds to a field" do
+    subject.owner = identity
+    subject.pool = pool
+    subject.label_field_id =  FactoryGirl.create(:subject_field).id
+    subject.should_not be_valid
+    subject.errors.full_messages.should == ["Label field must be one of the fields in this model"]
   end
 
   it "should belong to an identity" do
