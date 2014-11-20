@@ -45,7 +45,7 @@ describe "API" do
     #
     describe "models" do
       before do
-        @model = FactoryGirl.create(:model, pool: @pool)
+        @model = FactoryGirl.create(:model, pool: @pool, fields_attributes:[{code:"description"},{code:"name"},{code:"date_completed"}])
         @model2 = FactoryGirl.create(:model, pool: @pool)
       end
       it "should create a new model" do
@@ -82,6 +82,16 @@ describe "API" do
         model.fields.should == JSON.parse(@model.fields.to_json)
         model.pool.should == @model.pool.short_name
         model.identity.should == @model.pool.owner.short_name
+      end
+
+      it "should convert data keys to field identifiers for single hashes and arrays of hashes" do
+        data_to_convert = {"description"=>"Poet, prominent figure in the Harlem Renaissance","name"=>"Wallace Thurman", "date_completed"=>"2014-09-18"}
+        model = Cocupu::Model.load(@model.id)
+        description_field = model.fields.select {|f| f["code"] == "description"}.first
+        name_field = model.fields.select {|f| f["code"] == "name"}.first
+        date_completed_field = model.fields.select {|f| f["code"] == "date_completed"}.first
+        expect(model.convert_data_keys(data_to_convert)).to eq({description_field["id"]=>"Poet, prominent figure in the Harlem Renaissance", name_field["id"] => "Wallace Thurman", date_completed_field["id"] => "2014-09-18"})
+        expect(model.convert_data_keys([data_to_convert]).first).to eq({description_field["id"]=>"Poet, prominent figure in the Harlem Renaissance", name_field["id"] => "Wallace Thurman", date_completed_field["id"] => "2014-09-18"})
       end
     end
 

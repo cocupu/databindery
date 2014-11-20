@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: git://github.com/cocupu/databindery-client.git
-  revision: f5fa3e399babbd1e705c91957fd38ae3c026ef3c
-  ref: f5fa3e399babbd1e705c91957fd38ae3c026ef3c
+  revision: c03ce406659291abf35e9137e5d6c19580ce2c6b
+  ref: c03ce406659291abf35e9137e5d6c19580ce2c6b
   specs:
     cocupu (0.0.2)
       activesupport (>= 3.0)

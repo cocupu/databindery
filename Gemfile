@@ -45,8 +45,8 @@ group :test, :development do
   gem "factory_girl_rails"
   gem 'jasmine'
   gem 'jasminerice', github:"bradphelan/jasminerice", ref:"091349c27343bfa728b8e5745675f9ddbb7d9699"
-  gem 'cocupu', github: 'cocupu/databindery-client', ref:"f5fa3e399babbd1e705c91957fd38ae3c026ef3c" # The ruby client
-  #gem 'cocupu', path: '../databindery-client' # The ruby client
+  gem 'cocupu', github: 'cocupu/databindery-client', ref:"c03ce406659291abf35e9137e5d6c19580ce2c6b" # The ruby client
+  # gem 'cocupu', path: '../databindery-client' # The ruby client
   gem "debugger"
 end
 group :test do
