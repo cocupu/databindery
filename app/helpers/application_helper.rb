@@ -1,4 +1,7 @@
 module ApplicationHelper
+
+  APP_VERSION = "0.1"
+
   def add_child_link(name, association, index)
     link_to(name, "javascript:void(0)", :class => "btn add_child", :"data-association" => association, :"data-index" => index.to_s)
   end
