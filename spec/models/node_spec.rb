@@ -3,15 +3,21 @@ require 'spec_helper'
 describe Node do
   let(:identity) { FactoryGirl.create :identity }
   let(:pool){ FactoryGirl.create :pool, :owner=>identity }
+  let(:full_name_field) { FactoryGirl.create :full_name_field }
+  let(:first_name_field) { FactoryGirl.create :first_name_field }
+  let(:last_name_field) { FactoryGirl.create :last_name_field }
+  let(:title_field) {Field.create(name:'title', multivalue:true)}
   let(:model) do
     FactoryGirl.create(:model,
-                       fields_attributes: [{'code' => 'first_name', 'multivalue' => false}, {'code' => 'last_name'}, {'code' => 'title', 'multivalue' => true}],
-                       label: 'last_name', associations_attributes: [{name: 'authors', references: ref.id}])
+                       fields: [first_name_field,last_name_field,title_field],
+                       label_field: last_name_field,
+                       associations_attributes: [{name: 'authors', references: ref.id}])
   end
   let(:ref) do
+    city_field = Field.create(name:'first_name')
     FactoryGirl.create(:model,
-                       fields_attributes: [{'code' => 'first_name'}, {'code' => 'last_name'}, {'code' => 'title'}],
-                       label: 'last_name')
+                       fields: [city_field],
+                       label_field: city_field)
   end
 
   before do
@@ -30,25 +36,25 @@ describe Node do
   end
 
   it "should store a hash of data" do
-    subject.data = {:foo =>'bar', 'boop' =>'bop'}
-    subject.data.should == {:foo =>'bar', 'boop' =>'bop'}
+    subject.data = {first_name_field.id => "Betty", :foo =>'bar', 'boop' =>'bop'}
+    subject.data.should == {first_name_field.id => "Betty", :foo =>'bar', 'boop' =>'bop'}
     subject.pool = pool
     subject.save!
-    subject.reload.data.should == {:foo =>'bar', 'boop' =>'bop'}
+    subject.reload.data.should == {first_name_field.id => "Betty", :foo =>'bar', 'boop' =>'bop'}
   end
   it "should store a hash of associations" do
     Node.any_instance.stub(:solr_associations).and_return({}) # prevent solr_associations from trying to retrieve metadata from Nodes that don't actually exist! Must stub on any_instance because .update creates a new node.
-    subject.associations = { 'authors' =>[ "123", "3232"], 'undefined' =>["882"]}
-    subject.associations.should == { 'authors' =>[ "123", "3232"], 'undefined' =>["882"]}
+    subject.associations = { 34 =>[ "123", "3232"], 'undefined' =>["882"]}
+    subject.associations.should == { 34 =>[ "123", "3232"], 'undefined' =>["882"]}
     subject.pool = pool
     subject.save!
-    subject.associations.should == { 'authors' =>[ "123", "3232"], 'undefined' =>["882"]}
+    subject.associations.should == { 34 =>[ "123", "3232"], 'undefined' =>["882"]}
 
     ### Test copy-on-write
-    subject.associations['authors'] << "888"
+    subject.associations[34] << "888"
     subject.save!
     new_subject = Node.latest_version(subject.persistent_id)
-    new_subject.associations.should == { 'authors' =>[ "123", "3232", "888"], 'undefined' =>["882"]}
+    new_subject.associations.should == { 34 =>[ "123", "3232", "888"], 'undefined' =>["882"]}
   end
 
   describe "as_json" do
@@ -60,34 +66,37 @@ describe Node do
     end
   end
   describe "associations_for_json" do
+    let(:author_model) {FactoryGirl.create(:model, name: 'Author', label_field: full_name_field,
+                                           fields: [full_name_field],
+                                           owner: identity) }
+    let(:contributing_authors_association) { OrderedListAssociation.create(:name=>'Contributing Authors', :code=>'contributing_authors', :references=>author_model.id) }
+    let(:author1) { FactoryGirl.create(:node, model: author_model, pool: pool, data: {full_name_field.id.to_s => 'Agatha Christie'}) }
+    let(:author2) { FactoryGirl.create(:node, model: author_model, pool: pool, data: {full_name_field.id.to_s => 'Raymond Chandler'}) }
+
+    let(:publisher_model) {FactoryGirl.create(:model, name: 'Publisher', label_field: full_name_field,
+                                              fields: [full_name_field],
+                                              owner: identity)}
+    let(:publisher) { FactoryGirl.create(:node, model: publisher_model, pool: pool, data: {full_name_field.id.to_s => 'Simon & Schuster Ltd.'}) }
+    let(:file) { FactoryGirl.create(:node, model: Model.file_entity, pool: pool, data: {}) }
+
     before do
-      @author_model = FactoryGirl.create(:model, name: 'Author', label: 'full_name', 
-          fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"full_name"}],
-          owner: identity)#, :associations=>[{:name=>'books', :type=>'Belongs To', :references=>@book_model.id}])
-      subject.model = FactoryGirl.create(:model, name: 'Book', owner: identity, associations_attributes: [{:name=>'Contributing Authors', :code=>'contributing_authors', :references=>@author_model.id}])
-      @author1 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Agatha Christie'})
-      @author2 = FactoryGirl.create(:node, model: @author_model, pool: pool, data: {'full_name' => 'Raymond Chandler'})
-      @publisher_model = FactoryGirl.create(:model, name: 'Publisher', label: 'name', 
-          fields_attributes: [{"name"=>"Name", "type"=>"TextField", "uri"=>"dc:description", "code"=>"name"}],
-          owner: identity)
-      @publisher = FactoryGirl.create(:node, model: @publisher_model, pool: pool, data: {'name' => 'Simon & Schuster Ltd.'})
-      @file = FactoryGirl.create(:node, model: Model.file_entity, pool: pool, data: {})
-      subject.associations['contributing_authors'] = [@author1.persistent_id, @author2.persistent_id]
-      subject.associations['undefined'] = [@publisher.persistent_id]
-      subject.files << @file
+      subject.model = FactoryGirl.create(:model, name: 'Book', owner: identity, associations: [contributing_authors_association])
+      subject.associations[contributing_authors_association.id.to_s] = [author1.persistent_id, author2.persistent_id]
+      subject.associations['undefined'] = [publisher.persistent_id]
+      subject.files << file
     end
 
     it "should return a hash, where the association name is the key" do
       obj = subject.associations_for_json
-      obj['Contributing Authors'].should == [{"id"=>@author1.persistent_id, "persistent_id"=>@author1.persistent_id,
+      obj['Contributing Authors'].should == [{"id"=>author1.persistent_id, "persistent_id"=>author1.persistent_id,
           "title"=>"Agatha Christie"},
-         {"id"=>@author2.persistent_id, "persistent_id"=>@author2.persistent_id,
+         {"id"=>author2.persistent_id, "persistent_id"=>author2.persistent_id,
           "title"=>"Raymond Chandler"}]
 
-      obj['undefined'].should == [{'id'=>@publisher.persistent_id, "persistent_id"=>@publisher.persistent_id,
+      obj['undefined'].should == [{'id'=>publisher.persistent_id, "persistent_id"=>publisher.persistent_id,
           "title"=>'Simon & Schuster Ltd.'}]
-      obj['files'].should == [{'id'=>@file.persistent_id, "persistent_id"=>@file.persistent_id,
-          "title"=>@file.persistent_id}]
+      obj['files'].should == [{'id'=>file.persistent_id, "persistent_id"=>file.persistent_id,
+          "title"=>file.persistent_id}]
     end
 
     it "should not return strings where there should be an array of ids" do
@@ -189,7 +198,7 @@ describe Node do
   describe "with data" do
     before do
       subject.pool = pool
-      subject.data = {'f1'=>'good', 'first_name' => 'Heathcliff', 'last_name' => 'Huxtable', 'title'=>'Dr.'}
+      subject.data = {'f1'=>'good', first_name_field.id.to_s => 'Heathcliff', last_name_field.id.to_s => 'Huxtable', title_field.id.to_s=>'Dr.'}
     end
     it "should read title from field designated by model.label" do
       subject.title.should == 'Huxtable'

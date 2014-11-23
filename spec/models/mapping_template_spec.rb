@@ -45,7 +45,7 @@ describe MappingTemplate do
     it "should create the model and serialize the mapping" do
       model = Model.last
       model.name.should == 'Talk'
-      model.label.should == 'title'
+      model.label_field.code.should == 'title'
       model.fields.count.should == 2
       model.fields.where(code:"file_name").first.name.should == "File Name"
       model.fields.where(code:"title").first.name.should == "Title"
@@ -61,12 +61,12 @@ describe MappingTemplate do
       @template.attributes = {"row_start"=>"2", :model_mappings_attributes=>{'0'=>{"name"=>"Joke", "label"=>2, :field_mappings_attributes=>{'0'=>{"source"=>0, "label"=>"Location"}, '1'=>{"source"=>1, "label"=>"Submitted By"},'2'=>{"source"=>2, "label"=>"Collection Name"}}}}}
       model = Model.last
       model.name.should == 'Joke'
-      model.label.should == 'collection_name'
+      model.label_field.should == model.fields.where(code:'collection_name').first
     end
     it "should match model label to fields even when label is in a string and field source value is an integer" do
       @template.attributes = {"row_start"=>"2", :model_mappings_attributes=>{'0'=>{"name"=>"Joke", "label"=>"1", :field_mappings_attributes=>{'0'=>{"source"=>0, "label"=>"Location"}, '1'=>{"source"=>1, "label"=>"Submitted By"},'2'=>{"source"=>2, "label"=>"Collection Name"}}}}}
       model = Model.last
-      model.label.should == 'submitted_by'
+      model.label_field.should == model.fields.where(code:'submitted_by').first
     end
     it "should update, not duplicate, model mappings on consecutive calls" do
       @template.model_mappings.count.should == 1

@@ -36,7 +36,7 @@ class NodesController < ApplicationController
     fq += " AND format:Node"
 
     ## TODO do we need to add query_fields for File entities?
-    query_fields = @pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
+    query_fields = @pool.models.map {|model| model.field_codes.map{ |key| Node.solr_name(key) } }.flatten.uniq
     (solr_response, @facet_fields) = get_search_results( params, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'search', :fq=>fq, :rows=>1000, 'facet.field' => ['name_si', 'model']})
     
     # puts "# of solr_docs: #{solr_response.docs.length}"
@@ -147,7 +147,7 @@ class NodesController < ApplicationController
     # puts query
 
     ## TODO do we need to add query_fields for File entities?
-    query_fields = @pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
+    query_fields = @pool.models.map {|model| model.fields.map{ |field| Node.solr_name(field) } }.flatten.uniq
     (solr_response, @facet_fields) = get_search_results( {:q=>query}, {:qf=>(query_fields + ["pool"]).join(' '), :qt=>'advanced', :fq=>fq, :rows=>10, 'facet.field' => ['name_si', 'model']})
     
     #puts "solr_response: #{solr_response.docs}"

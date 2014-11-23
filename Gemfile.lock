@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: git://github.com/cocupu/databindery-client.git
-  revision: f5fa3e399babbd1e705c91957fd38ae3c026ef3c
-  ref: f5fa3e399babbd1e705c91957fd38ae3c026ef3c
+  revision: c03ce406659291abf35e9137e5d6c19580ce2c6b
+  ref: c03ce406659291abf35e9137e5d6c19580ce2c6b
   specs:
     cocupu (0.0.2)
       activesupport (>= 3.0)
@@ -65,6 +65,8 @@ GEM
       amq-client (~> 0.9.5)
       amq-protocol (>= 0.9.4)
       eventmachine
+    angular_rails_csrf (1.0.3)
+      rails (>= 3, < 5)
     arel (4.0.1)
     atomic (1.1.14)
     autoparse (0.3.2)
@@ -119,6 +121,8 @@ GEM
       debugger-ruby_core_source (~> 1.2.1)
     debugger-linecache (1.2.0)
     debugger-ruby_core_source (1.2.4)
+    deprecation (0.1.0)
+      activesupport
     devise (3.1.0)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
@@ -339,6 +343,7 @@ DEPENDENCIES
   activerecord-import
   activerecord-session_store
   amqp
+  angular_rails_csrf
   aws-sdk
   blacklight
   bootstrap-kaminari-views
@@ -350,6 +355,7 @@ DEPENDENCIES
   coffee-rails
   database_cleaner (>= 0.7.0)
   debugger
+  deprecation
   devise
   factory_girl_rails
   foreigner

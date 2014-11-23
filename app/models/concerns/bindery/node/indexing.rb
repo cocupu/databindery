@@ -89,10 +89,10 @@ module Bindery::Node::Indexing
     doc = {}
     update_file_ids
     model.associations.each do |f|
-      instances = find_association(f['code'])
+      instances = find_association(f.id.to_s)
       next unless instances
       doc["bindery__associations_sim"] ||= []
-      find_association(f['code']).each do |instance|
+      instances.each do |instance|
         doc["bindery__associations_sim"] << instance.persistent_id
         facet_name_for_association = Node.solr_name(f['code'], type: 'facet', multivalue:true)
         doc[facet_name_for_association] ||= []
@@ -114,7 +114,7 @@ module Bindery::Node::Indexing
     doc = {}
     return doc if data.nil?
     model.fields.each do |f|
-      val = f.sanitize(data[f.code])
+      val = f.sanitize(data[f.id.to_s])
       if opts[:multivalue]
         f['multivalue'] = true
       end

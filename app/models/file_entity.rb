@@ -18,6 +18,7 @@ module FileEntity
     opts[:data] = {} unless opts[:data]
     opts[:data]["content-type"] = opts[:data][:mime_type] unless opts[:data][:mime_type].nil?
     file_entity = Node.new( opts.slice(:data, :associations, :binding, :persistent_id, :storage_location_id) )
+    file_entity.model = Model.file_entity
     file_entity.pool = pool
     file_entity.extend FileEntity
     file_entity.file_entity_type = "S3"
@@ -227,6 +228,14 @@ module FileEntity
     h["file_entity"] = true
     h["file_type"] = file_type
     h
+  end
+
+  def to_solr
+    solr_doc = super
+    [:mime_type,:content_type,:file_type,:storage_location_id,:file_size,:file_entity_type,:file_name].each do |method|
+      solr_doc[method.to_s+"_ssi"] = self.send(method)
+    end
+    solr_doc
   end
 
   # Set metadata (ie. filename for insertion into Content-Disposition) on object in remote file store

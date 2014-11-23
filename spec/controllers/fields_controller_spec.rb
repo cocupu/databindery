@@ -110,7 +110,7 @@ describe FieldsController do
         sign_in @identity.login_credential
       end
       it "should return field info and current values from pool" do
-        FactoryGirl.create(:node, pool:@pool, model:@my_model, data:{"title"=>"My title"})
+        FactoryGirl.create(:node, pool:@pool, model:@my_model, data:{@field.id.to_s=>"My title"})
         get :show, identity_id: @identity.short_name, :pool_id=>@pool, id:@field.code, format: :json
         response.should be_successful
         assigns[:field].should == @field

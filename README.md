@@ -74,4 +74,7 @@ We use "resque-pool":https://github.com/nevans/resque-pool in production.  See t
   rake resque:work QUEUE=*
 ```
 
+# License & Copyright
 
+DataBindery and all of its source code is property of CoCuPu LLC
+© copyright CoCuPu LLC 2014. All rights reserved.

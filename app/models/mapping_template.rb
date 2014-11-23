@@ -29,8 +29,9 @@ class MappingTemplate < ActiveRecord::Base
         unless map_wia[:label].nil? || map_wia[:label].empty?
           field_code = Model.field_name(map_wia[:label])
           unless field_code.blank?
-            model.fields << Field.create(:code => field_code, :name =>map_wia[:label])
-            model.label= field_code if model_attributes[:label] == map_wia[:source] || model_attributes[:label].to_i == map_wia[:source]
+            field = Field.create(:code => field_code, :name =>map_wia[:label])
+            model.fields << field
+            model.label_field = field if model_attributes[:label] == map_wia[:source] || model_attributes[:label].to_i == map_wia[:source]
             map[:field] = field_code
           end
         end

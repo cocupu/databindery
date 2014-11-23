@@ -17,8 +17,9 @@ module Bindery::Node::Finders
   end
 
   # TODO grab this info out of solr.
-  def find_association(type)
-    associations[type] && (associations[type] != "") ? associations[type].map { |pid| Node.latest_version(pid) } : nil
+  def find_association(association_id)
+    association_id = association_id.to_s
+    associations[association_id] && (associations[association_id] != "") ? associations[association_id].map { |pid| Node.latest_version(pid) } : nil
   end
 
   def reify_association(type)

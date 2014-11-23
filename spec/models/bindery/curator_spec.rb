@@ -122,29 +122,29 @@ describe Bindery::Curator do
       @pool = FactoryGirl.create :pool, :owner=>@identity
       @model = FactoryGirl.create(:model, pool: @pool, label: 'first_name',
                                   fields_attributes: [{:code=>'first_name'}, {:code=>'last_name'}, {:code=>'title'}])
-      @node1 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'})
-      @node2 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'})
-      @node3 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>{'first_name'=>'Justin', 'last_name'=>'Ball', 'title'=>'Mr.'})
+      @node1 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>@model.convert_data_field_codes_to_id_strings({'first_name'=>'Justin', 'last_name'=>'Coyne', 'title'=>'Mr.'}))
+      @node2 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>@model.convert_data_field_codes_to_id_strings({'first_name'=>'Matt', 'last_name'=>'Zumwalt', 'title'=>'Mr.'}))
+      @node3 = FactoryGirl.create(:node, model: @model, pool: @pool, :data=>@model.convert_data_field_codes_to_id_strings({'first_name'=>'Justin', 'last_name'=>'Ball', 'title'=>'Mr.'}))
     end
     it "should not be successful using a pool I can't edit" do
       pending
-      Bindery::Curator.instance.find_or_create_node(pool:@pool, :model=>@model, :data=>{"first_name" =>"Justin", "last_name" => "Coyne"})
+      Bindery::Curator.instance.find_or_create_node(pool:@pool, :model=>@model, :data=>@model.convert_data_field_codes_to_id_strings({"first_name" =>"Justin", "last_name" => "Coyne"}))
       response.code.should == '404'
       assigns[:node].should be_nil
     end
 
     it "should return existing node  if one already fits the fields & values specified" do
       previous_number_of_nodes = Node.count
-      result = Bindery::Curator.instance.find_or_create_node(pool:@pool, :model=>@model, :data=>{"first_name" =>"Justin", "last_name" => "Coyne"})
+      result = Bindery::Curator.instance.find_or_create_node(pool:@pool, :model=>@model, :data=>@model.convert_data_field_codes_to_id_strings({"first_name" =>"Justin", "last_name" => "Coyne"}))
       Node.count.should == previous_number_of_nodes
       result.should == @node1
     end
 
     it "should create a new node if none fits the fields & values specified" do
       previous_number_of_nodes = Node.count
-      result = Bindery::Curator.instance.find_or_create_node(pool:@pool, :model=>@model, :data=>{"first_name" =>"Randy", "last_name" => "Reckless"})
+      result = Bindery::Curator.instance.find_or_create_node(pool:@pool, :model=>@model, :data=>@model.convert_data_field_codes_to_id_strings({"first_name" =>"Randy", "last_name" => "Reckless"}))
       Node.count.should == previous_number_of_nodes + 1
-      result.data.should == {"first_name"=>"Randy", "last_name"=>"Reckless"}
+      result.data.should == @model.convert_data_field_codes_to_id_strings({"first_name"=>"Randy", "last_name"=>"Reckless"})
       result.model.should == @model
     end
   end

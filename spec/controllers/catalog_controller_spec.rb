@@ -7,6 +7,11 @@ describe CatalogController do
     end
   end
 
+  let(:style_field) {Field.create(name:'Style')}
+  let(:label_field) {Field.create(name:'Label')}
+  let(:f1) {Field.create(code: 'f1', name: 'Field good')}
+  let(:f2) {Field.create(code: 'f2', name: "Another one")}
+
   before do
     @identity = FactoryGirl.create :identity
     @pool = FactoryGirl.create :pool, :owner=>@identity
@@ -17,10 +22,10 @@ describe CatalogController do
 
     @model1 = FactoryGirl.create(:model, :name=>"Mods and Rockers", :pool=>@exhibit.pool)
 
-    @model1.update_attributes fields_attributes: [{code: 'f1', name: 'Field good'}, {code: 'f2', name: "Another one"}]
+    @model1.update_attributes fields: [f1,f2]
     @model1.save!
     @model2 = FactoryGirl.create(:model, :pool=>@exhibit.pool)
-    @model2.update_attributes fields_attributes: [{code: 'style', name: 'Style'}, {code: 'label', name: "Label"}, {code: 'f2', name: "Another one"}]
+    @model2.update_attributes fields: [style_field,label_field,f2]
 
     #TODO ensure that code is unique for all fields in a pool, so that Author.name is separate from Book.name
     @model2.save!
@@ -31,15 +36,15 @@ describe CatalogController do
     Bindery.solr.delete_by_id raw_results["response"]["docs"].map{ |d| d["id"]}
     Bindery.solr.commit
 
-    @instance = Node.new(data: {'f1' => 'bazaar'})
+    @instance = Node.new(data: {f1.id.to_s => 'bazaar'})
     @instance.model = @model1
     @instance.pool = @exhibit.pool 
     @instance.save!
 
-    @instance.data['f2'] = 'Bizarre'
+    @instance.data[f2.id.to_s] = 'Bizarre'
     @instance.save! #Create a new version of this, only one version should show in search results.
 
-    @instance2 = Node.new(data: {'f1' => 'bazaar'})
+    @instance2 = Node.new(data: {f1.id.to_s => 'bazaar'})
     @instance2.model = @model1
     @instance2.pool = FactoryGirl.create :pool
     @instance2.save!
