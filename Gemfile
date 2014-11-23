@@ -4,6 +4,7 @@ gem "rails", "~> 4.0.1"
 gem "activerecord-session_store"
 gem 'activerecord-import'
 gem 'json'
+gem 'angular_rails_csrf'
 
 # Gems used only for assets and not required
 # in production environments by default.

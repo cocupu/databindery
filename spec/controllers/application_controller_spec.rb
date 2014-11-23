@@ -11,8 +11,9 @@ describe ApplicationController do
   end
   
   it "should return CSRF/XSRF header" do
+    controller.allow_forgery_protection = true
     get :index
-    response.cookies["XSRF-TOKEN"].should == controller.send(:form_authenticity_token)
+    expect(response.cookies["XSRF-TOKEN"]).to eq controller.send(:form_authenticity_token)
   end
   
 end
