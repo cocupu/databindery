@@ -17,13 +17,15 @@ Model.all.each do |m|
         # do nothing
     end
     begin
-      field = Field.create(field_hash.permit(:id, :name, :type, :code, :uri, :multivalue))
+      field = Field.find_or_create_by(field_hash.permit(:id, :name, :type, :code, :uri, :multivalue))
     rescue
       errors << {model: m.id, field_hash: field_hash}
     end
     m.fields << field
-    m.save
   end
+
+  m.label_field = m.fields.where(code:m[:label]).first
+  m.save
 
   if errors.empty?
     puts "Finished with no errors."
