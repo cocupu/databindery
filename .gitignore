@@ -37,4 +37,5 @@ public/dev-assets
 
 config/client_secrets.json
 .idea
+local_scripts/
 

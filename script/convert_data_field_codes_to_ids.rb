@@ -2,9 +2,11 @@ errors = {}
 puts "#{Pool.count} pools to process."
 Pool.all.each do |pool|
   errors[pool.id] = []
+
   nodes_head = pool.nodes_head
   puts "Processing #{pool.name} (#{pool.short_name}) -- head contains #{nodes_head.count} nodes of #{pool.nodes.count} total node versions"
-  nodes_head.each_with_index do |node, id|
+  pool.node_pids.each_with_index do |node_pid, id|
+    node = Node.latest_version(node_pid)
     if (id % 250 == 0)
       print "."
       STDOUT.flush
