@@ -56,6 +56,8 @@ group :test do
 end
 
 gem "devise"
+gem "rack-cors", :require => 'rack/cors'
+# gem "rack-cors", github:"cyu/rack-cors", :require => 'rack/cors', ref:"470a0f92d4a971f1f2d9a7839cdab772c845591a"
 gem "aws-sdk"
 gem "jettywrapper"
 gem "rsolr"

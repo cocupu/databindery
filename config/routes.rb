@@ -9,9 +9,11 @@ Bindery::Application.routes.draw do
   devise_for :users, class_name: "LoginCredential", controllers: {registrations:  "users/registrations"}
   as :user do
     get "signin", :to => "devise/sessions#new"
-    post "signin", :to => "devise/sessions#create"
+    post "signin", :to => "devise/sessions#create", class_name: "LoginCredential"
     get "signout", :to => "devise/sessions#destroy"
   end
+
+  get 'users/registrations' => 'users/registrations#index', :as => 'login_credentials'
 
   # Drives is a redirect point for google oauth, so it can't have any dynamic segments
   resources :drives, :only=>[:index]

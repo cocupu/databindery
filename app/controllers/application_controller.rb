@@ -59,6 +59,5 @@ class ApplicationController < ActionController::Base
   def current_identity
     current_user.identities.first if current_user
   end
-  
-  
+
 end

@@ -55,7 +55,19 @@ module Bindery
     config.assets.version = '1.0'
 
     config.action_mailer.default_url_options = { :host => "bindery.cocupu.com" }
-    
+
+    # config.action_dispatch.default_headers = {
+    #     'Access-Control-Allow-Origin' => '*',
+    #     'Access-Control-Request-Method' => %w{GET POST PUT OPTIONS}.join(",")
+    # }
+    config.middleware.insert_after Rails::Rack::Logger, Rack::Cors, :logger => Rails.logger do
+      allow do
+        origins '*'
+        resource '*',
+                 :headers => :any,
+                 :methods => [:get, :post, :options]
+      end
+    end
 
   end
 end
