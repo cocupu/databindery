@@ -5,6 +5,7 @@ describe IdentitiesController do
   describe "index" do
     before do
       @identity = FactoryGirl.create :identity
+      @second_identity = FactoryGirl.create :identity
       sign_in @identity.login_credential
     end
     it "should give a json formatted list of identities available for the current user" do
@@ -20,8 +21,8 @@ describe IdentitiesController do
       identity_json.delete("updated_at")
       identity_json.should == {"id"=>@identity.id, "name"=>@identity.name, "short_name"=>@identity.short_name, "url"=>"/#{@identity.short_name}"}
     end
-    it "should allow searching for identities belonging to current_user" do
-      get :index, q:"current_user"
+    it "should allow searching for identities belonging to email address" do
+      get :index, email:@identity.login_credential.email
       assigns[:identities].should == @identity.login_credential.identities.all
     end
   end

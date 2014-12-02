@@ -1,18 +1,22 @@
 class IdentitiesController < ApplicationController
   def index
-    if params[:q]
+    if params[:email]
+      login_credential = LoginCredential.find_by_email(params[:email])
+      @identities = Identity.where(:login_credential_id => login_credential.id)
+    elsif params[:q]
       q = params[:q]
-      if q == "current_user"
+      capitalized = q.split.map(&:capitalize).join(' ')
+      @identities = Identity.where("name LIKE :prefix OR name LIKE :capitalized OR short_name LIKE :prefix OR short_name LIKE :capitalized", prefix: "%#{q}%", capitalized:"%#{capitalized}%").limit(25)
+    else
+      if current_user
         @identities = Identity.where(:login_credential_id => current_user.id)
       else
-        capitalized = q.split.map(&:capitalize).join(' ')
-        @identities = Identity.where("name LIKE :prefix OR name LIKE :capitalized OR short_name LIKE :prefix OR short_name LIKE :capitalized", prefix: "%#{q}%", capitalized:"%#{capitalized}%").limit(25)
+        @identities = []
       end
-    else
-      @identities = Identity.limit(25)
     end
     render :json=> @identities.map {|i| serialize_identity(i) }
   end
+
   def show
     if @identity.nil? && params[:id].to_i.to_s == params[:id]
       @identity = Identity.find(params[:id])
