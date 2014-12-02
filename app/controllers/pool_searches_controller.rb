@@ -7,6 +7,8 @@ class PoolSearchesController < ApplicationController
   before_filter :set_perspective
   before_filter :load_configuration
   before_filter :load_model_for_grid
+  before_filter :convert_facet_fields_params
+  before_filter :convert_sort_fields_params
 
   include Blacklight::Controller
   def layout_name
@@ -18,7 +20,7 @@ class PoolSearchesController < ApplicationController
 
   solr_search_params_logic << :add_pool_to_fq << :add_index_fields_to_qf << :ensure_model_filtered_for_grid << :apply_audience_filters
 
-  # get search results from the solr index
+      # get search results from the solr index
   # Had to override the whole method (rather than using super) in order to add json support
   def index
 
@@ -261,6 +263,48 @@ class PoolSearchesController < ApplicationController
   def apply_audience_filters(solr_parameters, user_parameters)
     unless can? :edit, @pool
       @pool.apply_solr_params_for_identity(current_identity, solr_parameters, user_parameters)
+    end
+  end
+
+  # Allows facet queries by field id instead of Solr field name
+  # @example Facet on nodes where the value of field 45 is "Mint"
+  #   get :index, :pool_id=>1, identity_id:'sassy', "facet_fields" => {45 => "Mint"}
+  # Has to be run as a before filter instead of part of solr_search_params_logic to ensure that Blacklight intercepts & converts the facets as if they were regular facet queries.
+  def convert_facet_fields_params
+    if params[:facet_fields]
+      params[:f] ||= {}
+      params[:facet_fields].each_pair do |field_id,value|
+        begin
+          field = Field.find(field_id.to_i)
+          params[:f][field.solr_name(type: "facet")] = value
+        end
+      end
+    end
+  end
+
+  # Allows sorting by field id instead of Solr field name
+  # @example Sort by field 45 descending
+  #   get :index, :pool_id=>1, identity_id:'sassy', "sort_fields" => {47 => "desc"}
+  # Has to be run as a before filter instead of part of solr_search_params_logic to ensure that Blacklight intercepts & converts the sort params as if they were regular sort params.
+  def convert_sort_fields_params
+    if params[:sort_fields]
+      unless params[:sort_fields].kind_of?(Array)
+        params[:sort_fields] = JSON.parse(params[:sort_fields])
+      end
+      sort_entries = []
+      params[:sort_fields].each do |sort_entry|
+        field_id = sort_entry.keys.first
+        direction = sort_entry.values.first
+        begin
+          field = Field.find(field_id.to_i)
+          sort_entries << "#{field.solr_name} #{direction}"
+        end
+      end
+      unless params[:sort].nil? || params[:sort].empty?
+        sort_entries << params[:sort]
+      end
+      params[:sort] = sort_entries.join(",")
+      puts params[:sort]
     end
   end
 

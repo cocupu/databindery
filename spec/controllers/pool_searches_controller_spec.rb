@@ -97,6 +97,28 @@ describe PoolSearchesController do
         [@node3, @node4].each {|n| pids.should include(n.persistent_id)}
         [@node1, @node2].each {|n| pids.should_not include(n.persistent_id)}
       end
+      it "should allow faceted queries by field id" do
+        get :index, :pool_id=>other_pool, :format=>:json, identity_id: identity.short_name, "nodesOnly"=>"true", "facet_fields" => {make_field.id.to_s => "barf"}
+        response.should  be_successful
+        json = JSON.parse(response.body)
+        pids = json.map {|doc| doc["id"]}
+        [@node3, @node4].each {|n| pids.should include(n.persistent_id)}
+        [@node1, @node2].each {|n| pids.should_not include(n.persistent_id)}
+      end
+      it "should allow sorting by field id" do
+        get :index, :pool_id=>other_pool, :format=>:json, identity_id: identity.short_name, "nodesOnly"=>"true", "sort_fields" => [year_field.id.to_s => "desc"]
+        response.should  be_successful
+        json = JSON.parse(response.body)
+        pids = json.map {|doc| doc["id"]}
+        expect(pids).to eq [@node3.persistent_id, @node4.persistent_id, @node2.persistent_id, @node1.persistent_id]
+      end
+      it "should allow sorting by field id from json array" do
+        get :index, :pool_id=>other_pool, :format=>:json, identity_id: identity.short_name, "nodesOnly"=>"true", "sort_fields" => "[{\"#{name_field.id.to_s}\":\"asc\"},{\"#{year_field.id.to_s}\":\"desc\"}]"
+        response.should  be_successful
+        json = JSON.parse(response.body)
+        pids = json.map {|doc| doc["id"]}
+        expect(pids).to eq [@node2.persistent_id, @node1.persistent_id, @node3.persistent_id, @node4.persistent_id]
+      end
     end
   end
   
