@@ -126,17 +126,19 @@ class PoolSearchesController < ApplicationController
       # :show may be set to false if you don't want the facet to be drawn in the 
       # facet bar
       exhibit.facets.uniq.each do |field|
-        if field.kind_of?(Field)
-          if field.name.nil?
-            field.name = field.code.humanize
-          end
-          config.add_facet_field Node.solr_name(field), :label => field.name.humanize, limit: 10
-        else
-          case field
-            when "model_name"
-              config.add_facet_field Node.solr_name(field, type: 'facet'), :label => "Model", limit: 10
-            when String
-              config.add_facet_field Node.solr_name(field, type: 'facet'), :label => field.humanize, limit: 10
+        unless blacklight_config.facet_fields.keys.include?( Node.solr_name(field) )
+          if field.kind_of?(Field)
+            if field.name.nil?
+              field.name = field.code.humanize
+            end
+            config.add_facet_field Node.solr_name(field), :label => field.name.humanize, limit: 10
+          else
+            case field
+              when "model_name"
+                config.add_facet_field Node.solr_name(field, type: 'facet'), :label => "Model", limit: 10
+              when String
+                config.add_facet_field Node.solr_name(field, type: 'facet'), :label => field.humanize, limit: 10
+            end
           end
         end
       end
@@ -154,20 +156,21 @@ class PoolSearchesController < ApplicationController
         #else
         #  config.add_index_field Node.solr_name(f), :label => f.humanize+':'
         #end
-        if field.kind_of?(Field)
-          if field.name.nil?
-            field.name = field.code.humanize
-          end
-          config.add_index_field Node.solr_name(field), :label => field.name+':'
-        else
-          case field
-            when "model_name"
-              config.add_index_field Node.solr_name(field, type: 'facet'), :label => "Model"
-            when String
-              config.add_index_field Node.solr_name(field), :label => field.humanize+':'
+        unless blacklight_config.index_fields.keys.include?( Node.solr_name(field) )
+          if field.kind_of?(Field)
+            if field.name.nil?
+              field.name = field.code.humanize
+            end
+            config.add_index_field Node.solr_name(field), :label => field.name+':'
+          else
+            case field
+              when "model_name"
+                config.add_index_field Node.solr_name(field, type: 'facet'), :label => "Model"
+              when String
+                config.add_index_field Node.solr_name(field), :label => field.humanize+':'
+            end
           end
         end
-
       end
       # query_fields = exhibit.pool.models.map {|model| model.keys.map{ |key| Node.solr_name(key) } }.flatten.uniq
       #solr_parameters[:qf] = query_fields + ["pool"]
@@ -175,20 +178,21 @@ class PoolSearchesController < ApplicationController
       # solr fields to be displayed in the show (single result) view
       #   The ordering of the field names is the order of the display 
       exhibit.index_fields.uniq.each do |field|
-        if field.kind_of?(Field)
-          if field.name.nil?
-            field.name = field.code.humanize
-          end
-          config.add_show_field Node.solr_name(field), :label => field.name+':'
-        else
-          case field
-            when "model_name"
-              config.add_show_field Node.solr_name(field, type: 'facet'), :label => "Model"
-            when String
-              config.add_show_field Node.solr_name(field), :label => field.humanize+':'
+        unless blacklight_config.show_fields.keys.include?( Node.solr_name(field) )
+          if field.kind_of?(Field)
+            if field.name.nil?
+              field.name = field.code.humanize
+            end
+            config.add_show_field Node.solr_name(field), :label => field.name+':'
+          else
+            case field
+              when "model_name"
+                config.add_show_field Node.solr_name(field, type: 'facet'), :label => "Model"
+              when String
+                config.add_show_field Node.solr_name(field), :label => field.humanize+':'
+            end
           end
         end
-
       end
 
       # "fielded" search configuration. Used by pulldown among other places.
