@@ -87,18 +87,11 @@ class PoolsController < ApplicationController
     end
     pool_params.permit(:description, :name, :short_name)
   end
+
   # Update the solr index with the pool's head (current version of all nodes)
   def update_index
-    failed_nodes = []
-    pool_head = @pool.nodes.head
-    pool_head.each do |n| 
-      begin
-        n.update_index
-      rescue  
-        failed_nodes << n
-      end
-    end
+    failed_nodes = @pool.update_index
     flash[:notice] ||= []
-    flash[:notice] << "Reindexed #{pool_head.count} nodes with #{failed_nodes.count} failures."
+    flash[:notice] << "Reindexed #{@pool.node_pids.count} nodes with #{failed_nodes.count} failures."
   end
 end

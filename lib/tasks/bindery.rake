@@ -28,3 +28,17 @@ task :ci do
   raise "test failures: #{error}" if error
 end
 
+namespace :bindery do
+  desc "Import seed data"
+  task :seed  => :environment do
+    # Bindery::SeedDataImporter.instance.import_data("seeds.json", Model.file_entity, Bindery::SeedDataImporter.instance.seed_pool)
+    pool = Pool.find_or_create_by(short_name:"seeds2", owner: Bindery::SeedDataImporter.instance.seed_identity)
+    Bindery::SeedDataImporter.instance.import_data("seeds.json", Model.file_entity, pool)
+  end
+
+  desc "Harvest seed data from S3 (slow)"
+  task :seed_from_s3 => :environment do
+    Bindery::S3BucketImporter.instace.import_bucket("5f496210-5ee3-0132-962e-12313819959a", Bindery::SeedDataImporter.instance.seed_pool)
+  end
+end
+

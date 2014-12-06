@@ -230,4 +230,14 @@ describe Pool do
       ["model_name","description","one","two","three"].each {|code| codes.should include(code)}
     end
   end
+
+  it "updates the index with all current nodes" do
+    allow(subject).to receive(:node_pids).and_return(["pid1","pid2"])
+    ["pid1","pid2"].each do |pid|
+      node_double = double
+      expect(node_double).to receive(:update_index)
+      expect(Node).to receive(:latest_version).with(pid).and_return(node_double)
+    end
+    subject.update_index
+  end
 end

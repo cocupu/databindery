@@ -1,10 +1,20 @@
 module Bindery::Node::DataManipulations
   extend ActiveSupport::Concern
 
+  # Getter for field values
+  # Uses #lookup_field_id_string to figure out which field key to use
+  # @example
+  #   field_value(48)
+  # @example find by field code
+  #   field_value("full_name", :find_by => :code)
+  # @example find by field name
+  #   field_value("Full Name", :find_by => :name)
   def field_value(field_identifier, options={})
     data[lookup_field_id_string(field_identifier, options)]
   end
 
+  # Sets field value corresponding to identifier
+  # Supports same options as #field_value
   def set_field_value(field_identifier, value, options={})
     id_string = lookup_field_id_string(field_identifier, options)
     if id_string.nil?
@@ -13,6 +23,17 @@ module Bindery::Node::DataManipulations
     return data[id_string] = value
   end
 
+  # Returns the id string corresponding to the given field_identifier
+  # Assumes field_identifier is field id unless you provide :find_by in the options
+  # @example
+  #   lookup_field_id_string(48)
+  #   => "48"
+  # @example find by field code
+  #   lookup_field_id_string("full_name", :find_by => :code)
+  #   => "48"
+  # @example find by field name
+  #   lookup_field_id_string("Full Name", :find_by => :name)
+  #   => "48"
   def lookup_field_id_string(field_identifier, options={})
     if options[:find_by] == :code
       return model.map_field_codes_to_id_strings[field_identifier]

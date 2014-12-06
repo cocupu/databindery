@@ -64,8 +64,9 @@ describe Model do
     file_entity = Model.file_entity
     file_entity.should be_kind_of Model
     file_entity.code.should == Model::FILE_ENTITY_CODE
-    file_entity.fields.first.code.should == 'file_name'
-    file_entity.fields.last.code.should == "content_type"
+    ['file_name','content_type','bucket','file_entity_type','file_size'].each do |field_code|
+      file_entity.fields.map {|f| f.code}
+    end
     file_entity.label_field.should == file_entity.fields.where(code:'file_name').first
   end
 

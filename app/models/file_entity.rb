@@ -12,13 +12,14 @@ module FileEntity
   #   * the remote file is in Amazon S3
   #   * the S3 object is in the given Pool's default bucket
   # @example
-  #   file_entity = FileEntity.register(my_pool, :data=>{"filepath"=>"/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg", "filename"=>"DSC_0549-3.jpg", "filesize"=>"471990", "filetype"=>"image/jpeg", "binding"=>"https://s3.amazonaws.com/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg"})
+  #   file_entity = FileEntity.register(my_pool, :data=>{"bucket"=>"f542aab0-66e4-0130-8d40-442c031da886",storage_location_id"=>"/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg", "file_name"=>"DSC_0549-3.jpg", "file_size"=>"471990", "mime_type"=>"image/jpeg", "binding"=>"https://s3.amazonaws.com/f542aab0-66e4-0130-8d40-442c031da886/uploads%2F20130305T1425Z_eaf29caae12b6d4a101297b45c46dc2a%2FDSC_0549-3.jpg"})
   def self.register(pool, opts={})
     opts = opts.with_indifferent_access
     opts[:data] = {} unless opts[:data]
-    opts[:data]["content-type"] = opts[:data][:mime_type] unless opts[:data][:mime_type].nil?
+    opts[:data]["mime_type"] = opts[:data][:filetype] unless opts[:data][:filetype].nil?
     file_entity = Node.new( opts.slice(:data, :associations, :binding, :persistent_id, :storage_location_id) )
     file_entity.model = Model.file_entity
+    file_entity.convert_data_field_codes_to_id_strings!
     file_entity.pool = pool
     file_entity.extend FileEntity
     file_entity.file_entity_type = "S3"
@@ -55,45 +56,59 @@ module FileEntity
     #file_entity.save!
     return file_entity
   end
+
+  def model
+    Model.file_entity
+  end
   
   def file_entity_type=(name)
-    data['file_entity_type'] = name
+    set_field_value('file_entity_type', name, find_by: :code)
   end
 
   def file_entity_type
-    data['file_entity_type']
+    field_value('file_entity_type', find_by: :code)
   end
   
   def file_name=(name)
-    data['file_name'] = name
+    set_field_value('file_name', name, find_by: :code)
   end
 
   def file_name
-    data['file_name']
+    field_value('file_name', find_by: :code)
   end
 
   def content_type=(name)
-    data['content_type='] = name
+    set_field_value('content_type', name, find_by: :code)
   end
 
   def content_type
-    data['content_type'] ||= file_type.capitalize
+    value = field_value('content_type', find_by: :code)
+    if value.nil?
+      return self.content_type = file_type.capitalize
+    else
+      return value
+    end
   end
   
   def file_size=(name)
-    data['file_size'] = name
+    set_field_value('file_size', name, find_by: :code)
   end
 
   def file_size
-    data['file_size']
+    field_value('file_size', find_by: :code)
   end
 
   def bucket=(name)
-    data['bucket'] = name
+    set_field_value('bucket', name, find_by: :code)
   end
 
   def bucket
-    data['bucket'] ||= pool.persistent_id
+    value = field_value('bucket', find_by: :code)
+    if value.nil?
+      return self.bucket = pool.persistent_id
+    else
+      return value
+    end
   end
   
   # Returns an authorized S3 url for the corresponding S3 content
@@ -110,20 +125,25 @@ module FileEntity
   
   # The id used to find file in file store (ie. S3 object key)
   def storage_location_id
-    data["storage_location_id"] ||= self.generate_uuid   # make sure persistent_id is set & use that
+    value = field_value('storage_location_id', find_by: :code)
+    if value.nil?
+      return self.storage_location_id = self.generate_uuid   # make sure persistent_id is set & use that
+    else
+      return value
+    end
   end
   
   def storage_location_id=(new_id)
-    data["storage_location_id"] = new_id
+    set_field_value('storage_location_id', new_id, find_by: :code)
   end
 
   def mime_type
     # we can get this from s3, but keep it cached locally so we know what kind of presentation to use
-    data['content-type']
+    field_value('mime_type', find_by: :code)
   end
 
   def mime_type=(mime_type)
-    data['content-type'] = mime_type
+    set_field_value('mime_type', mime_type, find_by: :code)
   end
 
   # fetch from s3

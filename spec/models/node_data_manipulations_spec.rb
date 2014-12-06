@@ -14,12 +14,12 @@ describe Node do
     end
   end
   describe "set_field_value" do
-    it "should set field values by field id" do
-      subject.set_field_value(full_name_field.id, "NEW VALUE")
+    it "should set field values by field id and return the new value" do
+      expect( subject.set_field_value(full_name_field.id, "NEW VALUE") ).to eq("NEW VALUE")
       expect( subject.field_value(full_name_field.id) ).to eq("NEW VALUE")
     end
     it "should set field values by field code" do
-      subject.set_field_value(full_name_field.code, "NEW VALUE", :find_by => :code)
+      expect(  subject.set_field_value(full_name_field.code, "NEW VALUE", :find_by => :code) ).to eq("NEW VALUE")
       expect( subject.field_value(full_name_field.id) ).to eq("NEW VALUE")
     end
     it "should raise error if no field id is available" do

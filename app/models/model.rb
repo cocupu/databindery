@@ -73,7 +73,7 @@ class Model < ActiveRecord::Base
   end
 
   def self.file_entity
-    Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity", fields_attributes: [{'code' => 'file_name', 'type' => 'TextField', 'name' => "Filename"}, {'code' => 'content_type', 'type' => 'TextField', 'name' => "Content Type"}] ) do |file_entity_model|
+    Model.where(code: FILE_ENTITY_CODE).first_or_create!(code: FILE_ENTITY_CODE, name: "File Entity", fields_attributes: [{'code' => 'file_name', 'type' => 'TextField', 'name' => "Filename"}, {'code' => 'bucket', 'type' => 'TextField', 'name' => "Bucket"},{'code' => 'storage_location_id', 'type' => 'TextField', 'name' => "Storage Location ID"}, {'code' => 'file_entity_type', 'type' => 'TextField', 'name' => "Type of File"},{'code' => 'mime_type', 'type' => 'TextField', 'name' => "Mime Type"},{'code' => 'content_type', 'type' => 'TextField', 'name' => "Content Type"}, {'code' => 'file_size', 'type' => 'IntegerField', 'name' => "File Size"}] ) do |file_entity_model|
       file_name_field = file_entity_model.fields.select {|f| f.code == 'file_name' }.first
       file_name_field.save
       file_entity_model.label_field = file_name_field

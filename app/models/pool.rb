@@ -161,6 +161,20 @@ class Pool < ActiveRecord::Base
       bucket.delete
     end
   end
+
+  def update_index
+    failed_nodes = []
+    node_pids.each do |node_pid|
+      n = Node.latest_version(node_pid)
+      begin
+        n.update_index
+      rescue
+        failed_nodes << n
+      end
+    end
+    return failed_nodes
+  end
+
   # Serialize the pool and it's access_controls to a basic datastruture.
   def as_json(opts = nil)
     h = super

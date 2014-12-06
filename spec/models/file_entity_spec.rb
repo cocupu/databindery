@@ -35,7 +35,6 @@ describe FileEntity do
       file_entity.file_name.should == "909-Last-Supper-Large.jpg"
       file_entity.content_type.should == "Image"
       file_entity.file_size.should == "183237"
-      puts file_entity.data
       file_entity.mime_type.should == "image/jpeg"
       file_entity.pool.should == @pool
     end

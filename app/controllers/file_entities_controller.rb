@@ -54,12 +54,12 @@ class FileEntitiesController < ApplicationController
   def file_entity_params
     if params[:file].nil?
       process_s3_direct_upload_params
-      return params.permit(:binding, :url, {data: [:storage_location_id, :file_name, :file_size, "content-type"]})
+      return params.permit(:binding, :url, {data: [:storage_location_id, :file_name, :file_size, :mime_type]})
     else
       # Move the file_name, etc into :data
       unless params.require(:file).permit(:file_name, :mime_type, :file_size, :storage_location_id, :bucket).empty?
         params[:file][:data] ||= {}
-        params[:file][:data].merge!(params.require(:file).permit(:file_name, :mime_type, :file_size, :storage_location_id, :bucket, "content-type"))
+        params[:file][:data].merge!(params.require(:file).permit(:file_name, :mime_type, :file_size, :storage_location_id, :bucket, :mime_type))
         [:file_name, :mime_type, :file_size, :storage_location_id, :bucket].each {|k| params[:file].delete(k)}
       end
 
@@ -102,7 +102,7 @@ class FileEntitiesController < ApplicationController
       params[:data]["storage_location_id"] = params["filepath"] unless params["filepath"].nil?
       params[:data]["file_name"] = params["filename"] unless params["filename"].nil?
       params[:data]["file_size"] = params["filesize"] unless params["filesize"].nil?
-      params[:data]["content-type"] = params["filetype"] unless params["filetype"].nil?
+      params[:data]["mime_type"] = params["filetype"] unless params["filetype"].nil?
     end
   end
 end
